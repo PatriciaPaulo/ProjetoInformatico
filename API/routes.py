@@ -1,4 +1,4 @@
-from flask import jsonify, make_response, request
+from flask import jsonify, make_response, request, current_app
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_restful import Api
 from flask import Blueprint
@@ -13,12 +13,11 @@ api = Api(routes_blueprint)
 
 
 
-
 @routes_blueprint.route('/register', methods=['POST'])
 def signup_user():
     data = request.get_json()
     hashed_password = generate_password_hash(data['password'], method='sha256')
-    print(data)
+
     new_user = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password, admin=False)
     db.session.add(new_user)
     db.session.commit()
@@ -26,17 +25,16 @@ def signup_user():
 
 @routes_blueprint.route('/login', methods=['POST'])
 def login_user():
-    auth = request.authorization
-    print(auth)
+    auth = request.get_json()
 
-    if not auth or not auth.username or not auth.password:
+    if not auth or not auth['username'] or not auth['password']:
         return make_response('could not verify', 401, {'Authentication': 'login required"'})
 
-    user = Utilizador.query.filter_by(username=auth.username).first()
-    if check_password_hash(user.password, auth.password):
+    user = Utilizador.query.filter_by(username=auth['username']).first()
+    if check_password_hash(user.password,  auth['password']):
         token = jwt.encode(
             {'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
-            routes_blueprint.config['SECRET_KEY'], "HS256")
+            current_app.config['SECRET_KEY'], "HS256")
 
         return jsonify({'token': token})
 

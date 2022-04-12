@@ -6,6 +6,10 @@ from flask_sqlalchemy import SQLAlchemy
 import jwt
 db = SQLAlchemy()
 
+
+
+
+
 class Utilizador(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
