@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request, current_app
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import Utilizador, Atividade,db
+from models import Utilizador, Atividade, Evento, db
 import jwt
 import datetime
 
@@ -59,7 +59,7 @@ def get_all_users():
 #region Atividade
 @routes_blueprint.route('/atividades', methods=['POST'])
 @Atividade.token_required
-def create_book(current_user):
+def create_atividade(current_user):
     data = request.get_json()
 
     new_atividade = Atividade(eventoID=data['eventoID'], userID=current_user.username, distanciaPercorrida=0,
@@ -71,7 +71,7 @@ def create_book(current_user):
 
 @routes_blueprint.route('/atividades', methods=['GET'])
 @Atividade.token_required
-def get_books(current_user):
+def get_atividades(current_user):
     atividades = Atividade.query.filter_by(userID=current_user.username).all()
     output = []
     for ati in atividades:
@@ -103,4 +103,67 @@ def update_atividade(current_user,atividade_id):
     return jsonify({'message': 'atividade atualizada'})
 
     return jsonify({'list_of_atividades': output})
+#endregion
+
+#region Evento
+@routes_blueprint.route('/eventos', methods=['POST'])
+@Evento.token_required
+def create_evento(current_user):
+    data = request.get_json()
+
+    new_evento = Evento(nome=data['nome'], localizacao=data['localizacao'], organizador=current_user.username,
+                        estado=data['estado'], duracao=data['duracao'], descricao=data['descricao'],
+                        acessibilidade=data['acessibilidade'], restricoes=data['restricoes'], tipoLixo=data['tipoLixo'],
+                        volume=data['volume'], foto=data['foto'], observacoes=data['observacoes'],
+                        )
+    db.session.add(new_evento)
+    db.session.commit()
+    return jsonify({'message': 'new evento created'})
+
+
+@routes_blueprint.route('/eventos', methods=['GET'])
+@Evento.token_required
+def get_eventos(current_user):
+    eventos = Evento.query.filter_by(organizador=current_user.username).all()
+    output = []
+    for evento in eventos:
+
+        evento_data = {}
+        evento_data['id'] = evento.id
+        evento_data['nome'] = evento.nome
+        evento_data['localizacao'] = evento.localizacao
+        evento_data['estado'] = evento.estado
+        evento_data['duracao'] = evento.duracao
+        evento_data['descricao'] = evento.descricao
+        evento_data['acessibilidade'] = evento.acessibilidade
+        evento_data['restricoes'] = evento.restricoes
+        evento_data['tipoLixo'] = evento.tipoLixo
+        evento_data['volume'] = evento.volume
+        evento_data['foto'] = evento.foto
+        evento_data['observacoes'] = evento.observacoes
+        output.append(evento_data)
+
+    return jsonify({'list_of_eventos': output})
+
+@routes_blueprint.route('/eventos/<evento_id>', methods=['PUT'])
+@Evento.token_required
+def update_evento(current_user, evento_id):
+    evento = Evento.query.filter_by(id=evento_id, organizador=current_user.username).first()
+    if not evento:
+        return jsonify({'message': 'evento does not exist'})
+    evento_data = request.get_json()
+
+    evento.duracao = evento_data['duracao']
+    evento.descricao = evento_data['descricao']
+    evento.acessibilidade = evento_data['acessibilidade']
+    evento.restricoes = evento_data['restricoes']
+    evento.tipoLixo = evento_data['tipoLixo']
+    evento.volume = evento_data['volume']
+    evento.foto = evento_data['foto']
+    evento.observacoes = evento_data['observacoes']
+
+    db.session.commit()
+    return jsonify({'message': 'evento atualizada'})
+
+    return jsonify({'list_of_eventos': output})
 #endregion
