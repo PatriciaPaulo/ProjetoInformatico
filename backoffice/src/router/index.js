@@ -1,0 +1,65 @@
+import { createRouter, createWebHashHistory } from 'vue-router'
+import Home from '../views/Home.vue'
+import Dashboard from "../components/Dashboard.vue"
+import Login from "../components/auth/Login.vue"
+import Register from "../components/auth/Register.vue"
+import ChangePassword from "../components/auth/ChangePassword.vue"
+import User from "../components/users/User.vue"
+import Users from "../components/users/Users.vue"
+
+
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: Home
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/password',
+    name: 'ChangePassword',
+    component: ChangePassword
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dashboard
+  },
+  {
+    path: '/users/',
+    name: 'Users',
+    component: Users
+  },
+  {
+    path: '/users/:id',
+    name: 'User',
+    component: User,
+    // props: true,
+    // Replaced with the following line to ensure that id is a number
+    props: route => ({ id: parseInt(route.params.id) })
+  },
+  {
+    path: '/about',
+    name: 'About',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  }
+]
+
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes
+})
+
+export default router
