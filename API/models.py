@@ -1,6 +1,5 @@
 
 from flask import Blueprint, current_app
-from functools import wraps
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import jwt
@@ -17,7 +16,7 @@ class Utilizador(db.Model):
     name = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), nullable=False)
     admin = db.Column(db.Boolean)
-
+    blocked = db.Column(db.Boolean)
 
     def serialize(self):
         return {
@@ -25,9 +24,9 @@ class Utilizador(db.Model):
             'username': self.username,
             'name': self.name,
             'email': self.email,
-            'admin': self.admin
+            'admin': self.admin,
+            'blocked': self.blocked
         }
-
 
 
 
@@ -56,26 +55,7 @@ class Atividade(db.Model):
 
         }
 
-    def token_required(f):
-        @wraps(f)
-        def decorator(*args, **kwargs):
-            token = None
 
-            if 'authorization' in request.headers:
-                token = request.headers['authorization']
-            if not token:
-
-                return jsonify({'message': 'a valid token is missing'})
-            try:
-                data = jwt.decode(token.split(" ")[1], current_app.config['SECRET_KEY'], algorithms=["HS256"])
-                current_user = Utilizador.query.filter_by(username=data['username']).first()
-
-            except:
-                return jsonify({'message': 'token is invalid'})
-
-            return f(current_user, *args, **kwargs)
-
-        return decorator
 #endregion
 
 
@@ -114,31 +94,30 @@ class Evento(db.Model):
 
         }
 
-    def token_required(f):
-        @wraps(f)
-        def decorator(*args, **kwargs):
-            token = None
 
-            if 'authorization' in request.headers:
-                token = request.headers['authorization']
-            if not token:
-
-                return jsonify({'message': 'a valid token is missing'})
-            try:
-                data = jwt.decode(token.split(" ")[1], current_app.config['SECRET_KEY'], algorithms=["HS256"])
-                current_user = Utilizador.query.filter_by(username=data['username']).first()
-
-            except:
-                return jsonify({'message': 'token is invalid'})
-
-            return f(current_user, *args, **kwargs)
-
-        return decorator
 #endregion
 
 
+# region Lixeira
+class Lixeira(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    localizacao = db.Column(db.String(128), nullable=False)
+    criador = db.Column(db.Integer, db.ForeignKey('utilizador.id'), nullable=False)
+    estado = db.Column(db.String(50), nullable=False)
+    aprovado = db.Column(db.Boolean, nullable=False)
+    foto = db.Column(db.LargeBinary, nullable=False)
 
 
-#region Lixeira
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'localizacao': self.localizacao,
+            'criador': self.criador,
+            'estado': self.estado,
+            'aprovado': self.aprovado,
+            'foto': self.foto
+        }
+
 
 #endregion

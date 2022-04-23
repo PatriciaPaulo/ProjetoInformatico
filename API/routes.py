@@ -1,26 +1,47 @@
 from flask import jsonify, make_response, request, current_app
-from werkzeug.security import generate_password_hash,check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
 from models import Utilizador, Atividade, Evento, db
+from utils import token_required,admin_required
 import jwt
 import datetime
 
-routes_blueprint = Blueprint('routes', __name__,)
-
+routes_blueprint = Blueprint('routes', __name__, )
 api = Api(routes_blueprint)
 
 
-#region Utilizador
+# region Utilizador
 @routes_blueprint.route('/register', methods=['POST'])
 def signup_user():
     data = request.get_json()
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
-    new_user = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password, admin=False)
+    new_user = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password,
+                          admin=False, blocked=False)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({'message': 'registered successfully'})
+
+
+@routes_blueprint.route('/loginBackOffice', methods=['POST'])
+def login_admin():
+    auth = request.get_json()
+    if not auth or not auth['username'] or not auth['password']:
+        return make_response('could not verify', 401, {'Authentication': 'login required"'})
+
+    user = Utilizador.query.filter_by(username=auth['username']).first()
+    # todo check if user blocked
+    if check_password_hash(user.password, auth['password']):
+        token = jwt.encode(
+            {'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
+            current_app.config['SECRET_KEY'], "HS256")
+
+        if user.admin:
+            return make_response(jsonify({'access_token': token}), 200)
+
+    return make_response('could not verify', 401, {'Authentication': '"login required"'})
+
 
 @routes_blueprint.route('/login', methods=['POST'])
 def login_user():
@@ -30,14 +51,23 @@ def login_user():
         return make_response('could not verify', 401, {'Authentication': 'login required"'})
 
     user = Utilizador.query.filter_by(username=auth['username']).first()
-    if check_password_hash(user.password,  auth['password']):
+    # todo check if user blocked
+    if check_password_hash(user.password, auth['password']):
         token = jwt.encode(
             {'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
             current_app.config['SECRET_KEY'], "HS256")
 
-        return jsonify({'token': token})
+        return make_response(jsonify({'access_token': token}), 200)
 
     return make_response('could not verify', 401, {'Authentication': '"login required"'})
+
+
+@routes_blueprint.route('/users/me', methods=['GET'])
+@token_required
+def get_me(current_user):
+    resp = make_response(jsonify({'user': Utilizador.serialize(current_user)}), 200)  # here you could use make_response(render_template(...)) too
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @routes_blueprint.route('/users', methods=['GET'])
@@ -50,27 +80,29 @@ def get_all_users():
         user_data['name'] = user.name
         user_data['email'] = user.email
         user_data['admin'] = user.admin
+        user_data['blocked'] = user.blocked
         result.append(user_data)
     return jsonify({'users': result})
 
 
-#endregion
+# endregion
 
-#region Atividade
+# region Atividade
 @routes_blueprint.route('/atividades', methods=['POST'])
-@Atividade.token_required
+#
+@token_required
 def create_atividade(current_user):
     data = request.get_json()
 
     new_atividade = Atividade(eventoID=data['eventoID'], userID=current_user.username, distanciaPercorrida=0,
-                      passos=0, duracao=0, tipoAtividade=data['tipoAtividade'])
+                              passos=0, duracao=0, tipoAtividade=data['tipoAtividade'])
     db.session.add(new_atividade)
     db.session.commit()
     return jsonify({'message': 'new atividade created'})
 
 
 @routes_blueprint.route('/atividades', methods=['GET'])
-@Atividade.token_required
+@token_required
 def get_atividades(current_user):
     atividades = Atividade.query.filter_by(userID=current_user.username).all()
     output = []
@@ -87,9 +119,10 @@ def get_atividades(current_user):
 
     return jsonify({'list_of_atividades': output})
 
+
 @routes_blueprint.route('/atividades/<atividade_id>', methods=['PUT'])
-@Atividade.token_required
-def update_atividade(current_user,atividade_id):
+@token_required
+def update_atividade(current_user, atividade_id):
     atividade = Atividade.query.filter_by(id=atividade_id, userID=current_user.username).first()
     if not atividade:
         return jsonify({'message': 'atividade does not exist'})
@@ -102,12 +135,13 @@ def update_atividade(current_user,atividade_id):
     db.session.commit()
     return jsonify({'message': 'atividade atualizada'})
 
-    return jsonify({'list_of_atividades': output})
-#endregion
 
-#region Evento
+
+# endregion
+
+# region Evento
 @routes_blueprint.route('/eventos', methods=['POST'])
-@Evento.token_required
+@token_required
 def create_evento(current_user):
     data = request.get_json()
 
@@ -122,12 +156,11 @@ def create_evento(current_user):
 
 
 @routes_blueprint.route('/eventos', methods=['GET'])
-@Evento.token_required
+@token_required
 def get_eventos(current_user):
     eventos = Evento.query.filter_by(organizador=current_user.username).all()
     output = []
     for evento in eventos:
-
         evento_data = {}
         evento_data['id'] = evento.id
         evento_data['nome'] = evento.nome
@@ -145,14 +178,14 @@ def get_eventos(current_user):
 
     return jsonify({'list_of_eventos': output})
 
+
 @routes_blueprint.route('/eventos/<evento_id>', methods=['PUT'])
-@Evento.token_required
+@token_required
 def update_evento(current_user, evento_id):
     evento = Evento.query.filter_by(id=evento_id, organizador=current_user.username).first()
     if not evento:
         return jsonify({'message': 'evento does not exist'})
     evento_data = request.get_json()
-
     evento.duracao = evento_data['duracao']
     evento.descricao = evento_data['descricao']
     evento.acessibilidade = evento_data['acessibilidade']
@@ -165,5 +198,19 @@ def update_evento(current_user, evento_id):
     db.session.commit()
     return jsonify({'message': 'evento atualizada'})
 
-    return jsonify({'list_of_eventos': output})
-#endregion
+
+
+@routes_blueprint.route('/eventos/<evento_id>/aprovar', methods=['PATCH'])
+@admin_required
+def aprovar_evento(evento_id):
+    evento = Evento.query.filter_by(id=evento_id).first()
+    if not evento:
+        return jsonify({'message': 'evento does not exist'})
+    evento_data = request.get_json()
+
+    evento.estado = evento_data['estado']
+
+    db.session.commit()
+    return jsonify({'message': 'evento atualizada'})
+
+# endregion
