@@ -10,10 +10,10 @@ import datetime
 routes_blueprint = Blueprint('routes', __name__, )
 api = Api(routes_blueprint)
 
-
-# region Utilizador
-@routes_blueprint.route('/register', methods=['POST'])
-def signup_user():
+# region backoffice
+@routes_blueprint.route('/registerAdmin', methods=['POST'])
+@admin_required
+def create_admin():
     data = request.get_json()
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
@@ -22,7 +22,6 @@ def signup_user():
     db.session.add(new_user)
     db.session.commit()
     return jsonify({'message': 'registered successfully'})
-
 
 @routes_blueprint.route('/loginBackOffice', methods=['POST'])
 def login_admin():
@@ -41,6 +40,21 @@ def login_admin():
             return make_response(jsonify({'access_token': token}), 200)
 
     return make_response('could not verify', 401, {'Authentication': '"login required"'})
+
+
+#endregion
+
+# region Utilizador
+@routes_blueprint.route('/register', methods=['POST'])
+def signup_user():
+    data = request.get_json()
+    hashed_password = generate_password_hash(data['password'], method='sha256')
+
+    new_user = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password,
+                          admin=False, blocked=False)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'registered successfully'})
 
 
 @routes_blueprint.route('/login', methods=['POST'])
@@ -214,3 +228,76 @@ def aprovar_evento(evento_id):
     return jsonify({'message': 'evento atualizada'})
 
 # endregion
+
+#region Lixeira
+@routes_blueprint.route('/lixeiras', methods=['POST'])
+@token_required
+def create_lixeira(current_user):
+    data = request.get_json()
+    new_lixeira = Evento(localizacao=data['localizacao'], criador=current_user.username,
+                        estado=data['estado'], aprovado=data['aprovado'], foto=data['foto'])
+    db.session.add(new_lixeira)
+    db.session.commit()
+    return jsonify({'message': 'new lixeira created'})
+
+@routes_blueprint.route('/lixeiras', methods=['GET'])
+@admin_required
+def get_all_lixeiras():
+    lixeiras = Lixeira.query.all()
+    output = []
+    for lixeira in lixeiras:
+        lixeira_data = {}
+        lixeira_data['id'] = lixeira.id
+        lixeira_data['localizacao'] = lixeira.localizacao
+        lixeira_data['estado'] = lixeira.estado
+        lixeira_data['aprovado'] = lixeira.aprovado
+        lixeira_data['foto'] = lixeira.foto
+        output.append(lixeira_data)
+
+    return jsonify({'list_of_lixeiras': output})
+
+@routes_blueprint.route('/lixeiras/me', methods=['GET'])
+@token_required
+def get_my_lixeira(current_user):
+    lixeiras = Lixeira.query.filter_by(organizador=current_user.username).all()
+    output = []
+    for lixeira in lixeiras:
+        lixeira_data = {}
+        lixeira_data['id'] = lixeira.id
+        lixeira_data['localizacao'] = lixeira.localizacao
+        lixeira_data['estado'] = lixeira.estado
+        lixeira_data['aprovado'] = lixeira.aprovado
+        lixeira_data['foto'] = lixeira.foto
+        output.append(lixeira_data)
+
+    return jsonify({'list_of_lixeiras': output})
+
+
+@routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['PUT'])
+@token_required
+def update_lixeira(current_user, lixeira_id):
+    lixeira = Lixeira.query.filter_by(id=lixeira_id, criador=current_user.username).first()
+    if not evento:
+        return jsonify({'message': 'lixeira does not exist'})
+    lixeira_data = request.get_json()
+    lixeira.estado = lixeira_data['estado']
+    evento.foto = evento_data['foto']
+
+    db.session.commit()
+    return jsonify({'message': 'lixeira atualizada'})
+
+
+
+@routes_blueprint.route('/lixeiras/<lixeira_id>/aprovar', methods=['PATCH'])
+@admin_required
+def aprovar_lixeira(lixeira_id):
+    lixeira = Lixeira.query.filter_by(id=lixeira_id).first()
+    if not lixeira:
+        return jsonify({'message': 'lixeira does not exist'})
+    lixeira_data = request.get_json()
+
+    lixeira.estado = lixeira_data['estado']
+
+    db.session.commit()
+    return jsonify({'message': 'lixeira atualizada'})
+#endregion
