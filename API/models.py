@@ -5,10 +5,9 @@ from flask_sqlalchemy import SQLAlchemy
 import jwt
 db = SQLAlchemy()
 
-
+#TODO falta tabelas de equipamento e mensagens
 
 #region Utilizador
-
 class Utilizador(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -58,6 +57,38 @@ class Atividade(db.Model):
 
 #endregion
 
+#region Lixo
+class Lixo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(50), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'nome': self.nome
+
+        }
+
+
+#endregion
+
+#region LixoNaAtividade
+class LixoNaAtividade(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    atividadeID = db.Column(db.Integer, db.ForeignKey('atividade.id'), nullable=False)
+    lixoID = db.Column(db.Integer, db.ForeignKey('lixo.id'), nullable=False)
+    quantidade = db.Column(db.String(128), nullable=False)
+    medida = db.Column(db.String(128), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'atividadeID': self.atividadeID,
+            'lixoID': self.lixoID,
+            'quantidade': self.quantidade,
+            'medida': self.medida
+        }
+#endregion
 
 #region Evento
 class Evento(db.Model):
@@ -97,7 +128,6 @@ class Evento(db.Model):
 
 #endregion
 
-
 # region Lixeira
 class Lixeira(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -105,7 +135,7 @@ class Lixeira(db.Model):
     criador = db.Column(db.Integer, db.ForeignKey('utilizador.id'), nullable=False)
     estado = db.Column(db.String(50), nullable=False)
     aprovado = db.Column(db.Boolean, nullable=False)
-    foto = db.Column(db.LargeBinary, nullable=False)
+    foto = db.Column(db.LargeBinary)
 
 
 
@@ -119,5 +149,38 @@ class Lixeira(db.Model):
             'foto': self.foto
         }
 
+
+#endregion
+
+#region LixeiraEvento
+class LixeiraEvento(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    lixeiraID = db.Column(db.Integer, db.ForeignKey('lixeira.id'), nullable=False)
+    eventID = db.Column(db.Integer, db.ForeignKey('evento.id'), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'lixeiraID': self.lixeiraID,
+            'eventID': self.eventID
+
+        }
+
+#endregion
+
+#region UtilizadorNoEvento
+class UtilizadorNoEvento(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    userID = db.Column(db.Integer, db.ForeignKey('utilizador.id'), nullable=False)
+    eventID = db.Column(db.Integer, db.ForeignKey('evento.id'), nullable=False)
+    estado = db.Column(db.String(128), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'userID': self.userID,
+            'eventID': self.eventID,
+            'estado': self.estado
+        }
 
 #endregion

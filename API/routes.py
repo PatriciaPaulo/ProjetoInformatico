@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import Utilizador, Atividade, Evento, db
+from models import Utilizador, Atividade, Evento, db, Lixeira
 from utils import token_required,admin_required
 import jwt
 import datetime
@@ -301,3 +301,4 @@ def aprovar_lixeira(lixeira_id):
     db.session.commit()
     return jsonify({'message': 'lixeira atualizada'})
 #endregion
+
