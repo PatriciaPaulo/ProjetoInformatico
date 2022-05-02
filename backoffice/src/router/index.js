@@ -6,8 +6,8 @@ import Register from "../components/auth/Register.vue"
 import ChangePassword from "../components/auth/ChangePassword.vue"
 import User from "../components/users/User.vue"
 import Users from "../components/users/Users.vue"
-
-
+import Lixeiras from "../components/lixeiras/Lixeiras.vue"
+import Lixeira from "../components/lixeiras/Lixeira.vue"
 const routes = [
   {
     path: '/',
@@ -43,6 +43,19 @@ const routes = [
     path: '/users/:id',
     name: 'User',
     component: User,
+    // props: true,
+    // Replaced with the following line to ensure that id is a number
+    props: route => ({ id: parseInt(route.params.id) })
+  },
+  {
+    path: '/lixeiras',
+    name: 'Lixeiras',
+    component: Lixeiras
+  },
+  {
+    path: '/lixeiras/:id',
+    name: 'Lixeira',
+    component: Lixeira,
     // props: true,
     // Replaced with the following line to ensure that id is a number
     props: route => ({ id: parseInt(route.params.id) })

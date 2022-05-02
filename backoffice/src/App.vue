@@ -35,12 +35,6 @@
 
       <div class="collapse navbar-collapse justify-content-end" >
         <ul class="navbar-nav">
-           <li v-if="!$store.state.loggedInUser"  class="nav-item">
-            <router-link class="nav-link" href="#" to="/register"
-              ><i class="bi bi-box-arrow-in-right"></i>
-              Register
-            </router-link>
-          </li>
           <li  v-if="!$store.state.loggedInUser" class="nav-item">
             <router-link class="nav-link" href="#" to="/login"
               ><i class="bi bi-box-arrow-in-right"></i>
@@ -61,7 +55,7 @@
                 class="rounded-circle z-depth-0 avatar-img"
                 alt="avatar image"
               />
-              <span class="avatar-text">{{$store.state.loggedInUser.name}}</span>
+              <span class="avatar-text">{{$store.state.loggedInUser.nome}}</span>
             </a>
             <ul
               class="dropdown-menu dropdown-menu-dark dropdown-menu-end"
@@ -102,27 +96,38 @@
         class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
       >
         <div class="position-sticky pt-3">
-          <ul class="nav flex-column">
-            <li class="nav-item">
+           <ul
+              class="nav flex-column"
+              v-show="$store.state.loggedInUser"
+          >
+            <li   class="nav-item d-flex justify-content-between align-items-center pe-3" >
               <router-link
-                class="nav-link active"
-                aria-current="page"
-                href="#"
-                to="/dashboard"
+                  class="nav-link w-100 me-3"
+                  :class="{active: $route.name === 'Dashboard'}"
+                  :to="{ name: 'Dashboard'}"
               >
-                <i class="bi bi-house"></i>
+                <i class="bi bi-list-check"></i>
                 Dashboard
               </router-link>
+
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#" to="/users">
-                <i class="bi bi-people"></i>
-                Team Members
-              </a>
+
+            <li   class="nav-item d-flex justify-content-between align-items-center pe-3" >
+              <router-link
+                  class="nav-link w-100 me-3"
+                  :class="{active: $route.name === 'Lixeiras'}"
+                  :to="{ name: 'Lixeiras'}"
+              >
+                <i class="bi bi-list-check"></i>
+                Lixeiras
+              </router-link>
+             
             </li>
           </ul>
+    
+      
 
-        
+      
           <div class="d-block d-md-none">
             <h6
               class="

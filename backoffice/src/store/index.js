@@ -42,6 +42,22 @@ export default createStore({
         state.admins.splice(idx, 1)
       }
     },
+    //Lixeiras
+    setLixeiras (state, lixeiras) {
+      state.lixeiras = lixeiras
+    },
+    resetLixeiras (state) {
+      state.lixeiras = null
+    },
+    insertLixeira(state, newLixeira) {
+      state.lixeiras.push(newLixeira)
+    },
+    updateLixeira(state, updateLixeira) {
+      let idx = state.lixeiras.findIndex((t) => t.id === updateLixeira.id)
+      if (idx >= 0) {
+        state.lixeiras[idx] = updateLixeira
+      }
+    },
   },
   getters: {
     loggedInUser: (state) => {
@@ -70,18 +86,12 @@ export default createStore({
       await context.dispatch('refresh')
     },
     async logout (context) {
-      try {
-        console.log(this.state.loggedInUser)
-        await axios.post('logout')
-      }
-      finally {
-        
         delete axios.defaults.headers.common.Authorization
         sessionStorage.removeItem('token')
         context.commit('resetUser', null)
         console.log("loggedout")
         router.push({ path: '/' })
-      }
+      
     },
     async restoreToken (context) {
       let storedToken = sessionStorage.getItem('token')
@@ -114,6 +124,17 @@ export default createStore({
         throw error
       }
     },
+    async loadLixeiras (context) {
+      try {
+        let response = await axios.get('lixeiras')
+        context.commit('setLixeiras', response.data)
+        return response.data
+      } catch (error) {
+        context.commit('resetLixeiras', null)
+        throw error
+      }
+    },
+
     async refresh (context) {
       let userPromise = context.dispatch('loadLoggedInUser')
       await userPromise

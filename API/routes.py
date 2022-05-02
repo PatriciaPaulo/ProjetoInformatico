@@ -242,35 +242,21 @@ def create_lixeira(current_user):
 
 @routes_blueprint.route('/lixeiras', methods=['GET'])
 @admin_required
-def get_all_lixeiras():
+def get_all_lixeiras(current_user):
     lixeiras = Lixeira.query.all()
     output = []
     for lixeira in lixeiras:
         lixeira_data = {}
         lixeira_data['id'] = lixeira.id
         lixeira_data['localizacao'] = lixeira.localizacao
+        lixeira_data['criador'] = lixeira.criador
         lixeira_data['estado'] = lixeira.estado
         lixeira_data['aprovado'] = lixeira.aprovado
         lixeira_data['foto'] = lixeira.foto
         output.append(lixeira_data)
 
-    return jsonify({'list_of_lixeiras': output})
+    return jsonify({'data': output})
 
-@routes_blueprint.route('/lixeiras/me', methods=['GET'])
-@token_required
-def get_my_lixeira(current_user):
-    lixeiras = Lixeira.query.filter_by(organizador=current_user.username).all()
-    output = []
-    for lixeira in lixeiras:
-        lixeira_data = {}
-        lixeira_data['id'] = lixeira.id
-        lixeira_data['localizacao'] = lixeira.localizacao
-        lixeira_data['estado'] = lixeira.estado
-        lixeira_data['aprovado'] = lixeira.aprovado
-        lixeira_data['foto'] = lixeira.foto
-        output.append(lixeira_data)
-
-    return jsonify({'list_of_lixeiras': output})
 
 
 @routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['PUT'])

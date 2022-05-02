@@ -135,9 +135,7 @@ class Lixeira(db.Model):
     criador = db.Column(db.Integer, db.ForeignKey('utilizador.id'), nullable=False)
     estado = db.Column(db.String(50), nullable=False)
     aprovado = db.Column(db.Boolean, nullable=False)
-    foto = db.Column(db.LargeBinary)
-
-
+    foto = db.Column(db.Text,nullable=True)
 
     def serialize(self):
         return {
@@ -148,8 +146,6 @@ class Lixeira(db.Model):
             'aprovado': self.aprovado,
             'foto': self.foto
         }
-
-
 #endregion
 
 #region LixeiraEvento
