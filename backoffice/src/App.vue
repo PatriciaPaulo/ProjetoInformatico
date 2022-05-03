@@ -111,7 +111,17 @@
               </router-link>
 
             </li>
-
+             <li   class="nav-item d-flex justify-content-between align-items-center pe-3" >
+              <router-link
+                  class="nav-link w-100 me-3"
+                  :class="{active: $route.name === 'Users'}"
+                  :to="{ name: 'Users'}"
+              >
+                <i class="bi bi-list-check"></i>
+                Users
+              </router-link>
+             
+            </li>
             <li   class="nav-item d-flex justify-content-between align-items-center pe-3" >
               <router-link
                   class="nav-link w-100 me-3"
@@ -144,12 +154,6 @@
               <span>User</span>
             </h6>
             <ul class="nav flex-column mb-2">
-              <li class="nav-item">
-                <a class="nav-link" href="#"
-                  ><i class="bi bi-person-check-fill"></i>
-                  Register
-                </a>
-              </li>
               <li class="nav-item">
                 <router-link class="nav-link" href="#" to="/Login">
                   <i class="bi bi-box-arrow-in-right"></i>

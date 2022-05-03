@@ -1,44 +1,20 @@
 <template>
-  {{$store.state.loggedInUser}}
-  <div v-if="!$store.state.loggedInUser" >
+  
+  <div v-if="$store.state.loggedInUser" >
     <div class="d-flex flex-wrap justify-content-between">
-      <div class="w-75 pe-4">
-        <br>
-          <div class="mb-3">
-            <label
-                for="inputName"
-                class="form-label"
-            >Name</label>
-            <input
-                type="text"
-                class="form-control"
-                id="inputName"
-                placeholder="User Name"
-                disabled
-                v-model="$store.state.loggedInUser.name"
-            >
-
-          </div>
-
-          <div class="mb-3">
-            <label
-                for="inputEmail"
-                class="form-label"
-            >Email</label>
-            <input
-                type="email"
-                class="form-control"
-                id="inputEmail"
-                placeholder="Email"
-                disabled
-                v-model="$store.state.loggedInUser.email"
-            >
-
-          </div></div></div>
-
+      DASHBOOAARD
+       <router-link
+                  class="nav-link w-100 me-3"
+                  :class="{active: $route.name === 'Register'}"
+                  :to="{ name: 'Register'}"
+              >
+                <i class="bi bi-list-check"></i>
+                Criar Admin
+              </router-link>
+    </div>
   </div>
   <div v-else>
-
+    backoffice
   </div>
 </template>
 

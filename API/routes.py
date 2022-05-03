@@ -13,12 +13,12 @@ api = Api(routes_blueprint)
 # region backoffice
 @routes_blueprint.route('/registerAdmin', methods=['POST'])
 @admin_required
-def create_admin():
+def create_admin(current_user):
     data = request.get_json()
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
     new_user = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password,
-                          admin=False, blocked=False)
+                          admin=True, blocked=False)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({'message': 'registered successfully'})
@@ -30,7 +30,8 @@ def login_admin():
         return make_response('could not verify', 401, {'Authentication': 'login required"'})
 
     user = Utilizador.query.filter_by(username=auth['username']).first()
-    # todo check if user blocked
+
+    #todo check if user blocked
     if check_password_hash(user.password, auth['password']):
         token = jwt.encode(
             {'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
@@ -38,8 +39,35 @@ def login_admin():
 
         if user.admin:
             return make_response(jsonify({'access_token': token}), 200)
+        else:
+            return make_response('user not an admin', 401)
 
     return make_response('could not verify', 401, {'Authentication': '"login required"'})
+
+@routes_blueprint.route('/users/<user_id>/bloquear', methods=['PATCH'])
+@admin_required
+def bloquear_user(current_user,user_id):
+    user = Utilizador.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'})
+    user_data = request.get_json()
+
+    user.blocked = user_data['blocked']
+
+    db.session.commit()
+    return jsonify({'message': 'user blocked'})
+
+
+@routes_blueprint.route('/users/<user_id>', methods=['DELETE'])
+@admin_required
+def delete_user(current_user, user_id):
+    user = Utilizador.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'})
+
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message': 'user blocked'})
 
 
 #endregion
@@ -85,18 +113,21 @@ def get_me(current_user):
 
 
 @routes_blueprint.route('/users', methods=['GET'])
-def get_all_users():
+@admin_required
+def get_all_users(current_user):
     users = Utilizador.query.all()
     result = []
     for user in users:
         user_data = {}
+        user_data['id'] = user.id
         user_data['username'] = user.username
         user_data['name'] = user.name
         user_data['email'] = user.email
         user_data['admin'] = user.admin
         user_data['blocked'] = user.blocked
         result.append(user_data)
-    return jsonify({'users': result})
+    return jsonify({'data': result})
+
 
 
 # endregion

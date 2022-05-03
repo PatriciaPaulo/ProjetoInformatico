@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+
 import Dashboard from "../components/Dashboard.vue"
 import Login from "../components/auth/Login.vue"
 import Register from "../components/auth/Register.vue"
@@ -11,8 +11,8 @@ import Lixeira from "../components/lixeiras/Lixeira.vue"
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'Dashboard',
+    component: Dashboard
   },
   {
     path: '/register',
@@ -28,11 +28,6 @@ const routes = [
     path: '/password',
     name: 'ChangePassword',
     component: ChangePassword
-  },
-  {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: Dashboard
   },
   {
     path: '/users/',

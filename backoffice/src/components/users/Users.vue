@@ -1,49 +1,46 @@
 <template>
-  <h3 class="mt-5 mb-3">Team Members</h3>
-  <hr>
-  <user-table
-    :users="users"
-    :showId="false"
-    @edit="editUser"
-  ></user-table>
+  <h3 class="mt-5 mb-3">Todos Users</h3>
+  <hr />
+  <user-table :users="users" @edit="editUser"></user-table>
 </template>
 
 <script>
-import UserTable from "./UserTable.vue"
+import UserTable from "./UserTable.vue";
 
 export default {
-  name: 'Users',
+  name: "Users",
   components: {
-    UserTable
+    UserTable,
   },
-  data () {
+  data() {
     return {
-      users: []
-    }
+      users: [],
+    };
   },
   computed: {
-    totalUsers () {
-      return this.users.length
-    }
+    totalUsers() {
+      return this.users.length;
+    },
   },
   methods: {
-    loadUsers () {
-      this.$axios.get('users')
+    loadUsers() {
+      this.$axios
+        .get("users")
         .then((response) => {
-          this.users = response.data.data
+          this.users = response.data.data;
         })
         .catch((error) => {
-          console.log(error)
-        })
+          console.log(error);
+        });
     },
-    editUser (user) {
-      console.log('Navigate to Edit User with ID = ' + user.id)
+    editUser(user) {
+      console.log("Navigate to Edit User with ID = " + user.id);
     },
   },
-  mounted () {
-    this.loadUsers()
-  }
-}
+  mounted() {
+    this.loadUsers();
+  },
+};
 </script>
 
 <style scoped>
