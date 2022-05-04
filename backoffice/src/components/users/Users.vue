@@ -1,7 +1,27 @@
 <template>
-  <h3 class="mt-5 mb-3">Todos Users</h3>
+  <h3 class="mt-5 mb-3">Users</h3>
+   <div class="mx-2 mt-2 flex-grow-1 filter-div">
+        <label
+            for="selectBlocked"
+            class="form-label"
+        >Filter:</label>
+        <select
+            class="form-select"
+            id="selectBlocked"
+            v-model="filter"
+        >
+          <option value="-1">Todos</option>
+          <option value="1">Admins</option>
+          <option value="0">Users</option>
+        </select>
+      </div>
   <hr />
-  <user-table :users="users" @edit="editUser"></user-table>
+  <user-table
+    :users="filteredUsers"
+    @delete="deleteUser"
+    @block="blockUser"
+    @unblock="unblockUser"
+  ></user-table>
 </template>
 
 <script>
@@ -14,31 +34,67 @@ export default {
   },
   data() {
     return {
-      users: [],
+        filter: "-1",
     };
   },
   computed: {
     totalUsers() {
       return this.users.length;
     },
+    users(){
+      return this.$store.getters.users;
+    },
+    filteredUsers(){
+    return this.users.filter(t =>
+        (this.filter === "-1"
+            || this.filter === "0" && !t.admin
+            || this.filter === "1" && t.admin
+        ))
+    },
+    
   },
   methods: {
-    loadUsers() {
-      this.$axios
-        .get("users")
-        .then((response) => {
-          this.users = response.data.data;
+    deleteUser(user) {
+      this.$store
+        .dispatch("deleteUser", user)
+        .then(() => {
+          this.$toast.success(
+            "User " + user.username + " has been deleted."
+          );
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    editUser(user) {
-      console.log("Navigate to Edit User with ID = " + user.id);
+    blockUser(user) {
+      this.$store
+        .dispatch("blockUser", user)
+        .then((response) => {
+          this.$toast.success(
+            "User " + user.username + " has been blocked."
+          );
+           this.$store
+        .dispatch("loadUsers", response)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    unblockUser(user) {
+       this.$store
+        .dispatch("unblockUser", user)
+        .then(() => {
+          this.$toast.success(
+            "User " + user.username + " has been unblocked."
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
   mounted() {
-    this.loadUsers();
+    this.$store.dispatch('loadUsers');
   },
 };
 </script>

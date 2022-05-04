@@ -130,6 +130,28 @@ def get_all_users(current_user):
         result.append(user_data)
     return jsonify({'data': result})
 
+@routes_blueprint.route('/users/<user_id>', methods=['GET'])
+@admin_required
+def get_user(current_user,user_id):
+    user = Utilizador.query.filter_by(id=user_id).first()
+    return jsonify({'data': Utilizador.serialize(user)})
+
+@routes_blueprint.route('/users/<user_id>', methods=['PUT'])
+@admin_required
+def update_user(current_user,user_id):
+    user = Utilizador.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'user does not exist'})
+
+    user_data = request.get_json()
+    user.name = user_data['name']
+    user.username = user_data['username']
+    user.email = user_data['email']
+    db.session.commit()
+    return jsonify({'data': Utilizador.serialize(user),'message': 'atividade atualizada'})
+
+
+
 # endregion
 
 # region Atividade

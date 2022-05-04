@@ -22,50 +22,19 @@ export default {
   },
   data () {
     return {
-      user: this.newUser(),
+      user: this.$store.state.loggedInUser,
     }
   },
-  watch: {
-    // beforeRouteUpdate was not fired correctly
-    // Used this watcher instead to update the ID
-    id: {
-      immediate: true,
-      handler (newValue) {
-        this.loadUser(newValue)
-      }
-    },
-  },
   methods: {
-    newUser () {
-      return {
-        id: null,
-        name: '',
-        email: '',
-        gender: 'M',
-        photo_url: null
-      }
-    },
-    loadUser (id) {
-      if (!id || (id < 0)) {
-        this.user = this.newUser()
-      } else {
-        this.$axios.get('users/' + id)
-          .then((response) => {
-            this.user = response.data.data
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      }
-    },
     save () {
       this.$axios.put('users/' + this.id, this.user)
-        .then((response) => {
-          console.log('User Updated')
-          console.dir(response.data.data)
+        .then(() => {
+           this.$toast.success(
+            "User " + this.user.username + " has been updates."
+          );
         })
         .catch((error) => {
-          console.dir(error)
+          console.log(error);
         })
     },
     cancel () {

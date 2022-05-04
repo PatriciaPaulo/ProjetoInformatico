@@ -33,9 +33,9 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse justify-content-end" >
+      <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav">
-          <li  v-if="!$store.state.loggedInUser" class="nav-item">
+          <li v-if="!$store.state.loggedInUser" class="nav-item">
             <router-link class="nav-link" href="#" to="/login"
               ><i class="bi bi-box-arrow-in-right"></i>
               Login
@@ -55,7 +55,9 @@
                 class="rounded-circle z-depth-0 avatar-img"
                 alt="avatar image"
               />
-              <span class="avatar-text">{{$store.state.loggedInUser.nome}}</span>
+              <span class="avatar-text">{{
+                $store.state.loggedInUser.nome
+              }}</span>
             </a>
             <ul
               class="dropdown-menu dropdown-menu-dark dropdown-menu-end"
@@ -78,7 +80,10 @@
                 <hr class="dropdown-divider" />
               </li>
               <li>
-                <a class="dropdown-item" href="#" @click="this.$store.dispatch('logout')"
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  @click="this.$store.dispatch('logout')"
                   ><i class="bi bi-arrow-right"></i>Logout</a
                 >
               </li>
@@ -96,48 +101,63 @@
         class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
       >
         <div class="position-sticky pt-3">
-           <ul
-              class="nav flex-column"
-              v-show="$store.state.loggedInUser"
-          >
-            <li   class="nav-item d-flex justify-content-between align-items-center pe-3" >
+          <ul class="nav flex-column" v-show="$store.state.loggedInUser">
+            <li
+              class="
+                nav-item
+                d-flex
+                justify-content-between
+                align-items-center
+                pe-3
+              "
+            >
               <router-link
-                  class="nav-link w-100 me-3"
-                  :class="{active: $route.name === 'Dashboard'}"
-                  :to="{ name: 'Dashboard'}"
+                class="nav-link w-100 me-3"
+                :class="{ active: $route.name === 'Dashboard' }"
+                :to="{ name: 'Dashboard' }"
               >
                 <i class="bi bi-list-check"></i>
                 Dashboard
               </router-link>
-
             </li>
-             <li   class="nav-item d-flex justify-content-between align-items-center pe-3" >
+            <li
+              class="
+                nav-item
+                d-flex
+                justify-content-between
+                align-items-center
+                pe-3
+              "
+            >
               <router-link
-                  class="nav-link w-100 me-3"
-                  :class="{active: $route.name === 'Users'}"
-                  :to="{ name: 'Users'}"
+                class="nav-link w-100 me-3"
+                :class="{ active: $route.name === 'Users' }"
+                :to="{ name: 'Users' }"
               >
                 <i class="bi bi-list-check"></i>
                 Users
               </router-link>
-             
             </li>
-            <li   class="nav-item d-flex justify-content-between align-items-center pe-3" >
+            <li
+              class="
+                nav-item
+                d-flex
+                justify-content-between
+                align-items-center
+                pe-3
+              "
+            >
               <router-link
-                  class="nav-link w-100 me-3"
-                  :class="{active: $route.name === 'Lixeiras'}"
-                  :to="{ name: 'Lixeiras'}"
+                class="nav-link w-100 me-3"
+                :class="{ active: $route.name === 'Lixeiras' }"
+                :to="{ name: 'Lixeiras' }"
               >
                 <i class="bi bi-list-check"></i>
                 Lixeiras
               </router-link>
-             
             </li>
           </ul>
-    
-      
 
-      
           <div class="d-block d-md-none">
             <h6
               class="
@@ -214,18 +234,36 @@
 </template>
 
 <script>
-// REMOVE THESE IMPORTS WHEN VUE-ROUTER IS CONFIGURED
-
 export default {
   name: "RootComponent",
   components: {},
   data() {
-    return {
-    
-    }
+    return {};
+  },
+  methods: {
+    refresh() {
+      this.$store.dispatch("refresh");
+    },
+    logout() {
+      this.$store
+        .dispatch("logout")
+        .then(() => {
+          this.$toast.success("User has logged out of the application.");
+        })
+        .catch(() => {
+          this.$toast.error(
+            "There was a problem logging out of the application!"
+          );
+        });
+    },
   },
   mounted() {
-    
+    this.$store.dispatch("restoreToken").then((token) => {
+      if (token) {
+        this.$store.dispatch("refresh");
+      }
+    }),
+      (document.title = "My VCard");
   },
 };
 </script>
