@@ -55,7 +55,7 @@ def bloquear_user(current_user,user_id):
     user.blocked = user_data['blocked']
 
     db.session.commit()
-    return jsonify({'message': 'user blocked'})
+    return jsonify({'data': Utilizador.serialize(user),'message': 'user blocked'})
 
 
 @routes_blueprint.route('/users/<user_id>', methods=['DELETE'])
@@ -64,7 +64,8 @@ def delete_user(current_user, user_id):
     user = Utilizador.query.filter_by(id=user_id).first()
     if not user:
         return jsonify({'message': 'user does not exist'})
-
+    if current_user.id == user_id:
+        return jsonify({'message': 'can not delete yourself'})
     db.session.delete(user)
     db.session.commit()
     return jsonify({'message': 'user blocked'})
@@ -116,6 +117,7 @@ def get_me(current_user):
 @admin_required
 def get_all_users(current_user):
     users = Utilizador.query.all()
+
     result = []
     for user in users:
         user_data = {}
@@ -127,8 +129,6 @@ def get_all_users(current_user):
         user_data['blocked'] = user.blocked
         result.append(user_data)
     return jsonify({'data': result})
-
-
 
 # endregion
 

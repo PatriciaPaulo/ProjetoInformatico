@@ -6,7 +6,7 @@
       <div class="mb-3">
         <label for="inputUsername" class="form-label">Username</label>
         <input
-          type="number"
+          type="text"
           class="form-control"
           id="inputUsername"
           required

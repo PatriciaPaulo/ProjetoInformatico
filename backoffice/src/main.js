@@ -1,4 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css"
+import 'bootstrap-icons/font/bootstrap-icons.css'
 import "bootstrap"
 import Toaster from "@meforma/vue-toaster"
 import axios from 'axios'

@@ -7,46 +7,65 @@ export default createStore({
   state: {
     loggedInUser: null,
     admins: [],
-    utlizadores: [],
+    users: [],
     eventos: [],
     lixeiras: [],
     atividades: []
   },
   mutations: {
-     //LOGGED USER
-     resetUser (state) {
+    //LOGGED USER
+    resetUser(state) {
       state.loggedInUser = null
     },
-    setUser (state, loggedInUser) {
+    setUser(state, loggedInUser) {
       state.loggedInUser = loggedInUser
     },
+    //Users
+    setUsers(state, users) {
+      state.users = users
+    },
+    resetUsers(state) {
+      state.users = null
+    },
+    updateUser(state, updateUser) {
+      let idx = state.users.findIndex((t) => t.id === updateUser.id)
+      if (idx >= 0) {
+        state.users[idx] = updateUser
+      }
+    },
+    deleteUser(state, deleteUser) {
+      let idx = state.users.findIndex((t) => t.id === deleteUser.id)
+      if (idx >= 0) {
+        state.users.splice(idx, 1)
+      }
+    },
     //ADMINS
-    setAdmins (state, users) {
+    setAdmins(state, users) {
       state.admins = users
     },
-    resetAdmins (state) {
+    resetAdmins(state) {
       state.admins = null
     },
-    insertAdmin (state, newAdmin) {
+    insertAdmin(state, newAdmin) {
       state.admins.push(newAdmin)
     },
-    updateAdmin (state, updateAdmin) {
+    updateAdmin(state, updateAdmin) {
       let idx = state.admins.findIndex((t) => t.id === updateAdmin.id)
       if (idx >= 0) {
         state.admins[idx] = updateAdmin
       }
     },
-    deleteAdmin (state, deleteAdmin) {
+    deleteAdmin(state, deleteAdmin) {
       let idx = state.admins.findIndex((t) => t.id === deleteAdmin.id)
       if (idx >= 0) {
         state.admins.splice(idx, 1)
       }
     },
     //Lixeiras
-    setLixeiras (state, lixeiras) {
+    setLixeiras(state, lixeiras) {
       state.lixeiras = lixeiras
     },
-    resetLixeiras (state) {
+    resetLixeiras(state) {
       state.lixeiras = null
     },
     insertLixeira(state, newLixeira) {
@@ -66,12 +85,15 @@ export default createStore({
     admins: (state) => {
       return state.admins
     },
+    users: (state) => {
+      return state.users
+    },
     totalAdmins: (state) => {
       return state.admins.length
     },
   },
   actions: {
-    async login (context, credentials) {
+    async login(context, credentials) {
       try {
         let response = await axios.post('loginBackOffice', credentials)
         axios.defaults.headers.common.Authorization = "Bearer " + response.data.access_token
@@ -85,15 +107,15 @@ export default createStore({
       }
       await context.dispatch('refresh')
     },
-    async logout (context) {
-        delete axios.defaults.headers.common.Authorization
-        sessionStorage.removeItem('token')
-        context.commit('resetUser', null)
-        console.log("loggedout")
-        router.push({ path: '/' })
-      
+    async logout(context) {
+      delete axios.defaults.headers.common.Authorization
+      sessionStorage.removeItem('token')
+      context.commit('resetUser', null)
+      console.log("loggedout")
+      router.push({ path: '/' })
+
     },
-    async restoreToken (context) {
+    async restoreToken(context) {
       let storedToken = sessionStorage.getItem('token')
       if (storedToken) {
         axios.defaults.headers.common.Authorization = "Bearer " + storedToken
@@ -103,7 +125,7 @@ export default createStore({
       context.commit('resetUser', null)
       return null
     },
-    async loadUsers (context) {
+    async loadUsers(context) {
       try {
         let response = await axios.get('users')
         context.commit('setUsers', response.data.data)
@@ -113,7 +135,7 @@ export default createStore({
         throw error
       }
     },
-    async loadLoggedInUser (context) {
+    async loadLoggedInUser(context) {
       try {
         let response = await axios.get('users/me')
         console.log(response)
@@ -124,7 +146,7 @@ export default createStore({
         throw error
       }
     },
-    async loadLixeiras (context) {
+    async loadLixeiras(context) {
       try {
         let response = await axios.get('lixeiras')
         context.commit('setLixeiras', response.data)
@@ -134,10 +156,30 @@ export default createStore({
         throw error
       }
     },
+    async deleteUser (context, user) {
+      let response = await axios.delete("users/" + user.id)
+      context.commit('deleteUser', user)
+      console.log(response.data.data)
+      return response.data.data
+    },
+    async blockUser(context, user) {
+      let response = await axios.patch("users/" + user.id + '/bloquear', { "blocked": true })
+      context.commit('updateUser', response.data.data)
+      return response.data.data
+    },
+    async unblockUser(context, user) {
+      let response = await axios.patch("users/" + user.id + '/bloquear', { "blocked": false })
+      context.commit('updateUser', response.data.data)
+      return response.data.data
+    },
 
-    async refresh (context) {
+    async refresh(context) {
       let userPromise = context.dispatch('loadLoggedInUser')
+      let usersPromise = context.dispatch('loadUsers')
+      let lixeirasPromise = context.dispatch('loadLixeiras')
       await userPromise
+      await usersPromise
+      await lixeirasPromise
 
     },
   },

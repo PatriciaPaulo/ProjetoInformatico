@@ -167,6 +167,7 @@ export default {
     'changedPassword',
   ],
   methods: {
+    //todo
     async changePassword () {
       const route = this.$store.state.loggedInUser.user_type === 'V' ? 'vcards/' + this.$store.state.loggedInUser.id : 'users/' + this.$store.state.loggedInUser.id
       console.log(this.passwords);
@@ -186,26 +187,7 @@ export default {
           this.$toast.error('User credentials are invalid!')
         })
     },
-    async changeConfirmationCode () {
-      const route = this.$store.getters.loggedInUser.user_type === 'V' ? 'vcards/' + this.$store.getters.loggedInUser.id : 'users/' + this.$store.getters.loggedInUser.id
-      console.log(this.passwords);
-      await axios.patch(route +'/confirmation_code', this.passwords)
-          .then(() => {
-            this.$toast.success('User ' + this.$store.getters.loggedInUser.name + ' has changed his confirmation code')
-            // this.$emit('login')
-            this.$router.push({ name: 'Profile' })
-
-          })
-          .catch((error) => {
-            if(error.response.status == 401){
-              this.$toast.error('User ' + this.$store.getters.loggedInUser.name + ' has not changed his confirmation code due to wrong password')
-            }
-
-            this.errors = error.response.data
-            this.credentials.confirmation_code = ''
-            this.$toast.error('User credentials are invalid!')
-          })
-    },
+   
 
 
   }
