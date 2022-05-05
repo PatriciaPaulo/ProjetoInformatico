@@ -156,7 +156,12 @@ export default createStore({
         throw error
       }
     },
-    async deleteUser (context, user) {
+    async aprovarLixeira(context, lixeira) {
+      let response = await axios.patch('lixeiras/' + lixeira.id + '/aprovar',{'aprovado':lixeira.aprovado})
+      context.commit('updateLixeira', lixeira)
+      return response.data
+    },
+    async deleteUser(context, user) {
       let response = await axios.delete("users/" + user.id)
       context.commit('deleteUser', user)
       console.log(response.data.data)
