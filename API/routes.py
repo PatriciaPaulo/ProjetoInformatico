@@ -310,8 +310,12 @@ def get_all_lixeiras(current_user):
 
     return jsonify({'data': output})
 
+@routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['GET'])
+@admin_required
+def get_lixeira(current_user,lixeira_id):
+    lixeira = Lixeira.query.filter_by(id=lixeira_id).first()
 
-
+    return jsonify({'data': Lixeira.serialize(lixeira)})
 @routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['PUT'])
 @token_required
 def update_lixeira(current_user, lixeira_id):
@@ -329,13 +333,18 @@ def update_lixeira(current_user, lixeira_id):
 
 @routes_blueprint.route('/lixeiras/<lixeira_id>/aprovar', methods=['PATCH'])
 @admin_required
-def aprovar_lixeira(lixeira_id):
+def aprovar_lixeira(current_user,lixeira_id):
     lixeira = Lixeira.query.filter_by(id=lixeira_id).first()
     if not lixeira:
         return jsonify({'message': 'lixeira does not exist'})
     lixeira_data = request.get_json()
 
-    lixeira.estado = lixeira_data['estado']
+    lixeira.aprovado = lixeira_data['aprovado']
+    if lixeira_data['aprovado'] == 'false':
+        lixeira.aprovado = False
+    elif lixeira_data['aprovado'] == 'true':
+        lixeira.aprovado = True
+
 
     db.session.commit()
     return jsonify({'message': 'lixeira atualizada'})
