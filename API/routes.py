@@ -89,12 +89,16 @@ def signup_user():
 @routes_blueprint.route('/login', methods=['POST'])
 def login_user():
     auth = request.get_json()
+    print(auth)
 
     if not auth or not auth['username'] or not auth['password']:
         return make_response('could not verify', 401, {'Authentication': 'login required"'})
 
     user = Utilizador.query.filter_by(username=auth['username']).first()
     # todo check if user blocked
+    if not user :
+        return make_response('Credentials do not match or user does not exist', 404)
+
     if check_password_hash(user.password, auth['password']):
         token = jwt.encode(
             {'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
