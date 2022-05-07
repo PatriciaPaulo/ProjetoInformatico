@@ -1,41 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/lblLogUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lblLogUsername" />
+
     <EditText
-        android:id="@+id/txtUsername"
+        android:id="@+id/txtLogUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/txtLogUsername"
+        android:inputType="text"
+        android:minHeight="48dp" />
+
+    <TextView
+        android:id="@+id/lblLogPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lblLogPassword" />
+
+    <EditText
+        android:id="@+id/txtLogPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/txtLogPassword"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        tools:ignore="SpeakableTextPresentCheck"
+        android:autofillHints="" />
+
+    <Button
+        android:id="@+id/btnLogLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btnLogLogin" />
+
+    <TextView
+        android:id="@+id/txtLogRegister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txtLoginErrors" />
+
+    <EditText
+        android:id="@+id/lblLogLoginErrors"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="text"
-        android:text="Username" />
-
-    <EditText
-        android:id="@+id/txtPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPassword" />
-
-    <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="loginOnClick"
-        android:text="Button" />
-
-    <TextView
-        android:id="@+id/txtRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register HERE" />
-
-    <EditText
-        android:id="@+id/lblLoginErrors"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="text" />
+        android:minHeight="48dp"
+        tools:ignore="SpeakableTextPresentCheck"
+        android:autofillHints="" />
 </LinearLayout>

@@ -115,12 +115,6 @@ def delete_user(current_user, user_id):
 @routes_blueprint.route('/register', methods=['POST'])
 def register_user():
     data = request.get_json()
-
-    # Checks if user already exists
-    user = Utilizador.query.filter_by(username=data['username']).first()
-    if user:
-        return make_response('User already exists', 409)
-
     # todo
     # Checks if usernamename valid
     # Checks if name valid
@@ -131,13 +125,18 @@ def register_user():
     if data['password'] != data['passwordConfirmation']:
         return make_response('Passwords don\'t match', 400)
 
+    # Checks if user already exists
+    user = Utilizador.query.filter_by(username=data['username']).first()
+    if user:
+        return make_response('User already exists', 409)
+
     # Hashes password
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
-    new_user = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password,
-                           admin=False, blocked=False)
+    new_user = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password,admin=False, blocked=False)
     db.session.add(new_user)
     db.session.commit()
+
     return make_response('User created successfully', 200)
 
 

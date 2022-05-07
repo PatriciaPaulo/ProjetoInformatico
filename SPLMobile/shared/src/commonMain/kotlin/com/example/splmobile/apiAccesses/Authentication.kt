@@ -53,4 +53,54 @@ class Authentication {
 
         return Pair(responseCode, responseBody)
     }
+
+
+    suspend fun registerRequest(username: String,name: String,email:String, password: String, passwordConfirmation: String): Pair<Int, String> {
+        var responseBody = ""
+        var responseCode = 0
+
+        try {
+            //POST Request to API
+            val postResponse = client.post(API_URL + "register") {
+                contentType(ContentType.Application.Json)
+
+                val requestBody = JSONObject()
+                requestBody.put("username", username)
+                requestBody.put("name", name)
+                requestBody.put("email", email)
+                requestBody.put("password", password)
+                requestBody.put("passwordConfirmation", passwordConfirmation)
+
+                setBody(requestBody.toString())
+            }
+
+            responseCode = postResponse.status.toString().take(3).toInt()
+
+            when (responseCode) {
+                200 -> {
+                    responseBody = JSONObject(postResponse.bodyAsText()).getString("message")
+                }
+                400 -> {
+                    //TODO change text to android resources
+                    responseBody = "TXT FOR 400"
+                }
+                404 -> {
+                    //TODO change text to android resources
+                    responseBody = "TXT FOR 404"
+                }
+                409 -> {
+                    //TODO change text to android resources
+                    responseBody = "Já existe um utilizador com este username!"
+                }
+                else -> {
+                    //TODO change text to android resources
+                    responseBody = "TXT FOR ELSE"
+                }
+            }
+        } catch (exception: Exception) {
+            //TODO Write API Exception
+        }
+
+        return Pair(responseCode, responseBody)
+    }
 }

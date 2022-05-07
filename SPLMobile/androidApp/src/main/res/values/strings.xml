@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lblLogPassword">Password:</string>
+    <string name="txtLogUsername">Username</string>
+    <string name="lblLogUsername">Username:</string>
+    <string name="txtLoginErrors">REGISTER HERE</string>
+    <string name="txtLogPassword">Password</string>
+    <string name="btnLogLogin">Login</string>
+    <string name="lblRegRegister">Register</string>
+    <string name="lblRegPasswordConfirmation">Password Confirmation:</string>
+    <string name="txtRegPassword">Password</string>
+    <string name="txtRegUsername">Username</string>
+    <string name="txtRegName">Name</string>
+    <string name="txtRegPasswordConfirmation">Password Confirmation</string>
+    <string name="txtRegEmail">Email</string>
+    <string name="lblRegPassword">Password:</string>
+    <string name="lblRegUsername">Username:</string>
+    <string name="lblRegName">Name:</string>
+    <string name="lblRegEmail">Email:</string>
+    <string name="btnRegRegister">Register</string>
+</resources>
