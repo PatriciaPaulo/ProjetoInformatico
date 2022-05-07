@@ -67,6 +67,7 @@ export default {
         });
     },
     blockUser(user) {
+      console.log(user + "users")
       this.$store
         .dispatch("blockUser", user)
         .then((response) => {
@@ -81,6 +82,7 @@ export default {
         });
     },
     unblockUser(user) {
+      console.log(user + "users")
        this.$store
         .dispatch("unblockUser", user)
         .then(() => {

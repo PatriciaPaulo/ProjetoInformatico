@@ -15,42 +15,43 @@
         <td class="align-middle">{{ user.name }}</td>
         <td class="align-middle">{{ user.email }}</td>
 
-        <td class="text-end align-middle">
-          <div class="d-flex justify-content-end">
-            <button
-              v-if="user.blocked == '1'"
-              class="btn btn-xs btn-light"
-              @click="unblockClick(user)"
-            >
-              <i class="bi bi-xs bi-file-lock2"></i>
-            </button>
+        <td  v-if="user.id === this.$store.state.loggedInUser.id" class="align-middle">
+          <router-link
+            href="#"
+            :to="{ name: 'User', params: { id: user.id } }"
+            ><i class="bi bi-xs bi-person-square"></i
+          ></router-link>
+        </td>
+     
+          <td v-if="user.id !== this.$store.state.loggedInUser.id" class="align-middle">
+            <div class="d-flex justify-content-end">
+              <button
+                v-if="user.blocked == '1'"
+                class="btn btn-xs btn-light"
+                @click="unblockClick(user)"
+              >
+                <i class="bi bi-xs bi-file-lock2"></i>
+              </button>
 
-            <button
-              v-else
-              class="btn btn-xs btn-light"
-              @click="blockClick(user)"
-            >
-              <i class="bi bi-xs bi-file"></i>
-            </button>
-          </div>
-        </td>
-        <td class="text-end align-middle">
-          <div
-            v-if="user.id === this.$store.state.loggedInUser.id"
-           class="btn btn-xs btn-light"
-          >
-            <router-link
-              href="#"
-              :to="{ name: 'User', params: { id: user.id } }"
-              ><i class="bi bi-xs bi-person-square"></i
-            ></router-link>
-          </div>
-          <div v-else class="d-flex justify-content-end">
-            <button class="btn btn-xs btn-light" @click="deleteClick(user)">
-              <i class="bi bi-xs bi-x-square-fill"></i>
-            </button>
-          </div>
-        </td>
+              <button
+                v-else
+                class="btn btn-xs btn-light"
+                @click="blockClick(user)"
+              >
+                <i class="bi bi-xs bi-file"></i>
+              </button>
+            </div>
+          </td>
+          
+           <td v-if="user.id !== this.$store.state.loggedInUser.id" class="text-end align-middle">
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-xs btn-light" @click="deleteClick(user)">
+                <i class="bi bi-xs bi-x-square-fill"></i>
+              </button>
+            </div>
+          </td>
+
+        
       </tr>
     </tbody>
   </table>

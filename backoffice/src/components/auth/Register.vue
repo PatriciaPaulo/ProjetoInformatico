@@ -31,6 +31,20 @@
           fieldName="password"
         ></field-error-message>
       </div>
+       <div class="mb-3">
+        <label for="inputPasswordConfirmation" class="form-label">Password Confirmation</label>
+        <input
+          type="password"
+          class="form-control"
+          id="inputPasswordConfirmation"
+          required
+          v-model="credentials.passwordConfirmation"
+        />
+        <field-error-message
+          :errors="errors"
+          fieldName="passwordConfirmation"
+        ></field-error-message>
+      </div>
       <div class="mb-3">
         <div class="mb-3">
           <label for="inputName" class="form-label">Name</label>
@@ -84,6 +98,7 @@ export default {
         username: null,
         name: "",
         password: "",
+        passwordConfirmation: "",
         email: "",
        
       },

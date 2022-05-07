@@ -168,13 +168,16 @@ export default createStore({
       return response.data.data
     },
     async blockUser(context, user) {
-      let response = await axios.patch("users/" + user.id + '/bloquear', { "blocked": true })
-      context.commit('updateUser', response.data.data)
+      
+      let response = await axios.patch("users/" + user.id + '/block', { "blocked": true })
+      user.blocked = true
+      context.commit('updateUser',user)
       return response.data.data
     },
     async unblockUser(context, user) {
-      let response = await axios.patch("users/" + user.id + '/bloquear', { "blocked": false })
-      context.commit('updateUser', response.data.data)
+      let response = await axios.patch("users/" + user.id + '/block', { "blocked": false })
+      user.blocked = false
+      context.commit('updateUser',user)
       return response.data.data
     },
 
