@@ -11,104 +11,169 @@ routes_blueprint = Blueprint('routes', __name__, )
 api = Api(routes_blueprint)
 
 # region backoffice
+#registers only admins by admins
 @routes_blueprint.route('/registerAdmin', methods=['POST'])
 @admin_required
 def create_admin(current_user):
     data = request.get_json()
+
+    #Checks if admin already exists
+    admin = Utilizador.query.filter_by(username=data['username']).first()
+    if admin:
+        return make_response('Admin already exists', 409)
+
+    # todo
+    # Checks if usernamename valid
+    # Checks if name valid
+    # Checks if email valid
+    # Checks if password valid
+
+    #Checks if password and password confirmation match
+    if data['password'] != data['passwordConfirmation']:
+        return make_response('Passwords don\'t match', 400)
+
+    #Hashes password
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
-    new_user = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password,
-                          admin=True, blocked=False)
-    db.session.add(new_user)
+    new_admin = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password,admin=True, blocked=False)
+    db.session.add(new_admin)
     db.session.commit()
-    return jsonify({'message': 'registered successfully'})
+    return make_response('Admin created successfully', 200)
 
+#login for admins
 @routes_blueprint.route('/loginBackOffice', methods=['POST'])
 def login_admin():
     auth = request.get_json()
+    #Checks if requests has username and password parameters
     if not auth or not auth['username'] or not auth['password']:
-        return make_response('could not verify', 401, {'Authentication': 'login required"'})
+        return make_response('Bad request', 400)
 
-    user = Utilizador.query.filter_by(username=auth['username']).first()
+    #Checks if user exists
+    admin = Utilizador.query.filter_by(username=auth['username']).first()
+    if not admin:
+        return make_response('Admin doesn\'t exist', 404)
 
-    #todo check if user blocked
-    if check_password_hash(user.password, auth['password']):
+    #Checks if user is an admin
+    if not admin.admin:
+        return make_response('user not an admin', 401)
+
+    #Checks if admin is blocked
+    if admin.blocked:
+        return make_response('You are blocked!', 403)
+
+    #Checks if password is correct
+    if check_password_hash(admin.password, auth['password']):
+        #If correct returns makes and returns token
         token = jwt.encode(
-            {'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
+            {'username': admin.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
             current_app.config['SECRET_KEY'], "HS256")
 
-        if user.admin:
-            return make_response(jsonify({'access_token': token}), 200)
-        else:
-            return make_response('user not an admin', 401)
+        return make_response(jsonify({'access_token': token}), 200)
 
-    return make_response('could not verify', 401, {'Authentication': '"login required"'})
+    return make_response('Unknown Error, try again!', 400)
 
-@routes_blueprint.route('/users/<user_id>/bloquear', methods=['PATCH'])
+#Blocks or unblocks user by admin
+@routes_blueprint.route('/users/<user_id>/block', methods=['PATCH'])
 @admin_required
 def bloquear_user(current_user,user_id):
+    #Checks if user to be blocked exists
     user = Utilizador.query.filter_by(id=user_id).first()
     if not user:
-        return jsonify({'message': 'user does not exist'})
+        return make_response('User doesn\'t exist', 404)
+
     user_data = request.get_json()
-
     user.blocked = user_data['blocked']
-
     db.session.commit()
-    return jsonify({'data': Utilizador.serialize(user),'message': 'user blocked'})
+    #message based on action (block or unblock)
+    if user.blocked:
+        return make_response('User blocked successfully', 200,{'data': Utilizador.serialize(user)})
+    else:
+        return make_response('User unblocked successfully', 200,{'data': Utilizador.serialize(user)})
 
 
+#Deletes user by admin
 @routes_blueprint.route('/users/<user_id>', methods=['DELETE'])
 @admin_required
 def delete_user(current_user, user_id):
+    #Checks if user exists
     user = Utilizador.query.filter_by(id=user_id).first()
     if not user:
-        return jsonify({'message': 'user does not exist'})
+        return make_response('User doesn\'t exist', 404)
+    #Checks if user is deleting himself
     if current_user.id == user_id:
-        return jsonify({'message': 'can not delete yourself'})
+        return make_response('can not delete yourself', 400)
+
     db.session.delete(user)
     db.session.commit()
-    return jsonify({'message': 'user blocked'})
+    return make_response('User deleted successfully', 200)
 
 
 #endregion
 
 # region Utilizador
+#Register user for mobile app
 @routes_blueprint.route('/register', methods=['POST'])
-def signup_user():
+def register_user():
     data = request.get_json()
+
+    # Checks if user already exists
+    user = Utilizador.query.filter_by(username=data['username']).first()
+    if user:
+        return make_response('User already exists', 409)
+
+    # todo
+    # Checks if usernamename valid
+    # Checks if name valid
+    # Checks if email valid
+    # Checks if password valid
+
+    # Checks if password and password confirmation match
+    if data['password'] != data['passwordConfirmation']:
+        return make_response('Passwords don\'t match', 400)
+
+    # Hashes password
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
     new_user = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password,
-                          admin=False, blocked=False)
+                           admin=False, blocked=False)
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({'message': 'registered successfully'})
+    return make_response('User created successfully', 200)
 
 
 @routes_blueprint.route('/login', methods=['POST'])
 def login_user():
     auth = request.get_json()
-    print(auth)
 
+    # Checks if requests has username and password parameters
     if not auth or not auth['username'] or not auth['password']:
-        return make_response('could not verify', 401, {'Authentication': 'login required"'})
+        return make_response('Bad request', 400)
 
+    # Checks if user exists
     user = Utilizador.query.filter_by(username=auth['username']).first()
-    # todo check if user blocked
-    if not user :
-        return make_response('Credentials do not match or user does not exist', 404)
+    if not user:
+        return make_response('User doesn\'t exist', 404)
 
+    # Checks if user is an admin
+    if user.admin:
+        return make_response('Can not login with admin account!', 401)
+
+    # Checks if admin is blocked
+    if user.blocked:
+        return make_response('You are blocked!', 403)
+
+    # Checks if password is correct
     if check_password_hash(user.password, auth['password']):
+        # If correct returns makes and returns token
         token = jwt.encode(
             {'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
             current_app.config['SECRET_KEY'], "HS256")
 
         return make_response(jsonify({'access_token': token}), 200)
 
-    return make_response('could not verify', 401, {'Authentication': '"login required"'})
+    return make_response('Unknown Error, try again!', 400)
 
-
+#get logged in user
 @routes_blueprint.route('/users/me', methods=['GET'])
 @token_required
 def get_me(current_user):
@@ -116,10 +181,11 @@ def get_me(current_user):
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
 
-
+#gets all users
 @routes_blueprint.route('/users', methods=['GET'])
 @admin_required
 def get_all_users(current_user):
+    #Query for all users
     users = Utilizador.query.all()
 
     result = []
@@ -131,42 +197,42 @@ def get_all_users(current_user):
         user_data['email'] = user.email
         user_data['admin'] = user.admin
         user_data['blocked'] = user.blocked
-        result.append(user_data)
-    return jsonify({'data': result})
+        result.append(Utilizador.serialize(user_data))
+    return make_response(jsonify({'data': result}), 200)
 
+#get user by id
 @routes_blueprint.route('/users/<user_id>', methods=['GET'])
 @admin_required
 def get_user(current_user,user_id):
+    #find user
     user = Utilizador.query.filter_by(id=user_id).first()
-    return jsonify({'data': Utilizador.serialize(user)})
+    return make_response(jsonify({'data': Utilizador.serialize(user)}), 200)
 
+#update user
 @routes_blueprint.route('/users/<user_id>', methods=['PUT'])
 @admin_required
 def update_user(current_user,user_id):
+    #Checks if user exist
     user = Utilizador.query.filter_by(id=user_id).first()
     if not user:
-        return jsonify({'message': 'user does not exist'})
+        return make_response('User doesn\'t exist', 404)
 
     user_data = request.get_json()
+
     user.name = user_data['name']
     user.username = user_data['username']
     user.email = user_data['email']
     db.session.commit()
-    return jsonify({'data': Utilizador.serialize(user),'message': 'atividade atualizada'})
-
-
-
+    return make_response(jsonify({'data': Utilizador.serialize(user)}), 200)
 # endregion
 
 # region Atividade
 @routes_blueprint.route('/atividades', methods=['POST'])
-#
 @token_required
 def create_atividade(current_user):
     data = request.get_json()
 
-    new_atividade = Atividade(eventoID=data['eventoID'], userID=current_user.username, distanciaPercorrida=0,
-                              passos=0, duracao=0, tipoAtividade=data['tipoAtividade'])
+    new_atividade = Atividade(eventoID=data['eventoID'], userID=current_user.username, distanciaPercorrida=0,passos=0, duracao=0, tipoAtividade=data['tipoAtividade'])
     db.session.add(new_atividade)
     db.session.commit()
     return jsonify({'message': 'new atividade created'})
@@ -229,6 +295,7 @@ def create_evento(current_user):
 @routes_blueprint.route('/eventos', methods=['GET'])
 @token_required
 def get_eventos(current_user):
+    #todo order by data
     eventos = Evento.query.filter_by(organizador=current_user.username).all()
     output = []
     for evento in eventos:
