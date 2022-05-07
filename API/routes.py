@@ -86,9 +86,9 @@ def bloquear_user(current_user,user_id):
     db.session.commit()
     #message based on action (block or unblock)
     if user.blocked:
-        return make_response('User blocked successfully', 200,{'data': Utilizador.serialize(user)})
+        return make_response('User blocked successfully', 200)
     else:
-        return make_response('User unblocked successfully', 200,{'data': Utilizador.serialize(user)})
+        return make_response('User unblocked successfully', 200)
 
 
 #Deletes user by admin
@@ -196,7 +196,7 @@ def get_all_users(current_user):
         user_data['email'] = user.email
         user_data['admin'] = user.admin
         user_data['blocked'] = user.blocked
-        result.append(Utilizador.serialize(user_data))
+        result.append(user_data)
     return make_response(jsonify({'data': result}), 200)
 
 #get user by id
