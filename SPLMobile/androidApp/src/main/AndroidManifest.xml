@@ -4,6 +4,19 @@
 
     <!-- PERMISSÕES -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- PARA MAPA -->
+    <meta-data
+        android:name="com.google.android.geo.v2.API_KEY"
+        android:value="${MAPS_API_KEY}" />
+    <!-- PARA MAPA incorpora a versão do Google Play Services com que o app foi compilado. -->
+    <meta-data
+        android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version" />
+
+
 
     <application
         android:allowBackup="false"
@@ -13,15 +26,29 @@
         android:networkSecurityConfig="@xml/network_security_config"
         >
 
+        <!-- PARA MAPA -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+
+        <activity android:name=".MainActivity"/>
+        <activity android:name=".ActivityRegister"/>
+        <activity android:name=".ActivityLogin"/>
         <activity
-            android:name=".ActivityLogin"
-            android:exported="true">
+            android:name=".ActivityMap"
+            android:exported="true"
+           >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".ActivityRegister"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCPOah2M508FQC6pjXHnNR6QkLIrVJmljk" />
+
     </application>
 </manifest> 
