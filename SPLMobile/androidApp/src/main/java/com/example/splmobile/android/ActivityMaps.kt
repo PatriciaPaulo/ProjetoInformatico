@@ -1,31 +1,38 @@
 package com.example.splmobile.android
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity
+
+import android.os.Bundle
+import android.util.Log
+
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.example.splmobile.android.databinding.ActivityMapsBinding
+import com.example.splmobile.android.models.UserMap
 
+private const val TAG = "ActivityMaps"
+class ActivityMaps : AppCompatActivity(), OnMapReadyCallback {
 
-// Implement OnMapReadyCallback.
-public class ActivityMap:AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
+    private lateinit var binding: ActivityMapsBinding
+    private lateinit var userMap: UserMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps)
 
+        binding = ActivityMapsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-
+        userMap = intent.getSerializableExtra(EXTRA_USER_MAP) as UserMap
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
     }
 
     /**
@@ -39,12 +46,16 @@ public class ActivityMap:AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        Log.i(TAG,"USER MAP RENDER: ${userMap.lixeiras}")
+        for (lixeira in userMap.lixeiras){
 
+            val latlng = LatLng(lixeira.latitude, lixeira.longitude)
+            mMap.addMarker(MarkerOptions().position(latlng).title("Marker in Sydney"))
+
+        }
         // Add a marker in Sydney and move the camera
-        val sydney = LatLng(38.0, -9.0)
-        mMap.addMarker(MarkerOptions()
-            .position(sydney)
-            .title("Marker in Sydney"))
+        val sydney = LatLng(-34.0, 151.0)
+        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
 }

@@ -75,3 +75,7 @@ android {
         targetSdk = 32
     }
 }
+dependencies {
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("androidx.databinding:compiler:3.2.0-alpha11")
+}

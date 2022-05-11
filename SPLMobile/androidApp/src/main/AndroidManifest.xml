@@ -2,53 +2,56 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.splmobile.android">
 
-    <!-- PERMISSÕES -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <!-- PARA MAPA -->
-    <meta-data
-        android:name="com.google.android.geo.v2.API_KEY"
-        android:value="${MAPS_API_KEY}" />
-    <!-- PARA MAPA incorpora a versão do Google Play Services com que o app foi compilado. -->
-    <meta-data
-        android:name="com.google.android.gms.version"
-        android:value="@integer/google_play_services_version" />
-
-
-
     <application
         android:allowBackup="false"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"
-        android:networkSecurityConfig="@xml/network_security_config"
-        >
+        android:usesCleartextTraffic="true">
 
-        <!-- PARA MAPA -->
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
+        <!--
+             TODO: Before you run your application, you need a Google Maps API key.
 
+             To get one, follow the directions here:
 
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".ActivityRegister"/>
-        <activity android:name=".ActivityLogin"/>
+                https://developers.google.com/maps/documentation/android-sdk/get-api-key
+
+             Once you have your API key (it starts with "AIza"), define a new property in your
+             project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
+             "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
+        -->
         <activity
-            android:name=".ActivityMap"
-            android:exported="true"
-           >
+            android:name=".ActivityMaps"
+            android:exported="false"
+            android:label="@string/title_activity_maps" />
+
+        <activity android:name=".ActivityMap" />
+        <activity android:name=".ActivityRegister" /> <!-- PARA MAPA -->
+        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".ActivityLogin"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCPOah2M508FQC6pjXHnNR6QkLIrVJmljk" />
+            android:value="${MAPS_API_KEY}" />
 
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
     </application>
-</manifest> 
+
+    <meta-data
+        android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version" /> <!-- PARA MAPA incorpora a versão do Google Play Services com que o app foi compilado. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+</manifest>

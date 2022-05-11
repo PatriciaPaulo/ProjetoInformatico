@@ -18,4 +18,5 @@
     <string name="lblRegName">Name:</string>
     <string name="lblRegEmail">Email:</string>
     <string name="btnRegRegister">Register</string>
+    <string name="title_activity_maps">ActivityMaps</string>
 </resources>

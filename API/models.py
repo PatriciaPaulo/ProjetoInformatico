@@ -131,7 +131,8 @@ class Evento(db.Model):
 # region Lixeira
 class Lixeira(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    localizacao = db.Column(db.String(128), nullable=False)
+    latitude  = db.Column(db.Numeric(8,6), nullable=False)
+    longitude  = db.Column(db.Numeric(9,6), nullable=False)
     criador = db.Column(db.Integer, db.ForeignKey('utilizador.id'), nullable=False)
     estado = db.Column(db.String(50), nullable=False)
     aprovado = db.Column(db.Boolean, nullable=False)
@@ -140,7 +141,8 @@ class Lixeira(db.Model):
     def serialize(self):
         return {
             'id': self.id,
-            'localizacao': self.localizacao,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
             'criador': self.criador,
             'estado': self.estado,
             'aprovado': self.aprovado,
