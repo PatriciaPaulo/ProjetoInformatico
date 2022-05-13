@@ -2,20 +2,25 @@
 from flask import Blueprint, current_app
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import MetaData, Column, Integer, String,Boolean, ForeignKey,Numeric,Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
 import jwt
-db = SQLAlchemy()
-
-#TODO falta tabelas de equipamento e mensagens
+metadata = MetaData()
+Base = declarative_base(metadata=metadata)
+engine = create_engine('sqlite:///spl.db')
+db = SQLAlchemy(metadata=metadata)
 
 #region Utilizador
-class Utilizador(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column(db.String(50))
-    name = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(128), nullable=False)
-    admin = db.Column(db.Boolean)
-    blocked = db.Column(db.Boolean)
+class Utilizador(Base):
+    __tablename__="utilizador"
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True, nullable=False)
+    password = Column(String(50))
+    name = Column(String(128), nullable=False)
+    email = Column(String(128), nullable=False)
+    admin = Column(Boolean)
+    blocked = Column(Boolean)
 
     def serialize(self):
         return {
@@ -32,14 +37,15 @@ class Utilizador(db.Model):
 #endregion
 
 #region Atividade
-class Atividade(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    eventoID = db.Column(db.Integer, db.ForeignKey('evento.id'), nullable=True)
-    userID = db.Column(db.Integer, db.ForeignKey('utilizador.id'), nullable=False)
-    distanciaPercorrida = db.Column(db.String(50))
-    passos = db.Column(db.String(50))
-    duracao = db.Column(db.String(50))
-    tipoAtividade = db.Column(db.String(50))
+class Atividade(Base):
+    __tablename__ = "atividade"
+    id = Column(Integer, primary_key=True)
+    eventoID = Column(Integer, ForeignKey('evento.id'), nullable=True)
+    userID = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
+    distanciaPercorrida = Column(String(50))
+    passos = Column(String(50))
+    duracao = Column(String(50))
+    tipoAtividade = Column(String(50))
 
 
     def serialize(self):
@@ -57,28 +63,14 @@ class Atividade(db.Model):
 
 #endregion
 
-#region Lixo
-class Lixo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(50), nullable=False)
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'nome': self.nome
-
-        }
-
-
-#endregion
-
 #region LixoNaAtividade
-class LixoNaAtividade(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    atividadeID = db.Column(db.Integer, db.ForeignKey('atividade.id'), nullable=False)
-    lixoID = db.Column(db.Integer, db.ForeignKey('lixo.id'), nullable=False)
-    quantidade = db.Column(db.String(128), nullable=False)
-    medida = db.Column(db.String(128), nullable=False)
+class LixoNaAtividade(Base):
+    __tablename__ = "lixo_na_atividade"
+    id = Column(Integer, primary_key=True)
+    atividadeID = Column(Integer, ForeignKey('atividade.id'), nullable=False)
+    lixoID = Column(Integer, ForeignKey('lixo.id'), nullable=False)
+    quantidade = Column(String(128), nullable=False)
+    medida = Column(String(128), nullable=False)
 
     def serialize(self):
         return {
@@ -90,29 +82,81 @@ class LixoNaAtividade(db.Model):
         }
 #endregion
 
+#region Lixo
+class Lixo(Base):
+    __tablename__ = "lixo"
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(50), unique=True, nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'nome': self.nome
+
+        }
+
+
+#endregion
+
+#region Equipamento
+class Equipamento(Base):
+    __tablename__ = "equipamento"
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(50), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'nome': self.nome
+
+        }
+#endregion
+
+#region EquipamentoNoEvento
+class EquipamentoNoEvento(Base):
+    __tablename__ = "equipamento_no_evento"
+    id = Column(Integer, primary_key=True)
+    equipamentoID = Column(Integer, ForeignKey('equipamento.id'), nullable=False)
+    eventoID = Column(Integer, ForeignKey('evento.id'), nullable=False)
+    observacoes = Column(String(50))
+    isProvided = Column(Boolean)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'equipamentoID': self.equipamentoID,
+            'eventoID': self.eventoID,
+            'observacoes': self.observacoes,
+            'isProvided': self.isProvided
+
+        }
+#endregion
+
 #region Evento
-class Evento(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(128), nullable=False)
-    localizacao = db.Column(db.String(128), nullable=False)
-    organizador = db.Column(db.Integer, db.ForeignKey('utilizador.id'), nullable=False)
-    estado = db.Column(db.String(50))
-    duracao = db.Column(db.String(50))
-    descricao = db.Column(db.String(50))
-    acessibilidade = db.Column(db.String(50))
-    restricoes = db.Column(db.String(50))
-    tipoLixo = db.Column(db.String(50))
-    #????? wat is volume
-    volume = db.Column(db.String(50))
-    foto = db.Column(db.String(50))
-    observacoes = db.Column(db.String(50))
+class Evento(Base):
+    __tablename__ = "evento"
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(128), nullable=False)
+    latitude = Column(Numeric(128), nullable=False)
+    longitude = Column(Numeric(128), nullable=False)
+    organizador = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
+    estado = Column(String(50))
+    duracao = Column(String(50))
+    descricao = Column(String(50))
+    acessibilidade = Column(String(50))
+    restricoes = Column(String(50))
+    tipoLixo = Column(String(50))
+    volume = Column(String(50))
+    foto = Column(String(50))
+    observacoes = Column(String(50))
 
 
     def serialize(self):
         return {
             'id': self.id,
             'nome': self.nome,
-            'localizacao': self.localizacao,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
             'organizador': self.organizador,
             'estado': self.estado,
             'duracao': self.duracao,
@@ -124,23 +168,24 @@ class Evento(db.Model):
             'observacoes': self.observacoes
 
         }
-
-
 #endregion
 
 # region Lixeira
-class Lixeira(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    latitude  = db.Column(db.Numeric(8,6), nullable=False)
-    longitude  = db.Column(db.Numeric(9,6), nullable=False)
-    criador = db.Column(db.Integer, db.ForeignKey('utilizador.id'), nullable=False)
-    estado = db.Column(db.String(50), nullable=False)
-    aprovado = db.Column(db.Boolean, nullable=False)
-    foto = db.Column(db.Text,nullable=True)
+class Lixeira(Base):
+    __tablename__ = "lixeira"
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(50), nullable=False)
+    latitude  = Column(Numeric(8,6), nullable=False)
+    longitude  = Column(Numeric(9,6), nullable=False)
+    criador = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
+    estado = Column(String(50), nullable=False)
+    aprovado = Column(Boolean, nullable=False)
+    foto = Column(Text,nullable=True)
 
     def serialize(self):
         return {
             'id': self.id,
+            'nome': self.nome,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'criador': self.criador,
@@ -151,10 +196,11 @@ class Lixeira(db.Model):
 #endregion
 
 #region LixeiraEvento
-class LixeiraEvento(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    lixeiraID = db.Column(db.Integer, db.ForeignKey('lixeira.id'), nullable=False)
-    eventID = db.Column(db.Integer, db.ForeignKey('evento.id'), nullable=False)
+class LixeiraEvento(Base):
+    __tablename__ = "lixeira_evento"
+    id = Column(Integer, primary_key=True)
+    lixeiraID = Column(Integer, ForeignKey('lixeira.id'), nullable=False)
+    eventID = Column(Integer, ForeignKey('evento.id'), nullable=False)
 
     def serialize(self):
         return {
@@ -167,11 +213,12 @@ class LixeiraEvento(db.Model):
 #endregion
 
 #region UtilizadorNoEvento
-class UtilizadorNoEvento(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    userID = db.Column(db.Integer, db.ForeignKey('utilizador.id'), nullable=False)
-    eventID = db.Column(db.Integer, db.ForeignKey('evento.id'), nullable=False)
-    estado = db.Column(db.String(128), nullable=False)
+class UtilizadorNoEvento(Base):
+    __tablename__ = "utilizador_no_evento"
+    id = Column(Integer, primary_key=True)
+    userID = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
+    eventID = Column(Integer, ForeignKey('evento.id'), nullable=False)
+    estado = Column(String(128), nullable=False)
 
     def serialize(self):
         return {
@@ -181,4 +228,69 @@ class UtilizadorNoEvento(db.Model):
             'estado': self.estado
         }
 
+#endregion
+
+#region MensagemEvento
+class MensagemEvento(Base):
+    __tablename__ = "mensagem_evento"
+    id = Column(Integer, primary_key=True)
+    mensagemID = Column(Integer, ForeignKey('mensagem.id'), nullable=False)
+    eventoID = Column(Integer, ForeignKey('evento.id'), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'mensagemID': self.mensagemID,
+            'eventoID': self.eventoID
+
+        }
+#endregion
+
+#region Amizade
+class Amizade(Base):
+    __tablename__ = "amizade"
+    id = Column(Integer, primary_key=True)
+    requestorID = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
+    addresseeID = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
+    data = Column(String(50), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'requestorID': self.requestorID,
+            'addresseeID': self.addresseeID,
+            'data': self.data
+        }
+#endregion
+
+#region Mensagem
+class Mensagem(Base):
+    __tablename__ = "mensagem"
+    id = Column(Integer, primary_key=True)
+    userID = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
+    message = Column(String(50), nullable=False)
+    tipo = Column(String(50), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'userID': self.userID,
+            'message': self.message,
+            'tipo': self.tipo
+        }
+#endregion
+
+#region MensagemIndividual
+class MensagemIndividual(Base):
+    __tablename__ = "mensagem_individual"
+    id = Column(Integer, primary_key=True)
+    userID = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
+    mensagemID = Column(Integer, ForeignKey('mensagem.id'), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'userID': self.userID,
+            'mensagemID': self.mensagemID
+        }
 #endregion

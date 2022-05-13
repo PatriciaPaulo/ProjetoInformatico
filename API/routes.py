@@ -18,7 +18,7 @@ def create_admin(current_user):
     data = request.get_json()
 
     #Checks if admin already exists
-    admin = Utilizador.query.filter_by(username=data['username']).first()
+    admin = db.session.query(Utilizador).filter_by(username=data['username']).first()
     if admin:
         return make_response('Admin already exists', 409)
 
@@ -49,7 +49,7 @@ def login_admin():
         return make_response('Bad request', 400)
 
     #Checks if user exists
-    admin = Utilizador.query.filter_by(username=auth['username']).first()
+    admin = db.session.query(Utilizador).filter_by(username=auth['username']).first()
     if not admin:
         return make_response('Admin doesn\'t exist', 404)
 
@@ -77,7 +77,7 @@ def login_admin():
 @admin_required
 def bloquear_user(current_user,user_id):
     #Checks if user to be blocked exists
-    user = Utilizador.query.filter_by(id=user_id).first()
+    user = db.session.query(Utilizador).filter_by(id=user_id).first()
     if not user:
         return make_response('User doesn\'t exist', 404)
 
@@ -96,7 +96,7 @@ def bloquear_user(current_user,user_id):
 @admin_required
 def delete_user(current_user, user_id):
     #Checks if user exists
-    user = Utilizador.query.filter_by(id=user_id).first()
+    user = db.session.query(Utilizador).filter_by(id=user_id).first()
     if not user:
         return make_response('User doesn\'t exist', 404)
     #Checks if user is deleting himself
@@ -126,7 +126,7 @@ def register_user():
         return make_response('Passwords don\'t match', 400)
 
     # Checks if user already exists
-    user = Utilizador.query.filter_by(username=data['username']).first()
+    user = db.session.query(Utilizador).filter_by(username=data['username']).first()
     if user:
         return make_response('User already exists', 409)
 
@@ -149,7 +149,7 @@ def login_user():
         return make_response('Bad request', 400)
 
     # Checks if user exists
-    user = Utilizador.query.filter_by(username=auth['username']).first()
+    user = db.session.query(Utilizador).filter_by(username=auth['username']).first()
     if not user:
         return make_response('User doesn\'t exist', 404)
 
@@ -185,7 +185,7 @@ def get_me(current_user):
 @admin_required
 def get_all_users(current_user):
     #Query for all users
-    users = Utilizador.query.all()
+    users = db.session.query(Utilizador).all()
 
     result = []
     for user in users:
@@ -204,7 +204,7 @@ def get_all_users(current_user):
 @admin_required
 def get_user(current_user,user_id):
     #find user
-    user = Utilizador.query.filter_by(id=user_id).first()
+    user = db.session.query(Utilizador).filter_by(id=user_id).first()
     return make_response(jsonify({'data': Utilizador.serialize(user)}), 200)
 
 #update user
@@ -212,7 +212,7 @@ def get_user(current_user,user_id):
 @admin_required
 def update_user(current_user,user_id):
     #Checks if user exist
-    user = Utilizador.query.filter_by(id=user_id).first()
+    user = db.session.query(Utilizador).filter_by(id=user_id).first()
     if not user:
         return make_response('User doesn\'t exist', 404)
 
@@ -240,7 +240,7 @@ def create_atividade(current_user):
 @routes_blueprint.route('/atividades', methods=['GET'])
 @token_required
 def get_atividades(current_user):
-    atividades = Atividade.query.filter_by(userID=current_user.username).all()
+    atividades = db.session.query(Atividade).filter_by(userID=current_user.username).all()
     output = []
     for ati in atividades:
         atividade_data = {}
@@ -259,7 +259,7 @@ def get_atividades(current_user):
 @routes_blueprint.route('/atividades/<atividade_id>', methods=['PUT'])
 @token_required
 def update_atividade(current_user, atividade_id):
-    atividade = Atividade.query.filter_by(id=atividade_id, userID=current_user.username).first()
+    atividade = db.session.query(Atividade).filter_by(id=atividade_id, userID=current_user.username).first()
     if not atividade:
         return jsonify({'message': 'atividade does not exist'})
     atividade_data = request.get_json()
@@ -295,7 +295,7 @@ def create_evento(current_user):
 @token_required
 def get_eventos(current_user):
     #todo order by data
-    eventos = Evento.query.filter_by(organizador=current_user.username).all()
+    eventos = db.session.query(Evento).filter_by(organizador=current_user.username).all()
     output = []
     for evento in eventos:
         evento_data = {}
@@ -319,7 +319,7 @@ def get_eventos(current_user):
 @routes_blueprint.route('/eventos/<evento_id>', methods=['PUT'])
 @token_required
 def update_evento(current_user, evento_id):
-    evento = Evento.query.filter_by(id=evento_id, organizador=current_user.username).first()
+    evento = db.session.query(Evento).filter_by(id=evento_id, organizador=current_user.username).first()
     if not evento:
         return jsonify({'message': 'evento does not exist'})
     evento_data = request.get_json()
@@ -340,7 +340,7 @@ def update_evento(current_user, evento_id):
 @routes_blueprint.route('/eventos/<evento_id>/aprovar', methods=['PATCH'])
 @admin_required
 def aprovar_evento(evento_id):
-    evento = Evento.query.filter_by(id=evento_id).first()
+    evento = db.session.query(Evento).filter_by(id=evento_id).first()
     if not evento:
         return jsonify({'message': 'evento does not exist'})
     evento_data = request.get_json()
@@ -357,7 +357,7 @@ def aprovar_evento(evento_id):
 @token_required
 def create_lixeira(current_user):
     data = request.get_json()
-    new_lixeira = Evento(localizacao=data['localizacao'], criador=current_user.username,
+    new_lixeira = Lixeira(nome=data['nome'],latitude=data['latitude'],longitude=data['longitude'], criador=current_user.username,
                         estado=data['estado'], aprovado=data['aprovado'], foto=data['foto'])
     db.session.add(new_lixeira)
     db.session.commit()
@@ -366,12 +366,14 @@ def create_lixeira(current_user):
 @routes_blueprint.route('/lixeiras', methods=['GET'])
 @admin_required
 def get_all_lixeiras(current_user):
-    lixeiras = Lixeira.query.all()
+    lixeiras = db.session.query(Lixeira).all()
     output = []
     for lixeira in lixeiras:
         lixeira_data = {}
         lixeira_data['id'] = lixeira.id
-        lixeira_data['localizacao'] = lixeira.localizacao
+        lixeira_data['nome'] = lixeira.nome
+        lixeira_data['latitude'] = lixeira.latitude
+        lixeira_data['longitude'] = lixeira.longitude
         lixeira_data['criador'] = lixeira.criador
         lixeira_data['estado'] = lixeira.estado
         lixeira_data['aprovado'] = lixeira.aprovado
@@ -383,13 +385,13 @@ def get_all_lixeiras(current_user):
 @routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['GET'])
 @admin_required
 def get_lixeira(current_user,lixeira_id):
-    lixeira = Lixeira.query.filter_by(id=lixeira_id).first()
+    lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id).first()
 
     return jsonify({'data': Lixeira.serialize(lixeira)})
 @routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['PUT'])
 @token_required
 def update_lixeira(current_user, lixeira_id):
-    lixeira = Lixeira.query.filter_by(id=lixeira_id, criador=current_user.username).first()
+    lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id, criador=current_user.username).first()
     if not evento:
         return jsonify({'message': 'lixeira does not exist'})
     lixeira_data = request.get_json()
@@ -404,7 +406,7 @@ def update_lixeira(current_user, lixeira_id):
 @routes_blueprint.route('/lixeiras/<lixeira_id>/aprovar', methods=['PATCH'])
 @admin_required
 def aprovar_lixeira(current_user,lixeira_id):
-    lixeira = Lixeira.query.filter_by(id=lixeira_id).first()
+    lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id).first()
     if not lixeira:
         return jsonify({'message': 'lixeira does not exist'})
     lixeira_data = request.get_json()
