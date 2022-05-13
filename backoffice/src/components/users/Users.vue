@@ -82,7 +82,6 @@ export default {
         });
     },
     unblockUser(user) {
-      console.log(user + "users")
        this.$store
         .dispatch("unblockUser", user)
         .then(() => {

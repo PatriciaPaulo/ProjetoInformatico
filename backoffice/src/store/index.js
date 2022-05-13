@@ -39,28 +39,6 @@ export default createStore({
         state.users.splice(idx, 1)
       }
     },
-    //ADMINS
-    setAdmins(state, users) {
-      state.admins = users
-    },
-    resetAdmins(state) {
-      state.admins = null
-    },
-    insertAdmin(state, newAdmin) {
-      state.admins.push(newAdmin)
-    },
-    updateAdmin(state, updateAdmin) {
-      let idx = state.admins.findIndex((t) => t.id === updateAdmin.id)
-      if (idx >= 0) {
-        state.admins[idx] = updateAdmin
-      }
-    },
-    deleteAdmin(state, deleteAdmin) {
-      let idx = state.admins.findIndex((t) => t.id === deleteAdmin.id)
-      if (idx >= 0) {
-        state.admins.splice(idx, 1)
-      }
-    },
     //Lixeiras
     setLixeiras(state, lixeiras) {
       state.lixeiras = lixeiras
@@ -77,6 +55,7 @@ export default createStore({
         state.lixeiras[idx] = updateLixeira
       }
     },
+
   },
   getters: {
     loggedInUser: (state) => {
@@ -91,6 +70,7 @@ export default createStore({
     totalAdmins: (state) => {
       return state.admins.length
     },
+    
   },
   actions: {
     async login(context, credentials) {
