@@ -61,16 +61,13 @@ export default createStore({
     loggedInUser: (state) => {
       return state.loggedInUser
     },
-    admins: (state) => {
-      return state.admins
-    },
     users: (state) => {
       return state.users
     },
-    totalAdmins: (state) => {
-      return state.admins.length
+    totalUsers: (state) => {
+      return state.users.length
     },
-    
+
   },
   actions: {
     async login(context, credentials) {
@@ -113,7 +110,7 @@ export default createStore({
       } catch (error) {
         context.commit('resetUsers', null)
         throw error
-      }
+      } 
     },
     async loadLoggedInUser(context) {
       try {
@@ -137,7 +134,7 @@ export default createStore({
       }
     },
     async aprovarLixeira(context, lixeira) {
-      let response = await axios.patch('lixeiras/' + lixeira.id + '/aprovar',{'aprovado':lixeira.aprovado})
+      let response = await axios.patch('lixeiras/' + lixeira.id + '/aprovar', { 'aprovado': lixeira.aprovado })
       context.commit('updateLixeira', lixeira)
       return response.data
     },
@@ -148,16 +145,16 @@ export default createStore({
       return response.data.data
     },
     async blockUser(context, user) {
-      
+
       let response = await axios.patch("users/" + user.id + '/block', { "blocked": true })
       user.blocked = true
-      context.commit('updateUser',user)
+      context.commit('updateUser', user)
       return response.data.data
     },
     async unblockUser(context, user) {
       let response = await axios.patch("users/" + user.id + '/block', { "blocked": false })
       user.blocked = false
-      context.commit('updateUser',user)
+      context.commit('updateUser', user)
       return response.data.data
     },
 

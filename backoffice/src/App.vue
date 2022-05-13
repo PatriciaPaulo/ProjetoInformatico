@@ -263,7 +263,7 @@ export default {
         this.$store.dispatch("refresh");
       }
     }),
-      (document.title = "My VCard");
+      (document.title = "SPL");
   },
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <table class="table">
+  <!--<table class="table">
     <thead>
       <tr>
         <th class="align-middle">#</th>
@@ -15,51 +15,71 @@
         <td class="align-middle">{{ user.name }}</td>
         <td class="align-middle">{{ user.email }}</td>
 
-        <td  v-if="user.id === this.$store.state.loggedInUser.id" class="align-middle">
-          <router-link
-            href="#"
-            :to="{ name: 'User', params: { id: user.id } }"
+        <td
+          v-if="user.id === this.$store.state.loggedInUser.id"
+          class="align-middle"
+        >
+          <router-link href="#" :to="{ name: 'User', params: { id: user.id } }"
             ><i class="bi bi-xs bi-person-square"></i
           ></router-link>
         </td>
-     
-          <td v-if="user.id !== this.$store.state.loggedInUser.id" class="align-middle">
-            <div class="d-flex justify-content-end">
-              <button
-                v-if="user.blocked == '1'"
-                class="btn btn-xs btn-light"
-                @click="unblockClick(user)"
-              >
-                <i class="bi bi-xs bi-file-lock2"></i>
-              </button>
 
-              <button
-                v-else
-                class="btn btn-xs btn-light"
-                @click="blockClick(user)"
-              >
-                <i class="bi bi-xs bi-file"></i>
-              </button>
-            </div>
-          </td>
-          
-           <td v-if="user.id !== this.$store.state.loggedInUser.id" class="text-end align-middle">
-            <div class="d-flex justify-content-end">
-              <button class="btn btn-xs btn-light" @click="deleteClick(user)">
-                <i class="bi bi-xs bi-x-square-fill"></i>
-              </button>
-            </div>
-          </td>
+        <td
+          v-if="user.id !== this.$store.state.loggedInUser.id"
+          class="align-middle"
+        >
+          <div class="d-flex justify-content-end">
+            <button
+              v-if="user.blocked == '1'"
+              class="btn btn-xs btn-light"
+              @click="unblockClick(user)"
+            >
+              <i class="bi bi-xs bi-file-lock2"></i>
+            </button>
 
-        
+            <button
+              v-else
+              class="btn btn-xs btn-light"
+              @click="blockClick(user)"
+            >
+              <i class="bi bi-xs bi-file"></i>
+            </button>
+          </div>
+        </td>
+
+        <td
+          v-if="user.id !== this.$store.state.loggedInUser.id"
+          class="text-end align-middle"
+        >
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-xs btn-light" @click="deleteClick(user)">
+              <i class="bi bi-xs bi-x-square-fill"></i>
+            </button>
+          </div>
+        </td>
       </tr>
     </tbody>
-  </table>
+  </table> -->
+  <DataTable
+    :value="users"
+    :paginator="true"
+    class="p-datatable-customers"
+    :rows="10"
+  >
+    <Column field="name" header="Name"></Column>
+    <Column field="username" header="Username"></Column>
+    <Column field="email" header="Email"></Column>
+  </DataTable>
 </template>
 
 <script>
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 export default {
   name: "UserTable",
+  components: {
+    DataTable,Column
+  },
   props: {
     users: {
       type: Array,
