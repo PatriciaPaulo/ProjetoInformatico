@@ -1,8 +1,7 @@
 from functools import wraps
 
 import jwt
-from flask import Flask, jsonify, request, current_app
-
+from flask import Flask, jsonify, request, make_response,current_app
 from models import Utilizador, db
 
 

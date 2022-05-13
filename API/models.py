@@ -16,11 +16,12 @@ class Utilizador(Base):
     __tablename__="utilizador"
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
-    password = Column(String(50))
+    password = Column(String(50), nullable=False)
     name = Column(String(128), nullable=False)
     email = Column(String(128), nullable=False)
     admin = Column(Boolean)
     blocked = Column(Boolean)
+    deleted_at = Column(String(128))
 
     def serialize(self):
         return {

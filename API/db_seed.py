@@ -34,7 +34,7 @@ if __name__ == '__main__':
         email = uname + "@mail.pt"
         session.add(
             Utilizador(username=uname, password=generate_password_hash("123"), name=full_name, email=email, admin=False,
-                       blocked=False))
+                       blocked=False,deleted_at=None))
         session.commit()
     print("---UTILIZADORES seed done!")
     # SEED ADMINS

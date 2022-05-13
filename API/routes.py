@@ -103,7 +103,7 @@ def delete_user(current_user, user_id):
     if current_user.id == user_id:
         return make_response('can not delete yourself', 400)
 
-    db.session.delete(user)
+    user.deleted_at = datetime.datetime.utcnow()
     db.session.commit()
     return make_response('User deleted successfully', 200)
 
@@ -187,11 +187,8 @@ def get_me(current_user):
 def get_all_users(current_user):
     #Query for all users
     result = []
-    users = db.session.query(Utilizador)
-    for u in users:
-        user = Utilizador.serialize(u)
-        result.append(user)
-    """
+    users = db.session.query(Utilizador).filter_by(deleted_at=None)
+
     for user in users:
         user_data = {}
         user_data['id'] = user.id
@@ -201,8 +198,7 @@ def get_all_users(current_user):
         user_data['admin'] = user.admin
         user_data['blocked'] = user.blocked
         result.append(user_data)
-    print(result)
-    """
+
 
     return make_response(jsonify({'data': result}), 200)
 
@@ -211,7 +207,10 @@ def get_all_users(current_user):
 @admin_required
 def get_user(current_user,user_id):
     #find user
-    user = db.session.query(Utilizador).filter_by(id=user_id).first()
+    user = db.session.query(Utilizador).filter_by(id=user_id,deleted_at=None).first()
+    if not user:
+        return make_response(jsonify({'message': "User doesnt exist"}), 404)
+
     return make_response(jsonify({'data': Utilizador.serialize(user)}), 200)
 
 #update user
@@ -219,7 +218,9 @@ def get_user(current_user,user_id):
 @admin_required
 def update_user(current_user,user_id):
     #Checks if user exist
-    user = db.session.query(Utilizador).filter_by(id=user_id).first()
+    user = db.session.query(Utilizador).filter_by(id=user_id,deleted_at=None).first()
+    print(user_id)
+    print(user)
     if not user:
         return make_response('User doesn\'t exist', 404)
 
