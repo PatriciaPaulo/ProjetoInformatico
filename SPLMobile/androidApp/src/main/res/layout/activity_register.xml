@@ -17,17 +17,17 @@
         android:id="@+id/lblRegUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/lblRegUsername" />
+        android:text="@string/lblUsername" />
 
     <EditText
         android:id="@+id/txtRegUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:autofillHints=""
         android:ems="10"
-        android:hint="@string/txtRegUsername"
+        android:hint="@string/txtPlaceholderUsername"
         android:inputType="textPersonName"
-        android:minHeight="48dp"
-        android:autofillHints="" />
+        android:minHeight="48dp" />
 
     <TextView
         android:id="@+id/lblRegName"
@@ -65,17 +65,17 @@
         android:id="@+id/lblRegPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/lblRegPassword" />
+        android:text="@string/lblPassword" />
 
     <EditText
         android:id="@+id/txtRegPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:autofillHints=""
         android:ems="10"
-        android:hint="@string/txtRegPassword"
+        android:hint="@string/txtPlaceholderPassword"
         android:inputType="textPassword"
-        android:minHeight="48dp"
-        android:autofillHints="" />
+        android:minHeight="48dp" />
 
     <TextView
         android:id="@+id/lbReglPasswordConfirmation"
@@ -98,7 +98,7 @@
         android:id="@+id/btnRegRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btnRegRegister"
+        android:text="@string/btnRegister"
         tools:ignore="DuplicateSpeakableTextCheck" />
 
     <EditText

@@ -9,7 +9,7 @@
         android:id="@+id/lblLogUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/lblLogUsername" />
+        android:text="@string/lblUsername" />
 
     <EditText
         android:id="@+id/txtLogUsername"
@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:autofillHints=""
         android:ems="10"
-        android:hint="@string/txtLogUsername"
+        android:hint="@string/txtPlaceholderUsername"
         android:inputType="text"
         android:minHeight="48dp" />
 
@@ -25,30 +25,30 @@
         android:id="@+id/lblLogPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/lblLogPassword" />
+        android:text="@string/lblPassword" />
 
     <EditText
         android:id="@+id/txtLogPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:autofillHints=""
         android:ems="10"
-        android:hint="@string/txtLogPassword"
+        android:hint="@string/txtPlaceholderPassword"
         android:inputType="textPassword"
         android:minHeight="48dp"
-        tools:ignore="SpeakableTextPresentCheck"
-        android:autofillHints="" />
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <Button
         android:id="@+id/btnLogLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btnLogLogin" />
+        android:text="@string/btnLogin" />
 
     <TextView
         android:id="@+id/txtLogRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/txtLoginErrors" />
+        android:text="@string/txtLogRegister" />
 
     <EditText
         android:id="@+id/lblLogLoginErrors"
@@ -59,4 +59,10 @@
         android:minHeight="48dp"
         tools:ignore="SpeakableTextPresentCheck"
         android:autofillHints="" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cbLogKeepLogged" />
 </LinearLayout>

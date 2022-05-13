@@ -1,22 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="lblLogPassword">Password:</string>
-    <string name="txtLogUsername">Username</string>
-    <string name="lblLogUsername">Username:</string>
-    <string name="txtLoginErrors">REGISTER HERE</string>
-    <string name="txtLogPassword">Password</string>
-    <string name="btnLogLogin">Login</string>
+    <!-- LOGIN -->
+    <string name="lblPassword">Password:</string>
+    <string name="lblUsername">Username:</string>
+
+    <string name="txtPlaceholderUsername">Username</string>
+    <string name="txtPlaceholderPassword">Password</string>
+
+    <string name="txtLogRegister">REGISTER HERE</string>
+
+    <string name="btnLogin">Login</string>
+    <string name="btnRegister">Register</string>
+
+    <string name="cbLogKeepLogged">Keep Me Logged In</string>
+
+    <!-- REGISTER -->
     <string name="lblRegRegister">Register</string>
     <string name="lblRegPasswordConfirmation">Password Confirmation:</string>
-    <string name="txtRegPassword">Password</string>
-    <string name="txtRegUsername">Username</string>
+
     <string name="txtRegName">Name</string>
     <string name="txtRegPasswordConfirmation">Password Confirmation</string>
     <string name="txtRegEmail">Email</string>
-    <string name="lblRegPassword">Password:</string>
-    <string name="lblRegUsername">Username:</string>
+
     <string name="lblRegName">Name:</string>
     <string name="lblRegEmail">Email:</string>
-    <string name="btnRegRegister">Register</string>
     <string name="title_activity_maps">ActivityMaps</string>
+
+    <!-- LANDING PAGE -->
+    <string name="btnLanPagLogin">Login</string>
+    <string name="btnLanPagRegister">Register</string>
 </resources>
