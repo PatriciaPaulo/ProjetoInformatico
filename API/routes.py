@@ -181,13 +181,17 @@ def get_me(current_user):
     return resp
 
 #gets all users
+
 @routes_blueprint.route('/users', methods=['GET'])
 @admin_required
 def get_all_users(current_user):
     #Query for all users
-    users = db.session.query(Utilizador).all()
-
     result = []
+    users = db.session.query(Utilizador)
+    for u in users:
+        user = Utilizador.serialize(u)
+        result.append(user)
+    """
     for user in users:
         user_data = {}
         user_data['id'] = user.id
@@ -197,6 +201,9 @@ def get_all_users(current_user):
         user_data['admin'] = user.admin
         user_data['blocked'] = user.blocked
         result.append(user_data)
+    print(result)
+    """
+
     return make_response(jsonify({'data': result}), 200)
 
 #get user by id
