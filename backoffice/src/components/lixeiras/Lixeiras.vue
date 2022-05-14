@@ -1,71 +1,188 @@
 <template>
- 
-  <h3 class="mt-5 mb-3">Lixeiras</h3>
-  <hr>
+  <hr />
 
-  <lixeira-table
+  <div class="wrapper">
+    <div class="child">
+      <ConfirmDialog></ConfirmDialog>
+      <DataTable
+        :value="filteredLixeiras"
+        :paginator="true"
+        stripedRows
+        :rows="10"
+        :loading="isLoading"
+        :globalFilterFields="['nome', 'estado', 'criador', 'aprovado']"
+        :filters="filters"
+        class="p-datatable-sm"
+      >
+        <template #empty> No lixeiras found. </template>
+        <template #loading> Loading lixeiras data. Please wait. </template>
+        <template #header>
+          <div class="flex justify-content-between">
+            <div class="">
+              <select class="form-select" id="selectBlocked" v-model="filter">
+                <option value="-1">Todos</option>
+                <option value="1">Aprovadas</option>
+                <option value="0">Não Aprovadas</option>
+              </select>
+            </div>
+            <div>
+              <h1 class="">Lixeiras</h1>
+            </div>
+
+            <div>
+              <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <InputText
+                  v-model="filters['global'].value"
+                  placeholder="Keyword Search"
+                />
+              </span>
+            </div>
+          </div>
+        </template>
+        <Column field="nome" header="Nome" :sortable="true"></Column>
+        <Column header="Criador" :sortable="true">
+          <template #body="{ data }">
+            {{ userName(data.criador) }}
+          </template>
+        </Column>
+        <Column field="estado" header="Estado" :sortable="true"></Column>
+        <Column header="Aprovada">
+          <template #body="{ data }">
+            <div class="d-flex justify-content-between">
+              <i v-if="data.aprovado" class="bi bi-xs bi-check2"></i>
+              <i v-else class="bi bi-xs bi-file"></i>
+            </div>
+          </template>
+        </Column>
+        <Column header="Editar">
+          <template #body="{ data }">
+            <div class="d-flex justify-content-between">
+              <button
+                class="btn btn-xs btn-light"
+                @click="editLixeira(data)"
+                label="Confirm"
+              >
+                <i class="bi bi-xs bi-pencil"></i>
+              </button>
+            </div>
+          </template>
+        </Column>
+        <Column header="Eliminar">
+          <template #body="{ data }">
+            <div class="d-flex justify-content-between">
+              <button
+                class="btn btn-xs btn-light"
+                @click="deleteLixeira(data)"
+                label="Confirm"
+              >
+                <i class="bi bi-xs bi-x-square-fill"></i>
+              </button>
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
+    <div class="child">
+      <lixeira-map
       :lixeiras="this.lixeiras"
-      @edit="editLixeira"
-      @delete="deleteLixeira"
-  ></lixeira-table>
+      :center="center"
+      >
+      </lixeira-map>
+    </div>
+  </div>
 </template>
 
 <script>
-import LixeiraTable from "./LixeiraTable";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import InputText from "primevue/inputtext";
+import { FilterMatchMode } from "primevue/api";
+import ConfirmDialog from "primevue/confirmdialog";
+import LixeiraMap from "./LixeiraMap";
 
 export default {
   name: "Lixeiras",
   components: {
-    LixeiraTable
+    LixeiraMap,
+    DataTable,
+    Column,
+    InputText,
+    ConfirmDialog,
   },
   data() {
     return {
+      filter: "-1",
       lixeiras: [],
-      lixeiraToDelete: null
-    }
+      isLoading: false,
+      filters: {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      },
+      lixeiraToDelete: null,
+      center: { lat: 38.093048, lng: -9.84212 },
+    };
   },
   methods: {
     editLixeira(lixeira) {
-      this.$router.push({name: 'Lixeira', params: {id: lixeira.id}})
+      this.$router.push({ name: "Lixeira", params: { id: lixeira.id } });
     },
     deleteLixeira(lixeira) {
-     this.$store.dispatch('deleteLixeira', lixeira)
-          .then(() => {
-            this.$toast.success('Lixeira ' + lixeira.name + ' was deleted successfully.')
-            this.originalValueStr = this.dataAsString()
-          })
-          .catch((error) => {
-            console.log(error)
-          })
+      this.$store
+        .dispatch("deleteLixeira", lixeira)
+        .then(() => {
+          this.$toast.success(
+            "Lixeira " + lixeira.name + " was deleted successfully."
+          );
+          this.originalValueStr = this.dataAsString();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
-    loadLixeiras () {
-      this.$store.dispatch('loadLixeiras')
-          .then((response) => {
-            this.lixeiras = response.data
-            console.log(this.lixeiras)
-          })
-          .catch((error) => {
-            console.log(error)
-          })
+    loadLixeiras() {
+      this.isLoading = true;
+      this.$store
+        .dispatch("loadLixeiras")
+        .then((response) => {
+          this.lixeiras = response.data;
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.isLoading = false;
+        });
     },
+    userName(id) {
+      return this.$store.getters.users.at(id).username;
+    },
+   
   },
-  mounted () {
-    this.loadLixeiras(),
-        document.title = "Lixeiras"
-  }
-}
+  computed:{
+    filteredLixeiras() {
+      return this.lixeiras.filter(
+        (t) =>
+          this.filter === "-1" ||
+          (this.filter === "0" && !t.aprovado) ||
+          (this.filter === "1" && t.aprovado)
+      );
+    }
+  },
+  mounted() {
+    this.loadLixeiras(), (document.title = "Lixeiras");
+  },
+};
 </script>
 
 <style scoped>
-.filter-div {
-  min-width: 12rem;
+.wrapper {
+  margin-right: -100%;
 }
-
-.total-filtro {
-  margin-top: 0.35rem;
-}
-
-.btn-addtask {
-  margin-top: 1.85rem;
+.child {
+  box-sizing: border-box;
+  width: 25%;
+  height: 100%;
+  padding-right: 20px;
+  float: left;
 }
 </style>

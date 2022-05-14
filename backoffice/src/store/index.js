@@ -126,7 +126,7 @@ export default createStore({
     async loadLixeiras(context) {
       try {
         let response = await axios.get('lixeiras')
-        context.commit('setLixeiras', response.data)
+        context.commit('setLixeiras', response.data.data)
         return response.data
       } catch (error) {
         context.commit('resetLixeiras', null)

@@ -16,7 +16,6 @@
     <template #header>
       <div class="flex justify-content-between">
         <div class="">
-          <label for="selectBlocked" class="form-label">Filter:</label>
           <select class="form-select" id="selectBlocked" v-model="filter">
             <option value="-1">Todos</option>
             <option value="1">Admins</option>
@@ -59,7 +58,7 @@
         </div>
       </template>
     </Column>
-    <Column header="Delete">
+    <Column header="Delete">  
       <template #body="{ data }">
         <div v-if="data.id !== this.$store.state.loggedInUser.id" class="d-flex justify-content-between">
           <button

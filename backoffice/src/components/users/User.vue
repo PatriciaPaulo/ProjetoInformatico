@@ -27,7 +27,8 @@ export default {
   },
   methods: {
     save () {
-      this.$axios.put('users/' + this.id, this.user)
+
+      this.$axios.put('users/' + this.user.id, this.user)
         .then(() => {
            this.$toast.success(
             "User " + this.user.username + " has been updates."

@@ -13,16 +13,27 @@
     @save="save"
     @cancel="cancel"
   ></lixeira-detail>
+
+      <lixeira-map
+      :lixeiras="this.lixeira"
+      :center="centerLix"
+      >
+      </lixeira-map>
 </template>
 
 <script>
 import LixeiraDetail from "./LixeiraDetail";
+import LixeiraMap from "./LixeiraMap";
 export default {
   name: "Lixeira",
-  components: { LixeiraDetail },
+  components: { LixeiraDetail,LixeiraMap },
   props: {
     id: {
       type: Number,
+      default: null,
+    },
+    centerLix: {
+      type: Object,
       default: null,
     },
   },
@@ -30,6 +41,7 @@ export default {
     return {
       lixeira: this.loadLixeira(this.id),
       errors: null,
+       center: this.centerLix,
     };
   },
  /* watch: {

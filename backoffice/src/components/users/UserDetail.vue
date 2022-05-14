@@ -27,7 +27,7 @@
             v-model="editingUser.email"
           />
         </div>
-        <div class="mb-3 px-1">
+       <!-- <div class="mb-3 px-1">
           <label for="inputAdmin" class="form-label">Admin</label>
           <input
             type="checkbox"
@@ -45,8 +45,8 @@
             true-value="true"
             false-value="false"
           />
-     
-        </div>
+   
+        </div>  -->
       </div>
       <div class="w-25">
         <div class="mb-3">
@@ -69,6 +69,7 @@
 </template>
 
 <script>
+
 export default {
   name: "UserDetail",
   components: {},

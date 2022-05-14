@@ -4,14 +4,14 @@
   <div class="d-flex flex-wrap justify-content-between">
     <div class="w-75 pe-4">
       <div class="mb-3">
-        <label for="inputName" class="form-label">Localizacao</label>
+        <label for="inputName" class="form-label">Nome</label>
         <input
           type="text"
           class="form-control"
           id="inputLocalizacao"
           placeholder="Lixeira localizacao"
           required
-          v-model="editingLixeira.localizacao"
+          v-model="editingLixeira.nome"
           disabled
         />
         <field-error-message
@@ -19,8 +19,11 @@
           fieldName="name"
         ></field-error-message>
       </div>
+      <ConfirmDialog></ConfirmDialog>
       <div class="mb-3 px-1">
-        <label for="inputAdmin" class="form-label">Aprovado</label>
+        <label for="inputAdmin" class="form-label" label="Confirm"
+          >Aprovado</label
+        >
         <input
           type="checkbox"
           v-model="editingLixeira.aprovado"
@@ -29,11 +32,13 @@
           @change="check(editingLixeira)"
         />
       </div>
+
       <div class="mb-3">
         <label for="inputType" class="form-label">Estado</label>
         <select v-model="editingLixeira.estado" name="inputType">
-          <option value="estado1">estado1</option>
-          <option value="estado2">estado2</option>
+          <option v-for="(value, key) in estados" :value="value" :key="key">
+            {{ value }}
+          </option>
         </select>
         <field-error-message
           :errors="errors"
@@ -50,8 +55,12 @@
 </template>
 
 <script>
+import ConfirmDialog from "primevue/confirmdialog";
 export default {
   name: "LixeiraDetail",
+  components: {
+    ConfirmDialog,
+  },
   props: {
     lixeira: {
       type: Object,
@@ -66,25 +75,30 @@ export default {
   data() {
     return {
       editingLixeira: this.lixeira,
+      estados: ["Muito sujo", "Pouco sujo", "Limpo"],
     };
   },
-  watch: {
-    lixeira(newLixeira) {
-      console.log("asdasdasd");
-      this.editingLixeira = newLixeira;
-    },
-  },
   methods: {
-    save() {
-      this.$emit("save", this.editingLixeira);
-    },
-    cancel() {
-      this.$emit("cancel", this.editingLixeira);
-    },
     check(lixeira) {
-      this.$nextTick(() => {
-        console.log(lixeira.aprovado);
-        this.$store.dispatch('aprovarLixeira',lixeira)
+      this.$confirm.require({
+        message: "Are you sure you want to proceed?",
+        header: "Confirmation",
+        icon: "pi pi-exclamation-triangle",
+        accept: () => {
+          //callback to execute when user confirms the action
+          this.$nextTick(() => {
+            this.$store.dispatch("aprovarLixeira", lixeira)
+            .then(() => {
+              this.$toast.success(
+                "lixeira " + lixeira.nome
+              );
+            });
+          });
+        },
+
+        reject: () => {
+          lixeira.aprovado = !lixeira.aprovado
+        },
       });
     },
   },
