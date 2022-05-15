@@ -55,6 +55,22 @@ export default createStore({
         state.lixeiras[idx] = updateLixeira
       }
     },
+    //Eventos
+    setEventos(state, eventos) {
+      state.eventos = eventos
+    },
+    resetEventos(state) {
+      state.eventos = null
+    },
+    insertEvento(state, newEvento) {
+      state.eventos.push(newEvento)
+    },
+    updateEvento(state, updateEvento) {
+      let idx = state.eventos.findIndex((t) => t.id === updateEvento.id)
+      if (idx >= 0) {
+        state.eventos[idx] = updateEvento
+      }
+    },
 
   },
   getters: {
@@ -69,6 +85,9 @@ export default createStore({
     },
     lixeiras: (state) => {
       return state.lixeiras
+    },
+    eventos: (state) => {
+      return state.eventos
     },
 
   },
@@ -113,7 +132,7 @@ export default createStore({
       } catch (error) {
         context.commit('resetUsers', null)
         throw error
-      } 
+      }
     },
     async loadLoggedInUser(context) {
       try {
@@ -133,6 +152,16 @@ export default createStore({
         return response.data.data
       } catch (error) {
         context.commit('resetLixeiras', null)
+        throw error
+      }
+    },
+    async loadEventos(context) {
+      try {
+        let response = await axios.get('eventos')
+        context.commit('setEventos', response.data.data)
+        return response.data.data
+      } catch (error) {
+        context.commit('resetEventos', null)
         throw error
       }
     },
@@ -165,9 +194,11 @@ export default createStore({
       let userPromise = context.dispatch('loadLoggedInUser')
       let usersPromise = context.dispatch('loadUsers')
       let lixeirasPromise = context.dispatch('loadLixeiras')
+      let eventosPromise = context.dispatch('loadEventos')
       await userPromise
       await usersPromise
       await lixeirasPromise
+      await eventosPromise
 
     },
   },

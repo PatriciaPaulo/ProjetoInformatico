@@ -8,6 +8,9 @@ import User from "../components/users/User.vue"
 import Users from "../components/users/Users.vue"
 import Lixeiras from "../components/lixeiras/Lixeiras.vue"
 import Lixeira from "../components/lixeiras/Lixeira.vue"
+import Eventos from "../components/eventos/Eventos.vue"
+import Evento from "../components/eventos/Evento.vue"
+
 const routes = [
   {
     path: '/',
@@ -53,7 +56,20 @@ const routes = [
     component: Lixeira,
     // props: true,
     // Replaced with the following line to ensure that id is a number
-    props: route => ({ id: parseInt(route.params.id) })
+    props: route => ({ id: parseInt(route.params.id)})
+  },
+  {
+    path: '/eventos',
+    name: 'Eventos',
+    component: Eventos
+  },
+  {
+    path: '/eventos/:id',
+    name: 'Evento',
+    component: Evento,
+    // props: true,
+    // Replaced with the following line to ensure that id is a number
+    props: route => ({ id: parseInt(route.params.id)})
   },
   {
     path: '/about',

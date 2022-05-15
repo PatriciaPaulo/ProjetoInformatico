@@ -130,24 +130,13 @@ export default {
         },
         reject: () => {
           //callback to execute when user rejects the action
-          console.log(user + "users");
-          this.$store
-            .dispatch("blockUser", user)
-            .then((response) => {
-              this.$toast.success(
-                "User " + user.username + " has been blocked."
-              );
-              this.$store.dispatch("loadUsers", response);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+        
         },
       });
     },
     blockUser(user) {
       this.$confirm.require({
-        message: `Are you sure you want to delete user ${user.username}?`,
+        message: `Are you sure you want to block user ${user.username}?`,
         header: "Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: () => {
@@ -167,16 +156,7 @@ export default {
         },
         reject: () => {
           //callback to execute when user rejects the action
-          this.$store
-            .dispatch("unblockUser", user)
-            .then(() => {
-              this.$toast.success(
-                "User " + user.username + " has been unblocked."
-              );
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+          
         },
       });
     },

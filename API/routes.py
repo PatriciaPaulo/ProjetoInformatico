@@ -289,7 +289,7 @@ def update_atividade(current_user, atividade_id):
 def create_evento(current_user):
     data = request.get_json()
 
-    new_evento = Evento(nome=data['nome'], localizacao=data['localizacao'], organizador=current_user.username,
+    new_evento = Evento(nome=data['nome'], latitude=data['latitude'], longitude=data['longitude'],organizador=current_user.id,
                         estado=data['estado'], duracao=data['duracao'], descricao=data['descricao'],
                         acessibilidade=data['acessibilidade'], restricoes=data['restricoes'], tipoLixo=data['tipoLixo'],
                         volume=data['volume'], foto=data['foto'], observacoes=data['observacoes'],
@@ -303,13 +303,14 @@ def create_evento(current_user):
 @token_required
 def get_eventos(current_user):
     #todo order by data
-    eventos = db.session.query(Evento).filter_by(organizador=current_user.username).all()
+    eventos = db.session.query(Evento).all()
     output = []
     for evento in eventos:
         evento_data = {}
         evento_data['id'] = evento.id
         evento_data['nome'] = evento.nome
-        evento_data['localizacao'] = evento.localizacao
+        evento_data['latitude'] = evento.nome
+        evento_data['longitude'] = evento.nome
         evento_data['estado'] = evento.estado
         evento_data['duracao'] = evento.duracao
         evento_data['descricao'] = evento.descricao
@@ -321,7 +322,7 @@ def get_eventos(current_user):
         evento_data['observacoes'] = evento.observacoes
         output.append(evento_data)
 
-    return jsonify({'list_of_eventos': output})
+    return jsonify({'data': output})
 
 
 @routes_blueprint.route('/eventos/<evento_id>', methods=['PUT'])

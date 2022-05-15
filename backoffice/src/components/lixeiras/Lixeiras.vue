@@ -126,7 +126,7 @@ export default {
   methods: {
     editLixeira(lixeira) {
       console.log("id  - "+ lixeira.id)
-      this.$router.push({ name: "Lixeira", params: { id: lixeira.id,lixeira: lixeira } });
+      this.$router.push({ name: "Lixeira", params: { id: lixeira.id } });
     },
     deleteLixeira(lixeira) {
       this.$store

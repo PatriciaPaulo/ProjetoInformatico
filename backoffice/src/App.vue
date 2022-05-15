@@ -156,6 +156,24 @@
                 Lixeiras
               </router-link>
             </li>
+             <li
+              class="
+                nav-item
+                d-flex
+                justify-content-between
+                align-items-center
+                pe-3
+              "
+            >
+              <router-link
+                class="nav-link w-100 me-3"
+                :class="{ active: $route.name === 'Eventos' }"
+                :to="{ name: 'Eventos' }"
+              >
+                <i class="bi bi-list-check"></i>
+                Eventos
+              </router-link>
+            </li>
           </ul>
 
           <div class="d-block d-md-none">
