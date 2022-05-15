@@ -42,8 +42,6 @@ export default {
       // Replace this code to navigate back
       this.loadUser(this.id)
     }
-  },
-  mounted () {
   }
 }
 </script>

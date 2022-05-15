@@ -1,126 +1,114 @@
 <template>
-  <confirmation-dialog
-    ref="confirmationDialog"
-    confirmationBtn="Discard changes and leave"
-    msg="Do you really want to leave? You have unsaved changes!"
-    @confirmed="leaveConfirmed"
-  >
-  </confirmation-dialog>
+  <h3 class="mt-5 mb-3">lixeira #{{ this.id }}</h3>
+  <hr />
+  <div class="d-flex flex-wrap justify-content-between">
+    <div class="w-75 pe-4">
+      <div class="mb-3">
+        <label for="inputName" class="form-label">Nome</label>
+        <input
+          type="text"
+          class="form-control"
+          id="inputNome"
+          placeholder="Lixeira nome"
+          required
+          v-model="arrayLixeira[0].nome"
+          disabled
+        />
+        <field-error-message
+          :errors="errors"
+          fieldName="nome"
+        ></field-error-message>
+      </div>
+      <ConfirmDialog></ConfirmDialog>
+      <div class="mb-3 px-1">
+        <label for="inputAprovado" class="form-label" label="Confirm"
+          >Aprovado</label
+        >
+        <input
+          type="checkbox"
+          v-model="arrayLixeira[0].aprovado"
+          true-value="true"
+          false-value="false"
+          @change="check(this.lixeira)"
+        />
+      </div>
 
-  <lixeira-detail
-    :lixeira="lixeira"
-    :errors="errors"
-    @save="save"
-    @cancel="cancel"
-  ></lixeira-detail>
+      <div class="mb-3">
+        <label for="inputType" class="form-label">Estado</label>
+        <select v-model="arrayLixeira[0].estado" name="inputType">
+          <option v-for="(value, key) in estados" :value="value" :key="key">
+            {{ value }}
+          </option>
+        </select>
+        <field-error-message
+          :errors="errors"
+          fieldName="inputType"
+        ></field-error-message>
+      </div>
+    </div>
+  </div>
+  <div class="mb-3 d-flex justify-content-end">
+    <button type="button" class="btn btn-light px-5" @click="cancel">
+      Voltar
+    </button>
+  </div>
 
-      <lixeira-map
-      :lixeiras="this.lixeira"
-      :center="centerLix"
-      >
-      </lixeira-map>
+  <lixeira-map :lixeiras="arrayLixeira" :center="position(arrayLixeira[0].latitude,arrayLixeira[0].longitude)"></lixeira-map>
 </template>
 
 <script>
-import LixeiraDetail from "./LixeiraDetail";
+import ConfirmDialog from "primevue/confirmdialog";
 import LixeiraMap from "./LixeiraMap";
 export default {
   name: "Lixeira",
-  components: { LixeiraDetail,LixeiraMap },
+  components: { LixeiraMap, ConfirmDialog },
   props: {
     id: {
       type: Number,
-      default: null,
-    },
-    centerLix: {
-      type: Object,
-      default: null,
+      required: true,
     },
   },
   data() {
     return {
-      lixeira: this.loadLixeira(this.id),
+      arrayLixeira: [],
+      estados: ["Muito sujo", "Pouco sujo", "Limpo"],
       errors: null,
-       center: this.centerLix,
     };
   },
- /* watch: {
-    // beforeRouteUpdate was not fired correctly
-    // Used this watcher instead to update the ID
-    id: {
-      immediate: true,
-      handler(newValue) {
-        this.loadLixeira(newValue);
-      },
-    },
-  },*/
   methods: {
-    dataAsString() {
-      return JSON.stringify(this.lixeira);
+    check(lixeira) {
+      this.$confirm.require({
+        message: "Are you sure you want to proceed?",
+        header: "Confirmation",
+        icon: "pi pi-exclamation-triangle",
+        accept: () => {
+          //callback to execute when user confirms the action
+          this.$nextTick(() => {
+            this.$store.dispatch("aprovarLixeira", lixeira).then(() => {
+              this.$toast.success("lixeira " + lixeira.nome);
+            });
+          });
+        },
+
+        reject: () => {
+          lixeira.aprovado = !lixeira.aprovado;
+        },
+      });
     },
-    loadLixeira(id) {
-      this.$axios
-        .get("lixeiras/" + id)
-        .then((response) => {
-          console.log(response.data.data);
-          this.lixeira = response.data.data;
-          this.originalValueStr = this.dataAsString();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+     position(lat, long) {
+      return ( {
+        lat: parseFloat(lat),
+        lng: parseFloat(long),
+      });
     },
-    save() {
-      this.errors = null;
-      this.$axios
-        .put("lixeiras/" + this.id, this.lixeira)
-        .then((response) => {
-          this.$toast.success(
-            "Lixeira #" + response.data.data.name + " was updated successfully."
-          );
-          this.lixeira = response.data.data;
-          this.originalValueStr = this.dataAsString();
-          this.$store.commit("updateLixeira", response.data.data);
-          this.$router.back();
-        })
-        .catch((error) => {
-          if (error.response.status == 422) {
-            this.$toast.error(
-              "Lixeira #" +
-                this.id +
-                " was not updated due to validation errors!"
-            );
-            this.errors = error.response.data.errors;
-          } else {
-            this.$toast.error(
-              "Lixeira #" +
-                this.id +
-                " was not updated due to unknown server error!"
-            );
-          }
-        });
-    },
-    cancel() {
-      // Replace this code to navigate back
-      // this.loadUser(this.id)
-      this.$router.back();
-    },
-    leaveConfirmed() {
-      if (this.nextCallBack) {
-        this.nextCallBack();
-      }
-    },
+   
   },
-  beforeRouteLeave(to, from, next) {
-    this.nextCallBack = null;
-    let newValueStr = this.dataAsString();
-    if (this.originalValueStr != newValueStr) {
-      this.nextCallBack = next;
-      let dlg = this.$refs.confirmationDialog;
-      dlg.show();
-    } else {
-      next();
-    }
+  created() {
+    //when f5 
+
+    this.arrayLixeira[0] = this.$store.getters.lixeiras.at(this.id-1)
   },
+
+   
 };
 </script>

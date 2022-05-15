@@ -1,14 +1,13 @@
 <template>
   <GMapMap
-    :center="centerLix"
+    :center="center"
     :zoom="7"
     map-type-id="terrain"
     style="width: 100%; height: 500px"
   >
-  {{position(38,-9)}}
     <GMapCluster>
       <GMapMarker
-        v-for="lixeira in this.lixeiras"
+        v-for="lixeira in lixeiras"
         :key="lixeira.id"
         :position="position(lixeira.latitude, lixeira.longitude)"
         :clickable="true"
@@ -32,19 +31,23 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      centerLix: this.center,
-    };
-  },
   methods: {
     position(lat, long) {
+      console.log(lat + 'aabbba'+ long)
       return ( {
-        lat: parseInt(lat),
-        lng: parseInt(long),
+        lat: parseFloat(lat),
+        lng: parseFloat(long),
       });
     },
-  }
+  },
+   mounted() {
+    //when f5 
+    this.lixeiras.forEach(element => {
+        console.log(element + "lixeira")
+    });
+  },
+
+
 
 };
 </script>

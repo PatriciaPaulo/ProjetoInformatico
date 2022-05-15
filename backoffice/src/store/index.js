@@ -67,6 +67,9 @@ export default createStore({
     totalUsers: (state) => {
       return state.users.length
     },
+    lixeiras: (state) => {
+      return state.lixeiras
+    },
 
   },
   actions: {
@@ -127,7 +130,7 @@ export default createStore({
       try {
         let response = await axios.get('lixeiras')
         context.commit('setLixeiras', response.data.data)
-        return response.data
+        return response.data.data
       } catch (error) {
         context.commit('resetLixeiras', null)
         throw error

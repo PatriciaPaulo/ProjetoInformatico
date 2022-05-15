@@ -104,7 +104,5 @@ export default {
 </script>
 
 <style scoped>
-.total_hours {
-  width: 26rem;
-}
+
 </style>

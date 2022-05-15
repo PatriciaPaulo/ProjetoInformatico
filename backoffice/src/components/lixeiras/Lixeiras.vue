@@ -41,7 +41,7 @@
           </div>
         </template>
         <Column field="nome" header="Nome" :sortable="true"></Column>
-        <Column header="Criador" :sortable="true">
+        <Column field="criador" header="Criador" :sortable="true">
           <template #body="{ data }">
             {{ userName(data.criador) }}
           </template>
@@ -125,7 +125,8 @@ export default {
   },
   methods: {
     editLixeira(lixeira) {
-      this.$router.push({ name: "Lixeira", params: { id: lixeira.id } });
+      console.log("id  - "+ lixeira.id)
+      this.$router.push({ name: "Lixeira", params: { id: lixeira.id,lixeira: lixeira } });
     },
     deleteLixeira(lixeira) {
       this.$store
@@ -134,7 +135,7 @@ export default {
           this.$toast.success(
             "Lixeira " + lixeira.name + " was deleted successfully."
           );
-          this.originalValueStr = this.dataAsString();
+          
         })
         .catch((error) => {
           console.log(error);
@@ -145,7 +146,7 @@ export default {
       this.$store
         .dispatch("loadLixeiras")
         .then((response) => {
-          this.lixeiras = response.data;
+          this.lixeiras = response;
           this.isLoading = false;
         })
         .catch((error) => {
