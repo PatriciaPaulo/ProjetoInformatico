@@ -27,7 +27,6 @@ export default {
   },
   methods: {
     save () {
-
       this.$axios.put('users/' + this.user.id, this.user)
         .then(() => {
            this.$toast.success(

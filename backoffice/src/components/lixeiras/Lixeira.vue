@@ -101,6 +101,9 @@ export default {
         lng: parseFloat(long),
       });
     },
+    cancel(){
+      this.$router.push({ name: 'Lixeiras' })  
+    }
    
   },
   created() {
