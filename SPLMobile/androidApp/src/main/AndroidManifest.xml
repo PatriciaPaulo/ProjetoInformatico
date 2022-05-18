@@ -27,9 +27,9 @@
 
         <activity android:name=".ActivityMap" />
         <activity android:name=".ActivityRegister" /> <!-- PARA MAPA -->
-        <activity android:name=".MainActivity" />
+        <activity android:name=".ActivityLogin" />
         <activity
-            android:name=".ActivityLogin"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

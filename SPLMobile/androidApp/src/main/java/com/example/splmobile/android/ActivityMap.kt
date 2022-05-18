@@ -26,7 +26,7 @@ public class ActivityMap:AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-    }
+   }
 
     /**
      * Manipulates the map once available.

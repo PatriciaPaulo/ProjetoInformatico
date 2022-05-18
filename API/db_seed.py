@@ -20,6 +20,7 @@ if __name__ == '__main__':
     session = Session(engine)
     r = RandomWords()
 
+    """
     # SEED UTILIZADORES
     session.query(Utilizador).delete()
     for i in range(10):
@@ -133,9 +134,49 @@ if __name__ == '__main__':
         session.commit()
     print("---Evento seed done!")
     """
-     
+    id = Column(Integer, primary_key=True)
+    eventoID = Column(Integer, ForeignKey('evento.id'), nullable=True)
+    userID = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
+    distanciaPercorrida = Column(String(50))
+    passos = Column(String(50))
+    duracao = Column(String(50))
+    tipoAtividade = Column(String(50))
+
+    # SEED ATIVIDADE
+    session.query(Atividade).delete()
+    userID = session.query(Utilizador).filter_by(admin=False).order_by(func.random()).first()
+    eventoID = session.query(evento).filter_by(admin=False).order_by(func.random()).first()
+
+
+    for i in range(10):
+        organizador = session.query(Utilizador).filter_by(admin=False).order_by(func.random()).first()
+
+        atividadeID = Column(Integer, ForeignKey('atividade.id'), nullable=False)
+        lixoID = Column(Integer, ForeignKey('lixo.id'), nullable=False)
+        quantidade = Column(String(128), nullable=False)
+        medida = Column(String(128), nullable=False)
+
+    acessibilidade = ["Reduzida", "Suficiente"]
+    volume = ["Muito", "Pouco", "Medio"]
+
+    evento = Evento(nome=nome, descricao=descricao, observacoes=observacoes, latitude=latitude,
+                    longitude=longitude, organizador=organizador, estado=estado, acessibilidade=acessibilidade,
+                    volume=volume, restricoes=restricoes, tipoLixo=tipoLixo, duracao=duracao)
+    session.add(evento)
+    from datetime import date
+
+    today = date.today()
+    # ddmmYY
+    evento.foto = str(evento.id) + criador.username + str(today.strftime("%d%m%Y")) + '.png'
+    # todo create a foto ???
+
+    session.commit()
+
+
+
     # SEED LIXONAATIVIDADE
     session.query(LixoNaAtividade).delete()
+
     for i in range(10):
         organizador = session.query(Utilizador).filter_by(admin=False).order_by(func.random()).first()
         organizador = session.query(Utilizador).filter_by(admin=False).order_by(func.random()).first()
@@ -163,4 +204,4 @@ if __name__ == '__main__':
         evento.foto = str(evento.id) + criador.username + str(today.strftime("%d%m%Y")) + '.png'
         # todo create a foto ???
 
-        session.commit() """
+        session.commit()
