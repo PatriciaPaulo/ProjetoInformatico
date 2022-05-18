@@ -1,6 +1,9 @@
 #IMPORTS FOR DB ACCESS/MANIPULATION
+import datetime
+
 from models import Utilizador,Lixeira,Atividade,Evento,Mensagem,Lixo,LixoNaAtividade
 from models import Equipamento, EquipamentoNoEvento,MensagemIndividual,MensagemEvento
+from models import UtilizadorNoEvento,LixeiraEvento
 from werkzeug.security import generate_password_hash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -8,7 +11,7 @@ from  sqlalchemy.sql.expression import func
 
 #IMPORTS FOR VALUES
 import names
-from datetime import date
+from datetime import date, timedelta
 from random import randrange
 from random_word import RandomWords
 import random
@@ -124,7 +127,7 @@ if __name__ == '__main__':
                         volume=random.choice(volume),restricoes=random.choice(restricoes),
                         tipoLixo=tipoLixoJSON,duracao=duracao)
         session.add(evento)
-        from datetime import date
+
 
         today = date.today()
         # ddmmYY
@@ -133,75 +136,105 @@ if __name__ == '__main__':
 
         session.commit()
     print("---Evento seed done!")
-    """
-    id = Column(Integer, primary_key=True)
-    eventoID = Column(Integer, ForeignKey('evento.id'), nullable=True)
-    userID = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
-    distanciaPercorrida = Column(String(50))
-    passos = Column(String(50))
-    duracao = Column(String(50))
-    tipoAtividade = Column(String(50))
+
+
+
 
     # SEED ATIVIDADE
     session.query(Atividade).delete()
-    userID = session.query(Utilizador).filter_by(admin=False).order_by(func.random()).first()
-    eventoID = session.query(evento).filter_by(admin=False).order_by(func.random()).first()
+    for i in range(5):
+        userID = session.query(Utilizador).filter_by(admin=False).order_by(func.random()).first()
+        eventoID = session.query(Evento).order_by(func.random()).first()
+        distanciaPercorrida = randrange(99999)
+        passos = randrange(99999)
+        dataInicio =  datetime.datetime.utcnow()
+        td = timedelta(days=randrange(3))
+        # your calculated date
+        my_date = dataInicio + td
+        dataFim = [None,my_date]
 
 
-    for i in range(10):
-        organizador = session.query(Utilizador).filter_by(admin=False).order_by(func.random()).first()
+        tipoAtividade = ["corrida","caminhada","bicicleta"]
 
-        atividadeID = Column(Integer, ForeignKey('atividade.id'), nullable=False)
-        lixoID = Column(Integer, ForeignKey('lixo.id'), nullable=False)
-        quantidade = Column(String(128), nullable=False)
-        medida = Column(String(128), nullable=False)
+        atividade = Atividade(userID=userID.id, eventoID=eventoID.id, distanciaPercorrida=distanciaPercorrida, passos=passos,
+                    dataInicio=dataInicio, dataFim=random.choice(dataFim), tipoAtividade=random.choice(tipoAtividade))
+        session.add(atividade)
 
-    acessibilidade = ["Reduzida", "Suficiente"]
-    volume = ["Muito", "Pouco", "Medio"]
-
-    evento = Evento(nome=nome, descricao=descricao, observacoes=observacoes, latitude=latitude,
-                    longitude=longitude, organizador=organizador, estado=estado, acessibilidade=acessibilidade,
-                    volume=volume, restricoes=restricoes, tipoLixo=tipoLixo, duracao=duracao)
-    session.add(evento)
-    from datetime import date
-
-    today = date.today()
-    # ddmmYY
-    evento.foto = str(evento.id) + criador.username + str(today.strftime("%d%m%Y")) + '.png'
-    # todo create a foto ???
-
-    session.commit()
-
+        session.commit()
+    print("---Atividade seed done!")
 
 
     # SEED LIXONAATIVIDADE
     session.query(LixoNaAtividade).delete()
 
-    for i in range(10):
-        organizador = session.query(Utilizador).filter_by(admin=False).order_by(func.random()).first()
-        organizador = session.query(Utilizador).filter_by(admin=False).order_by(func.random()).first()
+    for i in range(5):
+        atividadeID = session.query(Atividade).order_by(func.random()).first()
+        lixoID = session.query(Lixo).order_by(func.random()).first()
+        quantidade = randrange(100)
+        medida = ["kgs","litros","unidades"]
 
-        atividadeID = Column(Integer, ForeignKey('atividade.id'), nullable=False)
-            lixoID = Column(Integer, ForeignKey('lixo.id'), nullable=False)
-            quantidade = Column(String(128), nullable=False)
-            medida = Column(String(128), nullable=False)
 
-       
-     
-        acessibilidade = ["Reduzida", "Suficiente"]
-        volume = ["Muito", "Pouco","Medio"]
-    
-     
-
-        evento = Evento(nome=nome,descricao=descricao,observacoes=observacoes,latitude=latitude,
-                        longitude=longitude,organizador=organizador,estado=estado,acessibilidade=acessibilidade,
-                        volume=volume,restricoes=restricoes,tipoLixo=tipoLixo,duracao=duracao)
-        session.add(evento)
-        from datetime import date
-
-        today = date.today()
-        # ddmmYY
-        evento.foto = str(evento.id) + criador.username + str(today.strftime("%d%m%Y")) + '.png'
-        # todo create a foto ???
+        lixonaatividade = LixoNaAtividade(atividadeID=atividadeID.id,lixoID=lixoID.id,quantidade=quantidade,medida=random.choice(medida))
+        session.add(lixonaatividade)
 
         session.commit()
+    print("---LixoNaAtividade seed done!")
+ 
+
+ # SEED EQUIPAMENTO
+    session.query(Equipamento).delete()
+    for i in range(6):
+        nome = ["Saco de Lixo", "Luvas", "Pá","Tesoura","Faca","Contentor"]
+        eq = Equipamento(nome=nome[i])
+        session.add(eq)
+        session.commit()
+
+    print("---Equipamento seed done!")
+
+
+    # SEED EQUIPAMENTONOEVENTO
+    session.query(EquipamentoNoEvento).delete()
+    for i in range(6):
+
+        equipamento = session.query(Equipamento).order_by(func.random()).first()
+        evento = session.query(Evento).order_by(func.random()).first()
+        observacoes=""
+        for b in range(2):
+            observacoes = str(observacoes) + " " + str(r.get_random_word())
+
+
+        isProvided = bool(random.getrandbits(1))
+
+        eq = EquipamentoNoEvento(equipamentoID=equipamento.id,eventoID=evento.id,observacoes=observacoes,isProvided=isProvided)
+        session.add(eq)
+        session.commit()
+
+    print("---EquipamentoNoEvento seed done!")
+
+"""
+    # SEED LIXEIRAEVENTO
+    session.query(LixeiraEvento).delete()
+    for i in range(6):
+
+        lixeira = session.query(Lixeira).order_by(func.random()).first()
+        evento = session.query(Evento).order_by(func.random()).first()
+
+        lixEv = LixeiraEvento(lixeiraID=lixeira.id, eventoID=evento.id)
+        session.add(lixEv)
+        session.commit()
+    print("---LixeiraEvento seed done!")
+
+    # SEED UTILIZADORNOEVENTO
+
+    session.query(UtilizadorNoEvento).delete()
+    for i in range(6):
+
+        utilizador = session.query(Utilizador).filter_by(admin=False).order_by(func.random()).first()
+        evento = session.query(Evento).order_by(func.random()).first()
+        estado = ["Confirmado","Inscrito","Cancelado"]
+
+        utilizadorNoEvento = UtilizadorNoEvento(userID=Utilizador.id, eventoID=evento.id,estado=random.choice(estado))
+        session.add(lixEv)
+        session.commit()
+
+    print("---UtilizadorNoEvento seed done!")

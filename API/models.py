@@ -2,7 +2,7 @@
 from flask import Blueprint, current_app
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, Column, Integer, String,Boolean, ForeignKey,Numeric,Text
+from sqlalchemy import MetaData, Column, Integer, String,Boolean, ForeignKey,Numeric,Text, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 import jwt
@@ -45,8 +45,10 @@ class Atividade(Base):
     userID = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
     distanciaPercorrida = Column(String(50))
     passos = Column(String(50))
-    duracao = Column(String(50))
     tipoAtividade = Column(String(50))
+    dataInicio = Column(Date)
+    dataFim = Column(Date)
+
 
 
     def serialize(self):
@@ -56,7 +58,8 @@ class Atividade(Base):
             'eventoID': self.eventoID,
             'distanciaPercorrida': self.distanciaPercorrida,
             'passos': self.passos,
-            'duracao': self.duracao,
+            'dataInicio': self.dataInicio,
+            'dataFim': self.dataFim,
             'tipoAtividade': self.tipoAtividade
 
         }
@@ -201,13 +204,13 @@ class LixeiraEvento(Base):
     __tablename__ = "lixeira_evento"
     id = Column(Integer, primary_key=True)
     lixeiraID = Column(Integer, ForeignKey('lixeira.id'), nullable=False)
-    eventID = Column(Integer, ForeignKey('evento.id'), nullable=False)
+    eventoID = Column(Integer, ForeignKey('evento.id'), nullable=False)
 
     def serialize(self):
         return {
             'id': self.id,
             'lixeiraID': self.lixeiraID,
-            'eventID': self.eventID
+            'eventoID': self.eventoID
 
         }
 
@@ -218,14 +221,14 @@ class UtilizadorNoEvento(Base):
     __tablename__ = "utilizador_no_evento"
     id = Column(Integer, primary_key=True)
     userID = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
-    eventID = Column(Integer, ForeignKey('evento.id'), nullable=False)
+    eventoID = Column(Integer, ForeignKey('evento.id'), nullable=False)
     estado = Column(String(128), nullable=False)
 
     def serialize(self):
         return {
             'id': self.id,
             'userID': self.userID,
-            'eventID': self.eventID,
+            'eventID': self.eventoID,
             'estado': self.estado
         }
 

@@ -7,6 +7,7 @@ from utils import token_required,admin_required
 import jwt
 import datetime
 
+
 routes_blueprint = Blueprint('routes', __name__, )
 api = Api(routes_blueprint)
 
@@ -239,7 +240,7 @@ def update_user(current_user,user_id):
 def create_atividade(current_user):
     data = request.get_json()
 
-    new_atividade = Atividade(eventoID=data['eventoID'], userID=current_user.username, distanciaPercorrida=0,passos=0, duracao=0, tipoAtividade=data['tipoAtividade'])
+    new_atividade = Atividade(eventoID=data['eventoID'], userID=current_user.username, distanciaPercorrida=0,passos=0, dataInicio=datetime.datetime.utcnow(), dataFim=None,tipoAtividade=data['tipoAtividade'])
     db.session.add(new_atividade)
     db.session.commit()
     return jsonify({'message': 'new atividade created'})
@@ -257,11 +258,12 @@ def get_atividades(current_user):
         atividade_data['userID'] = ati.userID
         atividade_data['distanciaPercorrida'] = ati.distanciaPercorrida
         atividade_data['passos'] = ati.passos
-        atividade_data['duracao'] = ati.duracao
+        atividade_data['dataInicio'] = ati.dataInicio
+        atividade_data['dataFim'] = ati.dataFim
         atividade_data['tipoAtividade'] = ati.tipoAtividade
         output.append(atividade_data)
 
-    return jsonify({'list_of_atividades': output})
+    return jsonify({'data': output})
 
 
 @routes_blueprint.route('/atividades/<atividade_id>', methods=['PUT'])
@@ -273,7 +275,7 @@ def update_atividade(current_user, atividade_id):
     atividade_data = request.get_json()
     atividade.distanciaPercorrida = atividade_data['distanciaPercorrida']
     atividade.passos = atividade_data['passos']
-    atividade.duracao = atividade_data['duracao']
+    atividade.duracao = atividade_data['dataFim']
     atividade.tipoAtividade = atividade_data['tipoAtividade']
 
     db.session.commit()
