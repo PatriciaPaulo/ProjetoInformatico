@@ -3,7 +3,7 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     kotlin("android")
     id ("dagger.hilt.android.plugin")
-    id ("kotlin-kapt")
+    kotlin("kapt")
 }
 
 android {
@@ -78,6 +78,8 @@ dependencies {
     // Dagger Hilt for Dependencies Injection
     implementation("com.google.dagger:hilt-android:2.38.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.38.1")
-    kapt("androidx.hilt:hilt-compiler:1.0.0")
+    kapt ("com.google.dagger:hilt-android-compiler:2.38.1")
+    kapt ("androidx.hilt:hilt-compiler:1.0.0")
+
+
 }
