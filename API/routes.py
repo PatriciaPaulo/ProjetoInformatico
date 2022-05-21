@@ -327,7 +327,13 @@ def get_eventos(current_user):
         evento_data['volume'] = evento.volume
         evento_data['foto'] = evento.foto
         evento_data['observacoes'] = evento.observacoes
+        evento_data['lixeiras'] = []
+        for lix in  db.session.query(LixeiraEvento).filter_by(eventoID=evento.id):
+            lixSer = LixeiraEvento.serialize(lix)
+            evento_data['lixeiras'].append(lixSer)
         output.append(evento_data)
+
+
 
 
     return make_response(jsonify({'data': output}), 200)
@@ -444,6 +450,21 @@ def aprovar_lixeira(current_user,lixeira_id):
     elif lixeira_data['aprovado'] == 'true':
         lixeira.aprovado = True
 
+
+    db.session.commit()
+    return make_response(jsonify({'message': 'lixeira atualizada'}), 200)
+
+
+@routes_blueprint.route('/lixeiras/<lixeira_id>/mudarEstadoLixeira', methods=['PATCH'])
+@admin_required
+def mudar_estado_lixeira(current_user,lixeira_id):
+    lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id).first()
+    if not lixeira:
+        return make_response(jsonify({'message': 'lixeira does not exist'}), 404)
+    lixeira_data = request.get_json()
+
+    lixeira.estado = lixeira_data['estado']
+    lixeira_data['estado'] = lixeira.estado
 
     db.session.commit()
     return make_response(jsonify({'message': 'lixeira atualizada'}), 200)

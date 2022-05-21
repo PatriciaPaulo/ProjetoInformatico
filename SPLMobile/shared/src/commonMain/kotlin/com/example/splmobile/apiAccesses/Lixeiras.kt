@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import org.json.JSONObject
 
 class Lixeiras {
     private val client = HttpClient()
@@ -19,7 +20,7 @@ class Lixeiras {
 
             responseCode = getResponse.status.toString().take(3).toInt()
             println(responseCode.toString().plus("response"))
-            print()
+
             when (responseCode) {
                 200 -> {
                     responseBody = JSONObject(getResponse.bodyAsText()).getString("access_token")
