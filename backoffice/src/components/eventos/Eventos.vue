@@ -5,28 +5,24 @@
     <div class="child">
       <ConfirmDialog></ConfirmDialog>
       <DataTable
-        :value="filteredLixeiras"
+        :value="this.eventos"
         :paginator="true"
         stripedRows
         :rows="10"
         :loading="isLoading"
-        :globalFilterFields="['nome', 'estado', 'criador', 'aprovado']"
+        :globalFilterFields="['nome', 'estado', 'organizador']"
         :filters="filters"
         class="p-datatable-sm"
       >
         <template #empty> No lixeiras found. </template>
         <template #loading> Loading lixeiras data. Please wait. </template>
-        <template #header>
+         <template #header>
           <div class="flex justify-content-between">
             <div class="">
-              <select class="form-select" id="selectBlocked" v-model="filter">
-                <option value="-1">Todos</option>
-                <option value="1">Aprovadas</option>
-                <option value="0">Não Aprovadas</option>
-              </select>
+           
             </div>
             <div>
-              <h1 class="">Lixeiras</h1>
+              <h1 class="">Eventos</h1>
             </div>
 
             <div>
@@ -41,26 +37,19 @@
           </div>
         </template>
         <Column field="nome" header="Nome" :sortable="true"></Column>
-        <Column field="criador" header="Criador" :sortable="true">
+        <Column field="organizador" header="Organizador" :sortable="true">
           <template #body="{ data }">
-            {{ userName(data.criador) }}
+            {{ userName(data.organizador) }}
           </template>
         </Column>
         <Column field="estado" header="Estado" :sortable="true"></Column>
-        <Column header="Aprovada">
-          <template #body="{ data }">
-            <div class="d-flex justify-content-between">
-              <i v-if="data.aprovado" class="bi bi-xs bi-check2"></i>
-              <i v-else class="bi bi-xs bi-file"></i>
-            </div>
-          </template>
-        </Column>
+
         <Column header="Editar">
           <template #body="{ data }">
             <div class="d-flex justify-content-between">
               <button
                 class="btn btn-xs btn-light"
-                @click="editLixeira(data)"
+                @click="editEvento(data)"
                 label="Confirm"
               >
                 <i class="bi bi-xs bi-pencil"></i>
@@ -73,7 +62,7 @@
             <div class="d-flex justify-content-between">
               <button
                 class="btn btn-xs btn-light"
-                @click="deleteLixeira(data)"
+                @click="deleteEvento(data)"
                 label="Confirm"
               >
                 <i class="bi bi-xs bi-x-square-fill"></i>
@@ -85,11 +74,7 @@
     </div>
 
     <div class="child">
-      <lixeira-map
-      :lixeiras="this.lixeiras"
-      :center="center"
-      >
-      </lixeira-map>
+      {{ "map" }}
     </div>
   </div>
 </template>
@@ -97,24 +82,20 @@
 <script>
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import ConfirmDialog from "primevue/confirmdialog";
-import LixeiraMap from "./LixeiraMap";
-
+import InputText from "primevue/inputtext";
 export default {
-  name: "Lixeiras",
+  name: "Eventos",
   components: {
-    LixeiraMap,
     DataTable,
     Column,
-    InputText,
     ConfirmDialog,
+    InputText
   },
   data() {
     return {
-      filter: "-1",
-      lixeiras: [],
+      eventos: [],
       isLoading: false,
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -124,29 +105,28 @@ export default {
     };
   },
   methods: {
-    editLixeira(lixeira) {
-      console.log("id  - "+ lixeira.id)
-      this.$router.push({ name: "Lixeira", params: { id: lixeira.id } });
+    editEvento(evento) {
+      console.log("id  - " + evento.id);
+      this.$router.push({ name: "Evento", params: { id: evento.id } });
     },
-    deleteLixeira(lixeira) {
+    deleteEvento(evento) {
       this.$store
-        .dispatch("deleteLixeira", lixeira)
+        .dispatch("deleteEvento", evento)
         .then(() => {
           this.$toast.success(
-            "Lixeira " + lixeira.name + " was deleted successfully."
+            "evento " + evento.name + " was deleted successfully."
           );
-          
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    loadLixeiras() {
+    loadEventos() {
       this.isLoading = true;
       this.$store
-        .dispatch("loadLixeiras")
+        .dispatch("loadEventos")
         .then((response) => {
-          this.lixeiras = response;
+          this.eventos = response;
           this.isLoading = false;
         })
         .catch((error) => {
@@ -154,26 +134,15 @@ export default {
           this.isLoading = false;
         });
     },
-     userName(id) {
+      userName(id) {
       var r = this.$store.getters.users.filter(user => {
         return user.id === id
       })
       return r[0] ? r[0].username : "Not found"
     },
-   
-  },
-  computed:{
-    filteredLixeiras() {
-      return this.lixeiras.filter(
-        (t) =>
-          this.filter === "-1" ||
-          (this.filter === "0" && !t.aprovado) ||
-          (this.filter === "1" && t.aprovado)
-      );
-    }
   },
   mounted() {
-    this.loadLixeiras(), (document.title = "Lixeiras");
+    this.loadEventos(), (document.title = "Eventos");
   },
 };
 </script>

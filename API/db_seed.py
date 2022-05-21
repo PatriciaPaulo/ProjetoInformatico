@@ -211,7 +211,6 @@ if __name__ == '__main__':
 
     print("---EquipamentoNoEvento seed done!")
 
-"""
     # SEED LIXEIRAEVENTO
     session.query(LixeiraEvento).delete()
     for i in range(6):
