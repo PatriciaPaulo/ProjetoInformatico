@@ -170,6 +170,11 @@ export default createStore({
       context.commit('updateLixeira', lixeira)
       return response.data
     },
+    async mudarEstadoLixeira(context, lixeira) {
+      let response = await axios.patch('lixeiras/' + lixeira.id + '/mudarEstadoLixeira', { 'estado': lixeira.estado })
+      context.commit('updateLixeira', lixeira)
+      return response.data
+    },
     async deleteUser(context, user) {
       let response = await axios.delete("users/" + user.id)
       context.commit('deleteUser', user)
@@ -191,6 +196,7 @@ export default createStore({
     },
 
     async refresh(context) {
+      console.log("im here4")
       let userPromise = context.dispatch('loadLoggedInUser')
       let usersPromise = context.dispatch('loadUsers')
       let lixeirasPromise = context.dispatch('loadLixeiras')

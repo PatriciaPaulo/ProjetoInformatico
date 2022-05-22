@@ -25,10 +25,6 @@
               v-model="passwords.current_password"
               required
           >
-          <field-error-message
-              :errors="errors"
-              fieldName="current_password"
-          ></field-error-message>
         </div>
       </div>
       <div class="mb-3">
@@ -44,10 +40,6 @@
               required
               v-model="passwords.password"
           >
-          <field-error-message
-              :errors="errors"
-              fieldName="password"
-          ></field-error-message>
         </div>
       </div>
       <div class="mb-3">
@@ -63,10 +55,6 @@
               required
               v-model="passwords.password_confirm"
           >
-          <field-error-message
-              :errors="errors"
-              fieldName="password_confirm"
-          ></field-error-message>
         </div>
       </div>
 
@@ -105,10 +93,6 @@
             required
             v-model="passwords.confirmation_code"
         >
-        <field-error-message
-            :errors="errors"
-            fieldName="confirmation_code"
-        ></field-error-message>
       </div>
     </div>
     <div class="mb-3">
@@ -124,10 +108,6 @@
             required
             v-model="passwords.current_password"
         >
-        <field-error-message
-            :errors="errors"
-            fieldName="current_password"
-        ></field-error-message>
       </div>
     </div>
     <div class="mb-3 d-flex justify-content-center">

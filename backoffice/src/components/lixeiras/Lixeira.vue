@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-5 mb-3">lixeira #{{ this.id }}</h3>
+  <h3 class="mt-5 mb-3">lixeira #{{ arrayLixeira[0].id }}</h3>
   <hr />
   <div class="d-flex flex-wrap justify-content-between">
     <div class="w-75 pe-4">
@@ -14,36 +14,44 @@
           v-model="arrayLixeira[0].nome"
           disabled
         />
-        <field-error-message
-          :errors="errors"
-          fieldName="nome"
-        ></field-error-message>
       </div>
       <ConfirmDialog></ConfirmDialog>
-      <div class="mb-3 px-1">
+      <div v-if="arrayLixeira[0].aprovado">
         <label for="inputAprovado" class="form-label" label="Confirm"
           >Aprovado</label
         >
-        <input
-          type="checkbox"
-          v-model="arrayLixeira[0].aprovado"
-          true-value="true"
-          false-value="false"
-          @change="check(this.lixeira)"
-        />
+        <button
+          @click="nAprovar(arrayLixeira[0])"
+          type="button"
+          class="btn btn-danger"
+        >
+          Não aprovar
+        </button>
+      </div>
+      <div v-else>
+        <label for="inputAprovado" class="form-label" label="Confirm"
+          >Não Aprovado</label
+        >
+        <button
+          @click="Aprovar(arrayLixeira[0])"
+          type="button"
+          class="btn btn-success"
+        >
+          Aprovar
+        </button>
       </div>
 
       <div class="mb-3">
         <label for="inputType" class="form-label">Estado</label>
-        <select v-model="arrayLixeira[0].estado" name="inputType">
+        <select
+          v-model="arrayLixeira[0].estado"
+          name="inputType"
+          @change="mudarEstado(arrayLixeira[0])"
+        >
           <option v-for="(value, key) in estados" :value="value" :key="key">
             {{ value }}
           </option>
         </select>
-        <field-error-message
-          :errors="errors"
-          fieldName="inputType"
-        ></field-error-message>
       </div>
     </div>
   </div>
@@ -52,7 +60,6 @@
       Voltar
     </button>
   </div>
-
   <lixeira-map
     :lixeiras="arrayLixeira"
     :center="position(arrayLixeira[0].latitude, arrayLixeira[0].longitude)"
@@ -79,23 +86,58 @@ export default {
     };
   },
   methods: {
-    check(lixeira) {
+    Aprovar(lixeira) {
       this.$confirm.require({
-        message: "Are you sure you want to proceed?",
+        message: "Certeza que queres aprovar a lixeira?",
         header: "Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: () => {
           //callback to execute when user confirms the action
           this.$nextTick(() => {
+            lixeira.aprovado = true;
             this.$store.dispatch("aprovarLixeira", lixeira).then(() => {
               this.$toast.success("lixeira " + lixeira.nome);
             });
           });
         },
 
-        reject: () => {
-          lixeira.aprovado = !lixeira.aprovado;
+        reject: () => {},
+      });
+    },
+    nAprovar(lixeira) {
+      this.$confirm.require({
+        message: "Certeza que queres não aprovar a lixeira?",
+        header: "Confirmation",
+        icon: "pi pi-exclamation-triangle",
+        accept: () => {
+          //callback to execute when user confirms the action
+          this.$nextTick(() => {
+            lixeira.aprovado = false;
+            this.$store.dispatch("aprovarLixeira", lixeira).then(() => {
+              this.$toast.success("lixeira " + lixeira.nome);
+            });
+          });
         },
+        reject: () => {},
+      });
+    },
+    mudarEstado(lixeira) {
+      console.log(lixeira + " - lixeira");
+
+      console.log(lixeira.estado + " - lixeira");
+      this.$confirm.require({
+        message: "Certeza que queres mudar o estado da lixeira?",
+        header: "Confirmation",
+        icon: "pi pi-exclamation-triangle",
+        accept: () => {
+          //callback to execute when user confirms the action
+          this.$nextTick(() => {
+            this.$store.dispatch("mudarEstadoLixeira", lixeira).then(() => {
+              this.$toast.success("lixeira " + lixeira.nome);
+            });
+          });
+        },
+        reject: () => {},
       });
     },
     position(lat, long) {
@@ -110,7 +152,7 @@ export default {
   },
   created() {
     //when f5
-    this.arrayLixeira[0] = this.$store.getters.lixeiras.filter((lix) => {
+    this.arrayLixeira = this.$store.getters.lixeiras.filter((lix) => {
       return lix.id === this.id;
     });
   },

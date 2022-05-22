@@ -33,7 +33,6 @@ export default {
   },
   methods: {
     position(lat, long) {
-      console.log(lat + 'aabbba'+ long)
       return ( {
         lat: parseFloat(lat),
         lng: parseFloat(long),
@@ -42,9 +41,9 @@ export default {
   },
    mounted() {
     //when f5 
-    this.lixeiras.forEach(element => {
-        console.log(element + "lixeira")
-    });
+   // this.lixeiras.forEach(element => {
+   //     console.log(element + "lixeira")
+   // });
   },
 
 

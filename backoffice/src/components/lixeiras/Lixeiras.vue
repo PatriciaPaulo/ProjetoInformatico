@@ -2,7 +2,7 @@
   <hr />
 
   <div class="wrapper">
-    <div class="child">
+    <div class="child" >
       <ConfirmDialog></ConfirmDialog>
       <DataTable
         :value="filteredLixeiras"
@@ -181,12 +181,14 @@ export default {
 <style scoped>
 .wrapper {
   margin-right: -100%;
+  display: flex;
+
 }
 .child {
-  box-sizing: border-box;
   width: 25%;
   height: 100%;
-  padding-right: 20px;
+  padding-right: 1%;
+  margin-right: 2%;
   float: left;
 }
 </style>

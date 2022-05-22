@@ -19,10 +19,6 @@
           required
           v-model="credentials.username"
         >
-        <field-error-message
-          :errors="errors"
-          fieldName="username"
-        ></field-error-message>
       </div>
     </div>
     <div class="mb-3">
@@ -38,10 +34,6 @@
           required
           v-model="credentials.password"
         >
-        <field-error-message
-          :errors="errors"
-          fieldName="password"
-        ></field-error-message>
       </div>
     </div>
     <div class="mb-3 d-flex justify-content-center">

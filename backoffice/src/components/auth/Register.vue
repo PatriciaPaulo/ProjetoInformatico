@@ -12,10 +12,6 @@
           required
           v-model="credentials.username"
         />
-        <field-error-message
-          :errors="errors"
-          fieldName="username"
-        ></field-error-message>
       </div>
       <div class="mb-3">
         <label for="inputPassword" class="form-label">Password</label>
@@ -26,10 +22,6 @@
           required
           v-model="credentials.password"
         />
-        <field-error-message
-          :errors="errors"
-          fieldName="password"
-        ></field-error-message>
       </div>
        <div class="mb-3">
         <label for="inputPasswordConfirmation" class="form-label">Password Confirmation</label>
@@ -40,10 +32,6 @@
           required
           v-model="credentials.passwordConfirmation"
         />
-        <field-error-message
-          :errors="errors"
-          fieldName="passwordConfirmation"
-        ></field-error-message>
       </div>
       <div class="mb-3">
         <div class="mb-3">
@@ -55,10 +43,6 @@
             required
             v-model="credentials.name"
           />
-          <field-error-message
-            :errors="errors"
-            fieldName="name"
-          ></field-error-message>
         </div>
       </div>
       <div class="mb-3">
@@ -71,10 +55,6 @@
             required
             v-model="credentials.email"
           />
-          <field-error-message
-            :errors="errors"
-            fieldName="email"
-          ></field-error-message>
         </div>
       </div>
     </div>
