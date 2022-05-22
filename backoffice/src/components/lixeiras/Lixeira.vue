@@ -53,7 +53,10 @@
     </button>
   </div>
 
-  <lixeira-map :lixeiras="arrayLixeira" :center="position(arrayLixeira[0].latitude,arrayLixeira[0].longitude)"></lixeira-map>
+  <lixeira-map
+    :lixeiras="arrayLixeira"
+    :center="position(arrayLixeira[0].latitude, arrayLixeira[0].longitude)"
+  ></lixeira-map>
 </template>
 
 <script>
@@ -95,23 +98,21 @@ export default {
         },
       });
     },
-     position(lat, long) {
-      return ( {
+    position(lat, long) {
+      return {
         lat: parseFloat(lat),
         lng: parseFloat(long),
-      });
+      };
     },
-    cancel(){
-      this.$router.push({ name: 'Lixeiras' })  
-    }
-   
+    cancel() {
+      this.$router.push({ name: "Lixeiras" });
+    },
   },
   created() {
-    //when f5 
-
-    this.arrayLixeira[0] = this.$store.getters.lixeiras.at(this.id-1)
+    //when f5
+    this.arrayLixeira[0] = this.$store.getters.lixeiras.filter((lix) => {
+      return lix.id === this.id;
+    });
   },
-
-   
 };
 </script>

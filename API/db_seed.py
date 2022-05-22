@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
     print("---Lixo seed done!")
     # SEED EVENTO
-    session.query(Evento).delete()
+    session.query(Evento).delete()  
     for i in range(5):
         latitude = round(random.uniform(38.779875,41.575756), 5)
         longitude = round(random.uniform(-8.199258, -7.886036), 5)
@@ -211,7 +211,6 @@ if __name__ == '__main__':
 
     print("---EquipamentoNoEvento seed done!")
 
-"""
     # SEED LIXEIRAEVENTO
     session.query(LixeiraEvento).delete()
     for i in range(6):

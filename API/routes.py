@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import Utilizador, Atividade, Evento, db, Lixeira
+from models import Utilizador, Atividade, Evento, db, Lixeira,LixeiraEvento
 from utils import token_required,admin_required
 import jwt
 import datetime
@@ -144,7 +144,6 @@ def register_user():
 @routes_blueprint.route('/login', methods=['POST'])
 def login_user():
     auth = request.get_json()
-
     # Checks if requests has username and password parameters
     if not auth or not auth['username'] or not auth['password']:
         return make_response('Bad request', 400)
@@ -243,7 +242,7 @@ def create_atividade(current_user):
     new_atividade = Atividade(eventoID=data['eventoID'], userID=current_user.username, distanciaPercorrida=0,passos=0, dataInicio=datetime.datetime.utcnow(), dataFim=None,tipoAtividade=data['tipoAtividade'])
     db.session.add(new_atividade)
     db.session.commit()
-    return jsonify({'message': 'new atividade created'})
+    return make_response(jsonify("message': 'new atividade created'"), 200)
 
 
 @routes_blueprint.route('/atividades', methods=['GET'])
@@ -263,7 +262,9 @@ def get_atividades(current_user):
         atividade_data['tipoAtividade'] = ati.tipoAtividade
         output.append(atividade_data)
 
-    return jsonify({'data': output})
+    return make_response(jsonify({'data': output}), 200)
+
+
 
 
 @routes_blueprint.route('/atividades/<atividade_id>', methods=['PUT'])
@@ -271,7 +272,8 @@ def get_atividades(current_user):
 def update_atividade(current_user, atividade_id):
     atividade = db.session.query(Atividade).filter_by(id=atividade_id, userID=current_user.username).first()
     if not atividade:
-        return jsonify({'message': 'atividade does not exist'})
+        return make_response(jsonify({'message': 'atividade does not exist'}), 400)
+
     atividade_data = request.get_json()
     atividade.distanciaPercorrida = atividade_data['distanciaPercorrida']
     atividade.passos = atividade_data['passos']
@@ -279,8 +281,8 @@ def update_atividade(current_user, atividade_id):
     atividade.tipoAtividade = atividade_data['tipoAtividade']
 
     db.session.commit()
-    return jsonify({'message': 'atividade atualizada'})
 
+    return make_response(jsonify({'message': 'atividade atualizada'}), 200)
 
 
 # endregion
@@ -298,7 +300,9 @@ def create_evento(current_user):
                         )
     db.session.add(new_evento)
     db.session.commit()
-    return jsonify({'message': 'new evento created'})
+    return make_response(jsonify({'message': 'new evento created'}), 200)
+
+
 
 
 @routes_blueprint.route('/eventos', methods=['GET'])
@@ -311,6 +315,7 @@ def get_eventos(current_user):
         evento_data = {}
         evento_data['id'] = evento.id
         evento_data['nome'] = evento.nome
+        evento_data['organizador'] = evento.organizador
         evento_data['latitude'] = evento.nome
         evento_data['longitude'] = evento.nome
         evento_data['estado'] = evento.estado
@@ -322,9 +327,17 @@ def get_eventos(current_user):
         evento_data['volume'] = evento.volume
         evento_data['foto'] = evento.foto
         evento_data['observacoes'] = evento.observacoes
+        evento_data['lixeiras'] = []
+        for lix in  db.session.query(LixeiraEvento).filter_by(eventoID=evento.id):
+            lixSer = LixeiraEvento.serialize(lix)
+            evento_data['lixeiras'].append(lixSer)
         output.append(evento_data)
 
-    return jsonify({'data': output})
+
+
+
+    return make_response(jsonify({'data': output}), 200)
+
 
 
 @routes_blueprint.route('/eventos/<evento_id>', methods=['PUT'])
@@ -332,7 +345,8 @@ def get_eventos(current_user):
 def update_evento(current_user, evento_id):
     evento = db.session.query(Evento).filter_by(id=evento_id, organizador=current_user.username).first()
     if not evento:
-        return jsonify({'message': 'evento does not exist'})
+        return make_response(jsonify({'message': 'evento does not exist'}), 400)
+
     evento_data = request.get_json()
     evento.duracao = evento_data['duracao']
     evento.descricao = evento_data['descricao']
@@ -344,7 +358,9 @@ def update_evento(current_user, evento_id):
     evento.observacoes = evento_data['observacoes']
 
     db.session.commit()
-    return jsonify({'message': 'evento atualizada'})
+    return make_response(jsonify({'message': 'evento atualizada'}), 200)
+
+
 
 
 
@@ -353,13 +369,15 @@ def update_evento(current_user, evento_id):
 def aprovar_evento(evento_id):
     evento = db.session.query(Evento).filter_by(id=evento_id).first()
     if not evento:
-        return jsonify({'message': 'evento does not exist'})
+        return make_response(jsonify({'message': 'evento does not exist'}), 400)
+
     evento_data = request.get_json()
 
     evento.estado = evento_data['estado']
 
     db.session.commit()
-    return jsonify({'message': 'evento atualizada'})
+    return make_response(jsonify({'message': 'evento atualizada'}), 200)
+
 
 # endregion
 
@@ -372,11 +390,12 @@ def create_lixeira(current_user):
                         estado=data['estado'], aprovado=data['aprovado'], foto=data['foto'])
     db.session.add(new_lixeira)
     db.session.commit()
-    return jsonify({'message': 'new lixeira created'})
+    return make_response(jsonify({'message': 'new lixeira created'}), 200)
+
+
 
 @routes_blueprint.route('/lixeiras', methods=['GET'])
-@admin_required
-def get_all_lixeiras(current_user):
+def get_all_lixeiras():
     lixeiras = db.session.query(Lixeira).all()
     output = []
     for lixeira in lixeiras:
@@ -391,26 +410,29 @@ def get_all_lixeiras(current_user):
         lixeira_data['foto'] = lixeira.foto
         output.append(lixeira_data)
 
-    return jsonify({'data': output})
+    return make_response(jsonify({'data': output}), 200)
 
 @routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['GET'])
 @admin_required
 def get_lixeira(current_user,lixeira_id):
     lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id).first()
 
-    return jsonify({'data': Lixeira.serialize(lixeira)})
+    return make_response(jsonify({'data': Lixeira.serialize(lixeira)}), 200)
+
 @routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['PUT'])
 @token_required
 def update_lixeira(current_user, lixeira_id):
     lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id, criador=current_user.username).first()
     if not evento:
-        return jsonify({'message': 'lixeira does not exist'})
+        return make_response(jsonify({'message': 'lixeira does not exist'}), 404)
+
     lixeira_data = request.get_json()
     lixeira.estado = lixeira_data['estado']
     evento.foto = evento_data['foto']
 
     db.session.commit()
-    return jsonify({'message': 'lixeira atualizada'})
+    return make_response(jsonify({'message': 'lixeira atualizada'}), 200)
+
 
 
 
@@ -419,7 +441,7 @@ def update_lixeira(current_user, lixeira_id):
 def aprovar_lixeira(current_user,lixeira_id):
     lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id).first()
     if not lixeira:
-        return jsonify({'message': 'lixeira does not exist'})
+        return make_response(jsonify({'message': 'lixeira does not exist'}), 404)
     lixeira_data = request.get_json()
 
     lixeira.aprovado = lixeira_data['aprovado']
@@ -430,6 +452,72 @@ def aprovar_lixeira(current_user,lixeira_id):
 
 
     db.session.commit()
-    return jsonify({'message': 'lixeira atualizada'})
+    return make_response(jsonify({'message': 'lixeira atualizada'}), 200)
+
+
+@routes_blueprint.route('/lixeiras/<lixeira_id>/mudarEstadoLixeira', methods=['PATCH'])
+@admin_required
+def mudar_estado_lixeira(current_user,lixeira_id):
+    lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id).first()
+    if not lixeira:
+        return make_response(jsonify({'message': 'lixeira does not exist'}), 404)
+    lixeira_data = request.get_json()
+
+    lixeira.estado = lixeira_data['estado']
+    lixeira_data['estado'] = lixeira.estado
+
+    db.session.commit()
+    return make_response(jsonify({'message': 'lixeira atualizada'}), 200)
+
+#endregion
+
+#region evento-lixeira
+@routes_blueprint.route('/eventos/<evento_id>/addLixeira', methods=['POST'])
+@token_required
+def add_lixeira_to_event(current_user,evento_id):
+    evento = db.session.query(Evento).filter_by(id=evento_id).first()
+    if not evento:
+        return make_response(jsonify({'message': 'evento does not exist'}), 404)
+
+    data = request.get_json()
+    lixeira = db.session.query(Lixeira).filter_by(id=data["lixeiraID"]).first()
+    if not lixeira:
+        return make_response(jsonify({'message': 'lixeira does not exist'}), 404)
+
+
+    inscricao = LixeiraEvento(lixeiraID=data['lixeiraID'],eventoID=evento_id)
+
+    db.session.add(inscricao)
+    db.session.commit()
+    return make_response(jsonify({'message': 'lixeira adicionada ao evento'}), 200)
+
+@routes_blueprint.route('/eventos/<evento_id>/lixeiras', methods=['GET'])
+@token_required
+def get_lixeiras_no_evento(current_user,evento_id):
+    lixeirasEvento = db.session.query(LixeiraEvento).filter_by(eventoID=evento_id)
+    result = []
+    for lix in lixeirasEvento:
+        lix_data = {}
+        lix_data['id'] = lix.id
+        lix_data['eventoID'] = evento_id
+        lix_data['lixeiraID'] = lix.lixeiraID
+        result.append(lix_data)
+
+    return make_response(jsonify({'data': result}), 200)
+
+
+@routes_blueprint.route('/lixeiras/<lixeira_id>/eventos', methods=['GET'])
+@token_required
+def get_eventos_na_lixiera(current_user, lixeira_id):
+    lixeirasEvento = db.session.query(LixeiraEvento).filter_by(lixeiraID=lixeira_id)
+    result = []
+    for lix in lixeirasEvento:
+        lix_data = {}
+        lix_data['id'] = lix.id
+        lix_data['eventoID'] = evento_id
+        lix_data['lixeiraID'] = lix.lixeiraID
+        result.append(lix_data)
+
+    return make_response(jsonify({'data': result}), 200)
 #endregion
 
