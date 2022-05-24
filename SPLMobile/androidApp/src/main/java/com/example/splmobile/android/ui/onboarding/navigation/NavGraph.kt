@@ -2,6 +2,7 @@ package com.example.splmobile.android.ui.onboarding.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,10 +13,13 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Composable
-fun SetupNavGraph(navController: NavHostController){
+fun SetupNavGraph(
+    navController: NavHostController,
+    startDestination: String
+){
     NavHost(
         navController = navController,
-        startDestination = Screen.Onboarding.route
+        startDestination = startDestination
     ) {
         composable(route = Screen.Onboarding.route) {
             OnboardingScreen(navController = navController)

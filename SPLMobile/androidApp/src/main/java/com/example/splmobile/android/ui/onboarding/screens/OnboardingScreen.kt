@@ -16,8 +16,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.splmobile.android.ui.onboarding.OnboardingPage
+import com.example.splmobile.android.ui.onboarding.navigation.Screen
+import com.example.splmobile.android.viewmodel.OnboardingViewModel
 import com.google.accompanist.pager.*
 
 // Build Onboarding Screen with Pages, Indicators and Buttons
@@ -25,7 +28,8 @@ import com.google.accompanist.pager.*
 @ExperimentalAnimationApi
 @Composable
 fun OnboardingScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
     val pages = listOf(
         OnboardingPage.ParticipateScreen,
@@ -53,13 +57,17 @@ fun OnboardingScreen(
                 .align(Alignment.CenterHorizontally)
                 .weight(1f),
             pagerState = pagerState
+            //activeColor = ,
+            //inactiveColor =
         )
         btnOnboardFinish(
             modifier = Modifier
                 .weight(1f),
             pagerState = pagerState,
         ){
-
+            onboardingViewModel.saveOnBoardingState(completed = true)
+            navController.popBackStack()
+            navController.navigate(Screen.Authentication.route)
         }
     }
 

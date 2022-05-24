@@ -7,7 +7,7 @@
         android:allowBackup="false"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/Theme.CustomSplashScreenTheme"
         android:usesCleartextTraffic="true">
 
         <!--
