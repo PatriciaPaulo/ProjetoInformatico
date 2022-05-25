@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ONBOARDING -->
+    <string name="participateTitle">Participa</string>
+    <string name="participateDescription">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sollicitudin ac augue vel porta. Praesent et velit non urna pulvinar malesuada. Donec lacinia volutpat elementum. </string>
+
+    <string name="cleanTitle">Limpa</string>
+    <string name="cleanDescription">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sollicitudin ac augue vel porta. Praesent et velit non urna pulvinar malesuada. Donec lacinia volutpat elementum. </string>
+
+    <string name="shareTitle">Partilha</string>
+    <string name="shareDescription">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sollicitudin ac augue vel porta. Praesent et velit non urna pulvinar malesuada. Donec lacinia volutpat elementum. </string>
+
+    <string name="btnOnboardingFinish">Terminar</string>
+
     <!-- LOGIN -->
     <string name="lblPassword">Password:</string>
     <string name="lblUsername">Username:</string>
