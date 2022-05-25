@@ -97,7 +97,7 @@ export default createStore({
         let response = await axios.post('loginBackOffice', credentials)
         axios.defaults.headers.common.Authorization = "Bearer " + response.data.access_token
         sessionStorage.setItem('token', response.data.access_token)
-        console.log(response)
+        
       } catch (error) {
         delete axios.defaults.headers.common.Authorization
         sessionStorage.removeItem('token')
@@ -137,8 +137,8 @@ export default createStore({
     async loadLoggedInUser(context) {
       try {
         let response = await axios.get('users/me')
-        console.log(response)
-        context.commit('setUser', response.data.user)
+        console.log(response.data.data + " get me")
+        context.commit('setUser', response.data.data)
       } catch (error) {
         delete axios.defaults.headers.common.Authorization
         context.commit('resetUser', null)
@@ -196,7 +196,6 @@ export default createStore({
     },
 
     async refresh(context) {
-      console.log("im here4")
       let userPromise = context.dispatch('loadLoggedInUser')
       let usersPromise = context.dispatch('loadUsers')
       let lixeirasPromise = context.dispatch('loadLixeiras')

@@ -11,6 +11,7 @@ def token_required(f):
         token = None
         if 'authorization' in request.headers:
             token = request.headers['authorization']
+
         if not token:
             return make_response(jsonify({'message': 'a valid token is missing'}), 400)
 
