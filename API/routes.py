@@ -408,7 +408,12 @@ def get_all_lixeiras():
         lixeira_data['estado'] = lixeira.estado
         lixeira_data['aprovado'] = lixeira.aprovado
         lixeira_data['foto'] = lixeira.foto
+        lixeira_data['eventos'] = []
+        for ev in db.session.query(LixeiraEvento).filter_by(eventoID=evento.id):
+            evSer = LixeiraEvento.serialize(ev)
+            lixeira_data['eventos'].append(evSer)
         output.append(lixeira_data)
+
 
     return make_response(jsonify({'data': output}), 200)
 

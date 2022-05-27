@@ -1,7 +1,9 @@
 package com.example.splmobile.android
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
+import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import com.example.splmobile.android.models.UserMap
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -9,16 +11,19 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
+private const val TAG = "ActivityMaps"
 
 // Implement OnMapReadyCallback.
+
 public class ActivityMap:AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
+    private lateinit var userMap: UserMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
-
+        userMap = intent.getSerializableExtra(EXTRA_USER_MAP) as UserMap
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -28,23 +33,25 @@ public class ActivityMap:AppCompatActivity(), OnMapReadyCallback {
 
    }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        Log.i(TAG,"USER MAP RENDER: ${userMap.lixeiras}")
+        for (lixeira in userMap.lixeiras){
+            //Log.i(TAG,lixeira.toString())
+            val latlng = LatLng(lixeira.latitude.toDouble(), lixeira.longitude.toDouble())
+            mMap.addMarker(MarkerOptions().position(latlng).title(lixeira.title))
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(38.0, -9.0)
-        mMap.addMarker(MarkerOptions()
-            .position(sydney)
-            .title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        }
+
+        val portugal = LatLng(39.2, -8.0)
+        mMap.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(
+                    portugal.latitude,
+                    portugal.longitude
+                ), 7.0f
+            )
+        )
+         //mMap.moveCamera(CameraUpdateFactory.newLatLng(portugal))
     }
 }
