@@ -6,7 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.splmobile.apiAccesses.Authentication
+import com.example.splmobile.OLDSTUFF.apiAccesses.Authentication
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
@@ -47,7 +47,7 @@ class ActivityLogin : AppCompatActivity() {
                 var rsBody = ""
 
                 mainScope.launch {
-                    kotlin.runCatching {
+                   /* kotlin.runCatching {
                         val (responseCode, responseBody) = Authentication().loginRequest(usernameText, passwordText)
                         rsCode = responseCode
                         rsBody = responseBody
@@ -59,7 +59,7 @@ class ActivityLogin : AppCompatActivity() {
                                 lblLoginErrors.setText(rsBody)
                             }
                         }
-                    }
+                    }*/
                 }
 
             }

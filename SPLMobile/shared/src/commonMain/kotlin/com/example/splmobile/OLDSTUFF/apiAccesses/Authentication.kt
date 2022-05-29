@@ -1,15 +1,15 @@
-package com.example.splmobile.apiAccesses
+package com.example.splmobile.OLDSTUFF.apiAccesses
 
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import org.json.JSONObject
+//import org.json.JSONObject
 
 const val API_URL = "http://10.0.2.2:5000/api/"
 
 class Authentication {
-    private val client = HttpClient()
+   /* private val client = HttpClient()
 
     //Pair as Return Type to return 2 variables
     suspend fun loginRequest(username: String, password: String): Pair<Int, String> {
@@ -102,5 +102,5 @@ class Authentication {
         }
 
         return Pair(responseCode, responseBody)
-    }
+    }*/
 }

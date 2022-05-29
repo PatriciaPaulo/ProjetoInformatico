@@ -2,6 +2,8 @@ package com.example.splmobile.android.di
 
 import android.content.Context
 import com.example.splmobile.android.data.DataStoreRepository
+
+/*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,4 +23,4 @@ object OnboardingModel {
         @ApplicationContext context: Context
     ) = DataStoreRepository(context = context)
 
-}
+}*/

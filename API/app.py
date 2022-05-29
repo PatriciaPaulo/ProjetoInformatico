@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
         session = Session(engine)
 
-        #userDefault = Utilizador(username="user", password=generate_password_hash("123"), name="Nocme", email="email", admin=False, blocked=False)
+        # = Utilizador(username="user", password=generate_password_hash("123"), name="Nocme", email="email", admin=False, blocked=False)
         #adminDefault = Utilizador(username="admin", password=generate_password_hash("123"), name="Nocme", email="email",admin=True, blocked=False)
         #lixeira1 = Lixeira(latitude="38.0",longitude="-9",criador=userDefault.username,estado="limpo",aprovado=False,foto="asdas")
         #lixeira2 = Lixeira(latitude="38",longitude="-9",criador=userDefault.username,estado="sujo",aprovado=False,foto="asdas")

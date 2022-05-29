@@ -1,0 +1,49 @@
+CREATE TABLE Utilizador (
+id INTEGER PRIMARY KEY,
+username TEXT NOT NULL,
+name TEXT NOT NULL,
+email TEXT NOT NULL,
+blocked INTEGER AS Boolean DEFAULT 0,
+admin INTEGER AS Boolean DEFAULT 0
+);
+
+
+CREATE TABLE Lixeira (
+id INTEGER PRIMARY KEY NOT NULL,
+nome TEXT NOT NULL,
+criador INTEGER NOT NULL,
+longitude TEXT NOT NULL,
+latitude TEXT NOT NULL,
+estado TEXT NOT NULL,
+aprovado INTEGER AS Boolean DEFAULT 0 NOT NULL,
+foto TEXT
+);
+CREATE UNIQUE INDEX unq_lix_id ON Lixeira(id);
+
+
+insertUtilizador:
+INSERT OR REPLACE INTO Utilizador(id,username,name,email,blocked,admin)
+VALUES(?, ?, ?, ?, ?, ?);
+
+insertLixeira:
+INSERT OR REPLACE INTO Lixeira(id,nome,criador,longitude,latitude,estado,aprovado,foto)
+VALUES(?, ?, ?, ?, ?, ?,?,?);
+
+
+removeAllUtilizadores:
+DELETE FROM Utilizador;
+
+removeAllLixeiras:
+DELETE FROM Lixeira;
+
+selectLixeiraById:
+SELECT * FROM Lixeira
+WHERE id = ?;
+
+selectAllLixeiras:
+SELECT *
+FROM Lixeira;
+
+selectAllLixeirasFromUtilizador:
+SELECT Lixeira.*
+FROM Lixeira INNER JOIN Utilizador ON Lixeira.criador == Utilizador.id;

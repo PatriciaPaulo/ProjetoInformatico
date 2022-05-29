@@ -27,7 +27,7 @@
         <activity android:name=".ActivityLogin" />
         <activity android:name=".ActivityMap" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ActivityMain"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
+            android:name="com.google.android.maps.v2.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
         <uses-library

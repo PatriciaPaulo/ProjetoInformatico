@@ -23,7 +23,6 @@ if __name__ == '__main__':
     session = Session(engine)
     r = RandomWords()
 
-    """
     # SEED UTILIZADORES
     session.query(Utilizador).delete()
     for i in range(10):
@@ -238,4 +237,3 @@ if __name__ == '__main__':
 
     print("---UtilizadorNoEvento seed done!")
     
-   """

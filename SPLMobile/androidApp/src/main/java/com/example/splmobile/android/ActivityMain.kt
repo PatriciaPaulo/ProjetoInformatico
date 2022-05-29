@@ -1,71 +1,66 @@
 package com.example.splmobile.android
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.BottomNavigation
 import androidx.compose.material.Scaffold
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.runtime.getValue
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.NavGraph
 import androidx.navigation.compose.rememberNavController
 
-import com.example.splmobile.android.models.Lixeira
-import com.example.splmobile.android.models.UserMap
+import co.touchlab.kermit.Logger
 import com.example.splmobile.android.ui.main.BottomNavigationBar
-import com.example.splmobile.android.ui.main.components.BottomNavItem
 import com.example.splmobile.android.ui.main.navigation.Navigation
-import com.example.splmobile.android.ui.onboarding.navigation.SetupNavGraph
-import com.example.splmobile.android.ui.theme.SPLTheme
 import com.example.splmobile.android.viewmodel.SplashViewModel
+import com.example.splmobile.injectLogger
+import com.example.splmobile.models.LixeiraViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONObject
-import org.json.JSONException
-import javax.inject.Inject
-
+//import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.component.KoinComponent
+//import javax.inject.Inject
 
 private const val TAG = "MainActivity"
 const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
-@AndroidEntryPoint
-class ActivityMain : ComponentActivity() {
 
-    @Inject
-    lateinit var splashViewModel: SplashViewModel
+class ActivityMain : ComponentActivity() , KoinComponent{
+    private val log: Logger by injectLogger("MainActivity")
+    private val lixeiraViewModel: LixeiraViewModel by viewModel()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen().setKeepOnScreenCondition {
-            !splashViewModel.isLoading.value
-        }
 
         setContent {
-            SPLTheme {
-                val screen by splashViewModel.startDestination
+            val scaffoldState = rememberScaffoldState()
+            val coroutineScope = rememberCoroutineScope()
+            val navController = rememberNavController()
+            Scaffold(/*scaffoldState = scaffoldState,*/
+                bottomBar = { BottomNavigationBar(navController = navController) }
+            ) {
 
-                // rememberNav to know if its the first time to show onboarding
-                val navController = rememberNavController()
-                SetupNavGraph(
-                    navController = navController,
-                    startDestination = screen
-                )
+                Navigation(navController = navController,log, lixeiraViewModel = lixeiraViewModel )
             }
         }
     }
 }
+
+/*SPLTheme {
+               val screen by splashViewModel.startDestination
+
+               // rememberNav to know if its the first time to show onboarding
+               val navController = rememberNavController()
+
+               SetupNavGraph(
+                   navController = navController,
+                   startDestination = screen
+               )
+           }*/
        /*
        setContentView(R.layout.activity_maps_filter)
         val rvMap: RecyclerView = findViewById(R.id.rvMap)
