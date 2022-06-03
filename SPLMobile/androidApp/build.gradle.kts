@@ -94,7 +94,6 @@ dependencies {
 
     // DataStore Preferences
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
 
     //Dagger Hilt for Dependencies Injection
@@ -117,9 +116,14 @@ dependencies {
 
     // Annotation processor
     kapt("androidx.lifecycle:lifecycle-compiler:$lifecycle_version")
-
     //swipe refresh
     implementation("com.google.accompanist:accompanist-swiperefresh:0.24.9-beta")
+    //serialization
+    val serializationVersion = "1.3.0"
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$serializationVersion")
+    //json serialization
+    val ktorVersion = "2.0.1"
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 
 
 }

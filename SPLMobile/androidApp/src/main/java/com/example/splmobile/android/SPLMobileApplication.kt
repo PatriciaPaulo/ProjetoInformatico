@@ -6,7 +6,9 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.example.splmobile.AppInfo
 import com.example.splmobile.initKoin
-import com.example.splmobile.models.LixeiraViewModel
+import com.example.splmobile.models.SharedViewModel
+import com.example.splmobile.models.lixeiras.LixeiraViewModel
+import dagger.hilt.android.HiltAndroidApp
 
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.parameter.parametersOf
@@ -20,6 +22,7 @@ class SPLMobileApplication : Application() {
             module {
                 single<Context> { this@SPLMobileApplication }
                 viewModel { LixeiraViewModel(get(), get { parametersOf("LixeiraViewModel") }) }
+                viewModel { SharedViewModel(get(), get { parametersOf("SharedViewModel") }) }
                 single<SharedPreferences> {
                     get<Context>().getSharedPreferences("KAMPSTARTER_SETTINGS", Context.MODE_PRIVATE)
                 }

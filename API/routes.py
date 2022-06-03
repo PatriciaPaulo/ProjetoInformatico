@@ -1,4 +1,4 @@
-from flask import jsonify, make_response, request, current_app
+from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
@@ -10,7 +10,8 @@ import datetime
 
 routes_blueprint = Blueprint('routes', __name__, )
 api = Api(routes_blueprint)
-
+#todo
+#api = Flask(routes_blueprint)
 # region backoffice
 #registers only admins by admins
 @routes_blueprint.route('/registerAdmin', methods=['POST'])

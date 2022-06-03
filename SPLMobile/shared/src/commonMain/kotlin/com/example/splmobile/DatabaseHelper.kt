@@ -35,17 +35,18 @@ class DatabaseHelper(
 
             lixeiras.forEach { lixeira ->
                 val lixeiraJsonObj =lixeira.jsonObject
-                log.d { "ID OF LIXEIRA BROOO ${lixeiraJsonObj.get("id").toString().toLong()} " }
+                //log.d { " BROOO 2${lixeiraJsonObj.get("longitude").toString().removePrefix("\"").removeSuffix("\"")} " }
+
 
                 dbRef.appDatabaseQueries.insertLixeira(
-                    lixeiraJsonObj.get("id").toString().toLong(),
-                    lixeiraJsonObj.get("nome").toString(),
-                    lixeiraJsonObj.get("criador").toString().toLong(),
-                    lixeiraJsonObj.get("longitude").toString(),
-                    lixeiraJsonObj.get("latitude").toString(),
-                    lixeiraJsonObj.get("estado").toString(),
-                    lixeiraJsonObj.get("aprovado").toString().toBoolean(),
-                    lixeiraJsonObj.get("foto").toString())
+                    lixeiraJsonObj.get("id").toString().removePrefix("\"").removeSuffix("\"").toLong(),
+                    lixeiraJsonObj.get("nome").toString().removePrefix("\"").removeSuffix("\""),
+                    lixeiraJsonObj.get("criador").toString().removePrefix("\"").removeSuffix("\"").toLong(),
+                    lixeiraJsonObj.get("longitude").toString().removePrefix("\"").removeSuffix("\""),
+                    lixeiraJsonObj.get("latitude").toString().removePrefix("\"").removeSuffix("\""),
+                    lixeiraJsonObj.get("estado").toString().removePrefix("\"").removeSuffix("\""),
+                    lixeiraJsonObj.get("aprovado").toString().removePrefix("\"").removeSuffix("\"").toBoolean(),
+                    lixeiraJsonObj.get("foto").toString().removePrefix("\"").removeSuffix("\""))
             }
         }
     }

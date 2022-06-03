@@ -3,10 +3,11 @@ package com.example.splmobile
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.StaticConfig
 import co.touchlab.kermit.platformLogWriter
-import com.example.splmobile.database.Lixeira
-import com.example.splmobile.ktor.LixeiraApi
-import com.example.splmobile.ktor.LixeiraApiImpl
-import com.example.splmobile.models.LixeiraRepository
+import com.example.splmobile.ktor.lixeiras.LixeiraApi
+import com.example.splmobile.ktor.lixeiras.LixeiraApiImpl
+import com.example.splmobile.ktor.other.requests
+import com.example.splmobile.ktor.other.requestsAPI
+import com.example.splmobile.models.lixeiras.LixeiraRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.Clock
 import org.koin.core.KoinApplication
@@ -51,7 +52,13 @@ private val coreModule = module {
     }
     single<LixeiraApi> {
         LixeiraApiImpl(
-            getWith("DogApiImpl"),
+            getWith("LixeiraApiImpl"),
+            get()
+        )
+    }
+    single<requestsAPI> {
+        requests(
+            getWith("requests"),
             get()
         )
     }

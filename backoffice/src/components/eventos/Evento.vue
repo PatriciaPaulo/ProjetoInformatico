@@ -165,7 +165,7 @@ export default {
           this.isLoading = false;
           response.data.data.forEach((lixEv) => {
             console.log(lixEv.lixeiraID + "id");
-            this.lixeirasNoEvento.push(this.lixeira(lixEv.lixeiraID));
+            //this.lixeirasNoEvento.push(this.lixeira(lixEv.lixeiraID));
             console.log(this.lixeira(lixEv.lixeiraID) + "lixeira");
           });
         })

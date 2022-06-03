@@ -146,6 +146,7 @@ class Evento(Base):
     organizador = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
     estado = Column(String(50))
     duracao = Column(String(50))
+    #todo data inicio
     descricao = Column(String(50))
     acessibilidade = Column(String(50))
     restricoes = Column(String(50))

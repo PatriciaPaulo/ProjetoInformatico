@@ -1,23 +1,27 @@
 package com.example.splmobile.android
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.Scaffold
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.navigation.Navigation
-import com.example.splmobile.android.viewmodel.SplashViewModel
+import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.injectLogger
-import com.example.splmobile.models.LixeiraViewModel
+import com.example.splmobile.models.SharedViewModel
+import com.example.splmobile.models.lixeiras.LixeiraViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
+import dagger.hilt.android.AndroidEntryPoint
 //import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
@@ -31,22 +35,34 @@ const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 class ActivityMain : ComponentActivity() , KoinComponent{
     private val log: Logger by injectLogger("MainActivity")
     private val lixeiraViewModel: LixeiraViewModel by viewModel()
+    private val sharedViewModel: SharedViewModel by viewModel()
+    private val mainViewModel: MainViewModel by viewModels()
 
 
+    @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val scaffoldState = rememberScaffoldState()
-            val coroutineScope = rememberCoroutineScope()
-            val navController = rememberNavController()
-            Scaffold(/*scaffoldState = scaffoldState,*/
-                bottomBar = { BottomNavigationBar(navController = navController) }
-            ) {
 
-                Navigation(navController = navController,log, lixeiraViewModel = lixeiraViewModel )
+            val navController = rememberNavController()
+            Scaffold(
+                bottomBar = { BottomNavigationBar(navController = navController)}
+            ) { innerPadding ->
+                // Apply the padding globally to the whole BottomNavScreensController
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    Navigation(
+                        navController = navController,
+                        log,
+                        mainViewModel = mainViewModel,
+                        lixeiraViewModel = lixeiraViewModel,
+                        sharedViewModel = sharedViewModel
+                    )
+                }
+
             }
         }
+
     }
 }
 

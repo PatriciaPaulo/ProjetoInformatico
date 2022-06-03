@@ -1,13 +1,12 @@
-package com.example.splmobile.models
+package com.example.splmobile.models.lixeiras
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.DatabaseHelper
 import com.example.splmobile.database.Lixeira
-import com.example.splmobile.ktor.LixeiraApi
+import com.example.splmobile.ktor.lixeiras.LixeiraApi
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -45,14 +44,14 @@ class LixeiraRepository (
         val lixeiraResult = lixeiraApi.getJsonFromApi()
         var lixeiras = Json.parseToJsonElement(lixeiraResult!!.toString()).jsonObject.get("data")
         var lixeirasArray = Json.parseToJsonElement(lixeiras.toString()).jsonArray
-        //val lixeiras =Json.parseToJsonElement(lixeiraResult!!.toString()).jsonObject
 
         log.v { "lixeira network result: ${ lixeirasArray.toList() }" }
         log.v { "Fetched ${lixeirasArray.size} lixeiras from network" }
         settings.putLong(DB_TIMESTAMP_KEY, clock.now().toEpochMilliseconds())
         if (lixeirasArray.isNotEmpty()) {
+            dbHelper.deleteAllLixeiras()
             dbHelper.insertLixeiras(lixeirasArray.toList())
-            //dbHelper.deleteAllLixeiras()
+
         }
     }
 

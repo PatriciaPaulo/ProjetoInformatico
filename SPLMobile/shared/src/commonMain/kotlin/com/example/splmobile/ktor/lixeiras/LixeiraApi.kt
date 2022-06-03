@@ -1,6 +1,5 @@
-package com.example.splmobile.ktor
+package com.example.splmobile.ktor.lixeiras
 
-import com.example.splmobile.response.LixeiraResult
 import kotlinx.serialization.json.JsonElement
 
 interface LixeiraApi {

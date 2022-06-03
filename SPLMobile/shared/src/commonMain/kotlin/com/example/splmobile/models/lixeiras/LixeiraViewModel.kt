@@ -1,7 +1,8 @@
-package com.example.splmobile.models
+package com.example.splmobile.models.lixeiras
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.database.Lixeira
+import com.example.splmobile.models.ViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,8 +42,9 @@ class LixeiraViewModel (
         }
 
         viewModelScope.launch {
-            combine(refreshFlow, lixeiraRepository.getLixeiras()) { throwable, lixeiras -> throwable to lixeiras }
+           combine(refreshFlow, lixeiraRepository.getLixeiras()) { throwable, lixeiras -> throwable to lixeiras }
                 .collect { (error, lixeiras) ->
+
                     mutableLixeiraState.update { previousState ->
                         val errorMessage = if (error != null) {
                             "Unable to download Lixeira list"
@@ -51,7 +53,7 @@ class LixeiraViewModel (
                         }
                         LixeiraViewState(
                             isLoading = false,
-                            lixeiras = lixeiras.takeIf { it.isNotEmpty() },
+                            lixeiras =  lixeiras.distinct().toList().takeIf { it.isNotEmpty() },
                             error = errorMessage.takeIf { lixeiras.isEmpty() },
                             isEmpty = lixeiras.isEmpty() && errorMessage == null
                         )
