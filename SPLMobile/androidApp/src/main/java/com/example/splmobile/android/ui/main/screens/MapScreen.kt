@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,12 +16,16 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.main.components.SearchBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
+import com.example.splmobile.android.ui.main.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
+import com.example.splmobile.database.Lixeira
 import com.example.splmobile.ktor.lixeiras.LixeiraApi
 import com.example.splmobile.ktor.other.requests
 import com.example.splmobile.ktor.other.requestsAPI
@@ -40,36 +46,38 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
-fun MapScreen(mainViewModel: MainViewModel, lixeiraViewModel: LixeiraViewModel,sharedViewModel: SharedViewModel,
+fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, lixeiraViewModel: LixeiraViewModel, sharedViewModel: SharedViewModel,
               log: Logger
 ) {
-    val navController = rememberNavController()
+
+    // shared view model states
     val lifecycleOwner = LocalLifecycleOwner.current
-    val lifecycleAwareDogsFlow = remember(lixeiraViewModel.lixeiraState, lifecycleOwner) {
-        lixeiraViewModel.lixeiraState.flowWithLifecycle(lifecycleOwner.lifecycle)
-
+    val lifecycleAwareLixeirasFlow = remember(lixeiraViewModel.lixeirasState, lifecycleOwner) {
+        lixeiraViewModel.lixeirasState.flowWithLifecycle(lifecycleOwner.lifecycle)
     }
-
     @SuppressLint("StateFlowValueCalledInComposition") // False positive lint check when used inside collectAsState()
-    val lixeirasState by lifecycleAwareDogsFlow.collectAsState(lixeiraViewModel.lixeiraState.value)
+    val lixeirasState by lifecycleAwareLixeirasFlow.collectAsState(lixeiraViewModel.lixeirasState.value)
+    //android view model states
+    val searchWidgetState by mainViewModel.searchWidgetState
+    val searchTextState by mainViewModel.searchTextState
 
+    // map settings
     var uiSettings by remember { mutableStateOf(MapUiSettings()) }
     var properties by remember {
         mutableStateOf(MapProperties(mapType = MapType.SATELLITE))
     }
+
     val coroutineScope = rememberCoroutineScope()
-    val nomeProcura = remember { mutableStateOf<String?>(null) }
 
-    val searchWidgetState by mainViewModel.searchWidgetState
-    val searchTextState by mainViewModel.searchTextState
-
+    //default camera position
     var portugal = LatLng(39.5, -8.0)
     var cameraPosition = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(portugal, 7f)
 
     }
+
     Scaffold(
         topBar = {
             MapAppBar(
@@ -97,8 +105,6 @@ fun MapScreen(mainViewModel: MainViewModel, lixeiraViewModel: LixeiraViewModel,s
                             Log.d("Map","error, ${Json.parseToJsonElement(getGeocode(sharedViewModel,it)).jsonObject.get("error")}")
                         }
 
-
-                         //val nomeProcura =getGeocode(sharedViewModel,it)
                     }
 
 
@@ -112,8 +118,7 @@ fun MapScreen(mainViewModel: MainViewModel, lixeiraViewModel: LixeiraViewModel,s
             )
         },
         content ={
-
-            MapContent(lixeirasState,cameraPosition)
+            MapContent(navController,lixeirasState,cameraPosition)
         }
 
         )
@@ -128,7 +133,7 @@ fun MapScreen(mainViewModel: MainViewModel, lixeiraViewModel: LixeiraViewModel,s
 
 
 @Composable
-fun MapContent(lixeirasState: LixeiraViewState,cameraPosition: CameraPositionState) {
+fun MapContent(navController: NavHostController, lixeirasState: LixeiraViewState, cameraPosition: CameraPositionState) {
     Box(
         modifier = Modifier
             .background(colorResource(id = R.color.cardview_dark_background))
@@ -137,9 +142,6 @@ fun MapContent(lixeirasState: LixeiraViewState,cameraPosition: CameraPositionSta
         val lixeiras = lixeirasState.lixeiras
         if (lixeiras != null) {
 
-            TopAppBar() {
-
-            }
             Box(Modifier.fillMaxSize()) {
                 GoogleMap(
                     modifier = Modifier.matchParentSize(),
@@ -153,16 +155,47 @@ fun MapContent(lixeirasState: LixeiraViewState,cameraPosition: CameraPositionSta
                         Marker(
                             position = lixeiraPosition,
                             title = lixeira.nome,
-                            snippet = lixeira.estado
+                            snippet = lixeira.estado,
+                            onClick = {
+                                //navController.currentBackStackEntry?.arguments?.putLong("lixeiraID",lixeira.id)
+                                navController.navigate(Screen.LocalLixo.route+"/${lixeira.id}")
+
+                                true
+                            }
                         )
 
                     }
 
                 }
+                Column(
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Button(
+                        onClick = { /* ... */ },
+                        // Uses ButtonDefaults.ContentPadding by default
+                        contentPadding = PaddingValues(
+                            start = 20.dp,
+                            top = 12.dp,
+                            end = 20.dp,
+                            bottom = 12.dp
+                        ),
 
+                        ) {
+                        // Inner content including an icon and a text label
+
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = "Favorite",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text("")
+                    }
+                }
 
             }
-
         }
     }
 

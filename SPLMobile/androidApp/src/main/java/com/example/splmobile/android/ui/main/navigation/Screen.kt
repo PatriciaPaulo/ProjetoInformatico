@@ -6,5 +6,15 @@ sealed class Screen (val route: String) {
     object Community : Screen(route = "community_screen")
     object Chat : Screen(route = "chat_screen")
     object Home : Screen(route = "home_screen")
+    object LocalLixo : Screen(route = "local_lixo")
 
+    fun withArgs(vararg args: String):String {
+        return buildString {
+            append(route)
+            args.forEach { arg ->
+                append("/$arg")
+            }
+        }
+    }
 }
+

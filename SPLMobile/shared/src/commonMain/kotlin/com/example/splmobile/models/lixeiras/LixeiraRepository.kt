@@ -32,6 +32,9 @@ class LixeiraRepository (
 
     fun getLixeiras(): Flow<List<Lixeira>> = dbHelper.selectAllItems()
 
+    fun getLixeiraById(id: Long): Lixeira {
+       return dbHelper.selectById(id)
+    }
     suspend fun refreshLixeirasIfStale() {
         if (isLixeiraListStale()) {
             refreshLixeiras()
@@ -39,8 +42,6 @@ class LixeiraRepository (
     }
 
     suspend fun refreshLixeiras() {
-
-
         val lixeiraResult = lixeiraApi.getJsonFromApi()
         var lixeiras = Json.parseToJsonElement(lixeiraResult!!.toString()).jsonObject.get("data")
         var lixeirasArray = Json.parseToJsonElement(lixeiras.toString()).jsonArray

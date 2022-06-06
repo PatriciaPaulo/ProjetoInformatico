@@ -3,11 +3,14 @@ package com.example.splmobile.android.ui.main.navigation
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.ui.main.components.BottomNavItem
 import com.example.splmobile.android.ui.main.screens.*
+import com.example.splmobile.android.ui.main.screens.LocalLixo.LocalLixoScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.lixeiras.LixeiraViewModel
@@ -18,13 +21,12 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Composable
 fun Navigation(navController: NavHostController, log: Logger, mainViewModel: MainViewModel,lixeiraViewModel: LixeiraViewModel,sharedViewModel: SharedViewModel){
-
-    NavHost(navController, startDestination = BottomNavItem.Home.screen_route) {
+    NavHost(navController = navController, startDestination = BottomNavItem.Home.screen_route) {
         composable(BottomNavItem.Home.screen_route) {
             HomeScreen()
         }
         composable(BottomNavItem.Map.screen_route) {
-            MapScreen( mainViewModel,lixeiraViewModel,sharedViewModel,log)
+            MapScreen(navController, mainViewModel,lixeiraViewModel,sharedViewModel,log)
         }
         composable(BottomNavItem.Community.screen_route) {
             CommunityScreen()
@@ -34,6 +36,13 @@ fun Navigation(navController: NavHostController, log: Logger, mainViewModel: Mai
         }
         composable(BottomNavItem.Profile.screen_route) {
             ProfileScreen()
+        }
+        composable(Screen.LocalLixo.route+ "/{lixeiraID}", arguments = listOf(navArgument(name = "lixeiraID") {
+            type = NavType.LongType
+            defaultValue = -1
+            nullable = false
+        })) { entity ->
+            LocalLixoScreen(navController = navController, lixeiraID = entity.arguments?.getLong("lixeiraID") ?: -1, lixeiraViewModel = lixeiraViewModel)
         }
     }
 }

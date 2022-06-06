@@ -10,7 +10,7 @@ import com.example.splmobile.android.ui.onboarding.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+@HiltViewModel
 class SplashViewModel @Inject constructor(
     private val repository: DataStoreRepository
 ) : ViewModel() {

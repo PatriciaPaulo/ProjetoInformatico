@@ -51,12 +51,10 @@ class DatabaseHelper(
         }
     }
 
-    fun selectById(id: Long): Flow<List<Lixeira>> =
+    fun selectById(id: Long): Lixeira=
         dbRef.appDatabaseQueries
             .selectLixeiraById(id)
-            .asFlow()
-            .mapToList()
-            .flowOn(backgroundDispatcher)
+            .executeAsOne()
 
     suspend fun deleteAllLixeiras() {
         log.i { "Database Cleared" }

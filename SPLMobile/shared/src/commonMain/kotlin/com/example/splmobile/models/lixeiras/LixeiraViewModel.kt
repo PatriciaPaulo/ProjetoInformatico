@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.database.Lixeira
 import com.example.splmobile.models.ViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -17,10 +18,10 @@ class LixeiraViewModel (
 ) : ViewModel() {
     private val log = log.withTag("LixeiraViewModel")
 
-    private val mutableLixeiraState: MutableStateFlow<LixeiraViewState> =
+    private val mutableLixeirasState: MutableStateFlow<LixeiraViewState> =
         MutableStateFlow(LixeiraViewState(isLoading = true))
 
-    val lixeiraState: StateFlow<LixeiraViewState> = mutableLixeiraState
+    val lixeirasState: StateFlow<LixeiraViewState> = mutableLixeirasState
 
     init {
         observeLixeiras()
@@ -45,7 +46,7 @@ class LixeiraViewModel (
            combine(refreshFlow, lixeiraRepository.getLixeiras()) { throwable, lixeiras -> throwable to lixeiras }
                 .collect { (error, lixeiras) ->
 
-                    mutableLixeiraState.update { previousState ->
+                    mutableLixeirasState.update { previousState ->
                         val errorMessage = if (error != null) {
                             "Unable to download Lixeira list"
                         } else {
@@ -62,9 +63,22 @@ class LixeiraViewModel (
         }
     }
 
+
+    suspend fun getLixeiraInfo(id: Long): Lixeira?  {
+        var lixeira: Lixeira? = null
+         viewModelScope.async {
+            log.v { "GetLixeira" }
+            try {
+                lixeira = lixeiraRepository.getLixeiraById(id)
+            } catch (exception: Exception) {
+                handleLixeiraError(exception)
+            }
+        }.onAwait
+        return lixeira
+    }
     fun refreshLixeiras(): Job {
         // Set loading state, which will be cleared when the repository re-emits
-        mutableLixeiraState.update { it.copy(isLoading = true) }
+        mutableLixeirasState.update { it.copy(isLoading = true) }
         return viewModelScope.launch {
             log.v { "refreshLixeiras" }
             try {
@@ -77,7 +91,7 @@ class LixeiraViewModel (
 
     fun deleteLixeiras(): Job {
         // Set loading state, which will be cleared when the repository re-emits
-        mutableLixeiraState.update { it.copy(isLoading = true) }
+        mutableLixeirasState.update { it.copy(isLoading = true) }
         return viewModelScope.launch {
             log.v { "deleteLixeiras" }
             try {
@@ -91,7 +105,7 @@ class LixeiraViewModel (
 
     private fun handleLixeiraError(throwable: Throwable) {
         log.e(throwable) { "Error downloading Lixeira list" }
-        mutableLixeiraState.update {
+        mutableLixeirasState.update {
             if (it.lixeiras.isNullOrEmpty()) {
                 LixeiraViewState(error = "Unable to refresh Lixeira list")
             } else {
