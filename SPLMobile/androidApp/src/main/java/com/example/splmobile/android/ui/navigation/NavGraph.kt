@@ -42,8 +42,9 @@ fun SetupNavGraph(
             LoginScreen(navController = navController,
                 authViewModel = authViewModel)
         }
+
         composable(BottomNavItem.Home.screen_route) {
-            HomeScreen()
+            HomeScreen(navController = navController)
         }
         composable(BottomNavItem.Map.screen_route) {
             MapScreen(navController,
@@ -53,13 +54,13 @@ fun SetupNavGraph(
                 log)
         }
         composable(BottomNavItem.Community.screen_route) {
-            CommunityScreen()
+            CommunityScreen(navController = navController)
         }
         composable(BottomNavItem.Chat.screen_route) {
-            ChatScreen()
+            ChatScreen(navController = navController)
         }
         composable(BottomNavItem.Profile.screen_route) {
-            ProfileScreen()
+            ProfileScreen(navController = navController)
         }
         composable(Screen.LocalLixo.route+ "/{lixeiraID}",
             arguments = listOf(

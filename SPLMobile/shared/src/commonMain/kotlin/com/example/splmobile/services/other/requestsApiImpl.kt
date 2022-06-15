@@ -1,4 +1,4 @@
-package com.example.splmobile.ktor.other
+package com.example.splmobile.services.other
 
 import co.touchlab.stately.ensureNeverFrozen
 import io.ktor.client.*
@@ -8,11 +8,8 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.json.JsonElement
-import kotlin.contracts.CallsInPlace
 
 class requestsApiImpl(private val log: co.touchlab.kermit.Logger, engine: HttpClientEngine) : requestsAPI {
     private val client = HttpClient(engine) {

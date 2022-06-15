@@ -4,7 +4,7 @@ import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.DatabaseHelper
 import com.example.splmobile.database.LocalLixo
-import com.example.splmobile.ktor.locaisLixo.LocalLixoApi
+import com.example.splmobile.services.locaisLixo.LocalLixoApi
 
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.Flow

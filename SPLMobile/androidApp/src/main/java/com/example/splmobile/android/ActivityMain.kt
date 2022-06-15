@@ -21,6 +21,7 @@ import com.example.splmobile.android.ui.theme.SPLTheme
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.android.viewmodel.SplashViewModel
 import com.example.splmobile.injectLogger
+import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -42,6 +43,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
     private val log: Logger by injectLogger("MainActivity")
     private val localLixoViewModel: LocalLixoViewModel by viewModel()
     private val sharedViewModel: SharedViewModel by viewModel()
+    private val authViewModel: AuthViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -63,6 +65,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
                     startDestination = screen,
                     log,
                     mainViewModel = mainViewModel,
+                    authViewModel = authViewModel,
                     localLixoViewModel = localLixoViewModel,
                     sharedViewModel = sharedViewModel
                 )

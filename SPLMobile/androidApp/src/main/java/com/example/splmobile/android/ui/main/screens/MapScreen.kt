@@ -13,11 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
@@ -106,11 +110,45 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
                 }
             )
         },
-        content ={
-            MapContent(navController,lixeirasState,cameraPosition)
-        }
+        content =
+        { innerPadding ->
+            // Apply the padding globally to the whole BottomNavScreensController
+            Box(modifier = Modifier.padding(innerPadding)) {
+                MapContent(navController,lixeirasState,cameraPosition)
+                Column(
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Button(
+                        onClick = {
+                            navController.navigate(Screen.CreateLocalLixo.route)
+                        },
+                        // Uses ButtonDefaults.ContentPadding by default
+                        contentPadding = PaddingValues(
+                            start = 20.dp,
+                            top = 12.dp,
+                            end = 20.dp,
+                            bottom = 12.dp
+                        ),
 
-        )
+                        ) {
+                        // Inner content including an icon and a text label
+
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = "Favorite",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text("")
+                    }
+                }
+            }
+        },
+        bottomBar = { BottomNavigationBar(navController = navController) },
+    )
+
 
 
 }
@@ -158,35 +196,7 @@ fun MapContent(navController: NavHostController, locaisLixoState: LocalLixoViewS
                     }
 
                 }
-                Column(
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-                    verticalArrangement = Arrangement.Bottom,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Button(
-                        onClick = {
-                            navController.navigate(Screen.CreateLocalLixo.route)
-                        },
-                        // Uses ButtonDefaults.ContentPadding by default
-                        contentPadding = PaddingValues(
-                            start = 20.dp,
-                            top = 12.dp,
-                            end = 20.dp,
-                            bottom = 12.dp
-                        ),
 
-                        ) {
-                        // Inner content including an icon and a text label
-
-                        Icon(
-                            Icons.Filled.Add,
-                            contentDescription = "Favorite",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text("")
-                    }
-                }
 
             }
         }

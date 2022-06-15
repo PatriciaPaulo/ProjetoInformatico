@@ -1,4 +1,4 @@
-package com.example.splmobile.ktor.locaisLixo
+package com.example.splmobile.services.locaisLixo
 
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.database.LocalLixo
@@ -8,7 +8,6 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.kotlinx.serializer.*
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.*
@@ -46,6 +45,15 @@ class LocalLixoApiImpl(private val log: KermitLogger, engine: HttpClientEngine) 
             requestTimeoutMillis = timeout
             socketTimeoutMillis = timeout
         }
+        /*install(Auth) {
+            bearer {
+                // Load tokens ...
+                refreshTokens { // this: RefreshTokensParams
+                    // Refresh tokens and return them as the 'BearerTokens' instance
+                    BearerTokens("def456", "xyz111")
+                }
+            }
+        }*/
 
     }
 
@@ -64,7 +72,7 @@ class LocalLixoApiImpl(private val log: KermitLogger, engine: HttpClientEngine) 
         log.d { "post new Local Lixo" }
         return client.post {
             headers {
-                append(HttpHeaders.Authorization, "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJleHAiOjE2NTUyMjU4NTB9.pzsGFRWdfC-N9_vCikbjsmENRlPtEGeWUcJGfHllAdQ")
+                append(HttpHeaders.Authorization, "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJleHAiOjE2NTUzMDA5OTh9.jZhWcULPzMb05q-CTemtYntYM2dYxfMbuAc2hVzT0zc")
             }
             contentType(ContentType.Application.Json)
             setBody(LocalLixoSer(localLixo.id, localLixo.nome, "user",localLixo.longitude,localLixo.latitude,localLixo.estado,localLixo.aprovado,localLixo.foto))

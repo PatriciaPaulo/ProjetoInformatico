@@ -169,9 +169,9 @@ def login_user():
             {'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
             current_app.config['SECRET_KEY'], "HS256")
 
-        return make_response(jsonify({'access_token': token}), 200)
+        return make_response(jsonify({'access_token': token,'message':'success'}), 200)
 
-    return make_response('Unknown Error, try again!', 400)
+    return make_response(jsonify({'message': 'Unknown Error, try again!'}), 400)
 
 #get logged in user
 @routes_blueprint.route('/users/me', methods=['GET'])

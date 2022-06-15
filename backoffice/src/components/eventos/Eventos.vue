@@ -43,7 +43,7 @@
           </template>
         </Column>
         <Column field="estado" header="Estado" :sortable="true"></Column>
-
+        <Column field="dataInicio" header="dataInicio" :sortable="true"></Column>
         <Column header="Editar">
           <template #body="{ data }">
             <div class="d-flex justify-content-between">

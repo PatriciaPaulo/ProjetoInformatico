@@ -1,7 +1,7 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.ktor.other.requestsAPI
+import com.example.splmobile.services.other.requestsAPI
 import kotlinx.coroutines.async
 
 //requests not related to FLASK API

@@ -1,4 +1,4 @@
-package com.example.splmobile.ktor.locaisLixo
+package com.example.splmobile.services.locaisLixo
 
 import com.example.splmobile.database.LocalLixo
 import kotlinx.serialization.json.JsonElement

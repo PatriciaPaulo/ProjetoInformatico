@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.example.splmobile.AppInfo
 import com.example.splmobile.initKoin
+import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 
@@ -24,6 +25,7 @@ class SPLMobileApplication : Application() {
                 single<Context> { this@SPLMobileApplication }
                 viewModel { LocalLixoViewModel(get(), get { parametersOf("LocalLixoViewModel") }) }
                 viewModel { SharedViewModel(get(), get { parametersOf("SharedViewModel") }) }
+                viewModel { AuthViewModel(get(), get { parametersOf("AuthViewModel") }) }
                 single<SharedPreferences> {
                     get<Context>().getSharedPreferences("KAMPSTARTER_SETTINGS", Context.MODE_PRIVATE)
                 }
