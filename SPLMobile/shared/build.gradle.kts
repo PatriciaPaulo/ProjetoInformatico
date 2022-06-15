@@ -129,7 +129,7 @@ kotlin {
 
 }
 sqldelight {
-    database("AppDatabase") {
+    database("SPLDatabase") {
         packageName = "com.example.splmobile"
     }
 }

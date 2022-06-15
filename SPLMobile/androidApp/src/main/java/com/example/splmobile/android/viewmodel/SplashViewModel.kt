@@ -6,11 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.splmobile.android.data.DataStoreRepository
-import com.example.splmobile.android.ui.onboarding.navigation.Screen
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.example.splmobile.android.ui.navigation.Screen
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-@HiltViewModel
+
+
+
 class SplashViewModel @Inject constructor(
     private val repository: DataStoreRepository
 ) : ViewModel() {
@@ -27,7 +28,7 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             repository.readOnBoardingState().collect { completed ->
                 if (completed) {
-                    _startDestination.value = Screen.Authentication.route
+                    _startDestination.value = Screen.Login.route
                 } else {
                     _startDestination.value = Screen.Onboarding.route
                 }

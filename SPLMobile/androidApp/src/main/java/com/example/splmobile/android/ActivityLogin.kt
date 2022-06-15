@@ -31,7 +31,7 @@ class ActivityLogin : AppCompatActivity() {
             val usernameText = txtUsername.text.toString()
             val passwordText = txtPassword.text.toString()
 
-            val intent = Intent(this, ActivityMap::class.java)
+           // val intent = Intent(this, ActivityMap::class.java)
 
             if(usernameText.isBlank() || passwordText.isBlank()){
                 lblLoginErrors.setText("Dados incompletos. Preencha todos os campos.")

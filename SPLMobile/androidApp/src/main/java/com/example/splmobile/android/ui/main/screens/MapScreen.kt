@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,49 +15,39 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.main.components.SearchBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
-import com.example.splmobile.android.ui.main.navigation.Screen
+import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.database.Lixeira
-import com.example.splmobile.ktor.lixeiras.LixeiraApi
-import com.example.splmobile.ktor.other.requests
-import com.example.splmobile.ktor.other.requestsAPI
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.lixeiras.LixeiraViewModel
-import com.example.splmobile.models.lixeiras.LixeiraViewState
+import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
+import com.example.splmobile.models.locaisLixo.LocalLixoViewState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.SelectClause0
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
-fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, lixeiraViewModel: LixeiraViewModel, sharedViewModel: SharedViewModel,
+fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, localLixoViewModel: LocalLixoViewModel, sharedViewModel: SharedViewModel,
               log: Logger
 ) {
 
     // shared view model states
     val lifecycleOwner = LocalLifecycleOwner.current
-    val lifecycleAwareLixeirasFlow = remember(lixeiraViewModel.lixeirasState, lifecycleOwner) {
-        lixeiraViewModel.lixeirasState.flowWithLifecycle(lifecycleOwner.lifecycle)
+    localLixoViewModel.refreshLocaisLixo()
+    val lifecycleAwareLixeirasFlow = remember(localLixoViewModel.locaisLixoState, lifecycleOwner) {
+        localLixoViewModel.locaisLixoState.flowWithLifecycle(lifecycleOwner.lifecycle)
     }
+
     @SuppressLint("StateFlowValueCalledInComposition") // False positive lint check when used inside collectAsState()
-    val lixeirasState by lifecycleAwareLixeirasFlow.collectAsState(lixeiraViewModel.lixeirasState.value)
+    val lixeirasState by lifecycleAwareLixeirasFlow.collectAsState(localLixoViewModel.locaisLixoState.value)
     //android view model states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
@@ -133,32 +122,34 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, lix
 
 
 @Composable
-fun MapContent(navController: NavHostController, lixeirasState: LixeiraViewState, cameraPosition: CameraPositionState) {
+fun MapContent(navController: NavHostController, locaisLixoState: LocalLixoViewState, cameraPosition: CameraPositionState) {
+
     Box(
         modifier = Modifier
             .background(colorResource(id = R.color.cardview_dark_background))
             .wrapContentSize(Alignment.Center)
     ){
-        val lixeiras = lixeirasState.lixeiras
-        if (lixeiras != null) {
+
+        val locaisLixo = locaisLixoState.locaisLixo
+        if (locaisLixo != null) {
 
             Box(Modifier.fillMaxSize()) {
                 GoogleMap(
                     modifier = Modifier.matchParentSize(),
                     cameraPositionState = cameraPosition
                 ) {
-                    lixeiras.forEach { lixeira ->
+                    locaisLixo.forEach { localLixo ->
 
                         val lixeiraPosition =
-                            LatLng(lixeira.latitude.toDouble(), lixeira.longitude.toDouble())
+                            LatLng(localLixo.latitude.toDouble(), localLixo.longitude.toDouble())
 
                         Marker(
                             position = lixeiraPosition,
-                            title = lixeira.nome,
-                            snippet = lixeira.estado,
+                            title = localLixo.nome,
+                            snippet = localLixo.estado,
                             onClick = {
                                 //navController.currentBackStackEntry?.arguments?.putLong("lixeiraID",lixeira.id)
-                                navController.navigate(Screen.LocalLixo.route+"/${lixeira.id}")
+                                navController.navigate(Screen.LocalLixo.route+"/${localLixo.id}")
 
                                 true
                             }
@@ -173,7 +164,9 @@ fun MapContent(navController: NavHostController, lixeirasState: LixeiraViewState
                     horizontalAlignment = Alignment.Start
                 ) {
                     Button(
-                        onClick = { /* ... */ },
+                        onClick = {
+                            navController.navigate(Screen.CreateLocalLixo.route)
+                        },
                         // Uses ButtonDefaults.ContentPadding by default
                         contentPadding = PaddingValues(
                             start = 20.dp,

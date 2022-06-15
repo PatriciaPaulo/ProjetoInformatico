@@ -1,32 +1,32 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
+import com.example.splmobile.ktor.auth.authAPI
 import com.example.splmobile.ktor.other.requestsAPI
 import kotlinx.coroutines.async
 
-//requests not related to FLASK API
-class SharedViewModel(
-    private val requestsAPI: requestsAPI,
+class AuthViewModel (
+    private val authAPI: authAPI,
     log: Logger
 
 ): ViewModel() {
 
-    private val log = log.withTag("sharedViewModel")
+    private val log = log.withTag("AuthViewModel")
 
 
 
-   suspend fun getCoordenadas(nome :String): String {
+    suspend fun postLogin(username :String,password:String): String {
         // Set loading state, which will be cleared when the repository re-emits
 
         var coor =  viewModelScope.async(){
-            log.v { "getCoordenadas" }
+            log.v { "postLogin" }
             try {
-               requestsAPI.getJsonFromApi(nome)
+                authAPI.postLogin(username,password)
             } catch (exception: Exception) {
                 handleMainError(exception)
             }
         }.await()
-       return coor as String
+        return coor as String
     }
     private fun handleMainError(throwable: Throwable) {
         log.e(throwable) { "Error" }

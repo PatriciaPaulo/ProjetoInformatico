@@ -5,5 +5,5 @@ import kotlinx.serialization.json.JsonElement
 
 
 interface requestsAPI {
-    suspend fun postJsonFromApi(place :String): String
+    suspend fun getJsonFromApi(place :String): String
 }

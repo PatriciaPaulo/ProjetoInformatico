@@ -8,42 +8,42 @@ admin INTEGER AS Boolean DEFAULT 0
 );
 
 
-CREATE TABLE Lixeira (
-id INTEGER PRIMARY KEY NOT NULL,
+CREATE TABLE LocalLixo (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
 nome TEXT NOT NULL,
-criador INTEGER NOT NULL,
+criador TEXT NOT NULL,
 longitude TEXT NOT NULL,
 latitude TEXT NOT NULL,
 estado TEXT NOT NULL,
 aprovado INTEGER AS Boolean DEFAULT 0 NOT NULL,
 foto TEXT
 );
-CREATE UNIQUE INDEX unq_lix_id ON Lixeira(id);
+CREATE UNIQUE INDEX unq_lix_id ON LocalLixo(id);
 
 
 insertUtilizador:
 INSERT OR REPLACE INTO Utilizador(id,username,name,email,blocked,admin)
 VALUES(?, ?, ?, ?, ?, ?);
 
-insertLixeira:
-INSERT OR REPLACE INTO Lixeira(id,nome,criador,longitude,latitude,estado,aprovado,foto)
+insertLocalLixo:
+INSERT OR REPLACE INTO LocalLixo(id,nome,criador,longitude,latitude,estado,aprovado,foto)
 VALUES(?, ?, ?, ?, ?, ?,?,?);
 
 
 removeAllUtilizadores:
 DELETE FROM Utilizador;
 
-removeAllLixeiras:
-DELETE FROM Lixeira;
+removeAllLocaisLixo:
+DELETE FROM LocalLixo;
 
-selectLixeiraById:
-SELECT * FROM Lixeira
+selectLocalLixoById:
+SELECT * FROM LocalLixo
 WHERE id = ?;
 
-selectAllLixeiras:
+selectAllLocaisLixo:
 SELECT *
-FROM Lixeira;
+FROM LocalLixo;
 
-selectAllLixeirasFromUtilizador:
-SELECT Lixeira.*
-FROM Lixeira INNER JOIN Utilizador ON Lixeira.criador == Utilizador.id;
+selectAllLocaisLixoFromUtilizador:
+SELECT LocalLixo.*
+FROM LocalLixo INNER JOIN Utilizador ON LocalLixo.criador == Utilizador.id;

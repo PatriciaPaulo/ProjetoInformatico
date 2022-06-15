@@ -3,11 +3,11 @@ package com.example.splmobile
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.StaticConfig
 import co.touchlab.kermit.platformLogWriter
-import com.example.splmobile.ktor.lixeiras.LixeiraApi
-import com.example.splmobile.ktor.lixeiras.LixeiraApiImpl
-import com.example.splmobile.ktor.other.requests
+import com.example.splmobile.ktor.locaisLixo.LocalLixoApi
+import com.example.splmobile.ktor.locaisLixo.LocalLixoApiImpl
+import com.example.splmobile.ktor.other.requestsApiImpl
 import com.example.splmobile.ktor.other.requestsAPI
-import com.example.splmobile.models.lixeiras.LixeiraRepository
+import com.example.splmobile.models.locaisLixo.LocalLixoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.Clock
 import org.koin.core.KoinApplication
@@ -50,14 +50,14 @@ private val coreModule = module {
             Dispatchers.Default
         )
     }
-    single<LixeiraApi> {
-        LixeiraApiImpl(
-            getWith("LixeiraApiImpl"),
+    single<LocalLixoApi> {
+        LocalLixoApiImpl(
+            getWith("LocalLixoApiImpl"),
             get()
         )
     }
     single<requestsAPI> {
-        requests(
+        requestsApiImpl(
             getWith("requests"),
             get()
         )
@@ -74,11 +74,11 @@ private val coreModule = module {
     factory { (tag: String?) -> if (tag != null) baseLogger.withTag(tag) else baseLogger }
 
     single {
-        LixeiraRepository(
+        LocalLixoRepository(
             get(),
             get(),
             get(),
-            getWith("LixeiraRepository"),
+            getWith("LocalLixoRepository"),
             get()
         )
     }

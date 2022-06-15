@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.splmobile.android.ui.onboarding.OnboardingPage
-import com.example.splmobile.android.ui.onboarding.navigation.Screen
+import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.OnboardingViewModel
 import com.google.accompanist.pager.*
 
@@ -67,7 +67,7 @@ fun OnboardingScreen(
         ){
             onboardingViewModel.saveOnBoardingState(completed = true)
             navController.popBackStack()
-            navController.navigate(Screen.Authentication.route)
+            navController.navigate(Screen.Login.route)
         }
     }
 

@@ -124,7 +124,7 @@ if __name__ == '__main__':
                         longitude=longitude,organizador=organizador.id,
                         estado=random.choice(estado),acessibilidade=random.choice(acessibilidade),
                         volume=random.choice(volume),restricoes=random.choice(restricoes),
-                        tipoLixo=tipoLixoJSON,duracao=duracao)
+                        tipoLixo=tipoLixoJSON,duracao=duracao,dataInicio=datetime.datetime.utcnow())
         session.add(evento)
 
 

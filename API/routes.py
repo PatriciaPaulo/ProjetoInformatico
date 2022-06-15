@@ -297,7 +297,7 @@ def create_evento(current_user):
     new_evento = Evento(nome=data['nome'], latitude=data['latitude'], longitude=data['longitude'],organizador=current_user.id,
                         estado=data['estado'], duracao=data['duracao'], descricao=data['descricao'],
                         acessibilidade=data['acessibilidade'], restricoes=data['restricoes'], tipoLixo=data['tipoLixo'],
-                        volume=data['volume'], foto=data['foto'], observacoes=data['observacoes'],
+                        volume=data['volume'], foto=data['foto'], observacoes=data['observacoes'],dataInicio=data['dataInicio'],
                         )
     db.session.add(new_evento)
     db.session.commit()
@@ -321,6 +321,7 @@ def get_eventos(current_user):
         evento_data['longitude'] = evento.nome
         evento_data['estado'] = evento.estado
         evento_data['duracao'] = evento.duracao
+        evento_data['dataInicio'] = evento.dataInicio
         evento_data['descricao'] = evento.descricao
         evento_data['acessibilidade'] = evento.acessibilidade
         evento_data['restricoes'] = evento.restricoes
@@ -350,6 +351,7 @@ def update_evento(current_user, evento_id):
 
     evento_data = request.get_json()
     evento.duracao = evento_data['duracao']
+    evento.dataInicio = evento_data['dataInicio']
     evento.descricao = evento_data['descricao']
     evento.acessibilidade = evento_data['acessibilidade']
     evento.restricoes = evento_data['restricoes']
@@ -387,6 +389,7 @@ def aprovar_evento(evento_id):
 @token_required
 def create_lixeira(current_user):
     data = request.get_json()
+    print(data)
     new_lixeira = Lixeira(nome=data['nome'],latitude=data['latitude'],longitude=data['longitude'], criador=current_user.username,
                         estado=data['estado'], aprovado=data['aprovado'], foto=data['foto'])
     db.session.add(new_lixeira)

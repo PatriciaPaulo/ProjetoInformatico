@@ -1,13 +1,10 @@
 package com.example.splmobile.android.ui.main.screens.LocalLixo
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -22,41 +19,23 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.splmobile.android.R
-import com.example.splmobile.android.ui.main.screens.getGeocode
-import com.example.splmobile.database.Lixeira
-import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.lixeiras.LixeiraViewModel
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
+import com.example.splmobile.database.LocalLixo
+import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun LocalLixoScreen(navController: NavHostController, lixeiraID: Long,lixeiraViewModel: LixeiraViewModel) {
-    // shared view model states
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val lifecycleAwareLixeirasFlow = remember(lixeiraViewModel.lixeirasState, lifecycleOwner) {
-        lixeiraViewModel.lixeirasState.flowWithLifecycle(lifecycleOwner.lifecycle)
-    }
-    @SuppressLint("StateFlowValueCalledInComposition") // False positive lint check when used inside collectAsState()
-    val lixeirasState by lifecycleAwareLixeirasFlow.collectAsState(lixeiraViewModel.lixeirasState.value)
-
-    val coroutineScope = rememberCoroutineScope()
-
-    var lixeira by remember { mutableStateOf(Lixeira(0,"aa",0,"1","1","estado",false,"")) }
+fun LocalLixoScreen(navController: NavHostController, lixeiraID: Long,localLixoViewModel: LocalLixoViewModel) {
+    var lixeira by remember { mutableStateOf(LocalLixo(0,"aa","user","1","1","estado",false,"")) }
     LaunchedEffect(Unit) {
-        lixeira = lixeiraViewModel.getLixeiraInfo(lixeiraID)!!
+        lixeira = localLixoViewModel.getLocalLixoInfo(lixeiraID)!!
     }
     LocalLixoInfo(lixeira,navController)
 }
 
 
 @Composable
-fun LocalLixoInfo(lixeira: Lixeira,navController:NavHostController){
+fun LocalLixoInfo(localLixo: LocalLixo,navController:NavHostController){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -65,7 +44,7 @@ fun LocalLixoInfo(lixeira: Lixeira,navController:NavHostController){
     ) {
 
         Text(
-            text = "Lixeira #${lixeira.id}",
+            text = "localLixo #${localLixo.id}",
             fontWeight = FontWeight.Bold,
             color = Color.White,
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -73,7 +52,7 @@ fun LocalLixoInfo(lixeira: Lixeira,navController:NavHostController){
             fontSize = 30.sp
         )
         Text(
-            text = "Aprovada?  ${lixeira.aprovado}",
+            text = "Aprovada?  ${localLixo.aprovado}",
             fontWeight = FontWeight.Bold,
             color = Color.White,
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -81,7 +60,7 @@ fun LocalLixoInfo(lixeira: Lixeira,navController:NavHostController){
             fontSize = 20.sp
         )
         Text(
-            text = "Estado: ${lixeira.estado}",
+            text = "Estado: ${localLixo.estado}",
             fontWeight = FontWeight.Bold,
             color = Color.White,
             modifier = Modifier.align(Alignment.CenterHorizontally),

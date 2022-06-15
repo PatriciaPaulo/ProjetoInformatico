@@ -11,9 +11,9 @@ import io.ktor.client.engine.okhttp.OkHttp
 actual val platformModule: Module = module {
     single<SqlDriver> {
         AndroidSqliteDriver(
-            AppDatabase.Schema,
+            SPLDatabase.Schema,
             get(),
-            "AppDatabase"
+            "SPLDatabase"
         )
     }
 

@@ -2,7 +2,7 @@ package com.example.splmobile
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.initKoin
-import com.example.splmobile.shared.cache.AppDatabase
+
 import com.russhwolf.settings.AppleSettings
 import com.russhwolf.settings.Settings
 import com.squareup.sqldelight.db.SqlDriver
@@ -27,7 +27,7 @@ fun initKoinIos(
 )
 
 actual val platformModule = module {
-    single<SqlDriver> { NativeSqliteDriver(AppDatabase.Schema, "AppDatabase") }
+    single<SqlDriver> { NativeSqliteDriver(SPLDatabase.Schema, "SPLDatabase") }
 
     single { Darwin.create() }
 

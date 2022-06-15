@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.splmobile.android.R
-import com.example.splmobile.android.ui.main.components.BottomNavItem
+import com.example.splmobile.android.ui.navigation.BottomNavItem
 
 
 @Composable

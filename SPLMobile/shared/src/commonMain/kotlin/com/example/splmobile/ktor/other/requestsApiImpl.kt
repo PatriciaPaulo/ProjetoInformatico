@@ -14,7 +14,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.JsonElement
 import kotlin.contracts.CallsInPlace
 
-class requests(private val log: co.touchlab.kermit.Logger, engine: HttpClientEngine) : requestsAPI {
+class requestsApiImpl(private val log: co.touchlab.kermit.Logger, engine: HttpClientEngine) : requestsAPI {
     private val client = HttpClient(engine) {
         expectSuccess = true
         install(ContentNegotiation) {
@@ -43,7 +43,7 @@ class requests(private val log: co.touchlab.kermit.Logger, engine: HttpClientEng
         ensureNeverFrozen()
     }
 
-     override suspend fun postJsonFromApi(place: String): String {
+     override suspend fun getJsonFromApi(place: String): String {
 
         log.d { "post GEOCODE" }
         return client.get {

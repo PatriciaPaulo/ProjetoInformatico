@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     kotlin("android")
-    //id ("dagger.hilt.android.plugin")
+    id ("dagger.hilt.android.plugin")
     kotlin("kapt")
 }
 

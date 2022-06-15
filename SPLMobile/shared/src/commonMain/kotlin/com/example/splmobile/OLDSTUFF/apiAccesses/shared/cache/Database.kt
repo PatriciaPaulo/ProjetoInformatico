@@ -2,7 +2,6 @@ package com.example.splmobile.OLDSTUFF.apiAccesses.shared.cache
 
 /*
 import com.example.splmobile.core.entity.Lixeira
-import com.example.splmobile.shared.cache.AppDatabase
 
 internal class Database(databaseDriverFactory: DatabaseDriverFactory) {
     private val database = AppDatabase(databaseDriverFactory.createDriver())
