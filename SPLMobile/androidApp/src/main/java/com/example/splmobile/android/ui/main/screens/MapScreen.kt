@@ -45,22 +45,19 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
 
     // shared view model states
     val lifecycleOwner = LocalLifecycleOwner.current
-    localLixoViewModel.refreshLocaisLixo()
     val lifecycleAwareLixeirasFlow = remember(localLixoViewModel.locaisLixoState, lifecycleOwner) {
         localLixoViewModel.locaisLixoState.flowWithLifecycle(lifecycleOwner.lifecycle)
     }
-
-    @SuppressLint("StateFlowValueCalledInComposition") // False positive lint check when used inside collectAsState()
+    // @SuppressLint("StateFlowValueCalledInComposition") // False positive lint check when used inside collectAsState()
     val lixeirasState by lifecycleAwareLixeirasFlow.collectAsState(localLixoViewModel.locaisLixoState.value)
+
+    //val lixeirasState by localLixoViewModel.locaisLixoState.collectAsState()
+
     //android view model states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
 
-    // map settings
-    var uiSettings by remember { mutableStateOf(MapUiSettings()) }
-    var properties by remember {
-        mutableStateOf(MapProperties(mapType = MapType.SATELLITE))
-    }
+
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -116,7 +113,9 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
             Box(modifier = Modifier.padding(innerPadding)) {
                 MapContent(navController,lixeirasState,cameraPosition)
                 Column(
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
                     verticalArrangement = Arrangement.Bottom,
                     horizontalAlignment = Alignment.Start
                 ) {
@@ -149,9 +148,8 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
         bottomBar = { BottomNavigationBar(navController = navController) },
     )
 
-
-
 }
+
  suspend fun getGeocode(mainViewModel:SharedViewModel, nome : String):  String{
 
     return mainViewModel.getCoordenadas(nome)
@@ -166,43 +164,43 @@ fun MapContent(navController: NavHostController, locaisLixoState: LocalLixoViewS
         modifier = Modifier
             .background(colorResource(id = R.color.cardview_dark_background))
             .wrapContentSize(Alignment.Center)
-    ){
+    ) {
 
         val locaisLixo = locaisLixoState.locaisLixo
-        if (locaisLixo != null) {
 
-            Box(Modifier.fillMaxSize()) {
-                GoogleMap(
-                    modifier = Modifier.matchParentSize(),
-                    cameraPositionState = cameraPosition
-                ) {
+        Box(Modifier.fillMaxSize()) {
+            GoogleMap(
+                modifier = Modifier.matchParentSize(),
+                cameraPositionState = cameraPosition
+            ) {
+                if (locaisLixo != null) {
                     locaisLixo.forEach { localLixo ->
 
                         val lixeiraPosition =
                             LatLng(localLixo.latitude.toDouble(), localLixo.longitude.toDouble())
-
+                        //Log.d("Map", "lixeirrrraa, $localLixo")
+                        //Log.d("Map", "pos, $lixeiraPosition")
                         Marker(
                             position = lixeiraPosition,
                             title = localLixo.nome,
                             snippet = localLixo.estado,
                             onClick = {
-                                //navController.currentBackStackEntry?.arguments?.putLong("lixeiraID",lixeira.id)
-                                navController.navigate(Screen.LocalLixo.route+"/${localLixo.id}")
-
+                                navController.navigate(Screen.LocalLixo.route + "/${localLixo.id}")
                                 true
                             }
                         )
 
                     }
-
                 }
+
+            }
 
 
             }
         }
     }
 
-}
+
 
 
 @Composable

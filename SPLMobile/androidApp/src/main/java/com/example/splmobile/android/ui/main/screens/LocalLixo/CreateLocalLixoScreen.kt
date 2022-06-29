@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.database.LocalLixo
+import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 import com.google.android.gms.maps.model.CameraPosition
@@ -26,7 +27,7 @@ import com.google.maps.android.compose.Marker
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun CreateLocalLixoScreen(navController: NavHostController, mainViewModel: MainViewModel, localLixoViewModel: LocalLixoViewModel,sharedViewModel: SharedViewModel) {
+fun CreateLocalLixoScreen(navController: NavHostController, mainViewModel: MainViewModel, localLixoViewModel: LocalLixoViewModel,authViewModel: AuthViewModel,sharedViewModel: SharedViewModel) {
     //default camera position
     var portugal = LatLng(39.5, -8.0)
     var cameraPosition = rememberCameraPositionState {
@@ -103,7 +104,7 @@ fun CreateLocalLixoScreen(navController: NavHostController, mainViewModel: MainV
                 )
                 Button(
                     onClick = {
-                        localLixoViewModel.createLocalLixo(LocalLixo(0,"text","user",position.longitude.toString(),position.latitude.toString(),"Muito Sujo",false,""))
+                        localLixoViewModel.createLocalLixo(LocalLixo(0,text.text,0,String.format("%.4f", position.latitude),String.format("%.4f", position.longitude),"Muito Sujo",false,"", ""),authViewModel.tokenState.value)
                     },
                     enabled = buttonState.value
                 ) {

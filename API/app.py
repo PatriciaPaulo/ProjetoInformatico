@@ -22,15 +22,14 @@ if __name__ == '__main__':
 
         session = Session(engine)
 
-        # = Utilizador(username="user", password=generate_password_hash("123"), name="Nocme", email="email", admin=False, blocked=False)
+        #userDefault = Utilizador(username="user", password=generate_password_hash("123"), name="Nocme", email="email", admin=False, blocked=False)
         #adminDefault = Utilizador(username="admin", password=generate_password_hash("123"), name="Nocme", email="email",admin=True, blocked=False)
-        #lixeira1 = Lixeira(latitude="38.0",longitude="-9",criador=userDefault.username,estado="limpo",aprovado=False,foto="asdas")
-        #lixeira2 = Lixeira(latitude="38",longitude="-9",criador=userDefault.username,estado="sujo",aprovado=False,foto="asdas")
+
         #session.add(adminDefault)
         #session.add(userDefault)
-        #db.session.add(lixeira1)
-        #db.session.add(lixeira2)
-        #session.commit()
+
+
+        session.commit()
         app.run(debug=True)
 
 

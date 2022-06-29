@@ -1,8 +1,9 @@
 package com.example.splmobile
 
 import co.touchlab.kermit.Logger
-
 import com.example.splmobile.database.LocalLixo
+
+import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
 import com.example.splmobile.sqldelight.transactionWithContext
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.runtime.coroutines.asFlow
@@ -10,44 +11,31 @@ import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
 
 class DatabaseHelper(
-    sqlDriver: SqlDriver,
+    val sqlDriver: SqlDriver,
     private val log: Logger,
     private val backgroundDispatcher: CoroutineDispatcher
 ) {
     private val dbRef: SPLDatabase = SPLDatabase(sqlDriver)
 
     fun selectAllItems(): Flow<List<LocalLixo>> =
+
         dbRef.sPLDatabaseQueries
             .selectAllLocaisLixo()
             .asFlow()
             .mapToList()
             .flowOn(backgroundDispatcher)
 
-    suspend fun insertLocaisLixo(locaisLixo: List<JsonElement>) {
+    suspend fun insertLocaisLixo(locaisLixo: List<LocalLixoSer>) {
+
         log.d { "Inserting ${locaisLixo.size} locaisLixo into database" }
         dbRef.transactionWithContext(backgroundDispatcher) {
-
             locaisLixo.forEach { localLixo ->
-                val locaisLixoJsonObj =localLixo.jsonObject
-                //log.d { " BROOO 2${locaisLixoJsonObj.get("longitude").toString().removePrefix("\"").removeSuffix("\"")} " }
-
-
-                dbRef.sPLDatabaseQueries.insertLocalLixo(
-                    locaisLixoJsonObj.get("id").toString().removePrefix("\"").removeSuffix("\"").toLong(),
-                    locaisLixoJsonObj.get("nome").toString().removePrefix("\"").removeSuffix("\""),
-                    locaisLixoJsonObj.get("criador").toString().removePrefix("\"").removeSuffix("\""),
-                    locaisLixoJsonObj.get("longitude").toString().removePrefix("\"").removeSuffix("\""),
-                    locaisLixoJsonObj.get("latitude").toString().removePrefix("\"").removeSuffix("\""),
-                    locaisLixoJsonObj.get("estado").toString().removePrefix("\"").removeSuffix("\""),
-                    locaisLixoJsonObj.get("aprovado").toString().removePrefix("\"").removeSuffix("\"").toBoolean(),
-                    locaisLixoJsonObj.get("foto").toString().removePrefix("\"").removeSuffix("\""))
-            }
+                log.d { " lat  ${localLixo.latitude}"}
+                log.d { " long  ${localLixo.longitude}"}
+                dbRef.sPLDatabaseQueries.insertLocalLixo(localLixo.id,localLixo.nome,localLixo.criador,localLixo.latitude,localLixo.longitude,localLixo.estado,localLixo.aprovado,localLixo.foto,localLixo.eventos.toString())
+               }
         }
     }
 

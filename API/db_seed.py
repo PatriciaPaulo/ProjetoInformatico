@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
         session.add(lixeira)
         session.flush()
-        from datetime import date
+
 
         today = date.today()
         # ddmmYY

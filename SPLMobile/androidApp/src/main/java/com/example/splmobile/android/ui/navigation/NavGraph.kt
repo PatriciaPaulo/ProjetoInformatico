@@ -76,6 +76,7 @@ fun SetupNavGraph(
         composable(Screen.CreateLocalLixo.route) {
             CreateLocalLixoScreen(navController = navController,
                 mainViewModel = mainViewModel,
+                authViewModel = authViewModel,
                 localLixoViewModel = localLixoViewModel,
                 sharedViewModel = sharedViewModel)
         }

@@ -7,11 +7,10 @@ import com.example.splmobile.database.LocalLixo
 import com.example.splmobile.services.locaisLixo.LocalLixoApi
 
 import com.russhwolf.settings.Settings
+import io.ktor.client.call.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
 
 class LocalLixoRepository (
     private val dbHelper: DatabaseHelper,
@@ -31,8 +30,8 @@ class LocalLixoRepository (
         ensureNeverFrozen()
     }
 
-    suspend fun createLocalLixo(localLixo: LocalLixo): String {
-        val localLixoResult = localLixoApi.postLocalLixo(localLixo)
+    suspend fun createLocalLixo(localLixo: LocalLixo,token :String): String {
+        val localLixoResult = localLixoApi.postLocalLixo(localLixo,token)
        // log.v { "1: ${ localLixo }" }
       //  log.v { "2 result: ${ locaisLixoArray }" }
         log.v { "3 network result: ${ localLixoResult }" }
@@ -51,18 +50,21 @@ class LocalLixoRepository (
         }
     }
 
-    suspend fun refreshLocaisLixo() {
-        val localLixoResult = localLixoApi.getLocaisLixoJson()
-        var locaisLixo = Json.parseToJsonElement(localLixoResult!!.toString()).jsonObject.get("data")
-        var locaisLixoArray = Json.parseToJsonElement(locaisLixo.toString()).jsonArray
+    //update local storage by deleting old(?) and inserting all
+    //todo maybe change to only inserting new lix (if locais lixo updated from backoffice might not appear updated)
+   suspend fun refreshLocaisLixo() {
+        //log.v { "response ${ localLixo}" }
+        val localLixoList = localLixoApi.getLocaisLixo().locaisLixo
+        log.v { "locaisLixo  ${ localLixoList }" }
 
-        log.v { "locaisLixo network result: ${ locaisLixoArray.toList() }" }
-        log.v { "Fetched ${locaisLixoArray.size} locaisLixo from network" }
-        settings.putLong(DB_TIMESTAMP_KEY, clock.now().toEpochMilliseconds())
-        if (locaisLixoArray.isNotEmpty()) {
-            dbHelper.insertLocaisLixo(locaisLixoArray.toList())
+         log.v { "Fetched ${localLixoList.size} locaisLixo from network" }
+         settings.putLong(DB_TIMESTAMP_KEY, clock.now().toEpochMilliseconds())
+         if (localLixoList.isNotEmpty()) {
+             log.v { "IM HERE" }
+             dbHelper.deleteAllLocaisLixo()
+             dbHelper.insertLocaisLixo(localLixoList)
 
-        }
+         }
     }
 
     suspend fun deleteLocaisLixo() {

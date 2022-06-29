@@ -1,9 +1,10 @@
 package com.example.splmobile.services.locaisLixo
 
 import com.example.splmobile.database.LocalLixo
-import kotlinx.serialization.json.JsonElement
+import com.example.splmobile.dtos.locaisLixo.LocaisLixoResponse
+import io.ktor.client.statement.*
 
 interface LocalLixoApi {
-        suspend fun getLocaisLixoJson(): JsonElement?
-        suspend fun postLocalLixo(localLixo: LocalLixo): Any
+        suspend fun getLocaisLixo(): LocaisLixoResponse
+        suspend fun postLocalLixo(localLixo: LocalLixo, token: String): Any
 }

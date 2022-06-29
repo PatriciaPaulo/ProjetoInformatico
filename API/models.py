@@ -180,8 +180,8 @@ class Lixeira(Base):
     __tablename__ = "lixeira"
     id = Column(Integer, primary_key=True)
     nome = Column(String(50), nullable=False)
-    latitude  = Column(Numeric(8,6), nullable=False)
-    longitude  = Column(Numeric(9,6), nullable=False)
+    latitude  = Column(Integer, nullable=False)
+    longitude  = Column(Integer, nullable=False)
     criador = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
     estado = Column(String(50), nullable=False)
     aprovado = Column(Boolean, nullable=False)

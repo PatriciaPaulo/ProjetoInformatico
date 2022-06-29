@@ -11,12 +11,13 @@ admin INTEGER AS Boolean DEFAULT 0
 CREATE TABLE LocalLixo (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 nome TEXT NOT NULL,
-criador TEXT NOT NULL,
-longitude TEXT NOT NULL,
+criador INTEGER NOT NULL,
 latitude TEXT NOT NULL,
+longitude TEXT NOT NULL,
 estado TEXT NOT NULL,
 aprovado INTEGER AS Boolean DEFAULT 0 NOT NULL,
-foto TEXT
+foto TEXT,
+eventos TEXT
 );
 CREATE UNIQUE INDEX unq_lix_id ON LocalLixo(id);
 
@@ -26,8 +27,8 @@ INSERT OR REPLACE INTO Utilizador(id,username,name,email,blocked,admin)
 VALUES(?, ?, ?, ?, ?, ?);
 
 insertLocalLixo:
-INSERT OR REPLACE INTO LocalLixo(id,nome,criador,longitude,latitude,estado,aprovado,foto)
-VALUES(?, ?, ?, ?, ?, ?,?,?);
+INSERT OR REPLACE INTO LocalLixo(id,nome,criador,latitude,longitude,estado,aprovado,foto,eventos)
+VALUES(?, ?, ?, ?, ?, ?,?,?,?);
 
 
 removeAllUtilizadores:
@@ -47,3 +48,4 @@ FROM LocalLixo;
 selectAllLocaisLixoFromUtilizador:
 SELECT LocalLixo.*
 FROM LocalLixo INNER JOIN Utilizador ON LocalLixo.criador == Utilizador.id;
+

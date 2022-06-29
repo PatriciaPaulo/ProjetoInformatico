@@ -65,7 +65,9 @@ class AuthServiceImpl(
         return LoginResponse("error","error")
     }
 
-
+    override suspend fun postSignIn(): SignInResponse {
+        TODO("Not yet implemented")
+    }
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
@@ -75,7 +77,5 @@ class AuthServiceImpl(
     }
 
 
-    override suspend fun postSignIn(): SignInResponse {
-        TODO("Not yet implemented")
-    }
+
 }

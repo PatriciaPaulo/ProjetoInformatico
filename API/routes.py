@@ -390,7 +390,16 @@ def aprovar_evento(evento_id):
 def create_lixeira(current_user):
     data = request.get_json()
     print(data)
-    new_lixeira = Lixeira(nome=data['nome'],latitude=data['latitude'],longitude=data['longitude'], criador=current_user.username,
+    # Checks if lixeira with same coordinates exists
+    lix = db.session.query(Lixeira).filter_by(latitude=data['latitude']).first()
+    if lix:
+          if lix.longitude == float(data['longitude']) :
+            return make_response(jsonify({'message': 'Lixeira already exists! Update it instead!'}), 409)
+
+
+
+
+    new_lixeira = Lixeira(nome=data['nome'],latitude=data['latitude'],longitude=data['longitude'], criador=current_user.id,
                         estado=data['estado'], aprovado=data['aprovado'], foto=data['foto'])
     db.session.add(new_lixeira)
     db.session.commit()
@@ -417,9 +426,10 @@ def get_all_lixeiras():
             evSer = LixeiraEvento.serialize(ev)
             lixeira_data['eventos'].append(evSer)
         output.append(lixeira_data)
+    if len(output) == 0:
+        return make_response(jsonify({'locaisLixo':[],'message':'no locaisLixo'}), 404)
 
-
-    return make_response(jsonify({'data': output}), 200)
+    return make_response(jsonify({'locaisLixo': output,'message':'success'}), 200)
 
 @routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['GET'])
 @admin_required
@@ -431,7 +441,7 @@ def get_lixeira(current_user,lixeira_id):
 @routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['PUT'])
 @token_required
 def update_lixeira(current_user, lixeira_id):
-    lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id, criador=current_user.username).first()
+    lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id, criador=current_user.id).first()
     if not evento:
         return make_response(jsonify({'message': 'lixeira does not exist'}), 404)
 
