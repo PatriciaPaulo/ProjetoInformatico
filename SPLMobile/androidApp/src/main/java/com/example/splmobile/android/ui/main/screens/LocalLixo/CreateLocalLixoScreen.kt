@@ -2,14 +2,17 @@ package com.example.splmobile.android.ui.main.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
+import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.database.LocalLixo
 import com.example.splmobile.models.AuthViewModel
@@ -39,10 +42,11 @@ fun CreateLocalLixoScreen(navController: NavHostController, mainViewModel: MainV
     val searchTextState by mainViewModel.searchTextState
 
     val coroutineScope = rememberCoroutineScope()
-
+    val scaffoldState = rememberScaffoldState()
 
     Scaffold(
-        topBar = {
+        scaffoldState = scaffoldState,
+                topBar = {
             MapAppBar(
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState,
@@ -84,6 +88,8 @@ fun CreateLocalLixoScreen(navController: NavHostController, mainViewModel: MainV
 
     ) {
         var position by remember { mutableStateOf(LatLng(portugal.latitude,portugal.longitude)) }
+        var message by remember { mutableStateOf("")}
+        val context = LocalContext.current
         BottomSheetScaffold(
             sheetContent = {
                 var text by remember { mutableStateOf(TextFieldValue("")) }
@@ -104,8 +110,33 @@ fun CreateLocalLixoScreen(navController: NavHostController, mainViewModel: MainV
                 )
                 Button(
                     onClick = {
-                        localLixoViewModel.createLocalLixo(LocalLixo(0,text.text,0,String.format("%.4f", position.latitude),String.format("%.4f", position.longitude),"Muito Sujo",false,"", ""),authViewModel.tokenState.value)
-                    },
+                            coroutineScope.launch {
+                                message = localLixoViewModel.createLocalLixo(
+                                    LocalLixo(
+                                        0,
+                                        text.text,
+                                        0,
+                                        String.format("%.4f", position.latitude),
+                                        String.format("%.4f", position.longitude),
+                                        "Muito Sujo",
+                                        false,
+                                        "",
+                                        ""
+                                    ), authViewModel.tokenState.value
+                                )
+                                when(message){
+                                    "" -> print("x == 2")
+                                    else -> {
+                                        Toast.makeText(
+                                            context,
+                                            "Showing toast...$message",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        navController.popBackStack()
+                                    }
+                                }
+                            }
+                              },
                     enabled = buttonState.value
                 ) {
                     Text("Criar Local de Lixo")
@@ -134,7 +165,6 @@ fun CreateLocalLixoScreen(navController: NavHostController, mainViewModel: MainV
 
                 }
                 Button(
-
                     onClick = {
                         navController.popBackStack()
                     }
@@ -149,4 +179,18 @@ fun CreateLocalLixoScreen(navController: NavHostController, mainViewModel: MainV
     }
 
 }
-
+/*
+*    coroutineScope.launch { // using the `coroutineScope` to `launch` showing the snackbar
+                            // taking the `snackbarHostState` from the attached `scaffoldState`
+                            val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                                message = "Message $message",
+                            )
+                            when (snackbarResult) {
+                                SnackbarResult.Dismissed ->{
+                                    Log.d("SnackbarDemo", "Dismissed")
+                                    navController.popBackStack()
+                                }
+                            }
+                        }
+*
+* */

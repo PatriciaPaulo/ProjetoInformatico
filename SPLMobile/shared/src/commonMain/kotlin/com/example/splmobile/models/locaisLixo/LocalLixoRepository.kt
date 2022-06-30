@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.DatabaseHelper
 import com.example.splmobile.database.LocalLixo
+import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.services.locaisLixo.LocalLixoApi
 
 import com.russhwolf.settings.Settings
@@ -31,12 +32,13 @@ class LocalLixoRepository (
     }
 
     suspend fun createLocalLixo(localLixo: LocalLixo,token :String): String {
-        val localLixoResult = localLixoApi.postLocalLixo(localLixo,token)
+        val localLixoResult: RequestMessageResponse = localLixoApi.postLocalLixo(localLixo,token)
        // log.v { "1: ${ localLixo }" }
       //  log.v { "2 result: ${ locaisLixoArray }" }
-        log.v { "3 network result: ${ localLixoResult }" }
+        log.v { "network result: ${ localLixoResult }" }
         refreshLocaisLixo()
-        return localLixoResult.toString()
+
+        return localLixoResult.message
     }
 
     fun getLocaisLixo(): Flow<List<LocalLixo>> = dbHelper.selectAllItems()
@@ -49,7 +51,15 @@ class LocalLixoRepository (
             refreshLocaisLixo()
         }
     }
+    fun updateLocalLixoEstado(localLixo: LocalLixo, s: String): String {
+        val localLixoResult: RequestMessageResponse = localLixoApi.patchLocalLixoEstado(localLixo,s)
+        // log.v { "1: ${ localLixo }" }
+        //  log.v { "2 result: ${ locaisLixoArray }" }
+        log.v { "network result: ${ localLixoResult }" }
+        dbHelper
 
+        return localLixoResult.message
+    }
     //update local storage by deleting old(?) and inserting all
     //todo maybe change to only inserting new lix (if locais lixo updated from backoffice might not appear updated)
    suspend fun refreshLocaisLixo() {
@@ -83,4 +93,6 @@ class LocalLixoRepository (
         }
         return stale
     }
+
+
 }

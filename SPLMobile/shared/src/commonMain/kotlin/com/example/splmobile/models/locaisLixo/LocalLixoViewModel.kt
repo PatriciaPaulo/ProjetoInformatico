@@ -62,7 +62,7 @@ class LocalLixoViewModel (
     }
 
 
-    fun getLocalLixoInfo(id: Long): LocalLixo?  {
+    suspend fun getLocalLixoInfo(id: Long): LocalLixo?  {
         var localLixo: LocalLixo? = null
          viewModelScope.async {
             log.v { "GetLocalLixo" }
@@ -71,7 +71,7 @@ class LocalLixoViewModel (
             } catch (exception: Exception) {
                 handleLocalLixoError(exception)
             }
-        }.onAwait
+        }.await()
         return localLixo
     }
 
@@ -101,7 +101,7 @@ class LocalLixoViewModel (
         }
     }
 
-    fun createLocalLixo(localLixo: LocalLixo,token: String): String {
+    suspend fun createLocalLixo(localLixo: LocalLixo, token: String): String {
         var response: String = ""
         viewModelScope.async {
             log.v { "CreateLocalLixo" }
@@ -110,7 +110,8 @@ class LocalLixoViewModel (
             } catch (exception: Exception) {
                 handleLocalLixoError(exception)
             }
-        }.onAwait
+        }.await()
+        log.v { "message: ${ response }" }
         return response
     }
 
@@ -124,6 +125,20 @@ class LocalLixoViewModel (
                 it.copy(isLoading = false)
             }
         }
+    }
+
+    suspend fun updateLocalLixoEstado(localLixo: LocalLixo, s: String) : String{
+        var response: String = ""
+        viewModelScope.async {
+            log.v { "CreateLocalLixo" }
+            try {
+                response = localLixoRepository.updateLocalLixoEstado(localLixo,s)
+            } catch (exception: Exception) {
+                handleLocalLixoError(exception)
+            }
+        }.await()
+        log.v { "message: ${ response }" }
+        return response
     }
 }
 

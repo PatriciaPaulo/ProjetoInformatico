@@ -2,6 +2,7 @@ package com.example.splmobile.android.ui.main.screens
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -26,6 +27,7 @@ import com.example.splmobile.android.ui.main.components.SearchBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
+import com.example.splmobile.database.LocalLixo
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewState
@@ -44,14 +46,14 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
 ) {
 
     // shared view model states
-    val lifecycleOwner = LocalLifecycleOwner.current
+    /*val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleAwareLixeirasFlow = remember(localLixoViewModel.locaisLixoState, lifecycleOwner) {
         localLixoViewModel.locaisLixoState.flowWithLifecycle(lifecycleOwner.lifecycle)
-    }
+    }*/
     // @SuppressLint("StateFlowValueCalledInComposition") // False positive lint check when used inside collectAsState()
-    val lixeirasState by lifecycleAwareLixeirasFlow.collectAsState(localLixoViewModel.locaisLixoState.value)
+   // val lixeirasState by lifecycleAwareLixeirasFlow.collectAsState(localLixoViewModel.locaisLixoState.value)
 
-    //val lixeirasState by localLixoViewModel.locaisLixoState.collectAsState()
+    val lixeirasState by localLixoViewModel.locaisLixoState.collectAsState()
 
     //android view model states
     val searchWidgetState by mainViewModel.searchWidgetState
@@ -159,7 +161,16 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
 
 @Composable
 fun MapContent(navController: NavHostController, locaisLixoState: LocalLixoViewState, cameraPosition: CameraPositionState) {
-
+    var filterLocaisLixo by remember {
+        mutableStateOf(emptyList<LocalLixo>())
+    }
+    Box(
+        modifier = Modifier
+            .background(colorResource(id = R.color.cardview_dark_background))
+            .wrapContentSize(Alignment.TopStart)
+    ) {
+        DropdownDemo()
+    }
     Box(
         modifier = Modifier
             .background(colorResource(id = R.color.cardview_dark_background))
@@ -174,6 +185,8 @@ fun MapContent(navController: NavHostController, locaisLixoState: LocalLixoViewS
                 cameraPositionState = cameraPosition
             ) {
                 if (locaisLixo != null) {
+                    filterLocaisLixo = locaisLixo
+                   // filterLocaisLixo.filter { localLixo -> localLixo.aprovado  }
                     locaisLixo.forEach { localLixo ->
 
                         val lixeiraPosition =
@@ -250,4 +263,34 @@ fun MapAppBar(
     }
 }
 
-
+@Composable
+fun DropdownDemo() {
+    var expanded by remember { mutableStateOf(false) }
+    val items = listOf("A", "B", "C", "D", "E", "F")
+    val disabledValue = "B"
+    var selectedIndex by remember { mutableStateOf(0) }
+    Box(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.TopStart)) {
+        Text(items[selectedIndex],modifier = Modifier.fillMaxWidth().clickable(onClick = { expanded = true }).background(
+            Color.Gray))
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth().background(
+                Color.Red)
+        ) {
+            items.forEachIndexed { index, s ->
+                DropdownMenuItem(onClick = {
+                    selectedIndex = index
+                    expanded = false
+                }) {
+                    val disabledText = if (s == disabledValue) {
+                        " (Disabled)"
+                    } else {
+                        ""
+                    }
+                    Text(text = s + disabledText)
+                }
+            }
+        }
+    }
+}

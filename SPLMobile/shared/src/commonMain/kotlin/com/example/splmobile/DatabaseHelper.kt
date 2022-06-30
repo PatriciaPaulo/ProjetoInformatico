@@ -32,8 +32,8 @@ class DatabaseHelper(
         log.d { "Inserting ${locaisLixo.size} locaisLixo into database" }
         dbRef.transactionWithContext(backgroundDispatcher) {
             locaisLixo.forEach { localLixo ->
-                log.d { " lat  ${localLixo.latitude}"}
-                log.d { " long  ${localLixo.longitude}"}
+                //log.d { " lat  ${localLixo.latitude}"}
+                //log.d { " long  ${localLixo.longitude}"}
                 dbRef.sPLDatabaseQueries.insertLocalLixo(localLixo.id,localLixo.nome,localLixo.criador,localLixo.latitude,localLixo.longitude,localLixo.estado,localLixo.aprovado,localLixo.foto,localLixo.eventos.toString())
                }
         }
