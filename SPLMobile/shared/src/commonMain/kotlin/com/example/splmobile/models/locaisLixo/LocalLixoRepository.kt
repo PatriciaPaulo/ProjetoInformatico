@@ -51,6 +51,7 @@ class LocalLixoRepository (
             refreshLocaisLixo()
         }
     }
+    /*
     fun updateLocalLixoEstado(localLixo: LocalLixo, s: String): String {
         val localLixoResult: RequestMessageResponse = localLixoApi.patchLocalLixoEstado(localLixo,s)
         // log.v { "1: ${ localLixo }" }
@@ -60,6 +61,7 @@ class LocalLixoRepository (
 
         return localLixoResult.message
     }
+     */
     //update local storage by deleting old(?) and inserting all
     //todo maybe change to only inserting new lix (if locais lixo updated from backoffice might not appear updated)
    suspend fun refreshLocaisLixo() {

@@ -153,7 +153,7 @@ fun LocalLixoInfo(localLixo: LocalLixo,navController:NavHostController,localLixo
 
         Button(
             onClick = {
-                localLixoViewModel.updateLocalLixoEstado(items[selectedIndex.value])
+                //localLixoViewModel.updateLocalLixoEstado(items[selectedIndex.value])
             },
             enabled = updateLocalLixo.value,
 

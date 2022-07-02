@@ -92,4 +92,11 @@ class LocalLixoApiImpl(private val log: KermitLogger, engine: HttpClientEngine) 
             encodedPath = path
         }
     }
+
+    override suspend fun patchLocalLixoEstado(
+        localLixo: LocalLixo,
+        s: String
+    ): RequestMessageResponse {
+        TODO("Not yet implemented")
+    }
 }

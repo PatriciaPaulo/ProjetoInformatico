@@ -132,7 +132,7 @@ class LocalLixoViewModel (
         viewModelScope.async {
             log.v { "CreateLocalLixo" }
             try {
-                response = localLixoRepository.updateLocalLixoEstado(localLixo,s)
+                //response = localLixoRepository.updateLocalLixoEstado(localLixo,s)
             } catch (exception: Exception) {
                 handleLocalLixoError(exception)
             }
