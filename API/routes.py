@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
 from models import Utilizador, Atividade, Evento, db, Lixeira,LixeiraEvento
-from utils import token_required,admin_required
+from utils import token_required,admin_required,guest
 import jwt
 import datetime
 
@@ -47,11 +47,11 @@ def create_admin(current_user):
 def login_admin():
     auth = request.get_json()
     #Checks if requests has username and password parameters
-    if not auth or not auth['username'] or not auth['password']:
+    if not auth or not auth['email'] or not auth['password']:
         return make_response('Bad request', 400)
 
     #Checks if user exists
-    admin = db.session.query(Utilizador).filter_by(username=auth['username']).first()
+    admin = db.session.query(Utilizador).filter_by(email=auth['email']).first()
     if not admin:
         return make_response('Admin doesn\'t exist', 404)
 
@@ -67,7 +67,7 @@ def login_admin():
     if check_password_hash(admin.password, auth['password']):
         #If correct returns makes and returns token
         token = jwt.encode(
-            {'username': admin.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
+            {'email': admin.email, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
             current_app.config['SECRET_KEY'], "HS256")
 
         return make_response(jsonify({'access_token': token}), 200)
@@ -146,11 +146,11 @@ def register_user():
 def login_user():
     auth = request.get_json()
     # Checks if requests has username and password parameters
-    if not auth or not auth['username'] or not auth['password']:
+    if not auth or not auth['email'] or not auth['password']:
         return make_response('Bad request', 400)
 
     # Checks if user exists
-    user = db.session.query(Utilizador).filter_by(username=auth['username']).first()
+    user = db.session.query(Utilizador).filter_by(email=auth['email']).first()
     if not user:
         return make_response('User doesn\'t exist', 404)
 
@@ -166,7 +166,7 @@ def login_user():
     if check_password_hash(user.password, auth['password']):
         # If correct returns makes and returns token
         token = jwt.encode(
-            {'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
+            {'email': user.email, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=45)},
             current_app.config['SECRET_KEY'], "HS256")
 
         return make_response(jsonify({'access_token': token,'message':'success'}), 200)
@@ -386,7 +386,7 @@ def aprovar_evento(evento_id):
 
 #region Lixeira
 @routes_blueprint.route('/lixeiras', methods=['POST'])
-@token_required
+@guest
 def create_lixeira(current_user):
     data = request.get_json()
     print(data)
@@ -394,16 +394,14 @@ def create_lixeira(current_user):
     lix = db.session.query(Lixeira).filter_by(latitude=data['latitude']).first()
     if lix:
           if lix.longitude == float(data['longitude']) :
-            return make_response(jsonify({'message': 'Lixeira already exists! Update it instead!'}), 409)
-
-
+            return make_response(jsonify({'message': 'Lixeira already exists! Update it instead!','status': 409}))
 
 
     new_lixeira = Lixeira(nome=data['nome'],latitude=data['latitude'],longitude=data['longitude'], criador=current_user.id,
                         estado=data['estado'], aprovado=data['aprovado'], foto=data['foto'])
     db.session.add(new_lixeira)
     db.session.commit()
-    return make_response(jsonify({'message': 'new lixeira created'}), 200)
+    return make_response(jsonify({'message': 'local lixo criado','status':  200}))
 
 
 
@@ -427,16 +425,15 @@ def get_all_lixeiras():
             lixeira_data['eventos'].append(evSer)
         output.append(lixeira_data)
     if len(output) == 0:
-        return make_response(jsonify({'locaisLixo':[],'message':'no locaisLixo'}), 404)
+        return make_response(jsonify({'data':[],'staus':404}))
 
-    return make_response(jsonify({'locaisLixo': output,'message':'success'}), 200)
+    return make_response(jsonify({'data': output,'status':200}))
 
 @routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['GET'])
-@admin_required
 def get_lixeira(current_user,lixeira_id):
     lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id).first()
 
-    return make_response(jsonify({'data': Lixeira.serialize(lixeira)}), 200)
+    return make_response(jsonify({'data': Lixeira.serialize(lixeira),'status':200}))
 
 @routes_blueprint.route('/lixeiras/<lixeira_id>', methods=['PUT'])
 @token_required
@@ -475,7 +472,7 @@ def aprovar_lixeira(current_user,lixeira_id):
 
 
 @routes_blueprint.route('/lixeiras/<lixeira_id>/mudarEstadoLixeira', methods=['PATCH'])
-@admin_required
+@token_required
 def mudar_estado_lixeira(current_user,lixeira_id):
     lixeira = db.session.query(Lixeira).filter_by(id=lixeira_id).first()
     if not lixeira:
@@ -486,7 +483,7 @@ def mudar_estado_lixeira(current_user,lixeira_id):
     lixeira_data['estado'] = lixeira.estado
 
     db.session.commit()
-    return make_response(jsonify({'message': 'lixeira atualizada'}), 200)
+    return make_response(jsonify({'message': 'estado do local de lixo atualizado'}), 200)
 
 #endregion
 

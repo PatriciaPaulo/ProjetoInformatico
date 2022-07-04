@@ -24,7 +24,11 @@ if __name__ == '__main__':
     r = RandomWords()
 
     # SEED UTILIZADORES
-    session.query(Utilizador).delete()
+
+    userDefault = Utilizador(username="user", password=generate_password_hash("123"), name="Nome", email="user@mail.pt", admin=False, blocked=False)
+    session.add(userDefault)
+    session.commit()
+
     for i in range(10):
         first_name = names.get_first_name()
         last_name = names.get_last_name()
@@ -39,8 +43,13 @@ if __name__ == '__main__':
             Utilizador(username=uname, password=generate_password_hash("123"), name=full_name, email=email, admin=False,
                        blocked=False,deleted_at=None))
         session.commit()
+
     print("---UTILIZADORES seed done!")
     # SEED ADMINS
+    adminDefault = Utilizador(username="admin", password=generate_password_hash("123"), name="Nome", email="admin@mail.pt",admin=True, blocked=False)
+    session.add(adminDefault)
+    session.commit()
+
     for i in range(5):
         first_name = names.get_first_name()
         last_name = names.get_last_name()
