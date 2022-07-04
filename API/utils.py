@@ -51,7 +51,7 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
 
     return decorator
-
+\
 
 def admin_required(f):
     @wraps(f)

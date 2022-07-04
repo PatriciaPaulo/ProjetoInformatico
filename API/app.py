@@ -22,12 +22,6 @@ if __name__ == '__main__':
 
         session = Session(engine)
 
-        #userDefault = Utilizador(username="user", password=generate_password_hash("123"), name="Nocme", email="email", admin=False, blocked=False)
-        #adminDefault = Utilizador(username="admin", password=generate_password_hash("123"), name="Nocme", email="email",admin=True, blocked=False)
-
-        #session.add(adminDefault)
-        #session.add(userDefault)
-
 
         session.commit()
         app.run(debug=True)
