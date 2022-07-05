@@ -41,7 +41,8 @@ fun SetupNavGraph(
             OnboardingScreen(navController = navController)
         }
         composable(route = Screen.Authentication.route) {
-            AuthenticationScreen(navController = navController)
+            AuthenticationScreen(navController = navController,
+                authViewModel = authViewModel)
         }
         composable(route = Screen.Login.route) {
             LoginScreen(navController = navController,

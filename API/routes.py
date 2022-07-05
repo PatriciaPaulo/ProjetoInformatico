@@ -147,20 +147,20 @@ def login_user():
     auth = request.get_json()
     # Checks if requests has username and password parameters
     if not auth or not auth['email'] or not auth['password']:
-        return make_response(jsonify({'access_token': "",'message': 'Bad request','status':400}))
+        return make_response(jsonify({'access_token': "",'message': 'Bad request','status':400}), 400)
 
     # Checks if user exists
     user = db.session.query(Utilizador).filter_by(email=auth['email']).first()
     if not user:
-        return make_response(jsonify({'access_token': "",'message': 'User doesn\'t exist','status':404}) )
+        return make_response(jsonify({'access_token': "",'message': 'User doesn\'t exist','status':404}), 404)
 
     # Checks if user is an admin
     if user.admin:
-        return make_response(jsonify({'access_token': "",'message': 'Can not login with admin account!','status':401}))
+        return make_response(jsonify({'access_token': "",'message': 'Can not login with admin account!','status':401}), 401)
 
     # Checks if user is blocked
     if user.blocked:
-        return make_response(jsonify({'access_token': "",'message': 'Unknown Error, try again!','status':400}))
+        return make_response(jsonify({'access_token': "",'message': 'Unknown Error, try again!','status':400}), 400)
 
     # Checks if password is correct
     if check_password_hash(user.password, auth['password']):
@@ -171,7 +171,7 @@ def login_user():
 
         return make_response(jsonify({'access_token': token,'message':'logged in','status': 200}))
 
-    return make_response(jsonify({'access_token': "",'message': 'Unknown Error, try again!','status':400}))
+    return make_response(jsonify({'access_token': "",'message': 'Unknown Error, try again!','status':400}), 400)
 
 #get logged in user
 @routes_blueprint.route('/users/me', methods=['GET'])

@@ -1,6 +1,7 @@
 package com.example.splmobile.android.ui.main.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,6 +24,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(navController:NavController) {
+    Log.e("HOME", "Yes")
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) },
         content = {
