@@ -1,6 +1,7 @@
 package com.example.splmobile.android
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.rememberNavController
 
 import co.touchlab.kermit.Logger
@@ -30,6 +37,7 @@ import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
 //import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
@@ -38,6 +46,12 @@ import javax.inject.Inject
 
 private const val TAG = "MainActivity"
 const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
+
+val Context.dataStore : DataStore<Preferences> by preferencesDataStore(name = "settings")
+
+const val USER_KEY = "user"
+const val PASSWORD_KEY = "password"
+
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @AndroidEntryPoint

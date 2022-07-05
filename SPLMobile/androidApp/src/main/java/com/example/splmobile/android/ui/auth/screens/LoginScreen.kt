@@ -1,5 +1,6 @@
 package com.example.splmobile.android.ui.auth.screens
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.HorizontalAlignmentLine
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -33,9 +35,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.NavHostController
+import com.example.splmobile.android.*
 import com.example.splmobile.android.R
-import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.dtos.auth.LoginResponse
@@ -43,7 +51,6 @@ import com.example.splmobile.isEmailValid
 import com.example.splmobile.isTextFieldEmpty
 import com.example.splmobile.models.AuthViewModel
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun LoginScreen(
@@ -127,6 +134,12 @@ fun ComposableUI(
             when (loginUIState) {
                 is AuthViewModel.LoginUIState.Loading -> showRequestState = true
                 is AuthViewModel.LoginUIState.Success -> {
+
+                    LocalContext.current.dataStore.edit { settings ->
+                        settings[stringPreferencesKey(USER_KEY)] = email
+                        settings[stringPreferencesKey(PASSWORD_KEY)] = password
+                    }
+
                     showRequestState = false
                     navController.navigate(BottomNavItem.Home.screen_route)
 
@@ -150,6 +163,7 @@ fun ComposableUI(
         showErrorState = showErrorState,
         navController = navController
     ) {
+        // validate()
         if(isEmailValid(email) && !isTextFieldEmpty(password)){
             authViewModel.login(email, password)
         } else {
