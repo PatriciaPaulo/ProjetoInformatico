@@ -101,7 +101,7 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
     ): RequestMessageResponse {
         log.d { "update Local Lixo" }
         try{
-            return client.post {
+            return client.patch {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }

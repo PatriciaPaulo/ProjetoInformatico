@@ -1,9 +1,6 @@
 package com.example.splmobile.android.ui.main
 
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
@@ -27,7 +24,7 @@ fun BottomNavigationBar(navController: NavController) {
 
     )
     BottomNavigation(
-        backgroundColor = colorResource(id = R.color.colorPrimary),
+        backgroundColor = MaterialTheme.colors.primary,
         contentColor = Color.Black
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()

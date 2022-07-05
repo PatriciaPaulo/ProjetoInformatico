@@ -180,7 +180,7 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
                     })
                 }){
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        MapContent(navController,localLixoViewModel.locaisLixoUIState.collectAsState().value,cameraPosition,localLixoState)
+                        MapContent(navController,localLixoViewModel.locaisLixoUIState.collectAsState().value,localLixoState)
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -208,7 +208,6 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
 fun MapContent(
     navController: NavHostController,
     locaisLixoState: LocalLixoViewModel.LocaisLixoUIState,
-    cameraPosition: CameraPositionState,
     localLixoState: MutableState<LocalLixoSer>
 ) {
     var filterLocaisLixo by remember {
@@ -235,6 +234,11 @@ fun MapContent(
             ) {
 
                 val locaisLixo = locaisLixoState.locaisLixo
+                var portugal = LatLng(39.5, -8.0)
+                var cameraPosition = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(portugal, 7f)
+
+                }
 
                 Box(Modifier.fillMaxSize()) {
                     GoogleMap(
@@ -312,7 +316,7 @@ fun SheetContent(
         //variables to create a local lixo
         var nomeLocalLixo by remember { mutableStateOf(TextFieldValue("")) }
         var estadoLocalLixo by remember { mutableStateOf(TextFieldValue("")) }
-
+        val statusList = listOf("Muito sujo", "Pouco sujo", "Limpo")
 
         //if its a new local lixo
         if(localLixo.value.id.equals(0L)){
@@ -327,18 +331,50 @@ fun SheetContent(
                             nomeLocalLixo = newText
                         }
                     )
-                    TextField(
-                        value = estadoLocalLixo,
-                        label = { Text(text = "Estado Local Lixo") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    var expanded by remember { mutableStateOf(false) }
+                    var selectedOptionText by remember { mutableStateOf(statusList[0]) }
 
-                        onValueChange = { newText ->
-                            estadoLocalLixo = newText
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = {
+                            expanded = !expanded
                         }
-                    )
-                    if (nomeLocalLixo.text.isNotEmpty() && estadoLocalLixo.text.isNotEmpty()){
+                    ) {
+                        TextField(
+                            readOnly = true,
+                            value = selectedOptionText,
+                            onValueChange = { },
+                            label = { Text("Label") },
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = expanded
+                                )
+                            },
+                            colors = ExposedDropdownMenuDefaults.textFieldColors()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = {
+                                expanded = false
+                            }
+                        ) {
+                            statusList.forEach { selectionOption ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        selectedOptionText = selectionOption
+                                        expanded = false
+                                    }
+                                ) {
+                                    Text(text = selectionOption)
+                                }
+                            }
+                        }
+                    }
+
+
+                    if (nomeLocalLixo.text.isNotEmpty()){
                         localLixo.value.nome = nomeLocalLixo.text
-                        localLixo.value.estado = estadoLocalLixo.text
+                        localLixo.value.estado = selectedOptionText
                         createLocalLixoState.value = true
                     }else{
                         createLocalLixoState.value = false

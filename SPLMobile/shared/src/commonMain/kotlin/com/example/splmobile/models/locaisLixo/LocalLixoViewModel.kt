@@ -63,6 +63,7 @@ class LocalLixoViewModel (
 
     fun getLocaisLixo() {
         _locaisLixoUIState.value = LocaisLixoUIState.Loading
+        log.v("getting all local lixo ")
         viewModelScope.launch {
             val response = localLixoService.getLocaisLixo()
 
@@ -76,30 +77,39 @@ class LocalLixoViewModel (
     }
 
      fun createLocalLixo(localLixo: LocalLixoSer) {
+         log.v("creating local lixo $localLixo")
          _localLixoCreateUIState.value = LocalLixoCreateUIState.Loading
          viewModelScope.launch {
              val response = localLixoService.postLocalLixo(localLixo)
-
              if(response.status == "200"){
+                 log.v("Creating local lixo successful")
                  _localLixoCreateUIState.value = LocalLixoCreateUIState.Success
              }else{
+                 log.v("Creating local lixo error")
                  _localLixoCreateUIState.value = LocalLixoCreateUIState.Error(response.message)
              }
          }
+        getLocaisLixo()
     }
 
     fun updateLocalLixoEstado(localLixo: LocalLixoSer, estado: String, token: String){
-        _localLixoCreateUIState.value = LocalLixoCreateUIState.Loading
+        log.v("updating status local lixo $localLixo")
+        _localLixoUpdateUIState.value = LocalLixoUpdateUIState.Loading
         viewModelScope.launch {
             val response = localLixoService.patchLocalLixoEstado(localLixo,estado,token)
 
             if(response.status == "200"){
-                _localLixoCreateUIState.value = LocalLixoCreateUIState.Success
+                log.v("updating local lixo successful")
+                _localLixoUpdateUIState.value = LocalLixoUpdateUIState.Success
             }else{
-                _localLixoCreateUIState.value = LocalLixoCreateUIState.Error(response.message)
+                log.v("updating local lixo error")
+                _localLixoUpdateUIState.value = LocalLixoUpdateUIState.Error(response.message)
             }
         }
+        getLocaisLixo()
     }
+
+
     private fun handleLocalLixoError(throwable: Throwable) {
         log.e(throwable) { "Error downloading LocalLixo list" }
 
