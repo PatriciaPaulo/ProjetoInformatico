@@ -218,6 +218,8 @@ fun MapContent(
                             localLixoState.value.longitude = newLocalLixoPos.longitude.toString()
                             localLixoState.value.latitude = newLocalLixoPos.latitude.toString()
                             Marker(position = newLocalLixoPos, title = "new lixeira")
+                        }else{
+                            newLocalLixoPos = LatLng(0.0,0.0)
                         }
 
                         filterLocaisLixo = locaisLixo
@@ -348,6 +350,15 @@ fun SheetContent(
                     }else{
                         //error messages
                         createLocalLixoButtonState.value = false
+                        if(localLixo.value.latitude == "0.0" &&
+                            localLixo.value.longitude == "0.0"){
+                            Text(textResource(R.string.txtPositionError).toString(),
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.padding(
+                                    start = dimensionResource(R.dimen.medium_spacer))
+                            )
+                        }
                         if (nomeLocalLixo.text.isEmpty()){
                             Text(textResource(R.string.txtLocalLixoError).toString(),
                                 color = MaterialTheme.colors.error,
@@ -356,16 +367,8 @@ fun SheetContent(
                                     start = dimensionResource(R.dimen.medium_spacer))
                             )
                         }
-                        Log.d("asd","${localLixo.value.latitude}")
-                        if(localLixo.value.latitude == "0.0" &&
-                                    localLixo.value.longitude == "0.0"){
-                            Text(textResource(R.string.txtPositionError).toString(),
-                                color = MaterialTheme.colors.error,
-                                style = MaterialTheme.typography.caption,
-                                modifier = Modifier.padding(
-                                    start = dimensionResource(R.dimen.medium_spacer))
-                            )
-                        }
+
+
                     }
 
                 }
