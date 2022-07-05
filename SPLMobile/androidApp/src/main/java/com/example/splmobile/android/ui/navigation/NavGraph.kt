@@ -9,8 +9,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.ui.auth.screens.LoginScreen
+import com.example.splmobile.android.ui.auth.screens.RecoverPasswordScreen
+import com.example.splmobile.android.ui.auth.screens.RegisterScreen
 import com.example.splmobile.android.ui.main.screens.*
 import com.example.splmobile.android.ui.main.screens.LocalLixo.LocalLixoScreen
+import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.models.AuthViewModel
@@ -38,9 +41,18 @@ fun SetupNavGraph(
         composable(route = Screen.Onboarding.route) {
             OnboardingScreen(navController = navController)
         }
+        composable(route = Screen.Authentication.route) {
+            AuthenticationScreen(navController = navController)
+        }
         composable(route = Screen.Login.route) {
             LoginScreen(navController = navController,
                 authViewModel = authViewModel)
+        }
+        composable(route = Screen.Register.route) {
+            RegisterScreen(navController = navController)
+        }
+        composable(route = Screen.RecoverPassword.route) {
+            RecoverPasswordScreen()
         }
 
         composable(BottomNavItem.Home.screen_route) {

@@ -6,10 +6,9 @@ sealed class Screen (val route: String) {
 
     object Onboarding : Screen(route = "onboarding_screen")
     object Authentication : Screen(route = "authentication_screen")
-
-    //
     object Login : Screen(route = "login_screen")
-    //
+    object Register : Screen(route = "register_screen")
+    object RecoverPassword : Screen(route = "recover_password")
 
     object LocalLixo : Screen(route = "local_lixo")
     object CreateLocalLixo : Screen(route = "create_local_lixo")

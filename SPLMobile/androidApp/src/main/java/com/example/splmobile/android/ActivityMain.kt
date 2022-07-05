@@ -5,12 +5,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 
@@ -80,6 +84,13 @@ class ActivityMain : ComponentActivity() , KoinComponent{
 
     }
 }
+
+// Retrieve string id
+@Composable
+@ReadOnlyComposable
+fun textResource(@StringRes id: Int) : CharSequence =
+    LocalContext.current.resources.getText(id)
+
 /*setContent {
            SPLTheme() {
                val screen by splashViewModel.startDestination

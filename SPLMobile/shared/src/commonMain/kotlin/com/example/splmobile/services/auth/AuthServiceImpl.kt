@@ -55,7 +55,7 @@ class AuthServiceImpl(
             return client.post {
                 url("api/login")
                 contentType(ContentType.Application.Json)
-                setBody(LoginRequest(loginRequest.username, loginRequest.password))
+                setBody(LoginRequest(loginRequest.email, loginRequest.password))
             }.body()
 
         }

@@ -13,34 +13,33 @@ import kotlinx.coroutines.launch
 class AuthViewModel (
     private val authService: AuthService,
     log: Logger
+) : ViewModel() {
 
-): ViewModel() {
+    // Create variables for login state
     private val _loginUIState = MutableStateFlow<LoginUIState>(LoginUIState.Empty)
     val loginUIState: StateFlow<LoginUIState> = _loginUIState
 
-
-
     sealed class LoginUIState{
-        object Success :LoginUIState()
-        data class Error(val message: String):LoginUIState()
+        object Success : LoginUIState()
+        data class Error(val message: String) : LoginUIState()
         object Loading : LoginUIState()
-        object Empty : LoginUIState()
+        object Empty : LoginUIState() //Empty used to create
     }
 
+    // Create variables for token state, to save and access with other screens
     private val mutableTokenState: MutableStateFlow<String> = MutableStateFlow("")
-    val tokenState: StateFlow<String> = mutableTokenState
+    val tokenState : StateFlow<String> = mutableTokenState
 
     private val log = log.withTag("AuthViewModel")
 
-
-    fun login(username :String, password:String) = viewModelScope.launch {
+    fun login(email : String, password : String) = viewModelScope.launch {
+        // Set loading state, which will be cleared when the repository re-emits
         _loginUIState.value = LoginUIState.Loading
 
-        // Set loading state, which will be cleared when the repository re-emits
         var loginResponse : LoginResponse = viewModelScope.async(){
             log.v { "postLogin" }
             try {
-                authService.postLogin(LoginRequest(username,password))
+                authService.postLogin(LoginRequest(email,password))
             } catch (exception: Exception) {
                 handleMainError(exception)
             }

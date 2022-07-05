@@ -12,36 +12,34 @@ private val Teal200 = Color(0xFF03DAC5)
 
 // Colors in Keywords for DarkMode
 val DarkColorsPalette = darkColors(
-    /*
-    primary = ,
-    primaryVariant = ,
-    secondary = ,
-    secondaryVariant = ,
-    background = ,
-    surface = ,
-    error = ,
-    onPrimary = ,
-    onSecondary = ,
-    onBackground = ,
-    onSurface = ,
-    onError = ,
-     */
+
+    primary = Purple200,
+    //primaryVariant =
+    secondary = Purple500,
+    //secondaryVariant = ,
+    background = Color.White,
+    surface = Color.LightGray,
+    error = Color.Red,
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onBackground = Color.Black,
+    onSurface = Color.Black,
+    onError = Color.White,
+
 )
 
 // Colors in Keywords for LightMode
 public val LightColorsPalette = lightColors(
-    /*
-    primary = ,
-    primaryVariant = ,
-    secondary = ,
-    secondaryVariant = ,
-    background = ,
-    surface = ,
-    error = ,
-    onPrimary = ,
-    onSecondary = ,
-    onBackground = ,
-    onSurface = ,
-    onError = ,
-     */
+    primary = Purple200,
+    //primaryVariant =
+    secondary = Purple500,
+    //secondaryVariant = ,
+    background = Color.White,
+    surface = Color.LightGray,
+    error = Color.Red,
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onBackground = Color.Black,
+    onSurface = Color.Black,
+    onError = Color.White,
 )

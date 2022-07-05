@@ -12,12 +12,15 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.splmobile.android.R
+import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.onboarding.OnboardingPage
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.OnboardingViewModel
@@ -31,6 +34,7 @@ fun OnboardingScreen(
     navController: NavHostController,
     onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
+    // List of Onboarding Pages
     val pages = listOf(
         OnboardingPage.ParticipateScreen,
         OnboardingPage.CleanScreen,
@@ -43,6 +47,7 @@ fun OnboardingScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        // Create Pager
         HorizontalPager(
             modifier = Modifier
                 .weight(10f),
@@ -50,8 +55,10 @@ fun OnboardingScreen(
             state = pagerState,
             verticalAlignment = Alignment.Top
         ) {
+            // Set current page
             position -> ScreenTemplate(onboardingPage = pages[position])
         }
+        // Add the pager to show which page we are on
         HorizontalPagerIndicator(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -60,21 +67,25 @@ fun OnboardingScreen(
             //activeColor = ,
             //inactiveColor =
         )
+        // Add button only in last page
         btnOnboardFinish(
             modifier = Modifier
                 .weight(1f),
             pagerState = pagerState,
         ){
+            // Set Onboarding to completed
             onboardingViewModel.saveOnBoardingState(completed = true)
             navController.popBackStack()
-            navController.navigate(Screen.Login.route)
+
+            // Go to Authentication Page after finishing Onboarding
+            navController.navigate(Screen.Authentication.route)
         }
     }
 
 
 }
 
-// Onboarding Pages Layout
+// Onboarding Content Layout
 @Composable
 fun ScreenTemplate(onboardingPage: OnboardingPage) {
     Column(
@@ -104,8 +115,8 @@ fun ScreenTemplate(onboardingPage: OnboardingPage) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 40.dp)
-                .padding(top = 20.dp),
+                .padding(horizontal = dimensionResource(R.dimen.big_spacer))
+                .padding(top = dimensionResource(R.dimen.medium_spacer)),
             text = stringResource(id = onboardingPage.description),
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center
@@ -116,7 +127,7 @@ fun ScreenTemplate(onboardingPage: OnboardingPage) {
 // Skip Arrows Button
 // TODO
 
-// Finish onboarding Button
+// Finish Onboarding Button
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Composable
@@ -127,7 +138,7 @@ fun btnOnboardFinish (
 ) {
    Row(
        modifier = modifier
-           .padding(horizontal = 40.dp),
+           .padding(horizontal = dimensionResource(R.dimen.big_spacer)),
        verticalAlignment = Alignment.Top,
        horizontalArrangement = Arrangement.Center
    ) {
@@ -138,12 +149,9 @@ fun btnOnboardFinish (
        ) {
            Button(
                onClick = onClick,
-               colors = ButtonDefaults.buttonColors(
-                   contentColor = Color.White
-               )
            ) {
                Text(
-                   text = "Finish" //TODO Change to @strings/
+                   text = textResource(R.string.btnOnboardingFinish).toString()
                )
            }
        }
