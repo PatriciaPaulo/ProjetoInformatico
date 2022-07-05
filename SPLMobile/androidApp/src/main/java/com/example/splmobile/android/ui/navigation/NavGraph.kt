@@ -58,12 +58,12 @@ fun SetupNavGraph(
             HomeScreen(navController = navController)
         }
         composable(BottomNavItem.Map.screen_route) {
-            MapScreen(navController,
-                mainViewModel,
-                localLixoViewModel,
-                authViewModel,
-                sharedViewModel,
-                log)
+            MapScreen(navController =navController,
+                mainViewModel = mainViewModel,
+                localLixoViewModel = localLixoViewModel,
+                authViewModel = authViewModel,
+                sharedViewModel = sharedViewModel,
+                log = log)
         }
         composable(BottomNavItem.Community.screen_route) {
             CommunityScreen(navController = navController)
@@ -72,7 +72,12 @@ fun SetupNavGraph(
             ChatScreen(navController = navController)
         }
         composable(BottomNavItem.Profile.screen_route) {
-            ProfileScreen(navController = navController)
+            ProfileScreen(navController =navController,
+                mainViewModel = mainViewModel,
+                localLixoViewModel = localLixoViewModel,
+                authViewModel = authViewModel,
+                sharedViewModel = sharedViewModel,
+                log = log)
         }
     }
 }

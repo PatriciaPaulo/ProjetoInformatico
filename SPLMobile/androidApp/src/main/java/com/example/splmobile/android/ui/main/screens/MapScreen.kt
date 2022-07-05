@@ -2,10 +2,8 @@ package com.example.splmobile.android.ui.main.screens
 import MapAppBar
 import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -15,12 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -49,15 +43,21 @@ import kotlinx.serialization.json.jsonObject
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
-fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, localLixoViewModel: LocalLixoViewModel,authViewModel: AuthViewModel, sharedViewModel: SharedViewModel,
-              log: Logger
+fun MapScreen(
+    navController: NavHostController,
+    mainViewModel: MainViewModel,
+    localLixoViewModel: LocalLixoViewModel,
+    authViewModel: AuthViewModel,
+    sharedViewModel: SharedViewModel,
+    log: Logger
 ) {
+    val bottomScaffoldState = rememberBottomSheetScaffoldState()
 
-
-    val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
     //android view model states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
+
+
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
      //default camera position
@@ -66,6 +66,7 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
         position = CameraPosition.fromLatLngZoom(portugal, 7f)
 
     }
+
     var localLixoState = mutableStateOf(
         LocalLixoSer(0,"new",0,"0.0","0.0","Muito sujo",false,"",
             emptyList())
@@ -109,31 +110,14 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
                 }
             )
         },
+        bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
-            // Apply the padding globally to the whole BottomNavScreensController
-            val bottomScaffoldState = rememberBottomSheetScaffoldState()
-            val context = LocalContext.current
+            // Apply the padding globally
             BottomSheetScaffold(
-                sheetContent = {
-
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = 0.dp, bottom = 64.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Top
-                    ) {
-                        SheetContent(localLixoState,createLocalLixoButtonState,bottomScaffoldState,localLixoViewModel,navController, authViewModel)
-                       /* Button(
-                            onClick = {
-                                coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
-                            }
-                        ) {
-                            Text("Click to collapse sheet")
-                        }*/
-                    }
-                },
+                scaffoldState = bottomScaffoldState,
+                floatingActionButtonPosition = FabPosition.End,
+                sheetPeekHeight = 128.dp,
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
@@ -158,50 +142,26 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
                         Icon(Icons.Default.Add, contentDescription = "Localized description")
                     }
                 },
-                scaffoldState = bottomScaffoldState,
-                floatingActionButtonPosition = FabPosition.End,
-                sheetPeekHeight = 128.dp,
-                /*drawerContent = {
+                sheetContent = {
                     Column(
-                        Modifier.fillMaxWidth().padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 0.dp, bottom = 64.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
                     ) {
-                        Text("Drawer content")
-                        Spacer(Modifier.height(20.dp))
-                        Button(onClick = { coroutineScope.launch { bottomScaffoldState.drawerState.close() } }) {
-                            Text("Click to close drawer")
-                        }
+                        SheetContent(localLixoState,createLocalLixoButtonState,bottomScaffoldState,localLixoViewModel, authViewModel)
                     }
-                }*/
-            ) { innerPadding ->
-                Scaffold( modifier =
-                Modifier.pointerInput(Unit) {
-                    detectTapGestures(onTap = {
-                        coroutineScope.launch {
-                            if (bottomScaffoldState.bottomSheetState.isCollapsed) {
-                                bottomScaffoldState.bottomSheetState.expand()
-                            } else {
-                                bottomScaffoldState.bottomSheetState.collapse()
-                            }
-                        }
-                    })
-                }){
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        MapContent(navController,localLixoViewModel.locaisLixoUIState.collectAsState().value,localLixoState)
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(),
-                            verticalArrangement = Arrangement.Bottom,
-                            horizontalAlignment = Alignment.Start
-                        ) {
+                },
 
-                        }
-                    }
+            ) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        MapContent(localLixoViewModel.locaisLixoUIState.collectAsState().value,localLixoState)
+
                 }
             }
         },
-        bottomBar = { BottomNavigationBar(navController = navController) },
+
     )
 }
 
@@ -213,18 +173,16 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
 
 @Composable
 fun MapContent(
-    navController: NavHostController,
     locaisLixoState: LocalLixoViewModel.LocaisLixoUIState,
     localLixoState: MutableState<LocalLixoSer>
 ) {
+    //todo filter locais
     var filterLocaisLixo by remember {
         mutableStateOf(emptyList<LocalLixoSer>())
     }
-    var portugal = LatLng(39.5, -8.0)
-
     var newLocalLixoPos by remember { mutableStateOf(LatLng(0.0,0.0)) }
+
     when(locaisLixoState){
-        is LocalLixoViewModel.LocaisLixoUIState.Loading -> CircularProgressIndicator()
         is LocalLixoViewModel.LocaisLixoUIState.Success -> {
             Box(
                 modifier = Modifier
@@ -289,11 +247,11 @@ fun MapContent(
                 }
             }
         }
+        is LocalLixoViewModel.LocaisLixoUIState.Loading -> CircularProgressIndicator()
         is LocalLixoViewModel.LocaisLixoUIState.Error -> Log.d("screen map", "error")
         is LocalLixoViewModel.LocaisLixoUIState.Offline -> Log.d("screen map", "offline")
     }
-
-    }
+}
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -301,10 +259,9 @@ fun MapContent(
 @Composable
 fun SheetContent(
     localLixo: MutableState<LocalLixoSer>,
-    createLocalLixoState: MutableState<Boolean>,
+    createLocalLixoButtonState: MutableState<Boolean>,
     bottomScaffoldState: BottomSheetScaffoldState,
     localLixoViewModel: LocalLixoViewModel,
-    navController: NavHostController,
     authViewModel: AuthViewModel
 ){
     BoxWithConstraints {
@@ -316,10 +273,6 @@ fun SheetContent(
         var selectedStatus = remember { mutableStateOf(localLixo.value.estado) }
         //id of the current local lixo
         var selectedId = remember { mutableStateOf(localLixo.value.id) }
-
-        //var message by remember { mutableStateOf("")}
-        //apps context
-        val context = LocalContext.current
 
         //variables to create a local lixo
         var nomeLocalLixo by remember { mutableStateOf(TextFieldValue("")) }
@@ -334,6 +287,7 @@ fun SheetContent(
                         textResource(R.string.lblCreateLocalLixo).toString(),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )
+                    //text field for local lixo name
                     TextField(
                         value = nomeLocalLixo,
                         label = { Text(textResource(R.string.lblNomeLocalLixo).toString()) },
@@ -342,6 +296,7 @@ fun SheetContent(
                             nomeLocalLixo = newText
                         }
                     )
+                    //dropdown menu for local lixo status
                     var expanded by remember { mutableStateOf(false) }
                     var selectedOptionText by remember { mutableStateOf(statusList[0]) }
 
@@ -380,19 +335,19 @@ fun SheetContent(
                                 }
                             }
                         }
-
-
                     }
-                    //error
+
+                    //make createlocallixobutton available and assign the values inserted
                     if ((!(localLixo.value.latitude == "0.0" &&
                                         localLixo.value.longitude == "0.0")) &&
                         nomeLocalLixo.text.isNotEmpty() ){
                         localLixo.value.nome = nomeLocalLixo.text
                         localLixo.value.estado = selectedOptionText
 
-                        createLocalLixoState.value = true
+                        createLocalLixoButtonState.value = true
                     }else{
-                        createLocalLixoState.value = false
+                        //error messages
+                        createLocalLixoButtonState.value = false
                         if (nomeLocalLixo.text.isEmpty()){
                             Text(textResource(R.string.txtLocalLixoError).toString(),
                                 color = MaterialTheme.colors.error,
@@ -426,7 +381,6 @@ fun SheetContent(
                     }
                     Spacer(Modifier.height(32.dp))
                     Column{
-
                         DropDownMenuStatus(
                             selectedStatus,
                             selectedId,
@@ -448,16 +402,7 @@ fun SheetContent(
                         coroutineScope.launch {
                             localLixoViewModel.updateLocalLixoEstado(localLixo.value,selectedStatus.value,authViewModel.tokenState.value)
                             bottomScaffoldState.bottomSheetState.collapse()
-                            /*when(message){
-                                "" -> print("x == 2")
-                                else -> {
-                                    Toast.makeText(
-                                        context,
-                                        "Showing toast...$message",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }*/
+                            //todo show success/error message
                         }
 
                     },
@@ -472,6 +417,7 @@ fun SheetContent(
 
 }
 
+
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -482,7 +428,9 @@ private fun DropDownMenuStatus(
     updateLocalLixo: MutableState<Boolean>,
     bottomScaffoldState: BottomSheetScaffoldState
 ) {
+
     var coroutineScope = rememberCoroutineScope()
+
     //state of dropdownmenu
     var expanded by remember { mutableStateOf(false) }
     //available status for locallixo
@@ -499,7 +447,6 @@ private fun DropDownMenuStatus(
         //colapses botscaffold
         coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
     }
-
 
     Text(
         text = selectedStatus.value,
