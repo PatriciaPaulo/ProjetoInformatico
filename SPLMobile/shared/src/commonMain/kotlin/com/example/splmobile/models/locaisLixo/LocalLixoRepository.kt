@@ -5,18 +5,16 @@ import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.DatabaseHelper
 import com.example.splmobile.database.LocalLixo
 import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.services.locaisLixo.LocalLixoApi
+import com.example.splmobile.services.locaisLixo.`LocalLixoService.kt`
 
 import com.russhwolf.settings.Settings
-import io.ktor.client.call.*
-import io.ktor.client.statement.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
 
 class LocalLixoRepository (
     private val dbHelper: DatabaseHelper,
     private val settings: Settings,
-    private val localLixoApi: LocalLixoApi,
+    private val localLixoApi: `LocalLixoService.kt`,
     log: Logger,
     private val clock: Clock
 ) {

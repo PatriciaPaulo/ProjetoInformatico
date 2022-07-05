@@ -7,11 +7,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LocalLixoSer(
     val id: Long,
-    val nome: String,
+    var nome: String,
     val criador: Long,
-    val latitude: String,
-    val longitude: String,
-    val estado: String,
+    var latitude: String,
+    var longitude: String,
+    var estado: String,
     val aprovado: Boolean,
     val foto: String?,
     val eventos: List<LocalLixoEventoSer>
