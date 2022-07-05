@@ -5,6 +5,8 @@ from flask import Flask, jsonify, request, make_response,current_app
 from models import Utilizador, db
 class User(object):
     id = ""
+
+
 def guest(f):
     @wraps(f)
     def decorator(*args, **kwargs):
@@ -20,7 +22,7 @@ def guest(f):
             try:
                 data = jwt.decode(token.split(" ")[1], current_app.config['SECRET_KEY'], algorithms=["HS256"])
                 current_user = db.session.query(Utilizador).filter_by(email=data['email']).first()
-                print(current_user)
+
             except Exception as ex:
                 print(ex)
                 return make_response(jsonify({'message': 'token is invalid'}), 400)
@@ -43,7 +45,7 @@ def token_required(f):
         try:
             data = jwt.decode(token.split(" ")[1], current_app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = db.session.query(Utilizador).filter_by(email=data['email']).first()
-            print(current_user)
+           # print(current_user)
         except Exception as ex:
             print(ex)
             return make_response(jsonify({'message': 'token is invalid'}), 400)

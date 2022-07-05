@@ -11,7 +11,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +18,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.viewmodel.MainViewModel
@@ -64,10 +67,12 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
 
     }
     var localLixoState = mutableStateOf(
-        LocalLixoSer(0,"new",0,"","","Muito sujo",false,"",
+        LocalLixoSer(0,"new",0,"0.0","0.0","Muito sujo",false,"",
             emptyList())
     )
-    var createLocalLixoState = mutableStateOf(false)
+    var createLocalLixoState = localLixoViewModel.localLixoCreateUIState.collectAsState().value
+    var createLocalLixoButtonState = mutableStateOf(false)
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -119,7 +124,7 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
-                        SheetContent(localLixoState,createLocalLixoState,bottomScaffoldState,localLixoViewModel,navController, authViewModel)
+                        SheetContent(localLixoState,createLocalLixoButtonState,bottomScaffoldState,localLixoViewModel,navController, authViewModel)
                        /* Button(
                             onClick = {
                                 coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
@@ -132,20 +137,22 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
+                            //if not a new local lixo selected
                             if(!localLixoState.value.id.equals(0L)){
                                 localLixoState.value =  LocalLixoSer(0,"new",0,"","","",false,"", emptyList())
+                                coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
                             }
                             else{
-                                if (localLixoState.value.latitude.isNotEmpty()&&!localLixoState.value.latitude.equals("0.0")) {
-                                    if(createLocalLixoState.value){
-                                        localLixoViewModel.createLocalLixo(localLixoState.value)
-                                    }
-                                    else{
-                                        Toast.makeText(context,"Dá um nome e um estado ao seu Local", Toast.LENGTH_SHORT)
-                                    }
+
+                                if(createLocalLixoButtonState.value){
+                                    localLixoViewModel.createLocalLixo(localLixoState.value)
+                                    coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
+                                }
+                                else{
+
                                 }
 
-                                Toast.makeText(context,"Selecione o local", Toast.LENGTH_SHORT)
+
                             } },
                     ) {
                         Icon(Icons.Default.Add, contentDescription = "Localized description")
@@ -215,7 +222,6 @@ fun MapContent(
     }
     var portugal = LatLng(39.5, -8.0)
 
-
     var newLocalLixoPos by remember { mutableStateOf(LatLng(0.0,0.0)) }
     when(locaisLixoState){
         is LocalLixoViewModel.LocaisLixoUIState.Loading -> CircularProgressIndicator()
@@ -250,10 +256,12 @@ fun MapContent(
                         }
                     ) {
                         if (localLixoState.value.id.equals(0L)) {
+                            Log.d("screen map", "-$newLocalLixoPos")
                             localLixoState.value.longitude = newLocalLixoPos.longitude.toString()
                             localLixoState.value.latitude = newLocalLixoPos.latitude.toString()
                             Marker(position = newLocalLixoPos, title = "new lixeira")
                         }
+
                         filterLocaisLixo = locaisLixo
                         // filterLocaisLixo.filter { localLixo -> localLixo.aprovado  }
                         locaisLixo.forEach { localLixo ->
@@ -316,16 +324,19 @@ fun SheetContent(
         //variables to create a local lixo
         var nomeLocalLixo by remember { mutableStateOf(TextFieldValue("")) }
         var estadoLocalLixo by remember { mutableStateOf(TextFieldValue("")) }
-        val statusList = listOf("Muito sujo", "Pouco sujo", "Limpo")
+        val statusList = listOf(textResource(R.string.LocalLixoStatusListElement1).toString(), textResource(R.string.LocalLixoStatusListElement2).toString(), textResource(R.string.LocalLixoStatusListElement3).toString())
 
         //if its a new local lixo
         if(localLixo.value.id.equals(0L)){
             Row {
                 Column {
-                    Text("Cria um local de lixo!")
+                    Text(
+                        textResource(R.string.lblCreateLocalLixo).toString(),
+                        fontSize = dimensionResource(R.dimen.txt_medium).value.sp
+                    )
                     TextField(
                         value = nomeLocalLixo,
-                        label = { Text(text = "Nome Local Lixo") },
+                        label = { Text(textResource(R.string.lblNomeLocalLixo).toString()) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         onValueChange = { newText ->
                             nomeLocalLixo = newText
@@ -344,7 +355,7 @@ fun SheetContent(
                             readOnly = true,
                             value = selectedOptionText,
                             onValueChange = { },
-                            label = { Text("Label") },
+                            label = { Text(textResource(R.string.lblEstadoLocalLixo).toString()) },
                             trailingIcon = {
                                 ExposedDropdownMenuDefaults.TrailingIcon(
                                     expanded = expanded
@@ -369,16 +380,39 @@ fun SheetContent(
                                 }
                             }
                         }
+
+
                     }
-
-
-                    if (nomeLocalLixo.text.isNotEmpty()){
+                    //error
+                    if ((!(localLixo.value.latitude == "0.0" &&
+                                        localLixo.value.longitude == "0.0")) &&
+                        nomeLocalLixo.text.isNotEmpty() ){
                         localLixo.value.nome = nomeLocalLixo.text
                         localLixo.value.estado = selectedOptionText
+
                         createLocalLixoState.value = true
                     }else{
                         createLocalLixoState.value = false
+                        if (nomeLocalLixo.text.isEmpty()){
+                            Text(textResource(R.string.txtLocalLixoError).toString(),
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.padding(
+                                    start = dimensionResource(R.dimen.medium_spacer))
+                            )
+                        }
+                        Log.d("asd","${localLixo.value.latitude}")
+                        if(localLixo.value.latitude == "0.0" &&
+                                    localLixo.value.longitude == "0.0"){
+                            Text(textResource(R.string.txtPositionError).toString(),
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.padding(
+                                    start = dimensionResource(R.dimen.medium_spacer))
+                            )
+                        }
                     }
+
                 }
             }
         }else{ // displays info on already existent local lixo
@@ -429,7 +463,7 @@ fun SheetContent(
                     },
                     enabled = updateLocalLixo.value,
                 ) {
-                    Text("Atualizar estado do Local de Lixo")
+                    Text(textResource(R.string.btnUpdateLocalLixoStatus).toString())
                 }
 
             }
@@ -452,7 +486,8 @@ private fun DropDownMenuStatus(
     //state of dropdownmenu
     var expanded by remember { mutableStateOf(false) }
     //available status for locallixo
-    val statusList = listOf("Muito sujo", "Pouco sujo", "Limpo")
+    val statusList = listOf(textResource(R.string.LocalLixoStatusListElement1).toString(), textResource(R.string.LocalLixoStatusListElement2).toString(), textResource(R.string.LocalLixoStatusListElement3).toString())
+
     //only change selected item if the id has also changed
     if(!localLixo.value.id.equals(selectedId.value)){
         //changes the current locallix
