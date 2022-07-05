@@ -1,27 +1,85 @@
 package com.example.splmobile.android.ui.onboarding.screens
 
-import androidx.annotation.StringRes
-import com.example.splmobile.android.R
+
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavHostController
-import com.example.splmobile.android.textResource
+import com.example.splmobile.android.*
+import com.example.splmobile.android.R
+import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
+import com.example.splmobile.models.AuthViewModel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 
 
 //Build AuthenticationScreen with buttons to Login, Register and Login as Guest
 @Composable
 fun AuthenticationScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    authViewModel: AuthViewModel
 ) {
+    val context = LocalContext.current
+
+    val loginUIState by authViewModel.loginUIState.collectAsState()
+    LaunchedEffect(Unit) {
+        authViewModel.loginUIState.collect { loginUIState ->
+            when (loginUIState) {
+                is AuthViewModel.LoginUIState.Success -> {
+                    navController.navigate(BottomNavItem.Home.screen_route)
+                }
+                is AuthViewModel.LoginUIState.Error -> {
+                    context.dataStore.edit {
+                        it.clear()
+                    }
+                }
+            }
+        }
+    }
+
+    val authResult = isAuthenticated()
+
+    // if user already authenticated try to login
+    if(authResult.first){
+        // Attempt Login
+        authViewModel.login(authResult.second, authResult.third)
+    }
+
+    // if login failed build Authentication Screen
+    AuthenticationUI(navController)
+}
+
+// Check if user was previously logged in
+@Composable
+fun isAuthenticated() : Triple<Boolean, String, String> {
+    val context = LocalContext.current
+
+    val checkDataStore = runBlocking {
+        context.dataStore.data.first()
+    }
+
+    if (checkDataStore.asMap().isEmpty()) {
+        return Triple(false, "", "")
+    }
+
+    return Triple(true, checkDataStore[stringPreferencesKey(EMAIL_KEY)].orEmpty(), checkDataStore[stringPreferencesKey(PASSWORD_KEY)].orEmpty())
+}
+
+// Build Authentication Screen
+@Composable
+fun AuthenticationUI (
+    navController : NavHostController
+){
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -60,7 +118,6 @@ fun AuthenticationScreen(
         }
     }
 }
-
 
 // Go to Login
 @Composable

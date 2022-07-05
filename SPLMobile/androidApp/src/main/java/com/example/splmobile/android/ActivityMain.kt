@@ -49,7 +49,7 @@ const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 
 val Context.dataStore : DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-const val USER_KEY = "user"
+const val EMAIL_KEY = "email"
 const val PASSWORD_KEY = "password"
 
 @ExperimentalAnimationApi

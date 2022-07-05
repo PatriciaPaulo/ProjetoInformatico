@@ -50,6 +50,7 @@ import com.example.splmobile.dtos.auth.LoginResponse
 import com.example.splmobile.isEmailValid
 import com.example.splmobile.isTextFieldEmpty
 import com.example.splmobile.models.AuthViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
@@ -57,6 +58,7 @@ fun LoginScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel
 ) {
+
     /* TODO
         Mudar os ICONS dos text boxes para um user e uma key
      */
@@ -127,6 +129,8 @@ fun ComposableUI(
         mutableStateOf("")
     }
 
+    val context = LocalContext.current
+
     val loginUIState by authViewModel.loginUIState.collectAsState()
     LaunchedEffect(Unit) {
         authViewModel.loginUIState.collect { loginUIState ->
@@ -134,15 +138,13 @@ fun ComposableUI(
             when (loginUIState) {
                 is AuthViewModel.LoginUIState.Loading -> showRequestState = true
                 is AuthViewModel.LoginUIState.Success -> {
-
-                    LocalContext.current.dataStore.edit { settings ->
-                        settings[stringPreferencesKey(USER_KEY)] = email
+                    context.dataStore.edit { settings ->
+                        settings[stringPreferencesKey(EMAIL_KEY)] = email
                         settings[stringPreferencesKey(PASSWORD_KEY)] = password
                     }
 
                     showRequestState = false
                     navController.navigate(BottomNavItem.Home.screen_route)
-
                 }
                 is AuthViewModel.LoginUIState.Error -> {
                     showErrorState = loginUIState.message
