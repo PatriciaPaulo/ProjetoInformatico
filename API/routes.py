@@ -389,7 +389,6 @@ def aprovar_evento(evento_id):
 @guest
 def create_lixeira(current_user):
     data = request.get_json()
-    print(data)
     # Checks if lixeira with same coordinates exists
     lix = db.session.query(Lixeira).filter_by(latitude=data['latitude']).first()
     if lix:
@@ -483,7 +482,7 @@ def mudar_estado_lixeira(current_user,lixeira_id):
     lixeira_data['estado'] = lixeira.estado
 
     db.session.commit()
-    return make_response(jsonify({'message': 'estado do local de lixo atualizado'}), 200)
+    return make_response(jsonify({'message': 'estado do local de lixo atualizado','status':200}))
 
 #endregion
 
