@@ -75,8 +75,6 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
 
     }
 
-
-
     override suspend fun postLocalLixo(
         localLixo: LocalLixoSer
     ): RequestMessageResponse {

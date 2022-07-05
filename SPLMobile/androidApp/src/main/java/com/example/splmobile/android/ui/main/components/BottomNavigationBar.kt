@@ -19,11 +19,11 @@ import com.example.splmobile.android.ui.navigation.BottomNavItem
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
-        BottomNavItem.Profile,
         BottomNavItem.Map,
-        BottomNavItem.Home,
         BottomNavItem.Community,
-        BottomNavItem.Chat
+        BottomNavItem.Home,
+        BottomNavItem.Chat,
+        BottomNavItem.Profile
 
     )
     BottomNavigation(
