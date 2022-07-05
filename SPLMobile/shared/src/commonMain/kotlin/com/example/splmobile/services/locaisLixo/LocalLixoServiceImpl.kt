@@ -78,7 +78,7 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
 
 
     override suspend fun postLocalLixo(
-        localLixo: LocalLixo
+        localLixo: LocalLixoSer
     ): RequestMessageResponse {
         log.d { "post new Local Lixo" }
         try{
@@ -97,7 +97,7 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
 
     }
     override suspend fun patchLocalLixoEstado(
-        localLixo: LocalLixo,
+        localLixo: LocalLixoSer,
         estado: String,
         token: String,
     ): RequestMessageResponse {
@@ -110,7 +110,7 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
                 contentType(ContentType.Application.Json)
                 setBody(LocalLixoSer(localLixo.id, localLixo.nome, localLixo.criador,localLixo.latitude,localLixo.longitude,estado,localLixo.aprovado,localLixo.foto,
                     emptyList()))
-                url("api/lixeiras/"+localLixo.id)
+                url("api/lixeiras/"+localLixo.id+"/mudarEstadoLixeira")
             }.body() as RequestMessageResponse
         }
         catch (ex :HttpRequestTimeoutException){

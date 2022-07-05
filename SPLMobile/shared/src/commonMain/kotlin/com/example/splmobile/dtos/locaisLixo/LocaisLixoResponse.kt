@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LocaisLixoResponse(
     val data: List<LocalLixoSer>,
-    val message: String,
     val status: String,
+    val message: String,
 )

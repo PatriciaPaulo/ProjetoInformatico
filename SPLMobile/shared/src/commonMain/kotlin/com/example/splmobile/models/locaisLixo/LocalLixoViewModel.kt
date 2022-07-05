@@ -69,7 +69,7 @@ class LocalLixoViewModel (
             if(response.status == "200"){
                 _locaisLixoUIState.value = LocaisLixoUIState.Success(response.data)
             }else{
-                _locaisLixoUIState.value = LocaisLixoUIState.Error(response.message)
+                _locaisLixoUIState.value = LocaisLixoUIState.Error(response.status)
             }
         }
 

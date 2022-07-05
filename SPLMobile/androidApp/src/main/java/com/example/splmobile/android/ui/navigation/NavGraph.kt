@@ -12,7 +12,6 @@ import com.example.splmobile.android.ui.auth.screens.LoginScreen
 import com.example.splmobile.android.ui.auth.screens.RecoverPasswordScreen
 import com.example.splmobile.android.ui.auth.screens.RegisterScreen
 import com.example.splmobile.android.ui.main.screens.*
-import com.example.splmobile.android.ui.main.screens.LocalLixo.LocalLixoScreen
 import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
@@ -62,6 +61,7 @@ fun SetupNavGraph(
             MapScreen(navController,
                 mainViewModel,
                 localLixoViewModel,
+                authViewModel,
                 sharedViewModel,
                 log)
         }
@@ -73,24 +73,6 @@ fun SetupNavGraph(
         }
         composable(BottomNavItem.Profile.screen_route) {
             ProfileScreen(navController = navController)
-        }
-        composable(Screen.LocalLixo.route+ "/{lixeiraID}",
-            arguments = listOf(
-            navArgument(name = "lixeiraID") {
-            type = NavType.LongType
-            defaultValue = -1
-            nullable = false
-        })) { entity ->
-            LocalLixoScreen(navController = navController,
-                lixeiraID = entity.arguments?.getLong("lixeiraID") ?: -1,
-                localLixoViewModel = localLixoViewModel)
-        }
-        composable(Screen.CreateLocalLixo.route) {
-            CreateLocalLixoScreen(navController = navController,
-                mainViewModel = mainViewModel,
-                authViewModel = authViewModel,
-                localLixoViewModel = localLixoViewModel,
-                sharedViewModel = sharedViewModel)
         }
     }
 }

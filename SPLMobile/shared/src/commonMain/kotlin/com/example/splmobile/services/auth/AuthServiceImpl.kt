@@ -57,12 +57,12 @@ class AuthServiceImpl(
                 contentType(ContentType.Application.Json)
                 setBody(LoginRequest(loginRequest.email, loginRequest.password))
             }.body()
-
         }
         catch (e: Exception){
             println("Error: ${e.message}")
+            return LoginResponse("error","${e.message}","400")
         }
-        return LoginResponse("error","error")
+
     }
 
     override suspend fun postSignIn(): SignInResponse {

@@ -3,7 +3,6 @@ package com.example.splmobile.models
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.auth.LoginRequest
 import com.example.splmobile.dtos.auth.LoginResponse
-import com.example.splmobile.models.locaisLixo.LocalLixoViewState
 import com.example.splmobile.services.auth.AuthService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +44,7 @@ class AuthViewModel (
             }
         }.await() as LoginResponse
 
-        if(loginResponse.message == "success"){
+        if(loginResponse.status == "200"){
             mutableTokenState.value = loginResponse.access_token
             _loginUIState.value = LoginUIState.Success
         }
