@@ -1,9 +1,6 @@
 package com.example.splmobile.android.ui.main
 
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
@@ -19,15 +16,15 @@ import com.example.splmobile.android.ui.navigation.BottomNavItem
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
-        BottomNavItem.Profile,
         BottomNavItem.Map,
-        BottomNavItem.Home,
         BottomNavItem.Community,
-        BottomNavItem.Chat
+        BottomNavItem.Home,
+        BottomNavItem.Chat,
+        BottomNavItem.Profile
 
     )
     BottomNavigation(
-        backgroundColor = colorResource(id = R.color.colorPrimary),
+        backgroundColor = MaterialTheme.colors.primary,
         contentColor = Color.Black
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()

@@ -3,13 +3,13 @@ package com.example.splmobile
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.StaticConfig
 import co.touchlab.kermit.platformLogWriter
-import com.example.splmobile.services.locaisLixo.LocalLixoApi
-import com.example.splmobile.services.locaisLixo.LocalLixoApiImpl
+import com.example.splmobile.services.locaisLixo.LocalLixoServiceImpl
 import com.example.splmobile.services.other.requestsApiImpl
 import com.example.splmobile.services.other.requestsAPI
 import com.example.splmobile.models.locaisLixo.LocalLixoRepository
 import com.example.splmobile.services.auth.AuthService
 import com.example.splmobile.services.auth.AuthServiceImpl
+import com.example.splmobile.services.locaisLixo.LocalLixoService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.Clock
 import org.koin.core.KoinApplication
@@ -52,9 +52,9 @@ private val coreModule = module {
             Dispatchers.Default
         )
     }
-    single<LocalLixoApi> {
-        LocalLixoApiImpl(
-            getWith("LocalLixoApiImpl"),
+    single<LocalLixoService> {
+        LocalLixoServiceImpl(
+            getWith("LocalLixoServiceImpl"),
             get()
         )
     }

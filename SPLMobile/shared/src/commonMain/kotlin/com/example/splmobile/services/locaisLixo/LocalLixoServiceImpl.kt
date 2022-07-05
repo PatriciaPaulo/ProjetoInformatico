@@ -9,12 +9,11 @@ import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -22,7 +21,7 @@ import co.touchlab.kermit.Logger as KermitLogger
 import io.ktor.client.plugins.logging.Logger as KtorLogger
 
 
-class LocalLixoApiImpl(private val log: KermitLogger, engine: HttpClientEngine) : LocalLixoApi {
+class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngine) : LocalLixoService{
     private val client = HttpClient(engine) {
         expectSuccess = true
         install(ContentNegotiation) {
@@ -64,26 +63,58 @@ class LocalLixoApiImpl(private val log: KermitLogger, engine: HttpClientEngine) 
 
     override suspend fun getLocaisLixo(): LocaisLixoResponse {
         log.d { "Fetching lixeiras from network" }
-        return client.get {
-            contentType(ContentType.Application.Json)
-            url("api/lixeiras")
-        }.body() as LocaisLixoResponse
+        try{
+            return client.get {
+                contentType(ContentType.Application.Json)
+                url("api/lixeiras")
+            }.body() as LocaisLixoResponse
+        }catch (ex :HttpRequestTimeoutException){
+            return LocaisLixoResponse(emptyList(),"error","500")
+        }
+        return LocaisLixoResponse(emptyList(),"error","400")
+
     }
 
-
-
-    override suspend fun postLocalLixo(localLixo: LocalLixo, token: String): RequestMessageResponse {
+    override suspend fun postLocalLixo(
+        localLixo: LocalLixoSer
+    ): RequestMessageResponse {
         log.d { "post new Local Lixo" }
-        return client.post {
-            headers {
-                append(HttpHeaders.Authorization, "Bearer $token")
-            }
-            contentType(ContentType.Application.Json)
-            setBody(LocalLixoSer(localLixo.id, localLixo.nome, localLixo.criador,localLixo.latitude,localLixo.longitude,localLixo.estado,localLixo.aprovado,localLixo.foto,
-                emptyList()))
-            url("api/lixeiras")
-        }.body() as RequestMessageResponse
+        try{
+            return client.post {
+                contentType(ContentType.Application.Json)
+                setBody(LocalLixoSer(localLixo.id, localLixo.nome, localLixo.criador,localLixo.latitude,localLixo.longitude,localLixo.estado,localLixo.aprovado,localLixo.foto,
+                    emptyList()))
+                url("api/lixeiras")
+            }.body() as RequestMessageResponse
+        }
+        catch (ex :HttpRequestTimeoutException){
+            return RequestMessageResponse("error","500")
+        }
+        return RequestMessageResponse("error","400")
 
+
+    }
+    override suspend fun patchLocalLixoEstado(
+        localLixo: LocalLixoSer,
+        estado: String,
+        token: String,
+    ): RequestMessageResponse {
+        log.d { "update Local Lixo" }
+        try{
+            return client.patch {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                setBody(LocalLixoSer(localLixo.id, localLixo.nome, localLixo.criador,localLixo.latitude,localLixo.longitude,estado,localLixo.aprovado,localLixo.foto,
+                    emptyList()))
+                url("api/lixeiras/"+localLixo.id+"/mudarEstadoLixeira")
+            }.body() as RequestMessageResponse
+        }
+        catch (ex :HttpRequestTimeoutException){
+            return RequestMessageResponse("error","500")
+        }
+        return RequestMessageResponse("error","400")
     }
 
     private fun HttpRequestBuilder.url(path: String) {
@@ -93,10 +124,5 @@ class LocalLixoApiImpl(private val log: KermitLogger, engine: HttpClientEngine) 
         }
     }
 
-    override suspend fun patchLocalLixoEstado(
-        localLixo: LocalLixo,
-        s: String
-    ): RequestMessageResponse {
-        TODO("Not yet implemented")
-    }
+
 }

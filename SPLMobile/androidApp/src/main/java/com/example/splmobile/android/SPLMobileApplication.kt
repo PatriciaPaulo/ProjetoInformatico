@@ -23,7 +23,7 @@ class SPLMobileApplication : Application() {
         initKoin(
             module {
                 single<Context> { this@SPLMobileApplication }
-                viewModel { LocalLixoViewModel(get(), get { parametersOf("LocalLixoViewModel") }) }
+                viewModel { LocalLixoViewModel(get(), get { parametersOf("LocalLixoViewModel") }, get { parametersOf("LocalLixoRepository") }) }
                 viewModel { SharedViewModel(get(), get { parametersOf("SharedViewModel") }) }
                 viewModel { AuthViewModel(get(), get { parametersOf("AuthViewModel") }) }
                 single<SharedPreferences> {

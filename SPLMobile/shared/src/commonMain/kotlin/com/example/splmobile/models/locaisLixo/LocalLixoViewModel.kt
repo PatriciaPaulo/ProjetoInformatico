@@ -2,149 +2,120 @@ package com.example.splmobile.models.locaisLixo
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.database.LocalLixo
+import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
 import com.example.splmobile.models.ViewModel
+import com.example.splmobile.services.locaisLixo.LocalLixoService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class LocalLixoViewModel (
     private val localLixoRepository: LocalLixoRepository,
+    private val localLixoService: LocalLixoService,
     log: Logger
 ) : ViewModel() {
     private val log = log.withTag("LocalLixoViewModel")
 
 
-    private val mutableLocaisLixoState: MutableStateFlow<LocalLixoViewState> =
-        MutableStateFlow(LocalLixoViewState(isLoading = true))
+    //state get all locais lixo
+    private val _locaisLixoUIState = MutableStateFlow<LocaisLixoUIState>(LocaisLixoUIState.Empty)
+    val locaisLixoUIState = _locaisLixoUIState.asStateFlow()
+    sealed class LocaisLixoUIState {
+        data class Success(val locaisLixo: List<LocalLixoSer>) : LocaisLixoUIState()
+        data class Error(val error: String) : LocaisLixoUIState()
+        object Loading : LocaisLixoUIState()
+        object Offline : LocaisLixoUIState()
+        object Empty : LocaisLixoUIState()
+    }
 
-    val locaisLixoState= mutableLocaisLixoState.asStateFlow()
+    //state create local lixo
+    private val _localLixoCreateUIState = MutableStateFlow<LocalLixoCreateUIState>(LocalLixoCreateUIState.Empty)
+    val localLixoCreateUIState = _localLixoCreateUIState.asStateFlow()
+    sealed class LocalLixoCreateUIState {
+        object Success: LocalLixoCreateUIState()
+        data class Error(val error: String) : LocalLixoCreateUIState()
+        object Loading : LocalLixoCreateUIState()
+        object Offline : LocalLixoCreateUIState()
+        object Empty : LocalLixoCreateUIState()
+    }
+
+    //state update local lixo
+    private val _localLixoUpdateUIState = MutableStateFlow<LocalLixoUpdateUIState>(LocalLixoUpdateUIState.Empty)
+    val localLixoUpdateUIState = _localLixoCreateUIState.asStateFlow()
+    sealed class LocalLixoUpdateUIState {
+        object Success: LocalLixoUpdateUIState()
+        data class Error(val error: String) : LocalLixoUpdateUIState()
+        object Loading : LocalLixoUpdateUIState()
+        object Offline : LocalLixoUpdateUIState()
+        object Empty : LocalLixoUpdateUIState()
+    }
 
 
     init {
-        observeLocaisLixo()
+        getLocaisLixo()
     }
 
     override fun onCleared() {
         log.v("Clearing LocalLixoViewModel")
     }
-    private fun observeLocaisLixo() {
-        // Refresh LocaisLixo, and emit any exception that was thrown so we can handle it downstream
-        val refreshFlow = flow<Throwable?> {
-            try {
-                localLixoRepository.refreshLocaisLixo()
-                emit(null)
-            } catch (exception: Exception) {
-                emit(exception)
-            }
-        }
 
+    fun getLocaisLixo() {
+        _locaisLixoUIState.value = LocaisLixoUIState.Loading
+        log.v("getting all local lixo ")
         viewModelScope.launch {
-            //collect locaislixo from repository and if stale from api
-            combine(refreshFlow, localLixoRepository.getLocaisLixo()) { throwable, locaisLixo -> throwable to locaisLixo }
-                .collect { (error, locaisLixo) ->
-                    mutableLocaisLixoState.update { previousState ->
-                        val errorMessage = if (error != null) {
-                            "Unable to download localLixo list"
-                        } else {
-                            previousState.error
-                        }
-                        //log.v { "in observe " + locaisLixo.distinct().toList().toString()}
-                        LocalLixoViewState(
-                            isLoading = false,
-                            locaisLixo =  locaisLixo.distinct().toList().takeIf { it.isNotEmpty() },
-                            error = errorMessage.takeIf { locaisLixo.isEmpty() },
-                            isEmpty = locaisLixo.isEmpty() && errorMessage == null
-                        )
-                    }
-                }
-        }
-    }
+            val response = localLixoService.getLocaisLixo()
 
-
-    suspend fun getLocalLixoInfo(id: Long): LocalLixo?  {
-        var localLixo: LocalLixo? = null
-         viewModelScope.async {
-            log.v { "GetLocalLixo" }
-            try {
-                localLixo = localLixoRepository.getLocalLixoById(id)
-            } catch (exception: Exception) {
-                handleLocalLixoError(exception)
-            }
-        }.await()
-        return localLixo
-    }
-
-    fun refreshLocaisLixo(): Job {
-        // Set loading state, which will be cleared when the repository re-emits
-        mutableLocaisLixoState.update { it.copy(isLoading = true) }
-        return viewModelScope.launch {
-            log.v { "refreshLocaisLixo" }
-            try {
-                localLixoRepository.refreshLocaisLixo()
-            } catch (exception: Exception) {
-                handleLocalLixoError(exception)
+            if(response.status == "200"){
+                _locaisLixoUIState.value = LocaisLixoUIState.Success(response.data)
+            }else{
+                _locaisLixoUIState.value = LocaisLixoUIState.Error(response.status)
             }
         }
+
     }
 
-    fun deleteLocaisLixo(): Job {
-        // Set loading state, which will be cleared when the repository re-emits
-        mutableLocaisLixoState.update { it.copy(isLoading = true) }
-        return viewModelScope.launch {
-            log.v { "deleteLocaisLixo" }
-            try {
-                localLixoRepository.deleteLocaisLixo()
-            } catch (exception: Exception) {
-                handleLocalLixoError(exception)
+     fun createLocalLixo(localLixo: LocalLixoSer) {
+         log.v("creating local lixo $localLixo")
+         _localLixoCreateUIState.value = LocalLixoCreateUIState.Loading
+         viewModelScope.launch {
+             val response = localLixoService.postLocalLixo(localLixo)
+             if(response.status == "200"){
+                 log.v("Creating local lixo successful")
+                 _localLixoCreateUIState.value = LocalLixoCreateUIState.Success
+             }else{
+                 log.v("Creating local lixo error")
+                 _localLixoCreateUIState.value = LocalLixoCreateUIState.Error(response.message)
+             }
+         }
+        getLocaisLixo()
+    }
+
+    fun updateLocalLixoEstado(localLixo: LocalLixoSer, estado: String, token: String){
+        log.v("updating status local lixo $localLixo")
+        _localLixoUpdateUIState.value = LocalLixoUpdateUIState.Loading
+        viewModelScope.launch {
+            val response = localLixoService.patchLocalLixoEstado(localLixo,estado,token)
+
+            if(response.status == "200"){
+                log.v("updating local lixo successful")
+                _localLixoUpdateUIState.value = LocalLixoUpdateUIState.Success
+            }else{
+                log.v("updating local lixo error")
+                _localLixoUpdateUIState.value = LocalLixoUpdateUIState.Error(response.message)
             }
         }
+        getLocaisLixo()
     }
 
-    suspend fun createLocalLixo(localLixo: LocalLixo, token: String): String {
-        var response: String = ""
-        viewModelScope.async {
-            log.v { "CreateLocalLixo" }
-            try {
-                response = localLixoRepository.createLocalLixo(localLixo,token)
-            } catch (exception: Exception) {
-                handleLocalLixoError(exception)
-            }
-        }.await()
-        log.v { "message: ${ response }" }
-        return response
-    }
 
     private fun handleLocalLixoError(throwable: Throwable) {
         log.e(throwable) { "Error downloading LocalLixo list" }
-        mutableLocaisLixoState.update {
-            if (it.locaisLixo.isNullOrEmpty()) {
-                LocalLixoViewState(error = "Unable to refresh localLixo list")
-            } else {
-                // Just let it fail silently if we have a cache
-                it.copy(isLoading = false)
-            }
-        }
+
     }
 
-    suspend fun updateLocalLixoEstado(localLixo: LocalLixo, s: String) : String{
-        var response: String = ""
-        viewModelScope.async {
-            log.v { "CreateLocalLixo" }
-            try {
-                //response = localLixoRepository.updateLocalLixoEstado(localLixo,s)
-            } catch (exception: Exception) {
-                handleLocalLixoError(exception)
-            }
-        }.await()
-        log.v { "message: ${ response }" }
-        return response
-    }
+
 }
 
-data class LocalLixoViewState(
-    val locaisLixo: List<LocalLixo>? = null,
-    val error: String? = null,
-    val isLoading: Boolean = false,
-    val isEmpty: Boolean = false
-)
+
