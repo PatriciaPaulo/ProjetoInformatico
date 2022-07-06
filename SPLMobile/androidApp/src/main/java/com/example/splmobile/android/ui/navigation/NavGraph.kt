@@ -17,6 +17,7 @@ import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
+import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
 
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -31,6 +32,7 @@ fun SetupNavGraph(
     mainViewModel: MainViewModel,
     authViewModel:AuthViewModel,
     localLixoViewModel: LocalLixoViewModel,
+    utilizadorInfoViewModel: UtilizadorInfoViewModel,
     sharedViewModel: SharedViewModel
 ){
     NavHost(
@@ -59,12 +61,12 @@ fun SetupNavGraph(
             HomeScreen(navController = navController)
         }
         composable(BottomNavItem.Map.screen_route) {
-            MapScreen(navController,
-                mainViewModel,
-                localLixoViewModel,
-                authViewModel,
-                sharedViewModel,
-                log)
+            MapScreen(navController =navController,
+                mainViewModel = mainViewModel,
+                localLixoViewModel = localLixoViewModel,
+                authViewModel = authViewModel,
+                sharedViewModel = sharedViewModel,
+                log = log)
         }
         composable(BottomNavItem.Community.screen_route) {
             CommunityScreen(navController = navController)
@@ -73,7 +75,12 @@ fun SetupNavGraph(
             ChatScreen(navController = navController)
         }
         composable(BottomNavItem.Profile.screen_route) {
-            ProfileScreen(navController = navController)
+            ProfileScreen(navController =navController,
+                mainViewModel = mainViewModel,
+                utilizadorInfoViewModel = utilizadorInfoViewModel,
+                authViewModel = authViewModel,
+                sharedViewModel = sharedViewModel,
+                log = log)
         }
     }
 }

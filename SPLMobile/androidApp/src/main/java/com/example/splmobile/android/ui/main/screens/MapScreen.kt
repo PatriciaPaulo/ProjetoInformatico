@@ -2,32 +2,36 @@ package com.example.splmobile.android.ui.main.screens
 import MapAppBar
 import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.viewmodel.MainViewModel
@@ -46,15 +50,21 @@ import kotlinx.serialization.json.jsonObject
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
-fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, localLixoViewModel: LocalLixoViewModel,authViewModel: AuthViewModel, sharedViewModel: SharedViewModel,
-              log: Logger
+fun MapScreen(
+    navController: NavHostController,
+    mainViewModel: MainViewModel,
+    localLixoViewModel: LocalLixoViewModel,
+    authViewModel: AuthViewModel,
+    sharedViewModel: SharedViewModel,
+    log: Logger
 ) {
+    val bottomScaffoldState = rememberBottomSheetScaffoldState()
 
-
-    val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
     //android view model states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
+
+
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
      //default camera position
@@ -63,11 +73,16 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
         position = CameraPosition.fromLatLngZoom(portugal, 7f)
 
     }
+
     var localLixoState = mutableStateOf(
-        LocalLixoSer(0,"new",0,"","","Muito sujo",false,"",
+        LocalLixoSer(0,"new",0,"0.0","0.0","Muito sujo",false,"",
             emptyList())
     )
-    var createLocalLixoState = mutableStateOf(false)
+    var locaisLixoFilterState = mutableStateOf(textResource(R.string.lblFilterLocaisLixoAll).toString())
+
+    var createLocalLixoState = localLixoViewModel.localLixoCreateUIState.collectAsState().value
+    var createLocalLixoButtonState = mutableStateOf(false)
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -104,14 +119,42 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
                 }
             )
         },
+        bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
-            // Apply the padding globally to the whole BottomNavScreensController
-            val bottomScaffoldState = rememberBottomSheetScaffoldState()
-            val context = LocalContext.current
+            // Apply the padding globally
             BottomSheetScaffold(
-                sheetContent = {
+                scaffoldState = bottomScaffoldState,
+                floatingActionButtonPosition = FabPosition.End,
+                sheetPeekHeight = 128.dp,
 
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = {
+                            //if not a new local lixo selected
+                            if(!localLixoState.value.id.equals(0L)){
+                                localLixoState.value =
+                                    LocalLixoSer(0,"new",0,"","",
+                                        "",false,"", emptyList())
+                                coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
+                            }
+                            else{
+                                if(createLocalLixoButtonState.value){
+                                    localLixoViewModel.createLocalLixo(localLixoState.value)
+                                    coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
+                                    //todo create error/success message
+                                }
+                                else{
+
+                                }
+
+
+                            } },
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Localized description")
+                    }
+                },
+                sheetContent = {
                     Column(
                         Modifier
                             .fillMaxWidth()
@@ -119,85 +162,95 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
-                        SheetContent(localLixoState,createLocalLixoState,bottomScaffoldState,localLixoViewModel,navController, authViewModel)
-                       /* Button(
-                            onClick = {
-                                coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
-                            }
-                        ) {
-                            Text("Click to collapse sheet")
-                        }*/
+                        SheetContent(localLixoState,
+                            createLocalLixoButtonState,
+                            bottomScaffoldState,
+                            localLixoViewModel,
+                            authViewModel)
                     }
                 },
-                floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = {
-                            if(!localLixoState.value.id.equals(0L)){
-                                localLixoState.value =  LocalLixoSer(0,"new",0,"","","",false,"", emptyList())
-                            }
-                            else{
-                                if (localLixoState.value.latitude.isNotEmpty()&&!localLixoState.value.latitude.equals("0.0")) {
-                                    if(createLocalLixoState.value){
-                                        localLixoViewModel.createLocalLixo(localLixoState.value)
-                                    }
-                                    else{
-                                        Toast.makeText(context,"Dá um nome e um estado ao seu Local", Toast.LENGTH_SHORT)
-                                    }
-                                }
+                drawerContent = { DrawerFilterCompose(locaisLixoFilterState) },
 
-                                Toast.makeText(context,"Selecione o local", Toast.LENGTH_SHORT)
-                            } },
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = "Localized description")
-                    }
-                },
-                scaffoldState = bottomScaffoldState,
-                floatingActionButtonPosition = FabPosition.End,
-                sheetPeekHeight = 128.dp,
-                /*drawerContent = {
-                    Column(
-                        Modifier.fillMaxWidth().padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("Drawer content")
-                        Spacer(Modifier.height(20.dp))
-                        Button(onClick = { coroutineScope.launch { bottomScaffoldState.drawerState.close() } }) {
-                            Text("Click to close drawer")
-                        }
-                    }
-                }*/
+                drawerShape = customDrawerShape()
+
             ) { innerPadding ->
-                Scaffold( modifier =
-                Modifier.pointerInput(Unit) {
-                    detectTapGestures(onTap = {
-                        coroutineScope.launch {
-                            if (bottomScaffoldState.bottomSheetState.isCollapsed) {
-                                bottomScaffoldState.bottomSheetState.expand()
-                            } else {
-                                bottomScaffoldState.bottomSheetState.collapse()
-                            }
-                        }
-                    })
-                }){
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        MapContent(navController,localLixoViewModel.locaisLixoUIState.collectAsState().value,localLixoState)
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(),
-                            verticalArrangement = Arrangement.Bottom,
-                            horizontalAlignment = Alignment.Start
-                        ) {
+                        MapContent(
+                            localLixoViewModel.locaisLixoUIState.collectAsState().value,
+                            localLixoState,locaisLixoFilterState)
 
-                        }
-                    }
                 }
             }
         },
-        bottomBar = { BottomNavigationBar(navController = navController) },
+
     )
 }
+@Composable
+fun DrawerFilterCompose(
+    locaisLixoFilterState: MutableState<String>
+) {
+    Text(
+        text = textResource(R.string.lblFilterLocaisLixoTitle).toString(),
+        fontSize = dimensionResource(R.dimen.txt_large).value.sp,
+        fontStyle = MaterialTheme.typography.h6.fontStyle
+    )
 
+    Log.d("Map","error, DRAWER COMPOSE ${locaisLixoFilterState})}")
+
+    val element1 = textResource(R.string.lblFilterLocaisLixoStatus1).toString()
+    val element2 = textResource(R.string.lblFilterLocaisLixoStatus2).toString()
+    val element3 = textResource(R.string.lblFilterLocaisLixoStatus3).toString()
+    val all = textResource(R.string.lblFilterLocaisLixoAll).toString()
+    val mine = textResource(R.string.lblFilterLocaisLixoMine).toString()
+
+
+    Column(Modifier.padding(16.dp)){
+        Button(onClick = {
+            locaisLixoFilterState.value = all
+            Log.d("Map","error, DRAWER COMPOSEtoodos")
+        }, shape = RectangleShape) {
+            Text(text = textResource(R.string.lblFilterLocaisLixoAll).toString())
+        }
+        Button(onClick = {
+            locaisLixoFilterState.value = mine
+            Log.d("Map","error, DRAWER COMPOSEamine")
+        }, shape = RectangleShape) {
+            Text(text = textResource(R.string.lblFilterLocaisLixoMine).toString())
+        }
+        Button(onClick = {
+            locaisLixoFilterState.value = element1
+            Log.d("Map","error, DRAWER COMPOSE1")
+        }, shape = RectangleShape) {
+            Text(text =  textResource(R.string.lblFilterLocaisLixoStatus1).toString())
+        }
+        Button(onClick = {
+            locaisLixoFilterState.value = element2
+            Log.d("Map","error, DRAWER COMPOSE2")
+        }, shape = RectangleShape) {
+            Text(text =  textResource(R.string.lblFilterLocaisLixoStatus2).toString())
+        }
+        Button(onClick = {
+            locaisLixoFilterState.value = element3
+            Log.d("Map","error, DRAWER COMPOS3d")
+        }, shape = RectangleShape) {
+            Text(text =  textResource(R.string.lblFilterLocaisLixoStatus3).toString())
+        }
+
+    }
+}
+
+@Composable
+fun customDrawerShape() = object : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        return Outline.Rectangle(Rect(left = 0f, top = 0f, right = size.width * 3 / 5, bottom = size.height * 3 / 5))
+    }
+}
+
+//todo redo with state
  suspend fun getGeocode(mainViewModel:SharedViewModel, nome : String):  String{
     return mainViewModel.getCoordenadas(nome)
 
@@ -206,19 +259,18 @@ fun MapScreen(navController: NavHostController,mainViewModel: MainViewModel, loc
 
 @Composable
 fun MapContent(
-    navController: NavHostController,
     locaisLixoState: LocalLixoViewModel.LocaisLixoUIState,
-    localLixoState: MutableState<LocalLixoSer>
+    localLixoState: MutableState<LocalLixoSer>,
+    locaisLixoFilterState: MutableState<String>
 ) {
-    var filterLocaisLixo by remember {
+    var filteredLocaisLixo by remember {
         mutableStateOf(emptyList<LocalLixoSer>())
     }
-    var portugal = LatLng(39.5, -8.0)
-
 
     var newLocalLixoPos by remember { mutableStateOf(LatLng(0.0,0.0)) }
+
+
     when(locaisLixoState){
-        is LocalLixoViewModel.LocaisLixoUIState.Loading -> CircularProgressIndicator()
         is LocalLixoViewModel.LocaisLixoUIState.Success -> {
             Box(
                 modifier = Modifier
@@ -247,32 +299,54 @@ fun MapContent(
                         onMapClick = {
                             newLocalLixoPos = it
 
-                        }
+                        },
                     ) {
+
                         if (localLixoState.value.id.equals(0L)) {
+                            Log.d("screen map", "-$newLocalLixoPos")
                             localLixoState.value.longitude = newLocalLixoPos.longitude.toString()
                             localLixoState.value.latitude = newLocalLixoPos.latitude.toString()
                             Marker(position = newLocalLixoPos, title = "new lixeira")
+                        }else{
+                            newLocalLixoPos = LatLng(0.0,0.0)
                         }
-                        filterLocaisLixo = locaisLixo
+                        filteredLocaisLixo = locaisLixo.filter { localLixo ->
+                            localLixo.aprovado }
+                        Log.d("screen map", "FITLER STATE-${locaisLixoFilterState.value}")
+                        when(locaisLixoFilterState.value){
+                            textResource(R.string.lblFilterLocaisLixoAll).toString() -> {
+                                Log.d("screen map", "FITLER STATE- TODAS")
+                                markerFilterList(filteredLocaisLixo, localLixoState)
+                            }
+                            textResource(R.string.lblFilterLocaisLixoMine).toString() ->{
+                                //todo my id
+                                Log.d("screen map", "FITLER STATE- MINE")
+                                markerFilterList( locaisLixo.filter { localLixo -> localLixo.id == 0L  }, localLixoState)
+                            }
+                            textResource(R.string.lblFilterLocaisLixoStatus1).toString() -> {
+                                Log.d("screen map", "FITLER STATE- MT SUJO")
+                                 markerFilterList(
+                                     filteredLocaisLixo.filter {
+                                             localLixo ->
+                                         localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus1).toString() }
+                                     , localLixoState)
+                            }
+                            textResource(R.string.lblFilterLocaisLixoStatus2).toString() -> {
+
+                                markerFilterList(filteredLocaisLixo.filter { localLixo -> localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus2).toString() }, localLixoState)
+                            }
+                            textResource(R.string.lblFilterLocaisLixoStatus3).toString() -> {
+                                 markerFilterList( filteredLocaisLixo.filter {
+                                         localLixo ->
+                                     localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus3).toString() },
+                                     localLixoState)
+                            }
+
+                        }
+
+
                         // filterLocaisLixo.filter { localLixo -> localLixo.aprovado  }
-                        locaisLixo.forEach { localLixo ->
 
-                            val lixeiraPosition =
-                                LatLng(localLixo.latitude.toDouble(), localLixo.longitude.toDouble())
-                            //Log.d("Map", "lixeirrrraa, $localLixo")
-                            //Log.d("Map", "pos, $lixeiraPosition")
-                            Marker(
-                                position = lixeiraPosition,
-                                title = localLixo.nome,
-                                snippet = localLixo.estado,
-                                onClick = {
-                                    localLixoState.value = localLixo
-                                    true
-                                }
-                            )
-
-                        }
 
 
                     }
@@ -281,11 +355,34 @@ fun MapContent(
                 }
             }
         }
+        is LocalLixoViewModel.LocaisLixoUIState.Loading -> CircularProgressIndicator()
         is LocalLixoViewModel.LocaisLixoUIState.Error -> Log.d("screen map", "error")
         is LocalLixoViewModel.LocaisLixoUIState.Offline -> Log.d("screen map", "offline")
     }
+}
+
+@Composable
+private fun markerFilterList(
+    filteredLocaisLixo: List<LocalLixoSer>,
+    localLixoState: MutableState<LocalLixoSer>
+) {
+    filteredLocaisLixo.forEach { localLixo ->
+        val lixeiraPosition = LatLng(localLixo.latitude.toDouble(), localLixo.longitude.toDouble())
+        //Log.d("Map", "lixeirrrraa, $localLixo")
+        //Log.d("Map", "pos, $lixeiraPosition")
+        //todo mudar o icon baseado no estado
+        Marker(
+            position = lixeiraPosition,
+            title = localLixo.nome,
+            snippet = localLixo.estado,
+            onClick = {
+                localLixoState.value = localLixo
+                true
+            }
+        )
 
     }
+}
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -293,10 +390,9 @@ fun MapContent(
 @Composable
 fun SheetContent(
     localLixo: MutableState<LocalLixoSer>,
-    createLocalLixoState: MutableState<Boolean>,
+    createLocalLixoButtonState: MutableState<Boolean>,
     bottomScaffoldState: BottomSheetScaffoldState,
     localLixoViewModel: LocalLixoViewModel,
-    navController: NavHostController,
     authViewModel: AuthViewModel
 ){
     BoxWithConstraints {
@@ -309,28 +405,29 @@ fun SheetContent(
         //id of the current local lixo
         var selectedId = remember { mutableStateOf(localLixo.value.id) }
 
-        //var message by remember { mutableStateOf("")}
-        //apps context
-        val context = LocalContext.current
-
         //variables to create a local lixo
         var nomeLocalLixo by remember { mutableStateOf(TextFieldValue("")) }
         var estadoLocalLixo by remember { mutableStateOf(TextFieldValue("")) }
-        val statusList = listOf("Muito sujo", "Pouco sujo", "Limpo")
+        val statusList = listOf(textResource(R.string.LocalLixoStatusListElement1).toString(), textResource(R.string.LocalLixoStatusListElement2).toString(), textResource(R.string.LocalLixoStatusListElement3).toString())
 
         //if its a new local lixo
         if(localLixo.value.id.equals(0L)){
-            Row {
+            Column {
                 Column {
-                    Text("Cria um local de lixo!")
+                    Text(
+                        textResource(R.string.lblCreateLocalLixo).toString(),
+                        fontSize = dimensionResource(R.dimen.txt_medium).value.sp
+                    )
+                    //text field for local lixo name
                     TextField(
                         value = nomeLocalLixo,
-                        label = { Text(text = "Nome Local Lixo") },
+                        label = { Text(textResource(R.string.lblNomeLocalLixo).toString()) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         onValueChange = { newText ->
                             nomeLocalLixo = newText
                         }
                     )
+                    //dropdown menu for local lixo status
                     var expanded by remember { mutableStateOf(false) }
                     var selectedOptionText by remember { mutableStateOf(statusList[0]) }
 
@@ -344,7 +441,7 @@ fun SheetContent(
                             readOnly = true,
                             value = selectedOptionText,
                             onValueChange = { },
-                            label = { Text("Label") },
+                            label = { Text(textResource(R.string.lblEstadoLocalLixo).toString()) },
                             trailingIcon = {
                                 ExposedDropdownMenuDefaults.TrailingIcon(
                                     expanded = expanded
@@ -371,14 +468,38 @@ fun SheetContent(
                         }
                     }
 
-
-                    if (nomeLocalLixo.text.isNotEmpty()){
+                    //make createlocallixobutton available and assign the values inserted
+                    if ((!(localLixo.value.latitude == "0.0" &&
+                                        localLixo.value.longitude == "0.0")) &&
+                        nomeLocalLixo.text.isNotEmpty() ){
                         localLixo.value.nome = nomeLocalLixo.text
                         localLixo.value.estado = selectedOptionText
-                        createLocalLixoState.value = true
+
+                        createLocalLixoButtonState.value = true
                     }else{
-                        createLocalLixoState.value = false
+                        //error messages
+                        createLocalLixoButtonState.value = false
+                        if(localLixo.value.latitude == "0.0" &&
+                            localLixo.value.longitude == "0.0"){
+                            Text(textResource(R.string.txtPositionError).toString(),
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.padding(
+                                    start = dimensionResource(R.dimen.medium_spacer))
+                            )
+                        }
+                        if (nomeLocalLixo.text.isEmpty()){
+                            Text(textResource(R.string.txtLocalLixoError).toString(),
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.padding(
+                                    start = dimensionResource(R.dimen.medium_spacer))
+                            )
+                        }
+
+
                     }
+
                 }
             }
         }else{ // displays info on already existent local lixo
@@ -392,7 +513,6 @@ fun SheetContent(
                     }
                     Spacer(Modifier.height(32.dp))
                     Column{
-
                         DropDownMenuStatus(
                             selectedStatus,
                             selectedId,
@@ -414,22 +534,13 @@ fun SheetContent(
                         coroutineScope.launch {
                             localLixoViewModel.updateLocalLixoEstado(localLixo.value,selectedStatus.value,authViewModel.tokenState.value)
                             bottomScaffoldState.bottomSheetState.collapse()
-                            /*when(message){
-                                "" -> print("x == 2")
-                                else -> {
-                                    Toast.makeText(
-                                        context,
-                                        "Showing toast...$message",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }*/
+                            //todo show success/error message
                         }
 
                     },
                     enabled = updateLocalLixo.value,
                 ) {
-                    Text("Atualizar estado do Local de Lixo")
+                    Text(textResource(R.string.btnUpdateLocalLixoStatus).toString())
                 }
 
             }
@@ -437,6 +548,7 @@ fun SheetContent(
     }
 
 }
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -448,11 +560,14 @@ private fun DropDownMenuStatus(
     updateLocalLixo: MutableState<Boolean>,
     bottomScaffoldState: BottomSheetScaffoldState
 ) {
+
     var coroutineScope = rememberCoroutineScope()
+
     //state of dropdownmenu
     var expanded by remember { mutableStateOf(false) }
     //available status for locallixo
-    val statusList = listOf("Muito sujo", "Pouco sujo", "Limpo")
+    val statusList = listOf(textResource(R.string.LocalLixoStatusListElement1).toString(), textResource(R.string.LocalLixoStatusListElement2).toString(), textResource(R.string.LocalLixoStatusListElement3).toString())
+
     //only change selected item if the id has also changed
     if(!localLixo.value.id.equals(selectedId.value)){
         //changes the current locallix
@@ -464,7 +579,6 @@ private fun DropDownMenuStatus(
         //colapses botscaffold
         coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
     }
-
 
     Text(
         text = selectedStatus.value,

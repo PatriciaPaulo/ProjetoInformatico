@@ -32,6 +32,5 @@ if __name__ == '__main__':
 
         session = Session(engine)
 
-
         session.commit()
         app.run(debug=True)

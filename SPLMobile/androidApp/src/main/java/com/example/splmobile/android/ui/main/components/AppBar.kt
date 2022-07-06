@@ -6,6 +6,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.example.splmobile.android.R
+import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.components.SearchBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 
@@ -14,7 +16,7 @@ fun DefaultAppBar(onSearchClicked: ()-> Unit){
     TopAppBar(
         title = {
             Text(
-                text = "Mapa"
+                textResource(R.string.lblMapSearchBar).toString()
             )
         },
         actions = {

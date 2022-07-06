@@ -31,6 +31,24 @@
     <string name="orLineBreak"> ou </string>
 
 
+    <!-- MapScreen -->
+    <string name="lblCreateLocalLixo">Cria um local de lixo!</string>
+    <string name="lblNomeLocalLixo">Nome do Local de Lixo</string>
+    <string name="LocalLixoStatusListElement1">Muito sujo</string>
+    <string name="LocalLixoStatusListElement2">Pouco sujo</string>
+    <string name="LocalLixoStatusListElement3">Limpo</string>
+    <string name="lblEstadoLocalLixo">Estado</string>
+    <string name="btnUpdateLocalLixoStatus">Atualizar estado do Local de Lixo</string>
+    <string name="lblMapSearchBar">Mapa</string>
+    <string name="txtLocalLixoError">Preencha o nome do local</string>
+    <string name="txtPositionError">Selecione no mapa o Local de Lixo</string>
+    <string name="lblFilterLocaisLixoAll">Todos</string>
+    <string name="lblFilterLocaisLixoTitle">Filtrar Locais de Lixo</string>
+    <string name="lblFilterLocaisLixoMine">Meus</string>
+    <string name="lblFilterLocaisLixoStatus1">Muito sujo</string>
+    <string name="lblFilterLocaisLixoStatus2">Pouco sujo</string>
+    <string name="lblFilterLocaisLixoStatus3">Limpo</string>
+    <string name="lblFilterLocaisLixoNotAprooved">Não Aprovado</string>
 
 
 </resources>
