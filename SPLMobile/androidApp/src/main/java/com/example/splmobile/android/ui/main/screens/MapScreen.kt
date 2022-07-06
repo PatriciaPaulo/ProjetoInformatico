@@ -407,7 +407,6 @@ fun SheetContent(
 
         //variables to create a local lixo
         var nomeLocalLixo by remember { mutableStateOf(TextFieldValue("")) }
-        var estadoLocalLixo by remember { mutableStateOf(TextFieldValue("")) }
         val statusList = listOf(textResource(R.string.LocalLixoStatusListElement1).toString(), textResource(R.string.LocalLixoStatusListElement2).toString(), textResource(R.string.LocalLixoStatusListElement3).toString())
 
         //if its a new local lixo
@@ -419,6 +418,7 @@ fun SheetContent(
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )
                     //text field for local lixo name
+
                     TextField(
                         value = nomeLocalLixo,
                         label = { Text(textResource(R.string.lblNomeLocalLixo).toString()) },

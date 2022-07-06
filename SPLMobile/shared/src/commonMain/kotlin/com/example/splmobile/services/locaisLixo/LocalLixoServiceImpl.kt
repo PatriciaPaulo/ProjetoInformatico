@@ -26,6 +26,7 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
         expectSuccess = true
         install(ContentNegotiation) {
             json(Json {
+                ignoreUnknownKeys = true
                 prettyPrint = true
                 isLenient = true
             })
