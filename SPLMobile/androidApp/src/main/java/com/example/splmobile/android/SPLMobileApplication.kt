@@ -8,6 +8,7 @@ import com.example.splmobile.AppInfo
 import com.example.splmobile.initKoin
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
+import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 
 import dagger.hilt.android.HiltAndroidApp
@@ -25,6 +26,7 @@ class SPLMobileApplication : Application() {
                 single<Context> { this@SPLMobileApplication }
                 viewModel { LocalLixoViewModel(get(), get { parametersOf("LocalLixoViewModel") }, get { parametersOf("LocalLixoRepository") }) }
                 viewModel { SharedViewModel(get(), get { parametersOf("SharedViewModel") }) }
+                viewModel { UtilizadorInfoViewModel(get(), get { parametersOf("UtilizadorInfoViewModel") }) }
                 viewModel { AuthViewModel(get(), get { parametersOf("AuthViewModel") }) }
                 single<SharedPreferences> {
                     get<Context>().getSharedPreferences("KAMPSTARTER_SETTINGS", Context.MODE_PRIVATE)

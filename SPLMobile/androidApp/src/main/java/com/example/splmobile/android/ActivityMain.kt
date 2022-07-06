@@ -34,6 +34,7 @@ import com.example.splmobile.android.viewmodel.SplashViewModel
 import com.example.splmobile.injectLogger
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
+import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,6 +63,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
     private val localLixoViewModel: LocalLixoViewModel by viewModel()
     private val sharedViewModel: SharedViewModel by viewModel()
     private val authViewModel: AuthViewModel by viewModel()
+    private val utilizadorInfoViewModel: UtilizadorInfoViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -85,6 +87,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
                     mainViewModel = mainViewModel,
                     authViewModel = authViewModel,
                     localLixoViewModel = localLixoViewModel,
+                    utilizadorInfoViewModel = utilizadorInfoViewModel,
                     sharedViewModel = sharedViewModel
                 )
 

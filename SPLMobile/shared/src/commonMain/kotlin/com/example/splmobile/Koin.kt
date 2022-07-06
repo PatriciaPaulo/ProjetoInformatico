@@ -1,5 +1,7 @@
 package com.example.splmobile
 
+import UtilizadorInfoService
+import UtilizadorInfoServiceImpl
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.StaticConfig
 import co.touchlab.kermit.platformLogWriter
@@ -67,6 +69,12 @@ private val coreModule = module {
     single<AuthService> {
         AuthServiceImpl(
             getWith("AuthServiceImpl"),
+            get()
+        )
+    }
+    single<UtilizadorInfoService> {
+        UtilizadorInfoServiceImpl(
+            getWith("UtilizadorInfoServiceImpl"),
             get()
         )
     }

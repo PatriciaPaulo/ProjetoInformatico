@@ -30,6 +30,7 @@ import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
+import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.maps.model.CameraPosition
@@ -47,7 +48,7 @@ import kotlinx.serialization.json.jsonObject
 fun ProfileScreen(
     navController: NavHostController,
     mainViewModel: MainViewModel,
-    localLixoViewModel: LocalLixoViewModel,
+    utilizadorInfoViewModel: UtilizadorInfoViewModel,
     authViewModel: AuthViewModel,
     sharedViewModel: SharedViewModel,
     log: Logger
