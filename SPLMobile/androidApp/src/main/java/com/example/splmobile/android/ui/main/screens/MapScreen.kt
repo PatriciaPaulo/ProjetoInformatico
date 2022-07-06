@@ -202,7 +202,7 @@ fun DrawerFilterCompose(
     val element3 = textResource(R.string.lblFilterLocaisLixoStatus3).toString()
     val all = textResource(R.string.lblFilterLocaisLixoAll).toString()
     val mine = textResource(R.string.lblFilterLocaisLixoMine).toString()
-    val notAprooved = textResource(R.string.lblFilterLocaisLixoNotAprooved).toString()
+
 
     Column(Modifier.padding(16.dp)){
         Button(onClick = {
@@ -216,12 +216,6 @@ fun DrawerFilterCompose(
             Log.d("Map","error, DRAWER COMPOSEamine")
         }, shape = RectangleShape) {
             Text(text = textResource(R.string.lblFilterLocaisLixoMine).toString())
-        }
-        Button(onClick = {
-            locaisLixoFilterState.value = notAprooved
-            Log.d("Map","error, DRAWER COMPOSEaprooved")
-        }, shape = RectangleShape) {
-            Text(text =  textResource(R.string.lblFilterLocaisLixoNotAprooved).toString())
         }
         Button(onClick = {
             locaisLixoFilterState.value = element1
@@ -307,6 +301,7 @@ fun MapContent(
 
                         },
                     ) {
+
                         if (localLixoState.value.id.equals(0L)) {
                             Log.d("screen map", "-$newLocalLixoPos")
                             localLixoState.value.longitude = newLocalLixoPos.longitude.toString()
@@ -315,19 +310,18 @@ fun MapContent(
                         }else{
                             newLocalLixoPos = LatLng(0.0,0.0)
                         }
+                        filteredLocaisLixo = locaisLixo.filter { localLixo ->
+                            localLixo.aprovado }
                         Log.d("screen map", "FITLER STATE-${locaisLixoFilterState.value}")
                         when(locaisLixoFilterState.value){
                             textResource(R.string.lblFilterLocaisLixoAll).toString() -> {
                                 Log.d("screen map", "FITLER STATE- TODAS")
-                                filteredLocaisLixo = locaisLixo
-                                markerFilterList(filteredLocaisLixo.filter {
-                                        localLixo ->
-                                    localLixo.aprovado }, localLixoState)
+                                markerFilterList(filteredLocaisLixo, localLixoState)
                             }
                             textResource(R.string.lblFilterLocaisLixoMine).toString() ->{
                                 //todo my id
                                 Log.d("screen map", "FITLER STATE- MINE")
-                                markerFilterList( filteredLocaisLixo.filter { localLixo -> localLixo.id == 0L  }, localLixoState)
+                                markerFilterList( locaisLixo.filter { localLixo -> localLixo.id == 0L  }, localLixoState)
                             }
                             textResource(R.string.lblFilterLocaisLixoStatus1).toString() -> {
                                 Log.d("screen map", "FITLER STATE- MT SUJO")
@@ -346,13 +340,6 @@ fun MapContent(
                                          localLixo ->
                                      localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus3).toString() },
                                      localLixoState)
-                            }
-                            textResource(R.string.lblFilterLocaisLixoNotAprooved).toString() -> {
-                                Log.d("screen map", "FITLER STATE- APROVED")
-                                filteredLocaisLixo.filter {
-                                        localLixo ->
-                                    !localLixo.aprovado }
-                                markerFilterList(filteredLocaisLixo, localLixoState)
                             }
 
                         }
