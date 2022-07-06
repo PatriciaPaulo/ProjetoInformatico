@@ -139,11 +139,10 @@ fun MapScreen(
                                 coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
                             }
                             else{
-
                                 if(createLocalLixoButtonState.value){
                                     localLixoViewModel.createLocalLixo(localLixoState.value)
                                     coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
-
+                                    //todo create error/success message
                                 }
                                 else{
 
@@ -170,8 +169,9 @@ fun MapScreen(
                             authViewModel)
                     }
                 },
-                drawerContent = { DrawerCompose(locaisLixoFilterState) },
-                drawerShape = customShape()
+                drawerContent = { DrawerFilterCompose(locaisLixoFilterState) },
+
+                drawerShape = customDrawerShape()
 
             ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
@@ -186,7 +186,9 @@ fun MapScreen(
     )
 }
 @Composable
-fun DrawerCompose(locaisLixoFilterState: MutableState<String>) {
+fun DrawerFilterCompose(
+    locaisLixoFilterState: MutableState<String>
+) {
     Text(
         text = textResource(R.string.lblFilterLocaisLixoTitle).toString(),
         fontSize = dimensionResource(R.dimen.txt_large).value.sp,
@@ -242,8 +244,9 @@ fun DrawerCompose(locaisLixoFilterState: MutableState<String>) {
 
     }
 }
+
 @Composable
-fun customShape() = object : Shape {
+fun customDrawerShape() = object : Shape {
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
@@ -253,6 +256,7 @@ fun customShape() = object : Shape {
     }
 }
 
+//todo redo with state
  suspend fun getGeocode(mainViewModel:SharedViewModel, nome : String):  String{
     return mainViewModel.getCoordenadas(nome)
 
@@ -265,14 +269,12 @@ fun MapContent(
     localLixoState: MutableState<LocalLixoSer>,
     locaisLixoFilterState: MutableState<String>
 ) {
-    //todo filter locais
     var filteredLocaisLixo by remember {
         mutableStateOf(emptyList<LocalLixoSer>())
     }
 
-    //todo filter locais
-
     var newLocalLixoPos by remember { mutableStateOf(LatLng(0.0,0.0)) }
+
 
     when(locaisLixoState){
         is LocalLixoViewModel.LocaisLixoUIState.Success -> {
@@ -318,18 +320,18 @@ fun MapContent(
                             textResource(R.string.lblFilterLocaisLixoAll).toString() -> {
                                 Log.d("screen map", "FITLER STATE- TODAS")
                                 filteredLocaisLixo = locaisLixo
-                                markerList(filteredLocaisLixo.filter {
+                                markerFilterList(filteredLocaisLixo.filter {
                                         localLixo ->
                                     localLixo.aprovado }, localLixoState)
                             }
                             textResource(R.string.lblFilterLocaisLixoMine).toString() ->{
                                 //todo my id
                                 Log.d("screen map", "FITLER STATE- MINE")
-                                markerList( filteredLocaisLixo.filter { localLixo -> localLixo.id == 0L  }, localLixoState)
+                                markerFilterList( filteredLocaisLixo.filter { localLixo -> localLixo.id == 0L  }, localLixoState)
                             }
                             textResource(R.string.lblFilterLocaisLixoStatus1).toString() -> {
                                 Log.d("screen map", "FITLER STATE- MT SUJO")
-                                 markerList(
+                                 markerFilterList(
                                      filteredLocaisLixo.filter {
                                              localLixo ->
                                          localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus1).toString() }
@@ -337,10 +339,10 @@ fun MapContent(
                             }
                             textResource(R.string.lblFilterLocaisLixoStatus2).toString() -> {
 
-                                markerList(filteredLocaisLixo.filter { localLixo -> localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus2).toString() }, localLixoState)
+                                markerFilterList(filteredLocaisLixo.filter { localLixo -> localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus2).toString() }, localLixoState)
                             }
                             textResource(R.string.lblFilterLocaisLixoStatus3).toString() -> {
-                                 markerList( filteredLocaisLixo.filter {
+                                 markerFilterList( filteredLocaisLixo.filter {
                                          localLixo ->
                                      localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus3).toString() },
                                      localLixoState)
@@ -350,7 +352,7 @@ fun MapContent(
                                 filteredLocaisLixo.filter {
                                         localLixo ->
                                     !localLixo.aprovado }
-                                markerList(filteredLocaisLixo, localLixoState)
+                                markerFilterList(filteredLocaisLixo, localLixoState)
                             }
 
                         }
@@ -373,17 +375,15 @@ fun MapContent(
 }
 
 @Composable
-private fun markerList(
+private fun markerFilterList(
     filteredLocaisLixo: List<LocalLixoSer>,
     localLixoState: MutableState<LocalLixoSer>
 ) {
-
     filteredLocaisLixo.forEach { localLixo ->
-
-        val lixeiraPosition =
-            LatLng(localLixo.latitude.toDouble(), localLixo.longitude.toDouble())
-        Log.d("Map", "lixeirrrraa, $localLixo")
+        val lixeiraPosition = LatLng(localLixo.latitude.toDouble(), localLixo.longitude.toDouble())
+        //Log.d("Map", "lixeirrrraa, $localLixo")
         //Log.d("Map", "pos, $lixeiraPosition")
+        //todo mudar o icon baseado no estado
         Marker(
             position = lixeiraPosition,
             title = localLixo.nome,
