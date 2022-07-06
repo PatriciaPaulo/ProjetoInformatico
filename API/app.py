@@ -1,18 +1,28 @@
 from flask import Flask
 
 from routes import routes_blueprint
-from models import db, Utilizador, Lixeira
-from werkzeug.security import generate_password_hash
+from routes.admin_routes import admin_routes_blueprint
+from routes.garbagespot_routes import garbagespot_routes_blueprint
+from routes.event_routes import event_routes_blueprint
+from routes.activity_routes import activity_routes_blueprint
+from routes.user_routes import user_routes_blueprint
+from models import db
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from models import Base
 
 if __name__ == '__main__':
     app = Flask(__name__)
     app.config['SECRET_KEY'] = '6e129cb9707e18357de8b945656c430f'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///spl.db'
-    app.register_blueprint(routes_blueprint, url_prefix='/api')
+
+    # region Register Routes
+    app.register_blueprint(admin_routes_blueprint, url_prefix='/api')
+    app.register_blueprint(garbagespot_routes_blueprint, url_prefix='/api')
+    app.register_blueprint(event_routes_blueprint, url_prefix='/api')
+    app.register_blueprint(activity_routes_blueprint, url_prefix='/api')
+    app.register_blueprint(user_routes_blueprint, url_prefix='/api')
+    # endregion
 
     db.init_app(app)
     with app.app_context():
@@ -24,5 +34,3 @@ if __name__ == '__main__':
 
         session.commit()
         app.run(debug=True)
-
-
