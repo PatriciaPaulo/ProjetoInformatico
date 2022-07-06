@@ -12,13 +12,20 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -71,6 +78,8 @@ fun MapScreen(
         LocalLixoSer(0,"new",0,"0.0","0.0","Muito sujo",false,"",
             emptyList())
     )
+    var locaisLixoFilterState = mutableStateOf(textResource(R.string.lblFilterLocaisLixoAll).toString())
+
     var createLocalLixoState = localLixoViewModel.localLixoCreateUIState.collectAsState().value
     var createLocalLixoButtonState = mutableStateOf(false)
 
@@ -118,12 +127,15 @@ fun MapScreen(
                 scaffoldState = bottomScaffoldState,
                 floatingActionButtonPosition = FabPosition.End,
                 sheetPeekHeight = 128.dp,
+
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
                             //if not a new local lixo selected
                             if(!localLixoState.value.id.equals(0L)){
-                                localLixoState.value =  LocalLixoSer(0,"new",0,"","","",false,"", emptyList())
+                                localLixoState.value =
+                                    LocalLixoSer(0,"new",0,"","",
+                                        "",false,"", emptyList())
                                 coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
                             }
                             else{
@@ -131,6 +143,7 @@ fun MapScreen(
                                 if(createLocalLixoButtonState.value){
                                     localLixoViewModel.createLocalLixo(localLixoState.value)
                                     coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
+
                                 }
                                 else{
 
@@ -150,19 +163,94 @@ fun MapScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
-                        SheetContent(localLixoState,createLocalLixoButtonState,bottomScaffoldState,localLixoViewModel, authViewModel)
+                        SheetContent(localLixoState,
+                            createLocalLixoButtonState,
+                            bottomScaffoldState,
+                            localLixoViewModel,
+                            authViewModel)
                     }
                 },
+                drawerContent = { DrawerCompose(locaisLixoFilterState) },
+                drawerShape = customShape()
 
             ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        MapContent(localLixoViewModel.locaisLixoUIState.collectAsState().value,localLixoState)
+                        MapContent(
+                            localLixoViewModel.locaisLixoUIState.collectAsState().value,
+                            localLixoState,locaisLixoFilterState)
 
                 }
             }
         },
 
     )
+}
+@Composable
+fun DrawerCompose(locaisLixoFilterState: MutableState<String>) {
+    Text(
+        text = textResource(R.string.lblFilterLocaisLixoTitle).toString(),
+        fontSize = dimensionResource(R.dimen.txt_large).value.sp,
+        fontStyle = MaterialTheme.typography.h6.fontStyle
+    )
+
+    Log.d("Map","error, DRAWER COMPOSE ${locaisLixoFilterState})}")
+
+    val element1 = textResource(R.string.lblFilterLocaisLixoStatus1).toString()
+    val element2 = textResource(R.string.lblFilterLocaisLixoStatus2).toString()
+    val element3 = textResource(R.string.lblFilterLocaisLixoStatus3).toString()
+    val all = textResource(R.string.lblFilterLocaisLixoAll).toString()
+    val mine = textResource(R.string.lblFilterLocaisLixoMine).toString()
+    val notAprooved = textResource(R.string.lblFilterLocaisLixoNotAprooved).toString()
+
+    Column(Modifier.padding(16.dp)){
+        Button(onClick = {
+            locaisLixoFilterState.value = all
+            Log.d("Map","error, DRAWER COMPOSEtoodos")
+        }, shape = RectangleShape) {
+            Text(text = textResource(R.string.lblFilterLocaisLixoAll).toString())
+        }
+        Button(onClick = {
+            locaisLixoFilterState.value = mine
+            Log.d("Map","error, DRAWER COMPOSEamine")
+        }, shape = RectangleShape) {
+            Text(text = textResource(R.string.lblFilterLocaisLixoMine).toString())
+        }
+        Button(onClick = {
+            locaisLixoFilterState.value = notAprooved
+            Log.d("Map","error, DRAWER COMPOSEaprooved")
+        }, shape = RectangleShape) {
+            Text(text =  textResource(R.string.lblFilterLocaisLixoNotAprooved).toString())
+        }
+        Button(onClick = {
+            locaisLixoFilterState.value = element1
+            Log.d("Map","error, DRAWER COMPOSE1")
+        }, shape = RectangleShape) {
+            Text(text =  textResource(R.string.lblFilterLocaisLixoStatus1).toString())
+        }
+        Button(onClick = {
+            locaisLixoFilterState.value = element2
+            Log.d("Map","error, DRAWER COMPOSE2")
+        }, shape = RectangleShape) {
+            Text(text =  textResource(R.string.lblFilterLocaisLixoStatus2).toString())
+        }
+        Button(onClick = {
+            locaisLixoFilterState.value = element3
+            Log.d("Map","error, DRAWER COMPOS3d")
+        }, shape = RectangleShape) {
+            Text(text =  textResource(R.string.lblFilterLocaisLixoStatus3).toString())
+        }
+
+    }
+}
+@Composable
+fun customShape() = object : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        return Outline.Rectangle(Rect(left = 0f, top = 0f, right = size.width * 3 / 5, bottom = size.height * 3 / 5))
+    }
 }
 
  suspend fun getGeocode(mainViewModel:SharedViewModel, nome : String):  String{
@@ -174,12 +262,16 @@ fun MapScreen(
 @Composable
 fun MapContent(
     locaisLixoState: LocalLixoViewModel.LocaisLixoUIState,
-    localLixoState: MutableState<LocalLixoSer>
+    localLixoState: MutableState<LocalLixoSer>,
+    locaisLixoFilterState: MutableState<String>
 ) {
     //todo filter locais
-    var filterLocaisLixo by remember {
+    var filteredLocaisLixo by remember {
         mutableStateOf(emptyList<LocalLixoSer>())
     }
+
+    //todo filter locais
+
     var newLocalLixoPos by remember { mutableStateOf(LatLng(0.0,0.0)) }
 
     when(locaisLixoState){
@@ -211,7 +303,7 @@ fun MapContent(
                         onMapClick = {
                             newLocalLixoPos = it
 
-                        }
+                        },
                     ) {
                         if (localLixoState.value.id.equals(0L)) {
                             Log.d("screen map", "-$newLocalLixoPos")
@@ -221,26 +313,51 @@ fun MapContent(
                         }else{
                             newLocalLixoPos = LatLng(0.0,0.0)
                         }
+                        Log.d("screen map", "FITLER STATE-${locaisLixoFilterState.value}")
+                        when(locaisLixoFilterState.value){
+                            textResource(R.string.lblFilterLocaisLixoAll).toString() -> {
+                                Log.d("screen map", "FITLER STATE- TODAS")
+                                filteredLocaisLixo = locaisLixo
+                                markerList(filteredLocaisLixo.filter {
+                                        localLixo ->
+                                    localLixo.aprovado }, localLixoState)
+                            }
+                            textResource(R.string.lblFilterLocaisLixoMine).toString() ->{
+                                //todo my id
+                                Log.d("screen map", "FITLER STATE- MINE")
+                                markerList( filteredLocaisLixo.filter { localLixo -> localLixo.id == 0L  }, localLixoState)
+                            }
+                            textResource(R.string.lblFilterLocaisLixoStatus1).toString() -> {
+                                Log.d("screen map", "FITLER STATE- MT SUJO")
+                                 markerList(
+                                     filteredLocaisLixo.filter {
+                                             localLixo ->
+                                         localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus1).toString() }
+                                     , localLixoState)
+                            }
+                            textResource(R.string.lblFilterLocaisLixoStatus2).toString() -> {
 
-                        filterLocaisLixo = locaisLixo
-                        // filterLocaisLixo.filter { localLixo -> localLixo.aprovado  }
-                        locaisLixo.forEach { localLixo ->
-
-                            val lixeiraPosition =
-                                LatLng(localLixo.latitude.toDouble(), localLixo.longitude.toDouble())
-                            //Log.d("Map", "lixeirrrraa, $localLixo")
-                            //Log.d("Map", "pos, $lixeiraPosition")
-                            Marker(
-                                position = lixeiraPosition,
-                                title = localLixo.nome,
-                                snippet = localLixo.estado,
-                                onClick = {
-                                    localLixoState.value = localLixo
-                                    true
-                                }
-                            )
+                                markerList(filteredLocaisLixo.filter { localLixo -> localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus2).toString() }, localLixoState)
+                            }
+                            textResource(R.string.lblFilterLocaisLixoStatus3).toString() -> {
+                                 markerList( filteredLocaisLixo.filter {
+                                         localLixo ->
+                                     localLixo.estado == textResource(R.string.lblFilterLocaisLixoStatus3).toString() },
+                                     localLixoState)
+                            }
+                            textResource(R.string.lblFilterLocaisLixoNotAprooved).toString() -> {
+                                Log.d("screen map", "FITLER STATE- APROVED")
+                                filteredLocaisLixo.filter {
+                                        localLixo ->
+                                    !localLixo.aprovado }
+                                markerList(filteredLocaisLixo, localLixoState)
+                            }
 
                         }
+
+
+                        // filterLocaisLixo.filter { localLixo -> localLixo.aprovado  }
+
 
 
                     }
@@ -252,6 +369,31 @@ fun MapContent(
         is LocalLixoViewModel.LocaisLixoUIState.Loading -> CircularProgressIndicator()
         is LocalLixoViewModel.LocaisLixoUIState.Error -> Log.d("screen map", "error")
         is LocalLixoViewModel.LocaisLixoUIState.Offline -> Log.d("screen map", "offline")
+    }
+}
+
+@Composable
+private fun markerList(
+    filteredLocaisLixo: List<LocalLixoSer>,
+    localLixoState: MutableState<LocalLixoSer>
+) {
+
+    filteredLocaisLixo.forEach { localLixo ->
+
+        val lixeiraPosition =
+            LatLng(localLixo.latitude.toDouble(), localLixo.longitude.toDouble())
+        Log.d("Map", "lixeirrrraa, $localLixo")
+        //Log.d("Map", "pos, $lixeiraPosition")
+        Marker(
+            position = lixeiraPosition,
+            title = localLixo.nome,
+            snippet = localLixo.estado,
+            onClick = {
+                localLixoState.value = localLixo
+                true
+            }
+        )
+
     }
 }
 
@@ -283,7 +425,7 @@ fun SheetContent(
 
         //if its a new local lixo
         if(localLixo.value.id.equals(0L)){
-            Row {
+            Column {
                 Column {
                     Text(
                         textResource(R.string.lblCreateLocalLixo).toString(),

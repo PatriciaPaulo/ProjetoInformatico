@@ -42,6 +42,13 @@
     <string name="lblMapSearchBar">Mapa</string>
     <string name="txtLocalLixoError">Preencha o nome do local</string>
     <string name="txtPositionError">Selecione no mapa o Local de Lixo</string>
+    <string name="lblFilterLocaisLixoAll">Todos</string>
+    <string name="lblFilterLocaisLixoTitle">Filtrar Locais de Lixo</string>
+    <string name="lblFilterLocaisLixoMine">Meus</string>
+    <string name="lblFilterLocaisLixoStatus1">Muito sujo</string>
+    <string name="lblFilterLocaisLixoStatus2">Pouco sujo</string>
+    <string name="lblFilterLocaisLixoStatus3">Limpo</string>
+    <string name="lblFilterLocaisLixoNotAprooved">Não Aprovado</string>
 
 
 </resources>
