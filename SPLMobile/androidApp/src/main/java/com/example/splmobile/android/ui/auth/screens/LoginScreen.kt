@@ -61,11 +61,13 @@ fun LoginScreen(
 
     /* TODO
         Mudar os ICONS dos text boxes para um user e uma key
+        Mudar ICON do App Icon
      */
 
     // Login Layout
     Column (
         modifier = Modifier
+            .padding(top = dimensionResource(R.dimen.small_spacer))
             .fillMaxWidth()
             .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -73,7 +75,6 @@ fun LoginScreen(
         // App Icon
         Card(
             modifier = Modifier
-                .padding(top = dimensionResource(R.dimen.small_spacer))
                 .size(dimensionResource(R.dimen.small_logo))
                 .testTag("circle"),
             shape = CircleShape,
@@ -107,7 +108,7 @@ fun ComposableUI(
     var emailError by remember { mutableStateOf(false) } // Error flag
     val emailUpdate = { data : String ->
         email = data
-        if(isEmailValid(email)) {
+        if(!isTextFieldEmpty(email)) {
             emailError = false
         }
     }

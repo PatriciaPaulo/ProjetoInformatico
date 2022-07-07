@@ -111,12 +111,13 @@ def get_user(user_id):
 
     return make_response(jsonify({'data': Utilizador.serialize(user)}), 200)
 
+
 # Update User by Admin
 @user_routes_blueprint.route('/users/<user_id>', methods=['PUT'])
 @admin_required
-def update_user(current_user,user_id):
-    #Checks if user exist
-    user = db.session.query(Utilizador).filter_by(id=user_id,deleted_at=None).first()
+def update_user(current_user, user_id):
+    # Checks if user exist
+    user = db.session.query(Utilizador).filter_by(id=user_id, deleted_at=None).first()
     print(user_id)
     print(user)
     if not user:
@@ -130,16 +131,4 @@ def update_user(current_user,user_id):
     db.session.commit()
     return make_response(jsonify({'data': Utilizador.serialize(user)}), 200)
 
-# Check if Email belongs to any user
-@user_routes_blueprint.route('/checkEmail', methods=['GET'])
-def check_email(user_mail):
-    # Find if email belongs to user
-    user = db.session.query(Utilizador).filter_by(email = user_mail, deleted_at=None).first()
 
-    if not user:
-        make_response("Email doesn\'t belong to a user.", 404)
-
-    if user['blocked'] is True:
-        make_response("Email is blocked.", 401)
-
-    make_response("User with email found", 200)

@@ -31,6 +31,7 @@ class AuthViewModel (
 
     private val log = log.withTag("AuthViewModel")
 
+    // Request User Login
     fun login(email : String, password : String) = viewModelScope.launch {
         // Set loading state, which will be cleared when the repository re-emits
         _loginUIState.value = LoginUIState.Loading
@@ -51,7 +52,6 @@ class AuthViewModel (
         else{
             _loginUIState.value = LoginUIState.Error(loginResponse.message)
         }
-
     }
 
     private fun handleMainError(throwable: Throwable) {

@@ -1,19 +1,24 @@
+from time import time
 
 from flask import Blueprint, current_app
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, Column, Integer, String,Boolean, ForeignKey,Numeric,Text, Date
+from sqlalchemy import MetaData, Column, Integer, String, Boolean, ForeignKey, Numeric, Text, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 import jwt
+
+
+
 metadata = MetaData()
 Base = declarative_base(metadata=metadata)
 engine = create_engine('sqlite:///spl.db')
 db = SQLAlchemy(metadata=metadata)
 
-#region Utilizador
+
+# region Utilizador
 class Utilizador(Base):
-    __tablename__="utilizador"
+    __tablename__ = "utilizador"
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
     password = Column(String(50), nullable=False)
@@ -33,11 +38,28 @@ class Utilizador(Base):
             'blocked': self.blocked
         }
 
+    # Generate Password Token
+#    def get_reset_password_token(self, expires_in=1440):
+#        return jwt.encode(
+#            {'reset_password': self.id, 'exp': time() + expires_in},
+#            #app.config['SECRET_KEY'], algorithm='HS256' TODO Generating an error bc i cant import app.py
+#        )
+
+    # Verify Password Token
+#    @staticmethod
+#    def verify_reset_password_token(token):
+#        try:
+#        #id = jwt.decode(token, app.config['SECRET_KEY'],
+#            #                algorithms=['HS256'])['reset_password']
+#        except:
+#            return
+
+#        return Utilizador.query.get(id)
 
 
-#endregion
+# endregion
 
-#region Atividade
+# region Atividade
 class Atividade(Base):
     __tablename__ = "atividade"
     id = Column(Integer, primary_key=True)
@@ -48,8 +70,6 @@ class Atividade(Base):
     tipoAtividade = Column(String(50))
     dataInicio = Column(Date)
     dataFim = Column(Date)
-
-
 
     def serialize(self):
         return {
@@ -65,9 +85,9 @@ class Atividade(Base):
         }
 
 
-#endregion
+# endregion
 
-#region LixoNaAtividade
+# region LixoNaAtividade
 class LixoNaAtividade(Base):
     __tablename__ = "lixo_na_atividade"
     id = Column(Integer, primary_key=True)
@@ -84,9 +104,11 @@ class LixoNaAtividade(Base):
             'quantidade': self.quantidade,
             'medida': self.medida
         }
-#endregion
 
-#region Lixo
+
+# endregion
+
+# region Lixo
 class Lixo(Base):
     __tablename__ = "lixo"
     id = Column(Integer, primary_key=True)
@@ -100,9 +122,9 @@ class Lixo(Base):
         }
 
 
-#endregion
+# endregion
 
-#region Equipamento
+# region Equipamento
 class Equipamento(Base):
     __tablename__ = "equipamento"
     id = Column(Integer, primary_key=True)
@@ -114,9 +136,11 @@ class Equipamento(Base):
             'nome': self.nome
 
         }
-#endregion
 
-#region EquipamentoNoEvento
+
+# endregion
+
+# region EquipamentoNoEvento
 class EquipamentoNoEvento(Base):
     __tablename__ = "equipamento_no_evento"
     id = Column(Integer, primary_key=True)
@@ -134,9 +158,11 @@ class EquipamentoNoEvento(Base):
             'isProvided': self.isProvided
 
         }
-#endregion
 
-#region Evento
+
+# endregion
+
+# region Evento
 class Evento(Base):
     __tablename__ = "evento"
     id = Column(Integer, primary_key=True)
@@ -155,7 +181,6 @@ class Evento(Base):
     foto = Column(String(50))
     observacoes = Column(String(50))
 
-
     def serialize(self):
         return {
             'id': self.id,
@@ -173,19 +198,21 @@ class Evento(Base):
             'observacoes': self.observacoes
 
         }
-#endregion
+
+
+# endregion
 
 # region Lixeira
 class Lixeira(Base):
     __tablename__ = "lixeira"
     id = Column(Integer, primary_key=True)
     nome = Column(String(50), nullable=False)
-    latitude  = Column(Integer, nullable=False)
-    longitude  = Column(Integer, nullable=False)
+    latitude = Column(Integer, nullable=False)
+    longitude = Column(Integer, nullable=False)
     criador = Column(Integer, ForeignKey('utilizador.id'), nullable=False)
     estado = Column(String(50), nullable=False)
     aprovado = Column(Boolean, nullable=False)
-    foto = Column(Text,nullable=True)
+    foto = Column(Text, nullable=True)
 
     def serialize(self):
         return {
@@ -198,9 +225,11 @@ class Lixeira(Base):
             'aprovado': self.aprovado,
             'foto': self.foto
         }
-#endregion
 
-#region LixeiraEvento
+
+# endregion
+
+# region LixeiraEvento
 class LixeiraEvento(Base):
     __tablename__ = "lixeira_evento"
     id = Column(Integer, primary_key=True)
@@ -215,9 +244,10 @@ class LixeiraEvento(Base):
 
         }
 
-#endregion
 
-#region UtilizadorNoEvento
+# endregion
+
+# region UtilizadorNoEvento
 class UtilizadorNoEvento(Base):
     __tablename__ = "utilizador_no_evento"
     id = Column(Integer, primary_key=True)
@@ -233,9 +263,10 @@ class UtilizadorNoEvento(Base):
             'estado': self.estado
         }
 
-#endregion
 
-#region MensagemEvento
+# endregion
+
+# region MensagemEvento
 class MensagemEvento(Base):
     __tablename__ = "mensagem_evento"
     id = Column(Integer, primary_key=True)
@@ -249,9 +280,11 @@ class MensagemEvento(Base):
             'eventoID': self.eventoID
 
         }
-#endregion
 
-#region Amizade
+
+# endregion
+
+# region Amizade
 class Amizade(Base):
     __tablename__ = "amizade"
     id = Column(Integer, primary_key=True)
@@ -266,9 +299,11 @@ class Amizade(Base):
             'addresseeID': self.addresseeID,
             'data': self.data
         }
-#endregion
 
-#region Mensagem
+
+# endregion
+
+# region Mensagem
 class Mensagem(Base):
     __tablename__ = "mensagem"
     id = Column(Integer, primary_key=True)
@@ -283,9 +318,11 @@ class Mensagem(Base):
             'message': self.message,
             'tipo': self.tipo
         }
-#endregion
 
-#region MensagemIndividual
+
+# endregion
+
+# region MensagemIndividual
 class MensagemIndividual(Base):
     __tablename__ = "mensagem_individual"
     id = Column(Integer, primary_key=True)
@@ -298,4 +335,4 @@ class MensagemIndividual(Base):
             'userID': self.userID,
             'mensagemID': self.mensagemID
         }
-#endregion
+# endregion

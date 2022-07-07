@@ -2,13 +2,18 @@ package com.example.splmobile.models.UtilizadorInfo
 
 import UtilizadorInfoService
 import co.touchlab.kermit.Logger
+import com.example.splmobile.dtos.auth.LoginRequest
+import com.example.splmobile.dtos.auth.LoginResponse
 import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
+import com.example.splmobile.dtos.myInfo.EmailCheckResponse
+import com.example.splmobile.dtos.myInfo.EmailRequest
 import com.example.splmobile.dtos.myInfo.UtilizadorResponse
 import com.example.splmobile.dtos.myInfo.UtilizadorSer
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.ViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 import com.example.splmobile.services.locaisLixo.LocalLixoService
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -43,7 +48,7 @@ class UtilizadorInfoViewModel (
 
     fun getMyInfo(authViewModel: AuthViewModel) {
         _myInfoUtilizadorUIState.value = MyInfoUtilizadorUIState.Loading
-        log.v("getting all my local lixo ")
+        log.v("Getting All User Info ")
         viewModelScope.launch {
             val response = utilizadorInfoService.getUtilizador(authViewModel.tokenState.value)
 
@@ -75,5 +80,41 @@ class UtilizadorInfoViewModel (
             }
         }
 
+    }
+
+    // Check Email
+    fun checkEmail(email: String) = viewModelScope.launch {
+        _myInfoUtilizadorUIState.value = UtilizadorInfoViewModel.MyInfoUtilizadorUIState.Loading
+
+        var emailResponse : EmailCheckResponse = viewModelScope.async() {
+            log.v { "getEmailExists" }
+            try {
+                utilizadorInfoService.checkMyEmail(EmailRequest(email))
+            } catch (exception : Exception) {
+                handleMainError(exception)
+            }
+        }.await() as EmailResponse
+    }
+
+    fun login(email : String, password : String) = viewModelScope.launch {
+        // Set loading state, which will be cleared when the repository re-emits
+        _loginUIState.value = AuthViewModel.LoginUIState.Loading
+
+        var loginResponse : LoginResponse = viewModelScope.async(){
+            log.v { "postLogin" }
+            try {
+                authService.postLogin(LoginRequest(email,password))
+            } catch (exception: Exception) {
+                handleMainError(exception)
+            }
+        }.await() as LoginResponse
+
+        if(loginResponse.status == "200"){
+            mutableTokenState.value = loginResponse.access_token
+            _loginUIState.value = AuthViewModel.LoginUIState.Success
+        }
+        else{
+            _loginUIState.value = AuthViewModel.LoginUIState.Error(loginResponse.message)
+        }
     }
 }

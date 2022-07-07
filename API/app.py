@@ -1,11 +1,11 @@
 from flask import Flask
 
-from routes import routes_blueprint
-from routes.admin_routes import admin_routes_blueprint
 from routes.garbagespot_routes import garbagespot_routes_blueprint
+from routes.admin_routes import admin_routes_blueprint
 from routes.event_routes import event_routes_blueprint
 from routes.activity_routes import activity_routes_blueprint
 from routes.user_routes import user_routes_blueprint
+
 from models import db
 
 from sqlalchemy import create_engine
@@ -15,8 +15,7 @@ if __name__ == '__main__':
     app = Flask(__name__)
     app.config['SECRET_KEY'] = '6e129cb9707e18357de8b945656c430f'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///spl.db'
-
-    # region Register Routes
+    # region Register App Routes
     app.register_blueprint(admin_routes_blueprint, url_prefix='/api')
     app.register_blueprint(garbagespot_routes_blueprint, url_prefix='/api')
     app.register_blueprint(event_routes_blueprint, url_prefix='/api')
@@ -24,7 +23,9 @@ if __name__ == '__main__':
     app.register_blueprint(user_routes_blueprint, url_prefix='/api')
     # endregion
 
+    #mail = Mail(app)
     db.init_app(app)
+
     with app.app_context():
         engine = create_engine('sqlite:///spl.db')
         #Base.metadata.drop_all(engine)
