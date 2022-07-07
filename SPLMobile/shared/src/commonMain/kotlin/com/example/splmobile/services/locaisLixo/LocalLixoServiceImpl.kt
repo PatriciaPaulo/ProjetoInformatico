@@ -77,11 +77,17 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
     }
 
     override suspend fun postLocalLixo(
-        localLixo: LocalLixoSer
+        localLixo: LocalLixoSer,
+        token: String
     ): RequestMessageResponse {
         log.d { "post new Local Lixo" }
         try{
             return client.post {
+                if(token.isNotEmpty()){
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $token")
+                    }
+                }
                 contentType(ContentType.Application.Json)
                 setBody(LocalLixoSer(localLixo.id, localLixo.nome, localLixo.criador,localLixo.latitude,localLixo.longitude,localLixo.estado,localLixo.aprovado,localLixo.foto,
                     emptyList()))

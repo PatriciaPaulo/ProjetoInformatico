@@ -6,7 +6,7 @@ from routes.event_routes import event_routes_blueprint
 from routes.activity_routes import activity_routes_blueprint
 from routes.user_routes import user_routes_blueprint
 
-from models import db
+from models import db, Base
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session

@@ -52,6 +52,8 @@
     <string name="lblUtilizadorName">Nome</string>
     <string name="lblUtilizadorEmail">Email</string>
     <string name="lblUtilizadorUsername">Username</string>
+    <string name="lblCreateLocalLixoSuccess">Local de lixo criado com sucesso</string>
+    <string name="lblCreateLocalLixoError">Local de lixo não criado!</string>
 
 
 </resources>

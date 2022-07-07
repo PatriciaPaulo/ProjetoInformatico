@@ -76,20 +76,21 @@ class LocalLixoViewModel (
 
     }
 
-     fun createLocalLixo(localLixo: LocalLixoSer) {
+     fun createLocalLixo(localLixo: LocalLixoSer,token: String) {
          log.v("creating local lixo $localLixo")
          _localLixoCreateUIState.value = LocalLixoCreateUIState.Loading
          viewModelScope.launch {
-             val response = localLixoService.postLocalLixo(localLixo)
+             val response = localLixoService.postLocalLixo(localLixo,token)
              if(response.status == "200"){
                  log.v("Creating local lixo successful")
                  _localLixoCreateUIState.value = LocalLixoCreateUIState.Success
+                 getLocaisLixo()
              }else{
                  log.v("Creating local lixo error")
                  _localLixoCreateUIState.value = LocalLixoCreateUIState.Error(response.message)
              }
          }
-        getLocaisLixo()
+
     }
 
     fun updateLocalLixoEstado(localLixo: LocalLixoSer, estado: String, token: String){
@@ -101,12 +102,13 @@ class LocalLixoViewModel (
             if(response.status == "200"){
                 log.v("updating local lixo successful")
                 _localLixoUpdateUIState.value = LocalLixoUpdateUIState.Success
+                getLocaisLixo()
             }else{
                 log.v("updating local lixo error")
                 _localLixoUpdateUIState.value = LocalLixoUpdateUIState.Error(response.message)
             }
         }
-        getLocaisLixo()
+
     }
 
 

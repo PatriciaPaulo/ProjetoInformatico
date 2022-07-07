@@ -8,6 +8,6 @@ import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
 
 interface LocalLixoService {
       suspend fun getLocaisLixo(): LocaisLixoResponse
-      suspend fun postLocalLixo(localLixo: LocalLixoSer): RequestMessageResponse
+      suspend fun postLocalLixo(localLixo: LocalLixoSer,token: String): RequestMessageResponse
       suspend fun patchLocalLixoEstado(localLixo: LocalLixoSer, estado: String, token: String): RequestMessageResponse
 }

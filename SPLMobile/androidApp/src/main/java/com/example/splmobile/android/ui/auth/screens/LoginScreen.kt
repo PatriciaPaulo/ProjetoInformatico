@@ -50,13 +50,15 @@ import com.example.splmobile.dtos.auth.LoginResponse
 import com.example.splmobile.isEmailValid
 import com.example.splmobile.isTextFieldEmpty
 import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    utilizadorInfoViewModel: UtilizadorInfoViewModel
 ) {
 
     /* TODO
@@ -91,7 +93,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.big_spacer)))
 
         // TextFields updating according to state
-        ComposableUI(navController, authViewModel)
+        ComposableUI(navController, authViewModel,utilizadorInfoViewModel)
 
     }
 
@@ -101,7 +103,8 @@ fun LoginScreen(
 @Composable
 fun ComposableUI(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    utilizadorInfoViewModel: UtilizadorInfoViewModel
 ){
     // Variables for TextFields Validation
     var email by remember { mutableStateOf("") }
@@ -143,6 +146,8 @@ fun ComposableUI(
                         settings[stringPreferencesKey(EMAIL_KEY)] = email
                         settings[stringPreferencesKey(PASSWORD_KEY)] = password
                     }
+
+                    utilizadorInfoViewModel.getMyInfo(authViewModel.tokenState.value)
 
                     showRequestState = false
                     navController.navigate(BottomNavItem.Home.screen_route)

@@ -24,6 +24,10 @@ class UtilizadorInfoViewModel (
 ) : ViewModel() {
     private val log = log.withTag("UtilizadorInfoViewModel")
 
+    // my id
+    private val _myIDUIState = MutableStateFlow<Long>(0L)
+    val myIdUIState = _myIDUIState.asStateFlow()
+
     //state get me utilizador
     private val _myInfoUtilizadorUIState = MutableStateFlow<MyInfoUtilizadorUIState>(MyInfoUtilizadorUIState.Empty)
     val myInfoUtilizadorUIState = _myInfoUtilizadorUIState.asStateFlow()
@@ -57,6 +61,8 @@ class UtilizadorInfoViewModel (
         object Empty : MyLocaisLixoUIState()
     }
 
+
+
     fun getMyInfo(token: String) {
         _myInfoUtilizadorUIState.value = MyInfoUtilizadorUIState.Loading
         log.v("Getting All User Info ")
@@ -65,6 +71,8 @@ class UtilizadorInfoViewModel (
 
             if(response.status == "200"){
                 _myInfoUtilizadorUIState.value = MyInfoUtilizadorUIState.Success(response.data)
+                log.v("Getting All User Info ID --- ${response.data.id}")
+                _myIDUIState.value = response.data.id
             }else{
                 if(response.status == "500"){
                     _myInfoUtilizadorUIState.value =MyInfoUtilizadorUIState.Offline
