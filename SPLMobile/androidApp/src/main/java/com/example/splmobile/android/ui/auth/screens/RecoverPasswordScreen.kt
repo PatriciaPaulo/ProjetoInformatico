@@ -126,14 +126,14 @@ fun RecoverPasswordScreen(){
                 .height(dimensionResource(R.dimen.btn_small))
 
         ) {
-            if(showRequestState) {
+            /*if(showRequestState) {
                 CircularProgressIndicator()
             } else {
                 Text(
                     textResource(R.string.lblLogin).toString(),
                     fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                 )
-            }
+            }*/
         }
     }
 }

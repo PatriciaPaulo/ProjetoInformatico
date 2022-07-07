@@ -83,6 +83,15 @@ fun MapScreen(
     var createLocalLixoState = localLixoViewModel.localLixoCreateUIState.collectAsState().value
     var createLocalLixoButtonState = mutableStateOf(false)
 
+    when(localLixoViewModel.localLixoCreateUIState.collectAsState().value){
+        is LocalLixoViewModel.LocalLixoCreateUIState.Success -> {
+            createLocalLixoButtonState.value = false
+        }
+        is LocalLixoViewModel.LocalLixoCreateUIState.Error -> {
+
+        }
+    }
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -123,6 +132,9 @@ fun MapScreen(
         content =
         { innerPadding ->
             // Apply the padding globally
+
+
+
             BottomSheetScaffold(
                 scaffoldState = bottomScaffoldState,
                 floatingActionButtonPosition = FabPosition.End,
@@ -140,6 +152,7 @@ fun MapScreen(
                             }
                             else{
                                 if(createLocalLixoButtonState.value){
+                                    Log.v("screen map", "button clicked while true")
                                     localLixoViewModel.createLocalLixo(localLixoState.value)
                                     coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
                                     //todo create error/success message
@@ -149,7 +162,10 @@ fun MapScreen(
                                 }
 
 
-                            } },
+                            }
+
+
+                        }
                     ) {
                         Icon(Icons.Default.Add, contentDescription = "Localized description")
                     }
@@ -246,7 +262,7 @@ fun customDrawerShape() = object : Shape {
         layoutDirection: LayoutDirection,
         density: Density
     ): Outline {
-        return Outline.Rectangle(Rect(left = 0f, top = 0f, right = size.width * 3 / 5, bottom = size.height * 3 / 5))
+        return Outline.Rectangle(Rect(left = 0f, top = 0f, right = size.width * 3 / 5, bottom = size.height * 2 / 5))
     }
 }
 

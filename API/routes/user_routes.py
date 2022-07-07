@@ -75,8 +75,8 @@ def login_user():
 @user_routes_blueprint.route('/users/me', methods=['GET'])
 @token_required
 def get_me(current_user):
-    resp = make_response(jsonify({'data': Utilizador.serialize(current_user)}), 200)  # here you could use make_response(render_template(...)) too
-    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp = make_response(jsonify({'data': Utilizador.serialize(current_user),'message':'success','status':200}), 200)  # here you could use make_response(render_template(...)) too
+    #resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
 
 # Get All Users

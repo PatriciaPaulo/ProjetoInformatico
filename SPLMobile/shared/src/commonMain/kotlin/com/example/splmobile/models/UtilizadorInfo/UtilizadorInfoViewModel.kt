@@ -122,30 +122,10 @@ class UtilizadorInfoViewModel (
             try {
                 utilizadorInfoService.checkMyEmail(EmailRequest(email))
             } catch (exception : Exception) {
-                handleMainError(exception)
+
             }
-        }.await() as EmailResponse
+        }.await() as EmailCheckResponse
     }
 
-    fun login(email : String, password : String) = viewModelScope.launch {
-        // Set loading state, which will be cleared when the repository re-emits
-        _loginUIState.value = AuthViewModel.LoginUIState.Loading
 
-        var loginResponse : LoginResponse = viewModelScope.async(){
-            log.v { "postLogin" }
-            try {
-                authService.postLogin(LoginRequest(email,password))
-            } catch (exception: Exception) {
-                handleMainError(exception)
-            }
-        }.await() as LoginResponse
-
-        if(loginResponse.status == "200"){
-            mutableTokenState.value = loginResponse.access_token
-            _loginUIState.value = AuthViewModel.LoginUIState.Success
-        }
-        else{
-            _loginUIState.value = AuthViewModel.LoginUIState.Error(loginResponse.message)
-        }
-    }
 }

@@ -3,6 +3,8 @@ import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.eventos.EventosResponse
 import com.example.splmobile.dtos.locaisLixo.LocaisLixoResponse
 import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
+import com.example.splmobile.dtos.myInfo.EmailCheckResponse
+import com.example.splmobile.dtos.myInfo.EmailRequest
 import com.example.splmobile.dtos.myInfo.UtilizadorResponse
 import com.example.splmobile.dtos.myInfo.UtilizadorSer
 import com.example.splmobile.services.locaisLixo.LocalLixoService
@@ -85,6 +87,10 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
     override suspend fun getMyEventos(
         token: String
     ): EventosResponse {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun checkMyEmail(emailRequest: EmailRequest): EmailCheckResponse {
         TODO("Not yet implemented")
     }
 

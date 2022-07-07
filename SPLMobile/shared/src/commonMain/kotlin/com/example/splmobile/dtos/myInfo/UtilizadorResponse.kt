@@ -9,6 +9,13 @@ data class UtilizadorResponse(
     val message: String,
 )
 
+@Serializable
 data class EmailCheckResponse(
     val status: String,
 )
+
+@Serializable
+data class EmailRequest(
+    val status: String,
+)
+
