@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import Utilizador, Atividade, Evento, db, Lixeira, LixeiraEvento
+from models import User, Activity, Event, db, GarbageSpot, GarbageSpotInEvent
 from utils import token_required, admin_required, guest
 import jwt
 import datetime
@@ -19,7 +19,7 @@ def create_admin(current_user):
     data = request.get_json()
 
     # Checks if admin already exists
-    admin = db.session.query(Utilizador).filter_by(username=data['username']).first()
+    admin = db.session.query(User).filter_by(username=data['username']).first()
     if admin:
         return make_response('Admin already exists', 409)
 
@@ -36,7 +36,7 @@ def create_admin(current_user):
     # Hashes password
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
-    new_admin = Utilizador(username=data['username'], name=data['name'], email=data['email'], password=hashed_password,admin=True, blocked=False)
+    new_admin = User(username=data['username'], name=data['name'], email=data['email'], password=hashed_password, admin=True, blocked=False)
     db.session.add(new_admin)
     db.session.commit()
     return make_response('Admin created successfully', 200)
@@ -51,7 +51,7 @@ def login_admin():
         return make_response('Bad request', 400)
 
     # Checks if user exists
-    admin = db.session.query(Utilizador).filter_by(email=auth['email']).first()
+    admin = db.session.query(User).filter_by(email=auth['email']).first()
     if not admin:
         return make_response('Admin doesn\'t exist', 404)
 
@@ -80,7 +80,7 @@ def login_admin():
 @admin_required
 def bloquear_user(current_user,user_id):
     # Checks if user to be blocked exists
-    user = db.session.query(Utilizador).filter_by(id=user_id).first()
+    user = db.session.query(User).filter_by(id=user_id).first()
     if not user:
         return make_response('User doesn\'t exist', 404)
 
@@ -100,7 +100,7 @@ def bloquear_user(current_user,user_id):
 @admin_required
 def delete_user(current_user, user_id):
     # Checks if user exists
-    user = db.session.query(Utilizador).filter_by(id=user_id).first()
+    user = db.session.query(User).filter_by(id=user_id).first()
     if not user:
         return make_response('User doesn\'t exist', 404)
     # Checks if user is deleting himself
