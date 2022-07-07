@@ -49,6 +49,9 @@
     <string name="lblFilterLocaisLixoStatus2">Pouco sujo</string>
     <string name="lblFilterLocaisLixoStatus3">Limpo</string>
     <string name="lblFilterLocaisLixoNotAprooved">Não Aprovado</string>
+    <string name="lblUtilizadorName">Nome</string>
+    <string name="lblUtilizadorEmail">Email</string>
+    <string name="lblUtilizadorUsername">Username</string>
 
 
 </resources>

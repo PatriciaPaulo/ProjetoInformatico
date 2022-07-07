@@ -1,6 +1,8 @@
 import co.touchlab.kermit.Logger
+import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.eventos.EventosResponse
 import com.example.splmobile.dtos.locaisLixo.LocaisLixoResponse
+import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
 import com.example.splmobile.dtos.myInfo.UtilizadorResponse
 import com.example.splmobile.dtos.myInfo.UtilizadorSer
 import com.example.splmobile.services.locaisLixo.LocalLixoService
@@ -21,6 +23,7 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
         expectSuccess = true
         install(ContentNegotiation) {
             json(Json {
+                ignoreUnknownKeys = true
                 prettyPrint = true
                 isLenient = true
             })
@@ -48,7 +51,11 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
         log.d { "Fetching my locais lixo from network" }
         try{
             return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
                 contentType(ContentType.Application.Json)
+
                 url("api/users/me")
             }.body() as UtilizadorResponse
         }catch (ex :HttpRequestTimeoutException){
@@ -63,6 +70,9 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
         log.d { "Fetching my locais lixo from network" }
         try{
             return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
                 contentType(ContentType.Application.Json)
                 url("api/lixeiras/mine")
             }.body() as LocaisLixoResponse
@@ -76,5 +86,33 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
         token: String
     ): EventosResponse {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun putUtilizador(
+        utilizador: UtilizadorSer,
+        token: String
+    ): UtilizadorResponse {
+        log.d { "update Local Lixo" }
+        try{
+            return client.put {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                setBody(utilizador)
+                url("api/user/me")
+            }.body() as UtilizadorResponse
+        }
+        catch (ex :HttpRequestTimeoutException){
+            return UtilizadorResponse(UtilizadorSer(0,"","",""),"error","500")
+        }
+        return UtilizadorResponse(UtilizadorSer(0,"","",""),"error","400")
+    }
+
+    private fun HttpRequestBuilder.url(path: String) {
+        url {
+            takeFrom("http://10.0.2.2:5000/")
+            encodedPath = path
+        }
     }
 }

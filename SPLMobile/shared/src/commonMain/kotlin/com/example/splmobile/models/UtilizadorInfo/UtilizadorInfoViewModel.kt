@@ -35,6 +35,17 @@ class UtilizadorInfoViewModel (
         object Empty : MyInfoUtilizadorUIState()
     }
 
+    //state put me utilizador
+    private val _myInfoUtilizadorAtualizarUIState = MutableStateFlow<MyInfoUtilizadorAtualizarUIState>(MyInfoUtilizadorAtualizarUIState.Empty)
+    val myInfoUtilizadorAtualizarUIState = _myInfoUtilizadorAtualizarUIState.asStateFlow()
+    sealed class MyInfoUtilizadorAtualizarUIState {
+        data class Success(val data: UtilizadorSer) : MyInfoUtilizadorAtualizarUIState()
+        data class Error(val error: String) : MyInfoUtilizadorAtualizarUIState()
+        object Loading : MyInfoUtilizadorAtualizarUIState()
+        object Offline : MyInfoUtilizadorAtualizarUIState()
+        object Empty : MyInfoUtilizadorAtualizarUIState()
+    }
+
     //state get my locais lixo
     private val _myLocaisLixoUIState = MutableStateFlow<MyLocaisLixoUIState>(MyLocaisLixoUIState.Empty)
     val mylocaisLixoUIState = _myLocaisLixoUIState.asStateFlow()
@@ -46,11 +57,11 @@ class UtilizadorInfoViewModel (
         object Empty : MyLocaisLixoUIState()
     }
 
-    fun getMyInfo(authViewModel: AuthViewModel) {
+    fun getMyInfo(token: String) {
         _myInfoUtilizadorUIState.value = MyInfoUtilizadorUIState.Loading
         log.v("Getting All User Info ")
         viewModelScope.launch {
-            val response = utilizadorInfoService.getUtilizador(authViewModel.tokenState.value)
+            val response = utilizadorInfoService.getUtilizador(token)
 
             if(response.status == "200"){
                 _myInfoUtilizadorUIState.value = MyInfoUtilizadorUIState.Success(response.data)
@@ -66,12 +77,32 @@ class UtilizadorInfoViewModel (
         }
 
     }
+    fun putMyInfo(utilizador :UtilizadorSer,token: String) {
+        _myInfoUtilizadorAtualizarUIState.value = MyInfoUtilizadorAtualizarUIState.Loading
+        log.v("getting all my local lixo ")
+        viewModelScope.launch {
+            val response = utilizadorInfoService.putUtilizador(utilizador,token)
 
-    fun getMyLocaisLixo(authViewModel: AuthViewModel) {
+            if(response.status == "200"){
+                _myInfoUtilizadorAtualizarUIState.value = MyInfoUtilizadorAtualizarUIState.Success(response.data)
+            }else{
+                if(response.status == "500"){
+                    _myInfoUtilizadorAtualizarUIState.value =MyInfoUtilizadorAtualizarUIState.Offline
+                }
+                else{
+                    _myInfoUtilizadorAtualizarUIState.value =MyInfoUtilizadorAtualizarUIState.Error(response.status)
+                }
+            }
+
+        }
+
+    }
+
+    fun getMyLocaisLixo(token: String) {
         _myLocaisLixoUIState.value = MyLocaisLixoUIState.Loading
         log.v("getting all my local lixo ")
         viewModelScope.launch {
-            val response = utilizadorInfoService.getMyLocaisLixo(authViewModel.tokenState.value)
+            val response = utilizadorInfoService.getMyLocaisLixo(token)
 
             if(response.status == "200"){
                 _myLocaisLixoUIState.value = MyLocaisLixoUIState.Success(response.data)
