@@ -1,15 +1,14 @@
-#IMPORTS FOR DB ACCESS/MANIPULATION
+# IMPORTS FOR DB ACCESS/MANIPULATION
 import datetime
-
 from models import Utilizador,Lixeira,Atividade,Evento,Mensagem,Lixo,LixoNaAtividade
 from models import Equipamento, EquipamentoNoEvento,MensagemIndividual,MensagemEvento
 from models import UtilizadorNoEvento,LixeiraEvento
 from werkzeug.security import generate_password_hash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from  sqlalchemy.sql.expression import func
+from sqlalchemy.sql.expression import func
 
-#IMPORTS FOR VALUES
+# IMPORTS FOR VALUES
 import names
 from datetime import date, timedelta
 from random import randrange
@@ -23,12 +22,18 @@ if __name__ == '__main__':
     session = Session(engine)
     r = RandomWords()
 
-    # SEED UTILIZADORES
-
-    userDefault = Utilizador(username="user", password=generate_password_hash("123"), name="Nome", email="user@mail.pt", admin=False, blocked=False)
+    # CREATE DEFAULTS
+    userDefault = Utilizador(username="user", password=generate_password_hash("123"), name="Nome", email="user@mail.pt",
+                             admin=False, blocked=False)
     session.add(userDefault)
     session.commit()
 
+    adminDefault = Utilizador(username="admin", password=generate_password_hash("123"), name="Nome",
+                              email="admin@mail.pt", admin=True, blocked=False)
+    session.add(adminDefault)
+    session.commit()
+
+    # SEED UTILIZADORES
     for i in range(10):
         first_name = names.get_first_name()
         last_name = names.get_last_name()
@@ -41,15 +46,12 @@ if __name__ == '__main__':
         email = uname + "@mail.pt"
         session.add(
             Utilizador(username=uname, password=generate_password_hash("123"), name=full_name, email=email, admin=False,
-                       blocked=False,deleted_at=None))
+                       blocked=False, confirmed=True, deleted_at=None))
         session.commit()
 
     print("---UTILIZADORES seed done!")
-    # SEED ADMINS
-    adminDefault = Utilizador(username="admin", password=generate_password_hash("123"), name="Nome", email="admin@mail.pt",admin=True, blocked=False)
-    session.add(adminDefault)
-    session.commit()
 
+    # SEED ADMINS
     for i in range(5):
         first_name = names.get_first_name()
         last_name = names.get_last_name()
@@ -145,9 +147,6 @@ if __name__ == '__main__':
         session.commit()
     print("---Evento seed done!")
 
-
-
-
     # SEED ATIVIDADE
     session.query(Atividade).delete()
     for i in range(5):
@@ -187,9 +186,8 @@ if __name__ == '__main__':
 
         session.commit()
     print("---LixoNaAtividade seed done!")
- 
 
- # SEED EQUIPAMENTO
+    # SEED EQUIPAMENTO
     session.query(Equipamento).delete()
     for i in range(6):
         nome = ["Saco de Lixo", "Luvas", "Pá","Tesoura","Faca","Contentor"]
@@ -198,7 +196,6 @@ if __name__ == '__main__':
         session.commit()
 
     print("---Equipamento seed done!")
-
 
     # SEED EQUIPAMENTONOEVENTO
     session.query(EquipamentoNoEvento).delete()

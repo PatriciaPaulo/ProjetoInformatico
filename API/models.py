@@ -1,13 +1,7 @@
-from time import time
-
-from flask import Blueprint, current_app
-from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData, Column, Integer, String, Boolean, ForeignKey, Numeric, Text, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-import jwt
-
 
 
 metadata = MetaData()
@@ -22,10 +16,11 @@ class Utilizador(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
     password = Column(String(50), nullable=False)
-    name = Column(String(128), nullable=False)
+    name = Column(String(128))
     email = Column(String(128), nullable=False)
     admin = Column(Boolean)
-    blocked = Column(Boolean)
+    blocked = Column(Boolean, nullable=False, default=False)
+    confirmed = Column(Boolean, nullable=False, default=False)
     deleted_at = Column(String(128))
 
     def serialize(self):
@@ -35,7 +30,8 @@ class Utilizador(Base):
             'name': self.name,
             'email': self.email,
             'admin': self.admin,
-            'blocked': self.blocked
+            'blocked': self.blocked,
+            'confirmed': self.confirmed
         }
 
     # Generate Password Token
@@ -81,11 +77,9 @@ class Atividade(Base):
             'dataInicio': self.dataInicio,
             'dataFim': self.dataFim,
             'tipoAtividade': self.tipoAtividade
-
         }
-
-
 # endregion
+
 
 # region LixoNaAtividade
 class LixoNaAtividade(Base):
@@ -104,9 +98,8 @@ class LixoNaAtividade(Base):
             'quantidade': self.quantidade,
             'medida': self.medida
         }
-
-
 # endregion
+
 
 # region Lixo
 class Lixo(Base):
@@ -120,9 +113,8 @@ class Lixo(Base):
             'nome': self.nome
 
         }
-
-
 # endregion
+
 
 # region Equipamento
 class Equipamento(Base):
@@ -136,9 +128,8 @@ class Equipamento(Base):
             'nome': self.nome
 
         }
-
-
 # endregion
+
 
 # region EquipamentoNoEvento
 class EquipamentoNoEvento(Base):
@@ -158,9 +149,8 @@ class EquipamentoNoEvento(Base):
             'isProvided': self.isProvided
 
         }
-
-
 # endregion
+
 
 # region Evento
 class Evento(Base):
@@ -196,11 +186,9 @@ class Evento(Base):
             'volume': self.volume,
             'foto': self.foto,
             'observacoes': self.observacoes
-
         }
-
-
 # endregion
+
 
 # region Lixeira
 class Lixeira(Base):
@@ -225,9 +213,8 @@ class Lixeira(Base):
             'aprovado': self.aprovado,
             'foto': self.foto
         }
-
-
 # endregion
+
 
 # region LixeiraEvento
 class LixeiraEvento(Base):
@@ -243,9 +230,8 @@ class LixeiraEvento(Base):
             'eventoID': self.eventoID
 
         }
-
-
 # endregion
+
 
 # region UtilizadorNoEvento
 class UtilizadorNoEvento(Base):
@@ -262,9 +248,8 @@ class UtilizadorNoEvento(Base):
             'eventID': self.eventoID,
             'estado': self.estado
         }
-
-
 # endregion
+
 
 # region MensagemEvento
 class MensagemEvento(Base):
@@ -280,9 +265,8 @@ class MensagemEvento(Base):
             'eventoID': self.eventoID
 
         }
-
-
 # endregion
+
 
 # region Amizade
 class Amizade(Base):
@@ -299,9 +283,8 @@ class Amizade(Base):
             'addresseeID': self.addresseeID,
             'data': self.data
         }
-
-
 # endregion
+
 
 # region Mensagem
 class Mensagem(Base):
@@ -318,9 +301,8 @@ class Mensagem(Base):
             'message': self.message,
             'tipo': self.tipo
         }
-
-
 # endregion
+
 
 # region MensagemIndividual
 class MensagemIndividual(Base):
