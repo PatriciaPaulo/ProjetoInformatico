@@ -49,7 +49,7 @@ fun LoginScreen(
     // Login Layout
     Column (
         modifier = Modifier
-            .padding(top = dimensionResource(R.dimen.small_spacer))
+            .padding(top = dimensionResource(R.dimen.default_margin))
             .fillMaxWidth()
             .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -73,7 +73,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.big_spacer)))
 
         // TextFields updating according to state
-        ComposableUI(navController, authViewModel,userInfoViewModel)
+        LoginComposableUI(navController, authViewModel, userInfoViewModel)
 
     }
 
@@ -81,7 +81,7 @@ fun LoginScreen(
 }
 
 @Composable
-fun ComposableUI(
+fun LoginComposableUI(
     navController: NavHostController,
     authViewModel: AuthViewModel,
     userInfoViewModel: UserInfoViewModel
@@ -140,7 +140,7 @@ fun ComposableUI(
         }
     }
 
-    ValidationUI(
+    LoginValidationUI(
         email = email,
         emailError = emailError,
         emailUpdate = emailUpdate,
@@ -164,7 +164,7 @@ fun ComposableUI(
 
 // TODO Change ERROR text
 @Composable
-fun ValidationUI(
+fun LoginValidationUI(
     email : String,
     emailError : Boolean,
     emailUpdate : (String) -> Unit,

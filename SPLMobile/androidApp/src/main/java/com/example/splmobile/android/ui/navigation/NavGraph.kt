@@ -51,7 +51,7 @@ fun SetupNavGraph(
                 userInfoViewModel =userInfoViewModel)
         }
         composable(route = Screen.Register.route) {
-            RegisterScreen(navController = navController)
+            RegisterScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(route = Screen.RecoverPassword.route) {
             RecoverPasswordScreen()

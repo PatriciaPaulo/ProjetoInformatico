@@ -3,6 +3,8 @@ package com.example.splmobile.models
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.auth.LoginRequest
 import com.example.splmobile.dtos.auth.LoginResponse
+import com.example.splmobile.dtos.auth.SignInRequest
+import com.example.splmobile.dtos.auth.SignInResponse
 import com.example.splmobile.services.auth.AuthService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,10 +16,7 @@ class AuthViewModel (
     log: Logger
 ) : ViewModel() {
 
-    // Create variables for login state
-    private val _loginUIState = MutableStateFlow<LoginUIState>(LoginUIState.Empty)
-    val loginUIState: StateFlow<LoginUIState> = _loginUIState
-
+    // Sealed Classes
     sealed class LoginUIState{
         object Success : LoginUIState()
         data class Error(val message: String) : LoginUIState()
@@ -25,13 +24,26 @@ class AuthViewModel (
         object Empty : LoginUIState() //Empty used to create
     }
 
-    // Create variables for token state, to save and access with other screens
+    sealed class RegisterUIState{
+        object Success : RegisterUIState()
+        data class Error(val message: String) : RegisterUIState()
+        object Loading : RegisterUIState()
+        object Empty : RegisterUIState()
+    }
+
+
+    // Variables Declaration
+    private val _loginUIState = MutableStateFlow<LoginUIState>(LoginUIState.Empty)
     private val mutableTokenState: MutableStateFlow<String> = MutableStateFlow("")
+    private val _registerUIState = MutableStateFlow<RegisterUIState>(RegisterUIState.Empty)
+    val loginUIState: StateFlow<LoginUIState> = _loginUIState
+    val registerUIState: StateFlow<RegisterUIState> = _registerUIState
     val tokenState : StateFlow<String> = mutableTokenState
 
     private val log = log.withTag("AuthViewModel")
 
-    // Request User Login
+    // API Requests
+    // Login
     fun login(email : String, password : String) = viewModelScope.launch {
         // Set loading state, which will be cleared when the repository re-emits
         _loginUIState.value = LoginUIState.Loading
@@ -51,6 +63,25 @@ class AuthViewModel (
         }
         else{
             _loginUIState.value = LoginUIState.Error(loginResponse.message)
+        }
+    }
+
+    // Register New User
+    fun registerUser(email: String, password: String, passwordConfirmation: String) = viewModelScope.launch {
+        _registerUIState.value = RegisterUIState.Loading
+
+        var registerResponse : SignInResponse = viewModelScope.async {
+            try {
+                authService.postSignIn(SignInRequest(email, password, passwordConfirmation))
+            } catch (e : Exception) {
+                handleMainError(e)
+            }
+        }.await() as SignInResponse
+
+        if(registerResponse.status == 200){
+            _registerUIState.value = RegisterUIState.Success
+        } else {
+            _registerUIState.value = RegisterUIState.Error(registerResponse.message)
         }
     }
 
