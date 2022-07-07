@@ -106,7 +106,7 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
                 }
                 contentType(ContentType.Application.Json)
                 setBody(utilizador)
-                url("api/user/me")
+                url("api/users/me")
             }.body() as UtilizadorResponse
         }
         catch (ex :HttpRequestTimeoutException){

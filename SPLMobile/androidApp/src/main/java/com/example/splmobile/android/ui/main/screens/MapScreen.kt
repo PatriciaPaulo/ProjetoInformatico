@@ -2,6 +2,8 @@ package com.example.splmobile.android.ui.main.screens
 import MapAppBar
 import android.annotation.SuppressLint
 import android.util.Log
+import android.view.Gravity
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,8 +20,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -38,6 +42,7 @@ import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
+import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
 import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -55,18 +60,21 @@ fun MapScreen(
     mainViewModel: MainViewModel,
     localLixoViewModel: LocalLixoViewModel,
     authViewModel: AuthViewModel,
+    utilizadorInfoViewModel: UtilizadorInfoViewModel,
     sharedViewModel: SharedViewModel,
     log: Logger
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val scaffoldState = rememberScaffoldState()
+
     val bottomScaffoldState = rememberBottomSheetScaffoldState()
 
-    //android view model states
+    //search bar states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
 
 
-    val coroutineScope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState()
+
      //default camera position
     var portugal = LatLng(39.5, -8.0)
     var cameraPosition = rememberCameraPositionState {
@@ -75,19 +83,38 @@ fun MapScreen(
     }
 
     var localLixoState = mutableStateOf(
-        LocalLixoSer(0,"new",0,"0.0","0.0","Muito sujo",false,"",
+        LocalLixoSer(0,"new",utilizadorInfoViewModel.myIdUIState.value,"0.0","0.0","Muito sujo",false,"",
             emptyList())
     )
     var locaisLixoFilterState = mutableStateOf(textResource(R.string.lblFilterLocaisLixoAll).toString())
 
-    var createLocalLixoState = localLixoViewModel.localLixoCreateUIState.collectAsState().value
     var createLocalLixoButtonState = mutableStateOf(false)
+
+    //variables to create a local lixo
+    var nomeLocalLixoState = remember { mutableStateOf(TextFieldValue("")) }
+    var newLocalLixoPos = remember { mutableStateOf(LatLng(0.0,0.0)) }
+
 
     when(localLixoViewModel.localLixoCreateUIState.collectAsState().value){
         is LocalLixoViewModel.LocalLixoCreateUIState.Success -> {
+            Log.v("screen map", "success created local lixo")
+            //reset create local lixo
             createLocalLixoButtonState.value = false
+            localLixoState.value = LocalLixoSer(0,"new",0,"0.0","0.0","Muito sujo",false,"",
+                emptyList())
+            nomeLocalLixoState.value = TextFieldValue("")
+            newLocalLixoPos.value = LatLng(0.0,0.0)
+
+            Text(
+                text = stringResource(R.string.lblCreateLocalLixoSuccess),
+                color = MaterialTheme.colors.primary,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+            )
+
         }
         is LocalLixoViewModel.LocalLixoCreateUIState.Error -> {
+            Log.v("screen map", "error created local lixo")
 
         }
     }
@@ -134,7 +161,6 @@ fun MapScreen(
             // Apply the padding globally
 
 
-
             BottomSheetScaffold(
                 scaffoldState = bottomScaffoldState,
                 floatingActionButtonPosition = FabPosition.End,
@@ -146,16 +172,18 @@ fun MapScreen(
                             //if not a new local lixo selected
                             if(!localLixoState.value.id.equals(0L)){
                                 localLixoState.value =
-                                    LocalLixoSer(0,"new",0,"","",
+                                    LocalLixoSer(0,"new",utilizadorInfoViewModel.myIdUIState.value,"","",
                                         "",false,"", emptyList())
                                 coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
                             }
                             else{
+                                coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
                                 if(createLocalLixoButtonState.value){
                                     Log.v("screen map", "button clicked while true")
-                                    localLixoViewModel.createLocalLixo(localLixoState.value)
+                                    localLixoViewModel.createLocalLixo(localLixoState.value,authViewModel.tokenState.value)
                                     coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
                                     //todo create error/success message
+
                                 }
                                 else{
 
@@ -180,6 +208,7 @@ fun MapScreen(
                     ) {
                         SheetContent(localLixoState,
                             createLocalLixoButtonState,
+                            nomeLocalLixoState,
                             bottomScaffoldState,
                             localLixoViewModel,
                             authViewModel)
@@ -193,7 +222,7 @@ fun MapScreen(
                     Box(modifier = Modifier.padding(innerPadding)) {
                         MapContent(
                             localLixoViewModel.locaisLixoUIState.collectAsState().value,
-                            localLixoState,locaisLixoFilterState)
+                            localLixoState,newLocalLixoPos,locaisLixoFilterState, utilizadorInfoViewModel,authViewModel )
 
                 }
             }
@@ -262,7 +291,7 @@ fun customDrawerShape() = object : Shape {
         layoutDirection: LayoutDirection,
         density: Density
     ): Outline {
-        return Outline.Rectangle(Rect(left = 0f, top = 0f, right = size.width * 3 / 5, bottom = size.height * 2 / 5))
+        return Outline.Rectangle(Rect(left = 0f, top = 0f, right = size.width * 3 / 5, bottom = size.height * 3 / 5))
     }
 }
 
@@ -277,13 +306,15 @@ fun customDrawerShape() = object : Shape {
 fun MapContent(
     locaisLixoState: LocalLixoViewModel.LocaisLixoUIState,
     localLixoState: MutableState<LocalLixoSer>,
-    locaisLixoFilterState: MutableState<String>
+    newLocalLixoPos: MutableState<LatLng>,
+    locaisLixoFilterState: MutableState<String>,
+    utilizadorInfoViewModel: UtilizadorInfoViewModel,
+    authViewModel: AuthViewModel
 ) {
     var filteredLocaisLixo by remember {
         mutableStateOf(emptyList<LocalLixoSer>())
     }
 
-    var newLocalLixoPos by remember { mutableStateOf(LatLng(0.0,0.0)) }
 
 
     when(locaisLixoState){
@@ -313,18 +344,18 @@ fun MapContent(
                         modifier = Modifier.matchParentSize(),
                         cameraPositionState = cameraPosition,
                         onMapClick = {
-                            newLocalLixoPos = it
+                            newLocalLixoPos.value = it
 
                         },
                     ) {
 
                         if (localLixoState.value.id.equals(0L)) {
                             Log.d("screen map", "-$newLocalLixoPos")
-                            localLixoState.value.longitude = newLocalLixoPos.longitude.toString()
-                            localLixoState.value.latitude = newLocalLixoPos.latitude.toString()
-                            Marker(position = newLocalLixoPos, title = "new lixeira")
+                            localLixoState.value.longitude =  newLocalLixoPos.value.longitude.toString()
+                            localLixoState.value.latitude =  newLocalLixoPos.value.latitude.toString()
+                            Marker(position =  newLocalLixoPos.value, title = "new lixeira")
                         }else{
-                            newLocalLixoPos = LatLng(0.0,0.0)
+                            newLocalLixoPos.value = LatLng(0.0,0.0)
                         }
                         filteredLocaisLixo = locaisLixo.filter { localLixo ->
                             localLixo.aprovado }
@@ -336,9 +367,10 @@ fun MapContent(
                             }
                             textResource(R.string.lblFilterLocaisLixoMine).toString() ->{
                                 //todo my id
-                                Log.d("screen map", "FITLER STATE- MINE")
-                                markerFilterList( locaisLixo.filter { localLixo -> localLixo.id == 0L  }, localLixoState)
-                            }
+                                Log.d("screen map", "FITLER STATE- ${ utilizadorInfoViewModel.myIdUIState.value}")
+                                markerFilterList( locaisLixo.filter {
+                                        localLixo -> localLixo.criador ==  utilizadorInfoViewModel.myIdUIState.value }, localLixoState)
+                                 }
                             textResource(R.string.lblFilterLocaisLixoStatus1).toString() -> {
                                 Log.d("screen map", "FITLER STATE- MT SUJO")
                                  markerFilterList(
@@ -407,6 +439,7 @@ private fun markerFilterList(
 fun SheetContent(
     localLixo: MutableState<LocalLixoSer>,
     createLocalLixoButtonState: MutableState<Boolean>,
+    nomeLocalLixoState: MutableState<TextFieldValue>,
     bottomScaffoldState: BottomSheetScaffoldState,
     localLixoViewModel: LocalLixoViewModel,
     authViewModel: AuthViewModel
@@ -421,8 +454,7 @@ fun SheetContent(
         //id of the current local lixo
         var selectedId = remember { mutableStateOf(localLixo.value.id) }
 
-        //variables to create a local lixo
-        var nomeLocalLixo by remember { mutableStateOf(TextFieldValue("")) }
+
         val statusList = listOf(textResource(R.string.LocalLixoStatusListElement1).toString(), textResource(R.string.LocalLixoStatusListElement2).toString(), textResource(R.string.LocalLixoStatusListElement3).toString())
 
         //if its a new local lixo
@@ -436,11 +468,11 @@ fun SheetContent(
                     //text field for local lixo name
 
                     TextField(
-                        value = nomeLocalLixo,
+                        value = nomeLocalLixoState.value.text,
                         label = { Text(textResource(R.string.lblNomeLocalLixo).toString()) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         onValueChange = { newText ->
-                            nomeLocalLixo = newText
+                            nomeLocalLixoState.value = TextFieldValue(newText)
                         }
                     )
                     //dropdown menu for local lixo status
@@ -487,8 +519,8 @@ fun SheetContent(
                     //make createlocallixobutton available and assign the values inserted
                     if ((!(localLixo.value.latitude == "0.0" &&
                                         localLixo.value.longitude == "0.0")) &&
-                        nomeLocalLixo.text.isNotEmpty() ){
-                        localLixo.value.nome = nomeLocalLixo.text
+                        nomeLocalLixoState.value.text.isNotEmpty() ){
+                        localLixo.value.nome = nomeLocalLixoState.value.text
                         localLixo.value.estado = selectedOptionText
 
                         createLocalLixoButtonState.value = true
@@ -504,7 +536,7 @@ fun SheetContent(
                                     start = dimensionResource(R.dimen.medium_spacer))
                             )
                         }
-                        if (nomeLocalLixo.text.isEmpty()){
+                        if (nomeLocalLixoState.value.text.isEmpty()){
                             Text(textResource(R.string.txtLocalLixoError).toString(),
                                 color = MaterialTheme.colors.error,
                                 style = MaterialTheme.typography.caption,

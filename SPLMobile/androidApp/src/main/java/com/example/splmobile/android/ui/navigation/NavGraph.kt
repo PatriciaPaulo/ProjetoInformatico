@@ -44,11 +44,13 @@ fun SetupNavGraph(
         }
         composable(route = Screen.Authentication.route) {
             AuthenticationScreen(navController = navController,
-                authViewModel = authViewModel)
+                authViewModel = authViewModel,
+                utilizadorInfoViewModel =utilizadorInfoViewModel)
         }
         composable(route = Screen.Login.route) {
             LoginScreen(navController = navController,
-                authViewModel = authViewModel)
+                authViewModel = authViewModel,
+                utilizadorInfoViewModel =utilizadorInfoViewModel)
         }
         composable(route = Screen.Register.route) {
             RegisterScreen(navController = navController)
@@ -65,6 +67,7 @@ fun SetupNavGraph(
                 mainViewModel = mainViewModel,
                 localLixoViewModel = localLixoViewModel,
                 authViewModel = authViewModel,
+                utilizadorInfoViewModel = utilizadorInfoViewModel,
                 sharedViewModel = sharedViewModel,
                 log = log)
         }
