@@ -1,17 +1,17 @@
 package com.example.splmobile
 
-import UtilizadorInfoService
-import UtilizadorInfoServiceImpl
+import UserInfoService
+import UserInfoServiceImpl
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.StaticConfig
 import co.touchlab.kermit.platformLogWriter
-import com.example.splmobile.services.locaisLixo.LocalLixoServiceImpl
+import com.example.splmobile.services.garbageSpots.GarbageSpotServiceImpl
 import com.example.splmobile.services.other.requestsApiImpl
 import com.example.splmobile.services.other.requestsAPI
-import com.example.splmobile.models.locaisLixo.LocalLixoRepository
+import com.example.splmobile.models.garbageSpots.LocalLixoRepository
 import com.example.splmobile.services.auth.AuthService
 import com.example.splmobile.services.auth.AuthServiceImpl
-import com.example.splmobile.services.locaisLixo.LocalLixoService
+import com.example.splmobile.services.garbageSpots.GarbageSpotService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.Clock
 import org.koin.core.KoinApplication
@@ -54,9 +54,9 @@ private val coreModule = module {
             Dispatchers.Default
         )
     }
-    single<LocalLixoService> {
-        LocalLixoServiceImpl(
-            getWith("LocalLixoServiceImpl"),
+    single<GarbageSpotService> {
+        GarbageSpotServiceImpl(
+            getWith("GarbageSpotServiceImpl"),
             get()
         )
     }
@@ -72,9 +72,9 @@ private val coreModule = module {
             get()
         )
     }
-    single<UtilizadorInfoService> {
-        UtilizadorInfoServiceImpl(
-            getWith("UtilizadorInfoServiceImpl"),
+    single<UserInfoService> {
+        UserInfoServiceImpl(
+            getWith("UserInfoServiceImpl"),
             get()
         )
     }

@@ -8,25 +8,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.rememberNavController
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.SetupNavGraph
 import com.example.splmobile.android.ui.theme.SPLTheme
 import com.example.splmobile.android.viewmodel.MainViewModel
@@ -34,11 +26,10 @@ import com.example.splmobile.android.viewmodel.SplashViewModel
 import com.example.splmobile.injectLogger
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
-import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
+import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.Flow
 //import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
@@ -60,10 +51,10 @@ class ActivityMain : ComponentActivity() , KoinComponent{
     @Inject
     lateinit var splashViewModel: SplashViewModel
     private val log: Logger by injectLogger("MainActivity")
-    private val localLixoViewModel: LocalLixoViewModel by viewModel()
+    private val garbageSpotViewModel: GarbageSpotViewModel by viewModel()
     private val sharedViewModel: SharedViewModel by viewModel()
     private val authViewModel: AuthViewModel by viewModel()
-    private val utilizadorInfoViewModel: UtilizadorInfoViewModel by viewModel()
+    private val userInfoViewModel: UserInfoViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -86,8 +77,8 @@ class ActivityMain : ComponentActivity() , KoinComponent{
                     log,
                     mainViewModel = mainViewModel,
                     authViewModel = authViewModel,
-                    localLixoViewModel = localLixoViewModel,
-                    utilizadorInfoViewModel = utilizadorInfoViewModel,
+                    garbageSpotViewModel = garbageSpotViewModel,
+                    userInfoViewModel = userInfoViewModel,
                     sharedViewModel = sharedViewModel
                 )
 

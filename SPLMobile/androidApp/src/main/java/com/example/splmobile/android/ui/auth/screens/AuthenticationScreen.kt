@@ -19,7 +19,7 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
+import com.example.splmobile.models.userInfo.UserInfoViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 
@@ -29,7 +29,7 @@ import kotlinx.coroutines.runBlocking
 fun AuthenticationScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    utilizadorInfoViewModel:UtilizadorInfoViewModel
+    userInfoViewModel:UserInfoViewModel
 ) {
     val context = LocalContext.current
 
@@ -39,7 +39,7 @@ fun AuthenticationScreen(
             when (loginUIState) {
                 is AuthViewModel.LoginUIState.Success -> {
                     Log.v("login screen"," login state")
-                    utilizadorInfoViewModel.getMyInfo(authViewModel.tokenState.value)
+                    userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
                     navController.navigate(BottomNavItem.Home.screen_route)
 
                 }
