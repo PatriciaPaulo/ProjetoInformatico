@@ -32,28 +32,28 @@
 
 
     <!-- MapScreen -->
-    <string name="lblCreateLocalLixo">Cria um local de lixo!</string>
-    <string name="lblNomeLocalLixo">Nome do Local de Lixo</string>
-    <string name="LocalLixoStatusListElement1">Muito sujo</string>
-    <string name="LocalLixoStatusListElement2">Pouco sujo</string>
-    <string name="LocalLixoStatusListElement3">Limpo</string>
-    <string name="lblEstadoLocalLixo">Estado</string>
-    <string name="btnUpdateLocalLixoStatus">Atualizar estado do Local de Lixo</string>
+    <string name="lblCreateGarbageSpot">Cria um local de lixo!</string>
+    <string name="lblNomeGarbageSpot">Nome do Local de Lixo</string>
+    <string name="GarbageSpotStatusListElement1">Muito sujo</string>
+    <string name="GarbageSpotStatusListElement2">Pouco sujo</string>
+    <string name="GarbageSpotStatusListElement3">Limpo</string>
+    <string name="lblStatusGarbageSpot">Estado</string>
+    <string name="btnUpdateGarbageSpotStatus">Atualizar estado do Local de Lixo</string>
     <string name="lblMapSearchBar">Mapa</string>
-    <string name="txtLocalLixoError">Preencha o nome do local</string>
+    <string name="txtGarbageSpotError">Preencha o nome do local</string>
     <string name="txtPositionError">Selecione no mapa o Local de Lixo</string>
-    <string name="lblFilterLocaisLixoAll">Todos</string>
-    <string name="lblFilterLocaisLixoTitle">Filtrar Locais de Lixo</string>
-    <string name="lblFilterLocaisLixoMine">Meus</string>
-    <string name="lblFilterLocaisLixoStatus1">Muito sujo</string>
-    <string name="lblFilterLocaisLixoStatus2">Pouco sujo</string>
-    <string name="lblFilterLocaisLixoStatus3">Limpo</string>
-    <string name="lblFilterLocaisLixoNotAprooved">Não Aprovado</string>
-    <string name="lblUtilizadorName">Nome</string>
-    <string name="lblUtilizadorEmail">Email</string>
-    <string name="lblUtilizadorUsername">Username</string>
-    <string name="lblCreateLocalLixoSuccess">Local de lixo criado com sucesso</string>
-    <string name="lblCreateLocalLixoError">Local de lixo não criado!</string>
+    <string name="lblFilterGarbageSpotsAll">Todos</string>
+    <string name="lblFilterGarbageSpotsTitle">Filtrar Locais de Lixo</string>
+    <string name="lblFilterGarbageSpotsMine">Meus</string>
+    <string name="lblFilterGarbageSpotsStatus1">Muito sujo</string>
+    <string name="lblFilterGarbageSpotsStatus2">Pouco sujo</string>
+    <string name="lblFilterGarbageSpotsStatus3">Limpo</string>
+    <string name="lblFilterGarbageSpotsNotAprooved">Não Aprovado</string>
+    <string name="lblUserName">Nome</string>
+    <string name="lblUserEmail">Email</string>
+    <string name="lblUserUsername">Username</string>
+    <string name="lblCreateGarbageSpotSuccess">Local de lixo criado com sucesso</string>
+    <string name="lblCreateGarbageSpotError">Local de lixo não criado!</string>
 
 
 </resources>

@@ -1,11 +1,10 @@
-package com.example.splmobile.dtos.locaisLixo
+package com.example.splmobile.dtos.garbageSpots
 
-import com.example.splmobile.dtos.lixeiraEvento.LocalLixoEventoSer
-import kotlinx.serialization.SerialName
+import com.example.splmobile.dtos.garbageSpotsInEvents.GarbageSpotInEventSerializable
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LocalLixoSer(
+data class GarbageSpotSerializable(
     val id: Long,
     var nome: String,
     val criador: Long,
@@ -14,5 +13,5 @@ data class LocalLixoSer(
     var estado: String,
     val aprovado: Boolean,
     val foto: String?,
-    val eventos: List<LocalLixoEventoSer>
+    val eventos: List<GarbageSpotInEventSerializable>
 )

@@ -1,10 +1,9 @@
-package com.example.splmobile.services.locaisLixo
+package com.example.splmobile.services.garbageSpots
 
 import co.touchlab.stately.ensureNeverFrozen
-import com.example.splmobile.database.LocalLixo
 import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.locaisLixo.LocaisLixoResponse
-import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -21,7 +20,7 @@ import co.touchlab.kermit.Logger as KermitLogger
 import io.ktor.client.plugins.logging.Logger as KtorLogger
 
 
-class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngine) : LocalLixoService{
+class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEngine) : GarbageSpotService{
     private val client = HttpClient(engine) {
         expectSuccess = true
         install(ContentNegotiation) {
@@ -46,15 +45,7 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
             requestTimeoutMillis = timeout
             socketTimeoutMillis = timeout
         }
-        /*install(Auth) {
-            bearer {
-                // Load tokens ...
-                refreshTokens { // this: RefreshTokensParams
-                    // Refresh tokens and return them as the 'BearerTokens' instance
-                    BearerTokens("def456", "xyz111")
-                }
-            }
-        }*/
+
 
     }
 
@@ -62,25 +53,25 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
         ensureNeverFrozen()
     }
 
-    override suspend fun getLocaisLixo(): LocaisLixoResponse {
+    override suspend fun getGarbageSpots(): GarbageSpotsResponse {
         log.d { "Fetching lixeiras from network" }
         try{
             return client.get {
                 contentType(ContentType.Application.Json)
                 url("api/lixeiras")
-            }.body() as LocaisLixoResponse
+            }.body() as GarbageSpotsResponse
         }catch (ex :HttpRequestTimeoutException){
-            return LocaisLixoResponse(emptyList(),"error","500")
+            return GarbageSpotsResponse(emptyList(),"error","500")
         }
-        return LocaisLixoResponse(emptyList(),"error","400")
+        return GarbageSpotsResponse(emptyList(),"error","400")
 
     }
 
-    override suspend fun postLocalLixo(
-        localLixo: LocalLixoSer,
+    override suspend fun postGarbageSpot(
+        garbageSpot: GarbageSpotSerializable,
         token: String
     ): RequestMessageResponse {
-        log.d { "post new Local Lixo" }
+        log.d { "post new Garbage Spot" }
         try{
             return client.post {
                 if(token.isNotEmpty()){
@@ -89,7 +80,7 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
                     }
                 }
                 contentType(ContentType.Application.Json)
-                setBody(LocalLixoSer(localLixo.id, localLixo.nome, localLixo.criador,localLixo.latitude,localLixo.longitude,localLixo.estado,localLixo.aprovado,localLixo.foto,
+                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.nome, garbageSpot.criador,garbageSpot.latitude,garbageSpot.longitude,garbageSpot.estado,garbageSpot.aprovado,garbageSpot.foto,
                     emptyList()))
                 url("api/lixeiras")
             }.body() as RequestMessageResponse
@@ -101,21 +92,21 @@ class LocalLixoServiceImpl(private val log: KermitLogger, engine: HttpClientEngi
 
 
     }
-    override suspend fun patchLocalLixoEstado(
-        localLixo: LocalLixoSer,
-        estado: String,
+    override suspend fun patchGarbageSpotStatus(
+        garbageSpot: GarbageSpotSerializable,
+        status: String,
         token: String,
     ): RequestMessageResponse {
-        log.d { "update Local Lixo" }
+        log.d { "update Garbage Spot" }
         try{
             return client.patch {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
-                setBody(LocalLixoSer(localLixo.id, localLixo.nome, localLixo.criador,localLixo.latitude,localLixo.longitude,estado,localLixo.aprovado,localLixo.foto,
+                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.nome, garbageSpot.criador,garbageSpot.latitude,garbageSpot.longitude,status,garbageSpot.aprovado,garbageSpot.foto,
                     emptyList()))
-                url("api/lixeiras/"+localLixo.id+"/mudarEstadoLixeira")
+                url("api/lixeiras/"+garbageSpot.id+"/mudarEstadoLixeira")
             }.body() as RequestMessageResponse
         }
         catch (ex :HttpRequestTimeoutException){

@@ -1,13 +1,10 @@
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.eventos.EventosResponse
-import com.example.splmobile.dtos.locaisLixo.LocaisLixoResponse
-import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
+import com.example.splmobile.dtos.events.EventsResponse
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
 import com.example.splmobile.dtos.myInfo.EmailCheckResponse
 import com.example.splmobile.dtos.myInfo.EmailRequest
-import com.example.splmobile.dtos.myInfo.UtilizadorResponse
-import com.example.splmobile.dtos.myInfo.UtilizadorSer
-import com.example.splmobile.services.locaisLixo.LocalLixoService
+import com.example.splmobile.dtos.myInfo.UserResponse
+import com.example.splmobile.dtos.myInfo.UserSerializable
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -18,9 +15,8 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import kotlin.collections.get
 
-class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : UtilizadorInfoService {
+class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : UserInfoService {
     private val client = HttpClient(engine) {
         expectSuccess = true
         install(ContentNegotiation) {
@@ -47,10 +43,10 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
         }
 
     }
-    override suspend fun getUtilizador(
+    override suspend fun getUser(
         token: String
-    ): UtilizadorResponse {
-        log.d { "Fetching my locais lixo from network" }
+    ): UserResponse {
+        log.d { "Fetching my garbage spots from network" }
         try{
             return client.get {
                 headers {
@@ -59,17 +55,17 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
                 contentType(ContentType.Application.Json)
 
                 url("api/users/me")
-            }.body() as UtilizadorResponse
+            }.body() as UserResponse
         }catch (ex :HttpRequestTimeoutException){
-            return UtilizadorResponse(UtilizadorSer(0,"","",""),"error","500")
+            return UserResponse(UserSerializable(0,"","",""),"error","500")
         }
-        return UtilizadorResponse(UtilizadorSer(0,"","",""),"error","400")
+        return UserResponse(UserSerializable(0,"","",""),"error","400")
     }
 
-    override suspend fun getMyLocaisLixo(
+    override suspend fun getMyGarbageSpots(
         token: String
-    ): LocaisLixoResponse {
-        log.d { "Fetching my locais lixo from network" }
+    ): GarbageSpotsResponse {
+        log.d { "Fetching my garbage spots from network" }
         try{
             return client.get {
                 headers {
@@ -77,16 +73,16 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
                 }
                 contentType(ContentType.Application.Json)
                 url("api/lixeiras/mine")
-            }.body() as LocaisLixoResponse
+            }.body() as GarbageSpotsResponse
         }catch (ex :HttpRequestTimeoutException){
-            return LocaisLixoResponse(emptyList(),"error","500")
+            return GarbageSpotsResponse(emptyList(),"error","500")
         }
-        return LocaisLixoResponse(emptyList(),"error","400")
+        return GarbageSpotsResponse(emptyList(),"error","400")
     }
 
-    override suspend fun getMyEventos(
+    override suspend fun getMyEvents(
         token: String
-    ): EventosResponse {
+    ): EventsResponse {
         TODO("Not yet implemented")
     }
 
@@ -94,10 +90,10 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
         TODO("Not yet implemented")
     }
 
-    override suspend fun putUtilizador(
-        utilizador: UtilizadorSer,
+    override suspend fun putUser(
+        utilizador: UserSerializable,
         token: String
-    ): UtilizadorResponse {
+    ): UserResponse {
         log.d { "update Local Lixo" }
         try{
             return client.put {
@@ -107,12 +103,12 @@ class UtilizadorInfoServiceImpl(private val log: Logger, engine: HttpClientEngin
                 contentType(ContentType.Application.Json)
                 setBody(utilizador)
                 url("api/users/me")
-            }.body() as UtilizadorResponse
+            }.body() as UserResponse
         }
         catch (ex :HttpRequestTimeoutException){
-            return UtilizadorResponse(UtilizadorSer(0,"","",""),"error","500")
+            return UserResponse(UserSerializable(0,"","",""),"error","500")
         }
-        return UtilizadorResponse(UtilizadorSer(0,"","",""),"error","400")
+        return UserResponse(UserSerializable(0,"","",""),"error","400")
     }
 
     private fun HttpRequestBuilder.url(path: String) {

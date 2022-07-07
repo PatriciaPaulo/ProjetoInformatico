@@ -1,23 +1,14 @@
 package com.example.splmobile.android.ui.auth.screens
 
-import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
@@ -26,39 +17,28 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.NavHostController
 import com.example.splmobile.android.*
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
-import com.example.splmobile.dtos.auth.LoginResponse
 import com.example.splmobile.isEmailValid
 import com.example.splmobile.isTextFieldEmpty
 import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import com.example.splmobile.models.userInfo.UserInfoViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    utilizadorInfoViewModel: UtilizadorInfoViewModel
+    userInfoViewModel: UserInfoViewModel
 ) {
 
     /* TODO
@@ -93,7 +73,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.big_spacer)))
 
         // TextFields updating according to state
-        ComposableUI(navController, authViewModel,utilizadorInfoViewModel)
+        ComposableUI(navController, authViewModel,userInfoViewModel)
 
     }
 
@@ -104,7 +84,7 @@ fun LoginScreen(
 fun ComposableUI(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    utilizadorInfoViewModel: UtilizadorInfoViewModel
+    userInfoViewModel: UserInfoViewModel
 ){
     // Variables for TextFields Validation
     var email by remember { mutableStateOf("") }
@@ -147,7 +127,7 @@ fun ComposableUI(
                         settings[stringPreferencesKey(PASSWORD_KEY)] = password
                     }
 
-                    utilizadorInfoViewModel.getMyInfo(authViewModel.tokenState.value)
+                    userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
 
                     showRequestState = false
                     navController.navigate(BottomNavItem.Home.screen_route)

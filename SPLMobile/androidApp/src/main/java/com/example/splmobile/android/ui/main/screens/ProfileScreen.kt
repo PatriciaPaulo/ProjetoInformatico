@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,14 +14,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -35,10 +29,10 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.myInfo.UtilizadorSer
+import com.example.splmobile.dtos.myInfo.UserSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
+import com.example.splmobile.models.userInfo.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -49,7 +43,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 fun ProfileScreen(
     navController: NavHostController,
     mainViewModel: MainViewModel,
-    utilizadorInfoViewModel: UtilizadorInfoViewModel,
+    userInfoViewModel: UserInfoViewModel,
     authViewModel: AuthViewModel,
     sharedViewModel: SharedViewModel,
     log: Logger
@@ -61,11 +55,11 @@ fun ProfileScreen(
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
-    var utilizadorInfoState = utilizadorInfoViewModel.myInfoUtilizadorUIState.collectAsState().value
+    var utilizadorInfoState = userInfoViewModel.myInfoUserUIState.collectAsState().value
     LaunchedEffect(Unit) {
-        utilizadorInfoViewModel.getMyInfo(authViewModel.tokenState.value)
+        userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
     }
-
+    
     Scaffold(
         scaffoldState = scaffoldState,
         drawerContent = {
@@ -76,27 +70,46 @@ fun ProfileScreen(
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
-            Row(modifier = Modifier.fillMaxWidth()) {
-                when(utilizadorInfoState){
-                    is UtilizadorInfoViewModel.MyInfoUtilizadorUIState.Success ->
-                    {
-                        ProfileSection(
-                            utilizadorInfoState.data,
-                            utilizadorInfoViewModel,
-                            authViewModel,
-                            modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Top))
+            
+            Column(modifier = Modifier.fillMaxWidth()
+                .verticalScroll(rememberScrollState()) ){
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    when(utilizadorInfoState){
+                        is UserInfoViewModel.MyInfoUserUIState.Success ->
+                        {
+                            ProfileSection(
+                                utilizadorInfoState.data,
+                                userInfoViewModel,
+                                authViewModel,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.CenterHorizontally))
 
                             Text(text = "123")
 
 
-
-
                         }
                     }
+                }
+                Column(modifier = Modifier.fillMaxWidth()){
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                    Text(text="123")
+                }
             }
-
         },
     )
 }
@@ -105,8 +118,8 @@ fun ProfileScreen(
 
 @Composable
 fun ProfileSection(
-    utilizador: UtilizadorSer,
-    utilizadorInfoViewModel: UtilizadorInfoViewModel,
+    utilizador: UserSerializable,
+    userInfoViewModel: UserInfoViewModel,
     authViewModel: AuthViewModel,
     modifier: Modifier = Modifier,
 ) {
@@ -168,6 +181,7 @@ fun ProfileSection(
 
                     }
                     editableState.value = !editableState.value },
+
                 modifier = Modifier.align(Alignment.End)) {
                 if(editableState.value){
                     Icon(Icons.Default.Close, contentDescription = "editable")
@@ -180,8 +194,8 @@ fun ProfileSection(
                 Button(
                     onClick = {
                         if(editableFieldsAlteredState.value){
-                            utilizadorInfoViewModel.putMyInfo(
-                                UtilizadorSer(
+                            userInfoViewModel.putMyInfo(
+                                UserSerializable(
                                     0,
                                     utilizadorName.value.text,
                                     utilizadorEmail.value.text,
@@ -191,14 +205,9 @@ fun ProfileSection(
                               },
                     enabled = btnEditarState.value,
                     modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                    if (editableState.value) {
-                        Icon(Icons.Default.Close, contentDescription = "editable")
-
-
-                    } else {
                         Icon(Icons.Default.Check, contentDescription = "editable")
                     }
-                }
+
             }
             //edit state when(viewmodel state ui)
 
@@ -292,7 +301,7 @@ fun EditableProfileDescription(
 
         TextField(
             value = utilizadorName.value,
-            label = { Text(textResource(R.string.lblUtilizadorName).toString()) },
+            label = { Text(textResource(R.string.lblUserName).toString()) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             onValueChange = { newText ->
                 utilizadorName.value = newText
@@ -300,7 +309,7 @@ fun EditableProfileDescription(
         )
         TextField(
             value = utilizadorEmail.value,
-            label = { Text(textResource(R.string.lblUtilizadorEmail).toString()) },
+            label = { Text(textResource(R.string.lblUserEmail).toString()) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             onValueChange = { newText ->
                 utilizadorEmail.value = newText
@@ -308,7 +317,7 @@ fun EditableProfileDescription(
         )
         TextField(
             value = utilizadorUsername.value,
-            label = { Text(textResource(R.string.lblUtilizadorUsername).toString()) },
+            label = { Text(textResource(R.string.lblUserUsername).toString()) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             onValueChange = { newText ->
                 utilizadorUsername.value = newText
@@ -423,27 +432,20 @@ fun ActionButton(
 
 @ExperimentalFoundationApi
 @Composable
-fun PostSection(
+fun ActivitySection(
     posts: List<Painter>,
     modifier: Modifier = Modifier
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        modifier = modifier
-            .scale(1f)
-    ) {
-        items(posts.size) {
-            Image(
-                painter = posts[it],
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .border(
-                        width = 1.dp,
-                        color = Color.White
-                    )
-            )
-        }
-    }
+    
+
+}
+
+@ExperimentalFoundationApi
+@Composable
+fun NextEventsSection(
+    posts: List<Painter>,
+    modifier: Modifier = Modifier
+) {
+
+
 }

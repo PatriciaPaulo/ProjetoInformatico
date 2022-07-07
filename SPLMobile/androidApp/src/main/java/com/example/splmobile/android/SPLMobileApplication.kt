@@ -8,8 +8,8 @@ import com.example.splmobile.AppInfo
 import com.example.splmobile.initKoin
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.UtilizadorInfo.UtilizadorInfoViewModel
-import com.example.splmobile.models.locaisLixo.LocalLixoViewModel
+import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
 
 import dagger.hilt.android.HiltAndroidApp
 
@@ -24,9 +24,9 @@ class SPLMobileApplication : Application() {
         initKoin(
             module {
                 single<Context> { this@SPLMobileApplication }
-                viewModel { LocalLixoViewModel(get(), get { parametersOf("LocalLixoViewModel") }, get { parametersOf("LocalLixoRepository") }) }
+                viewModel { GarbageSpotViewModel(get(), get { parametersOf("LocalLixoViewModel") }, get { parametersOf("LocalLixoRepository") }) }
                 viewModel { SharedViewModel(get(), get { parametersOf("SharedViewModel") }) }
-                viewModel { UtilizadorInfoViewModel(get(), get { parametersOf("UtilizadorInfoViewModel") }) }
+                viewModel { UserInfoViewModel(get(), get { parametersOf("UtilizadorInfoViewModel") }) }
                 viewModel { AuthViewModel(get(), get { parametersOf("AuthViewModel") }) }
                 single<SharedPreferences> {
                     get<Context>().getSharedPreferences("KAMPSTARTER_SETTINGS", Context.MODE_PRIVATE)

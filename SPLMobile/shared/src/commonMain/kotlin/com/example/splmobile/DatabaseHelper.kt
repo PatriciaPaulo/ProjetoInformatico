@@ -3,7 +3,7 @@ package com.example.splmobile
 import co.touchlab.kermit.Logger
 import com.example.splmobile.database.LocalLixo
 
-import com.example.splmobile.dtos.locaisLixo.LocalLixoSer
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.sqldelight.transactionWithContext
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.runtime.coroutines.asFlow
@@ -27,7 +27,7 @@ class DatabaseHelper(
             .mapToList()
             .flowOn(backgroundDispatcher)
 
-    suspend fun insertLocaisLixo(locaisLixo: List<LocalLixoSer>) {
+    suspend fun insertLocaisLixo(locaisLixo: List<GarbageSpotSerializable>) {
 
         log.d { "Inserting ${locaisLixo.size} locaisLixo into database" }
         dbRef.transactionWithContext(backgroundDispatcher) {

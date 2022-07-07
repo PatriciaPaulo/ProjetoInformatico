@@ -1,21 +1,18 @@
-package com.example.splmobile.models.locaisLixo
+package com.example.splmobile.models.garbageSpots
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.DatabaseHelper
-import com.example.splmobile.database.LocalLixo
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.services.locaisLixo.LocalLixoService
+import com.example.splmobile.services.garbageSpots.GarbageSpotService
 
 
 import com.russhwolf.settings.Settings
-import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
 
 class LocalLixoRepository (
     private val dbHelper: DatabaseHelper,
     private val settings: Settings,
-    private val localLixoService: LocalLixoService,
+    private val garbageSpotService: GarbageSpotService,
     log: Logger,
     private val clock: Clock
 ) {
@@ -31,13 +28,10 @@ class LocalLixoRepository (
     }
 
 
-
-
     suspend fun deleteLocaisLixo() {
         dbHelper.deleteAllLocaisLixo()
 
     }
-
 
 
     private fun isLocalLixoListStale(): Boolean {
