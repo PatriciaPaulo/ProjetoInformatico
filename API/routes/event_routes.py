@@ -24,7 +24,7 @@ def create_event(current_user):
     db.session.add(new_event)
     db.session.commit()
 
-    return make_response(jsonify({'data': GarbageSpot.serialize(new_event), 'message': '200 OK - Event Created'}), 200)
+    return make_response(jsonify({'data': Event.serialize(new_event), 'message': '200 OK - Event Created'}), 200)
 
 
 # Get All Events by User
@@ -139,7 +139,7 @@ def get_garbageSpots_no_event(current_user,event_id):
 # Get Events for Garbage Spot
 @event_routes_blueprint.route('/garbageSpots/<garbageSpot_id>/events', methods=['GET'])
 @token_required
-def get_events_na_garbageSpotiera(current_user, garbageSpot_id):
+def get_events_na_garbageSpot(current_user, garbageSpot_id):
     garbageSpotsEvento = db.session.query(GarbageSpotInEvent).filter_by(garbageSpotID=garbageSpot_id)
     result = []
     for event_data in garbageSpotsEvento:
