@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GarbageSpotInEventSerializable(
     val id: Long,
-    val lixeiraID: Long,
-    val eventoID: Long,
+    val garbageSpotID: Long,
+    val eventID: Long,
     )

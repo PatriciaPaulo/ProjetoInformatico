@@ -54,11 +54,11 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
     }
 
     override suspend fun getGarbageSpots(): GarbageSpotsResponse {
-        log.d { "Fetching lixeiras from network" }
+        log.d { "Fetching garbageSpots from network" }
         try{
             return client.get {
                 contentType(ContentType.Application.Json)
-                url("api/lixeiras")
+                url("api/garbageSpots")
             }.body() as GarbageSpotsResponse
         }catch (ex :HttpRequestTimeoutException){
             return GarbageSpotsResponse(emptyList(),"error","500")
@@ -82,7 +82,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                 contentType(ContentType.Application.Json)
                 setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.nome, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,garbageSpot.status,garbageSpot.approved,
                     emptyList()))
-                url("api/lixeiras")
+                url("api/garbageSpots")
             }.body() as RequestMessageResponse
         }
         catch (ex :HttpRequestTimeoutException){
@@ -106,7 +106,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                 contentType(ContentType.Application.Json)
                 setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.nome, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,status,garbageSpot.approved,
                     emptyList()))
-                url("api/lixeiras/"+garbageSpot.id+"/mudarEstadoLixeira")
+                url("api/garbageSpots/"+garbageSpot.id+"/mudarEstadoLixeira")
             }.body() as RequestMessageResponse
         }
         catch (ex :HttpRequestTimeoutException){
