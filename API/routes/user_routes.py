@@ -141,7 +141,7 @@ def update_user(user_id):
     return make_response(jsonify({'data': User.serialize(user), 'message': '200 OK - User Updated'}), 200)
 """
 
-#Update User by User
+#Update User by Logged User
 @user_routes_blueprint.route('/users/me', methods=['PUT'])
 @token_required
 def update_user(current_user):

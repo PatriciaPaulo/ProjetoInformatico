@@ -188,6 +188,7 @@ class GarbageSpot(Base):
             'status': self.status,
             'approved': self.approved,
         }
+
 # endregion
 
 
