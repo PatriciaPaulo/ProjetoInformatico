@@ -106,9 +106,9 @@ def get_all_users():
             'admin': user.admin,
             'blocked': user.blocked
         }
-        result.append(user_data)
+        result.append(User.serialize(user_data))
 
-    return make_response(jsonify({'data': result}), 200)
+    return make_response(jsonify({'data': result, 'message': '200 OK - All Users Retrieved'}), 200)
 
 
 # Get User by ID
@@ -117,11 +117,11 @@ def get_all_users():
 def get_user(user_id):
     user = db.session.query(User).filter_by(id=user_id, deleted_at=None).first()
     if not user:
-        return make_response("404 Not Found - User doesn\'t exist", 404)
+        return make_response(jsonify({'message': '404 NOT OK - User doesn\'t exist'}), 404)
 
-    return make_response(jsonify({'data': User.serialize(user)}), 200)
+    return make_response(jsonify({'data': User.serialize(user), 'message': '200 OK - User Retrieved'}), 200)
 
-
+"""
 # Update User by Admin
 @user_routes_blueprint.route('/users/<user_id>', methods=['PUT'])
 @admin_required
@@ -129,7 +129,7 @@ def update_user(user_id):
     # Checks if user exist
     user = db.session.query(User).filter_by(id=user_id, deleted_at=None).first()
     if not user:
-        return make_response('404 Not Found - User doesn\'t exist', 404)
+        return make_response(jsonify({'message': '404 NOT OK - User doesn\'t exist'}), 404)
 
     user_data = request.get_json()
 
@@ -137,6 +137,23 @@ def update_user(user_id):
     user.username = user_data['username']
     user.email = user_data['email']
     db.session.commit()
-    return make_response(jsonify({'data': User.serialize(user)}), 200)
 
+    return make_response(jsonify({'data': User.serialize(user), 'message': '200 OK - User Updated'}), 200)
+"""
 
+#Update User by User
+@user_routes_blueprint.route('/users/me', methods=['PUT'])
+@token_required
+def update_user(current_user):
+    # Checks if user exist
+    user = db.session.query(User).filter_by(id=current_user.id, deleted_at=None).first()
+    if not user:
+        return make_response(jsonify({'message': '404 NOT OK - User doesn\'t exist'}), 404)
+
+    user_data = request.get_json()
+    user.name = user_data['name']
+    user.username = user_data['username']
+    user.email = user_data['email']
+    db.session.commit()
+
+    return make_response(jsonify({'data': User.serialize(user), 'message': '200 OK - User Updated'}), 200)
