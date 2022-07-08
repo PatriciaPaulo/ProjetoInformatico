@@ -7,11 +7,11 @@ import kotlinx.serialization.Serializable
 data class GarbageSpotSerializable(
     val id: Long,
     var nome: String,
-    val criador: Long,
+    val creator: Long,
     var latitude: String,
     var longitude: String,
-    var estado: String,
-    val aprovado: Boolean,
-    val foto: String?,
-    val eventos: List<GarbageSpotInEventSerializable>
+    var status: String,
+    val approved: Boolean,
+    val events: List<GarbageSpotInEventSerializable>
+
 )

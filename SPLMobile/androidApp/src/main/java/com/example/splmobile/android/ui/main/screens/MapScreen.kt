@@ -355,7 +355,7 @@ fun MapContent(
                             newGarbageSpotPos.value = LatLng(0.0,0.0)
                         }
                         filteredGarbageSpots = garbageSpots.filter { garbageSpot ->
-                            garbageSpot.aprovado }
+                            garbageSpot.approved }
                         Log.d("screen map", "FITLER STATE-${garbageSpotsFilterState.value}")
                         when(garbageSpotsFilterState.value){
                             textResource(R.string.lblFilterGarbageSpotsAll).toString() -> {
@@ -366,24 +366,24 @@ fun MapContent(
                                 //todo my id
                                 Log.d("screen map", "FITLER STATE- ${ userInfoViewModel.myIdUIState.value}")
                                 markerFilterList( garbageSpots.filter {
-                                        garbageSpot -> garbageSpot.criador ==  userInfoViewModel.myIdUIState.value }, garbageSpotState)
+                                        garbageSpot -> garbageSpot.creator ==  userInfoViewModel.myIdUIState.value }, garbageSpotState)
                                  }
                             textResource(R.string.lblFilterGarbageSpotsStatus1).toString() -> {
                                 Log.d("screen map", "FITLER STATE- MT SUJO")
                                  markerFilterList(
                                      filteredGarbageSpots.filter {
                                              garbageSpot ->
-                                         garbageSpot.estado == textResource(R.string.lblFilterGarbageSpotsStatus1).toString() }
+                                         garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus1).toString() }
                                      , garbageSpotState)
                             }
                             textResource(R.string.lblFilterGarbageSpotsStatus2).toString() -> {
 
-                                markerFilterList(filteredGarbageSpots.filter { garbageSpot -> garbageSpot.estado == textResource(R.string.lblFilterGarbageSpotsStatus2).toString() }, garbageSpotState)
+                                markerFilterList(filteredGarbageSpots.filter { garbageSpot -> garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus2).toString() }, garbageSpotState)
                             }
                             textResource(R.string.lblFilterGarbageSpotsStatus3).toString() -> {
                                  markerFilterList( filteredGarbageSpots.filter {
                                          garbageSpot ->
-                                     garbageSpot.estado == textResource(R.string.lblFilterGarbageSpotsStatus3).toString() },
+                                     garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus3).toString() },
                                      garbageSpotState)
                             }
 
@@ -419,7 +419,7 @@ private fun markerFilterList(
         Marker(
             position = lixeiraPosition,
             title = garbageSpot.nome,
-            snippet = garbageSpot.estado,
+            snippet = garbageSpot.status,
             onClick = {
                 garbageSpotState.value = garbageSpot
                 true
@@ -447,7 +447,7 @@ fun SheetContent(
         //state that determines if the button is disabled or not
         val updateGarbageSpot = remember { mutableStateOf(false) }
         //shown status
-        var selectedStatus = remember { mutableStateOf(garbageSpot.value.estado) }
+        var selectedStatus = remember { mutableStateOf(garbageSpot.value.status) }
         //id of the current local lixo
         var selectedId = remember { mutableStateOf(garbageSpot.value.id) }
 
@@ -518,7 +518,7 @@ fun SheetContent(
                                         garbageSpot.value.longitude == "0.0")) &&
                         nomeGarbageSpotState.value.text.isNotEmpty() ){
                         garbageSpot.value.nome = nomeGarbageSpotState.value.text
-                        garbageSpot.value.estado = selectedOptionText
+                        garbageSpot.value.status = selectedOptionText
 
                         createGarbageSpotButtonState.value = true
                     }else{
@@ -554,7 +554,7 @@ fun SheetContent(
             ) {
                     Column(Modifier.padding(28.dp)) {
                         Text(garbageSpot.value.nome)
-                        Text(garbageSpot.value.criador.toString())
+                        Text(garbageSpot.value.creator.toString())
                     }
                     Spacer(Modifier.height(32.dp))
                     Column{
@@ -618,7 +618,7 @@ private fun DropDownMenuStatus(
         //changes the current locallix
         selectedId.value = garbageSpot.value.id
         //changes status to be shown
-        selectedStatus.value = garbageSpot.value.estado
+        selectedStatus.value = garbageSpot.value.status
         //update button to disabled
         updateGarbageSpot.value = false
         //colapses botscaffold
@@ -653,7 +653,7 @@ private fun DropDownMenuStatus(
                 expanded = false
                 //check if current garbageSpot equals the index clicked
                 //if different then update the button state
-                if (!statusList.indexOf(garbageSpot.value.estado).equals(index)) {
+                if (!statusList.indexOf(garbageSpot.value.status).equals(index)) {
                     //change status to abled so the button to update status is available
                     updateGarbageSpot.value = true
                     //expand to show update button

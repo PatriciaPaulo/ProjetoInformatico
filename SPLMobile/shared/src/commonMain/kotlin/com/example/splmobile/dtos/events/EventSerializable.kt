@@ -4,21 +4,19 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class EventSer(
+data class EventSerializable(
     val id: Long,
     val name: String,
     val latitude: String,
     val longitude: String,
-    val organizer: Long,
     val status: String,
     val duration: String,
     val startingDate: String,
     val description: String,
-    val acessibility: String,
+    val accessibility: String,
     val restrictions: String,
     val garbageType: String,
     val quantity: String,
-    val photo: String?,
     val comments: String?
 
 )
