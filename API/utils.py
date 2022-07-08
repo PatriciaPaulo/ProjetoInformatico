@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request, make_response,current_app
 from models import User, db
 
 
-class User(object):
+class Guest(object):
     id = ""
 
 
@@ -15,10 +15,9 @@ def guest(f):
         token = None
         if 'authorization' in request.headers:
             token = request.headers['authorization']
-
         if not token:
             #return make_response(jsonify({'message': 'a valid token is missing'}), 400)
-            current_user = User()
+            current_user = Guest()
             current_user.id = 0
         else:
             try:
@@ -46,8 +45,9 @@ def token_required(f):
 
         try:
             data = jwt.decode(token.split(" ")[1], current_app.config['SECRET_KEY'], algorithms=["HS256"])
+            print(data['email'])
             current_user = db.session.query(User).filter_by(email=data['email']).first()
-           # print(current_user)
+            print(current_user.id)
         except Exception as ex:
             print(ex)
             return make_response(jsonify({'message': 'token is invalid'}), 400)
