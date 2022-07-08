@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.auth.LoginRequest
 import com.example.splmobile.dtos.auth.LoginResponse
+import com.example.splmobile.dtos.auth.SignInRequest
 import com.example.splmobile.dtos.auth.SignInResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -65,7 +66,7 @@ class AuthServiceImpl(
 
     }
 
-    override suspend fun postSignIn(): SignInResponse {
+    override suspend fun postSignIn(signInRequest: SignInRequest): SignInResponse {
         TODO("Not yet implemented")
     }
 

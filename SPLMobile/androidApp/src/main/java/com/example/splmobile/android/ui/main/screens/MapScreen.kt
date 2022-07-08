@@ -80,7 +80,7 @@ fun MapScreen(
     }
 
     var garbageSpotState = mutableStateOf(
-        GarbageSpotSerializable(0,"new",userInfoViewModel.myIdUIState.value,"0.0","0.0","Muito sujo",false,"",
+        GarbageSpotSerializable(0,"new",userInfoViewModel.myIdUIState.value,"0.0","0.0","Muito sujo",false,
             emptyList())
     )
     var garbageSpotsFilterState = mutableStateOf(textResource(R.string.lblFilterGarbageSpotsAll).toString())
@@ -97,7 +97,7 @@ fun MapScreen(
             Log.v("screen map", "success created local lixo")
             //reset create local lixo
             createGarbageSpotButtonState.value = false
-            garbageSpotState.value = GarbageSpotSerializable(0,"new",0,"0.0","0.0","Muito sujo",false,"",
+            garbageSpotState.value = GarbageSpotSerializable(0,"new",0,"0.0","0.0","Muito sujo",false,
                 emptyList())
             nomeGarbageSpotState.value = TextFieldValue("")
             newGarbageSpotPos.value = LatLng(0.0,0.0)
@@ -170,7 +170,7 @@ fun MapScreen(
                             if(!garbageSpotState.value.id.equals(0L)){
                                 garbageSpotState.value =
                                     GarbageSpotSerializable(0,"new",userInfoViewModel.myIdUIState.value,"","",
-                                        "",false,"", emptyList())
+                                        "",false, emptyList())
                                 coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
                             }
                             else{

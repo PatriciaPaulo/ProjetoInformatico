@@ -2,7 +2,7 @@ package com.example.splmobile.models.garbageSpots
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
-import com.example.splmobile.DatabaseHelper
+
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
 
 
@@ -10,7 +10,7 @@ import com.russhwolf.settings.Settings
 import kotlinx.datetime.Clock
 
 class LocalLixoRepository (
-    private val dbHelper: DatabaseHelper,
+   // private val dbHelper: DatabaseHelper,
     private val settings: Settings,
     private val garbageSpotService: GarbageSpotService,
     log: Logger,
@@ -29,7 +29,7 @@ class LocalLixoRepository (
 
 
     suspend fun deleteLocaisLixo() {
-        dbHelper.deleteAllLocaisLixo()
+       // dbHelper.deleteAllLocaisLixo()
 
     }
 

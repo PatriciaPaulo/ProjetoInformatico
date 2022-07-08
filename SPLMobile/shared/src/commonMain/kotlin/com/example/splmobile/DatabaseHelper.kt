@@ -11,7 +11,7 @@ import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
-
+/*
 class DatabaseHelper(
     val sqlDriver: SqlDriver,
     private val log: Logger,
@@ -34,7 +34,7 @@ class DatabaseHelper(
             locaisLixo.forEach { localLixo ->
                 //log.d { " lat  ${localLixo.latitude}"}
                 //log.d { " long  ${localLixo.longitude}"}
-                dbRef.sPLDatabaseQueries.insertLocalLixo(localLixo.id,localLixo.nome,localLixo.criador,localLixo.latitude,localLixo.longitude,localLixo.estado,localLixo.aprovado,localLixo.foto,localLixo.eventos.toString())
+                dbRef.sPLDatabaseQueries.insertLocalLixo(localLixo.id,localLixo.nome,localLixo.creator,localLixo.latitude,localLixo.longitude,localLixo.status,localLixo.approved,localLixo.events.toString())
                }
         }
     }
@@ -52,4 +52,4 @@ class DatabaseHelper(
     }
 
 
-}
+}*/

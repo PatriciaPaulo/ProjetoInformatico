@@ -47,13 +47,13 @@ fun initKoin(appModule: Module): KoinApplication {
 }
 
 private val coreModule = module {
-    single {
+  /*  single {
         DatabaseHelper(
             get(),
             getWith("DatabaseHelper"),
             Dispatchers.Default
         )
-    }
+    }*/
     single<GarbageSpotService> {
         GarbageSpotServiceImpl(
             getWith("GarbageSpotServiceImpl"),
@@ -91,7 +91,7 @@ private val coreModule = module {
 
     single {
         LocalLixoRepository(
-            get(),
+           // get(),
             get(),
             get(),
             getWith("LocalLixoRepository"),

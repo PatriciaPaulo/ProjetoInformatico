@@ -80,7 +80,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                     }
                 }
                 contentType(ContentType.Application.Json)
-                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.nome, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,garbageSpot.status,garbageSpot.approved,garbageSpot.photo,
+                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.nome, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,garbageSpot.status,garbageSpot.approved,
                     emptyList()))
                 url("api/lixeiras")
             }.body() as RequestMessageResponse
@@ -104,7 +104,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
-                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.nome, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,status,garbageSpot.approved,garbageSpot.photo,
+                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.nome, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,status,garbageSpot.approved,
                     emptyList()))
                 url("api/lixeiras/"+garbageSpot.id+"/mudarEstadoLixeira")
             }.body() as RequestMessageResponse
