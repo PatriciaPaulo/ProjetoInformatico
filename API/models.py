@@ -145,7 +145,7 @@ class Event(Base):
     accessibility = Column(String(50))
     restrictions = Column(String(50))
     garbageType = Column(String(50))
-    volume = Column(String(50))
+    quantity = Column(String(50))
     observations = Column(String(50))
 
     def serialize(self):
@@ -161,7 +161,7 @@ class Event(Base):
             'accessibility': self.accessibility,
             'restrictions': self.restrictions,
             'garbageType': self.garbageType,
-            'volume': self.volume,
+            'quantity': self.quantity,
             'observations': self.observations
         }
 # endregion
@@ -196,7 +196,7 @@ class GarbageSpotInEvent(Base):
     __tablename__ = "garbagespot_in_event"
     id = Column(Integer, primary_key=True)
     garbageSpotID = Column(Integer, ForeignKey('garbage_spot.id'), nullable=False)
-    eventID = Column(Integer, ForeignKey('evento.id'), nullable=False)
+    eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
 
     def serialize(self):
         return {

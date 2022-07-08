@@ -11,51 +11,51 @@ event_routes_blueprint = Blueprint('event_routes', __name__, )
 api = Api(event_routes_blueprint)
 
 # Create Event by User
-@event_routes_blueprint.route('/eventos', methods=['POST'])
+@event_routes_blueprint.route('/events', methods=['POST'])
 @token_required
-def create_evento(current_user):
+def create_event(current_user):
     data = request.get_json()
 
-    new_evento = Event(nome=data['name'], latitude=data['latitude'], longitude=data['longitude'], organizador=current_user.id,
-                       estado=data['status'], duracao=data['duration'], descricao=data['description'],
-                       acessibilidade=data['accessibility'], restricoes=data['restrictions'], tipoLixo=data['garbageType'],
-                       volume=data['volume'], foto=data['foto'], observacoes=data['observations'], dataInicio=data['startDate'],
+    new_event = Event(name=data['name'], latitude=data['latitude'], longitude=data['longitude'], organizer=current_user.id,
+                       status=data['status'], duration=data['duration'], description=data['description'],
+                       accessibility=data['accessibility'], restrictions=data['restrictions'], garbageType=data['garbageType'],
+                       quantity=data['quantity'], foto=data['foto'], comments=data['observations'], startDate=data['startDate'],
                        )
-    db.session.add(new_evento)
+    db.session.add(new_event)
     db.session.commit()
-    return make_response(jsonify({'message': 'new evento created'}), 200)
+    return make_response(jsonify({'message': 'new event created'}), 200)
 
 
 
 # Get All Events by User
-@event_routes_blueprint.route('/eventos', methods=['GET'])
+@event_routes_blueprint.route('/events', methods=['GET'])
 @token_required
-def get_eventos(current_user):
+def get_events(current_user):
     #todo order by date
-    eventos = db.session.query(Event).all()
+    events = db.session.query(Event).all()
     output = []
-    for evento in eventos:
-        evento_data = {}
-        evento_data['id'] = evento.id
-        evento_data['name'] = evento.name
-        evento_data['organizer'] = evento.organizer
-        evento_data['latitude'] = evento.name
-        evento_data['longitude'] = evento.name
-        evento_data['status'] = evento.status
-        evento_data['duration'] = evento.duration
-        evento_data['startDate'] = evento.startDate
-        evento_data['description'] = evento.description
-        evento_data['accessibility'] = evento.accessibility
-        evento_data['restrictions'] = evento.restrictions
-        evento_data['garbageType'] = evento.garbageType
-        evento_data['volume'] = evento.volume
-        evento_data['foto'] = evento.foto
-        evento_data['observations'] = evento.observations
-        evento_data['lixeiras'] = []
-        for lix in  db.session.query(GarbageSpotInEvent).filter_by(eventoID=evento.id):
+    for event in events:
+        event_data = {}
+        event_data['id'] = event.id
+        event_data['name'] = event.name
+        event_data['organizer'] = event.organizer
+        event_data['latitude'] = event.name
+        event_data['longitude'] = event.name
+        event_data['status'] = event.status
+        event_data['duration'] = event.duration
+        event_data['startDate'] = event.startDate
+        event_data['description'] = event.description
+        event_data['accessibility'] = event.accessibility
+        event_data['restrictions'] = event.restrictions
+        event_data['garbageType'] = event.garbageType
+        event_data['quantity'] = event.quantity
+        event_data['foto'] = event.foto
+        event_data['observations'] = event.observations
+        event_data['garbageSpots'] = []
+        for lix in  db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
             lixSer = GarbageSpotInEvent.serialize(lix)
-            evento_data['lixeiras'].append(lixSer)
-        output.append(evento_data)
+            event_data['garbageSpots'].append(lixSer)
+        output.append(event_data)
 
 
 
@@ -64,76 +64,76 @@ def get_eventos(current_user):
 
 
 # Update Event by Event Organizer (User)
-@event_routes_blueprint.route('/eventos/<evento_id>', methods=['PUT'])
+@event_routes_blueprint.route('/events/<event_id>', methods=['PUT'])
 @token_required
-def update_evento(current_user, evento_id):
-    evento = db.session.query(Event).filter_by(id=evento_id, organizador=current_user.username).first()
-    if not evento:
-        return make_response(jsonify({'message': 'evento does not exist'}), 400)
+def update_event(current_user, event_id):
+    event = db.session.query(Event).filter_by(id=event_id, organizer=current_user.username).first()
+    if not event:
+        return make_response(jsonify({'message': 'event does not exist'}), 400)
 
-    evento_data = request.get_json()
-    evento.duration = evento_data['duration']
-    evento.startDate = evento_data['startDate']
-    evento.description = evento_data['description']
-    evento.accessibility = evento_data['accessibility']
-    evento.restrictions = evento_data['restrictions']
-    evento.garbageType = evento_data['garbageType']
-    evento.volume = evento_data['volume']
-    evento.foto = evento_data['foto']
-    evento.observations = evento_data['observations']
+    event_data = request.get_json()
+    event.duration = event_data['duration']
+    event.startDate = event_data['startDate']
+    event.description = event_data['description']
+    event.accessibility = event_data['accessibility']
+    event.restrictions = event_data['restrictions']
+    event.garbageType = event_data['garbageType']
+    event.quantity = event_data['quantity']
+    event.foto = event_data['foto']
+    event.observations = event_data['observations']
 
     db.session.commit()
-    return make_response(jsonify({'message': 'evento atualizada'}), 200)
+    return make_response(jsonify({'message': 'event atualizada'}), 200)
 
 
 
 # Approve Event by Admin
-@event_routes_blueprint.route('/eventos/<evento_id>/aprovar', methods=['PATCH'])
+@event_routes_blueprint.route('/events/<event_id>/aprovar', methods=['PATCH'])
 @admin_required
-def aprovar_evento(evento_id):
-    evento = db.session.query(Event).filter_by(id=evento_id).first()
-    if not evento:
-        return make_response(jsonify({'message': 'evento does not exist'}), 400)
+def aprovar_event(event_id):
+    event = db.session.query(Event).filter_by(id=event_id).first()
+    if not event:
+        return make_response(jsonify({'message': 'event does not exist'}), 400)
 
-    evento_data = request.get_json()
+    event_data = request.get_json()
 
-    evento.status = evento_data['status']
+    event.status = event_data['status']
 
     db.session.commit()
-    return make_response(jsonify({'message': 'evento atualizada'}), 200)
+    return make_response(jsonify({'message': 'event atualizada'}), 200)
 
 # Region Event Operations Regarding Garbage Spots
 
 # Add Garbage Spot to Event by User
-@event_routes_blueprint.route('/eventos/<evento_id>/addLixeira', methods=['POST'])
+@event_routes_blueprint.route('/events/<event_id>/addLixeira', methods=['POST'])
 @token_required
-def add_lixeira_to_event(current_user,evento_id):
-    evento = db.session.query(Event).filter_by(id=evento_id).first()
-    if not evento:
-        return make_response(jsonify({'message': 'evento does not exist'}), 404)
+def add_garbageSpot_to_event(current_user,event_id):
+    event = db.session.query(Event).filter_by(id=event_id).first()
+    if not event:
+        return make_response(jsonify({'message': 'event does not exist'}), 404)
 
     data = request.get_json()
-    lixeira = db.session.query(GarbageSpot).filter_by(id=data["garbageSpotID"]).first()
-    if not lixeira:
-        return make_response(jsonify({'message': 'lixeira does not exist'}), 404)
+    garbageSpot = db.session.query(GarbageSpot).filter_by(id=data["garbageSpotID"]).first()
+    if not garbageSpot:
+        return make_response(jsonify({'message': 'garbageSpot does not exist'}), 404)
 
 
-    inscricao = GarbageSpotInEvent(lixeiraID=data['garbageSpotID'], eventoID=evento_id)
+    inscricao = GarbageSpotInEvent(garbageSpotID=data['garbageSpotID'], eventID=event_id)
 
     db.session.add(inscricao)
     db.session.commit()
-    return make_response(jsonify({'message': 'lixeira adicionada ao evento'}), 200)
+    return make_response(jsonify({'message': 'garbageSpot adicionada ao event'}), 200)
 
 # Get Garbage Spots for Event
-@event_routes_blueprint.route('/eventos/<evento_id>/lixeiras', methods=['GET'])
+@event_routes_blueprint.route('/events/<event_id>/garbageSpots', methods=['GET'])
 @token_required
-def get_lixeiras_no_evento(current_user,evento_id):
-    lixeirasEvento = db.session.query(GarbageSpotInEvent).filter_by(eventoID=evento_id)
+def get_garbageSpots_no_event(current_user,event_id):
+    garbageSpotsEvento = db.session.query(GarbageSpotInEvent).filter_by(eventID=event_id)
     result = []
-    for lix in lixeirasEvento:
+    for lix in garbageSpotsEvento:
         lix_data = {}
         lix_data['id'] = lix.id
-        lix_data['eventID'] = evento_id
+        lix_data['eventID'] = event_id
         lix_data['garbageSpotID'] = lix.garbageSpotID
         result.append(lix_data)
 
@@ -141,15 +141,15 @@ def get_lixeiras_no_evento(current_user,evento_id):
 
 
 # Get Events for Garbage Spot
-@event_routes_blueprint.route('/lixeiras/<lixeira_id>/eventos', methods=['GET'])
+@event_routes_blueprint.route('/garbageSpots/<garbageSpot_id>/events', methods=['GET'])
 @token_required
-def get_eventos_na_lixiera(current_user, lixeira_id):
-    lixeirasEvento = db.session.query(GarbageSpotInEvent).filter_by(lixeiraID=lixeira_id)
+def get_events_na_lixiera(current_user, garbageSpot_id):
+    garbageSpotsEvento = db.session.query(GarbageSpotInEvent).filter_by(garbageSpotID=garbageSpot_id)
     result = []
-    for lix in lixeirasEvento:
+    for lix in garbageSpotsEvento:
         lix_data = {}
         lix_data['id'] = lix.id
-        lix_data['eventID'] = evento_id
+        lix_data['eventID'] = event_id
         lix_data['garbageSpotID'] = lix.garbageSpotID
         result.append(lix_data)
 

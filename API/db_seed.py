@@ -72,20 +72,20 @@ if __name__ == '__main__':
     #SEED LIXEIRA
     session.query(GarbageSpot).delete()
     for i in range(10):
-        nome = str(r.get_random_word())
+        name = str(r.get_random_word())
         latitude = round(random.uniform(38.779875, 41.575756), 5)
         longitude = round(random.uniform(-8.199258, -7.886036), 5)
-        criador = session.query(User).filter_by(admin=False).order_by(func.random()).first()
-        estado = ["Muito sujo", "Pouco sujo", "Limpo"]
-        lixeira = GarbageSpot(nome=nome, latitude=latitude, longitude=longitude, criador=criador.id, estado=random.choice(estado), aprovado=True, foto="foto")
+        creator = session.query(User).filter_by(admin=False).order_by(func.random()).first()
+        status = ["Muito sujo", "Pouco sujo", "Limpo"]
+        garbageSpot = GarbageSpot(name=name, latitude=latitude, longitude=longitude, creator=creator.id, status=random.choice(status), approved=True)
 
-        session.add(lixeira)
+        session.add(garbageSpot)
         session.flush()
 
 
         today = date.today()
         # ddmmYY
-        lixeira.foto = str(lixeira.id) + criador.username + str(today.strftime("%d%m%Y")) + '.png'
+        #garbageSpot.foto = str(garbageSpot.id) + creator.username + str(today.strftime("%d%m%Y")) + '.png'
         #todo create a foto ???
 
         session.commit()
@@ -94,9 +94,9 @@ if __name__ == '__main__':
     # SEED Garbage
     session.query(Garbage).delete()
     for i in range(6):
-        nome = ["Mascara", "Garrafa", "Saco","Plastico","Cartao","Vidro"]
-        lixo = Garbage(nome=nome[i])
-        session.add(lixo)
+        name = ["Mascara", "Garrafa", "Saco","Plastico","Cartao","Vidro"]
+        garbage = Garbage(name=name[i])
+        session.add(garbage)
         session.commit()
 
     print("---Garbage seed done!")
@@ -105,43 +105,43 @@ if __name__ == '__main__':
     for i in range(5):
         latitude = round(random.uniform(38.779875,41.575756), 5)
         longitude = round(random.uniform(-8.199258, -7.886036), 5)
-        organizador = session.query(User).filter_by(admin=False).order_by(func.random()).first()
+        #organizer = session.query(User).filter_by(admin=False).order_by(func.random()).first()
 
-        estado = ["Criado", "Começado", "Cancelado","Finalizado"]
-        acessibilidade = ["Reduzida", "Suficiente"]
-        volume = ["Muito", "Pouco","Medio"]
-        restricoes = ["Todas as idades", "Não indicado para crianças"]
-        tipoLixo = []
+        status = ["Criado", "Começado", "Cancelado","Finalizado"]
+        accessibility = ["Reduzida", "Suficiente"]
+        quantity = ["Muito", "Pouco","Medio"]
+        restrictions = ["Todas as idades", "Não indicado para crianças"]
+        garbageType = []
         for a in range(2):
-            lixo = session.query(Garbage).order_by(func.random()).first()
-            if lixo.id not in tipoLixo:
-                tipoLixo.append(lixo.id)
-                #print(lixo.name)
+            garbage = session.query(Garbage).order_by(func.random()).first()
+            if garbage.id not in garbageType:
+                garbageType.append(garbage.id)
+                #print(garbage.name)
 
         #to json, so we can insert array in database (sqlite doesnt support arrays in database)
-        tipoLixoJSON = json.dumps(tipoLixo)
+        garbageTypeJSON = json.dumps(garbageType)
         # 72 hours ->
-        duracao = randrange(4320)
+        duration = randrange(4320)
 
-        nome =  str(r.get_random_word()) + " "+ str(r.get_random_word())
-        descricao = ""
-        observacoes = ""
+        name =  str(r.get_random_word()) + " "+ str(r.get_random_word())
+        description = ""
+        observations = ""
         for b in range(2):
-            descricao = str(descricao)+ " " + str(r.get_random_word())
-            observacoes = str(observacoes)+ " " + str(r.get_random_word())
+            description = str(description)+ " " + str(r.get_random_word())
+            observations = str(observations)+ " " + str(r.get_random_word())
 
 
-        evento = Event(nome=nome, descricao=descricao, observacoes=observacoes, latitude=latitude,
-                       longitude=longitude, organizador=organizador.id,
-                       estado=random.choice(estado), acessibilidade=random.choice(acessibilidade),
-                       volume=random.choice(volume), restricoes=random.choice(restricoes),
-                       tipoLixo=tipoLixoJSON, duracao=duracao, dataInicio=datetime.datetime.utcnow())
-        session.add(evento)
+        event = Event(name=name, description=description, observations=observations, latitude=latitude,
+                       longitude=longitude,
+                       status=random.choice(status), accessibility=random.choice(accessibility),
+                       quantity=random.choice(quantity), restrictions=random.choice(restrictions),
+                       garbageType=garbageTypeJSON, duration=duration, startDate=datetime.datetime.utcnow())
+        session.add(event)
 
 
         today = date.today()
         # ddmmYY
-        evento.foto = str(evento.id) + str(organizador.id) + str(today.strftime("%d%m%Y")) + '.png'
+        #event.foto = str(event.id) + str(organizer.id) + str(today.strftime("%d%m%Y")) + '.png'
         # todo create a foto ???
 
         session.commit()
@@ -151,21 +151,21 @@ if __name__ == '__main__':
     session.query(Activity).delete()
     for i in range(5):
         userID = session.query(User).filter_by(admin=False).order_by(func.random()).first()
-        eventoID = session.query(Event).order_by(func.random()).first()
-        distanciaPercorrida = randrange(99999)
-        passos = randrange(99999)
-        dataInicio =  datetime.datetime.utcnow()
+        eventID = session.query(Event).order_by(func.random()).first()
+        distanceTravelled = randrange(99999)
+        steps = randrange(99999)
+        startDate =  datetime.datetime.utcnow()
         td = timedelta(days=randrange(3))
         # your calculated date
-        my_date = dataInicio + td
-        dataFim = [None,my_date]
+        my_date = startDate + td
+        endDate = [None,my_date]
 
 
-        tipoAtividade = ["corrida","caminhada","bicicleta"]
+        activityType = ["corrida","caminhada","bicicleta"]
 
-        atividade = Activity(userID=userID.id, eventoID=eventoID.id, distanciaPercorrida=distanciaPercorrida, passos=passos,
-                             dataInicio=dataInicio, dataFim=random.choice(dataFim), tipoAtividade=random.choice(tipoAtividade))
-        session.add(atividade)
+        activity = Activity(userID=userID.id, eventID=eventID.id, distanceTravelled=distanceTravelled, steps=steps,
+                             startDate=startDate, endDate=random.choice(endDate), activityType=random.choice(activityType))
+        session.add(activity)
 
         session.commit()
     print("---Activity seed done!")
@@ -175,14 +175,14 @@ if __name__ == '__main__':
     session.query(GarbageInActivity).delete()
 
     for i in range(5):
-        atividadeID = session.query(Activity).order_by(func.random()).first()
-        lixoID = session.query(Garbage).order_by(func.random()).first()
-        quantidade = randrange(100)
-        medida = ["kgs","litros","unidades"]
+        activityID = session.query(Activity).order_by(func.random()).first()
+        garbageID = session.query(Garbage).order_by(func.random()).first()
+        amount = randrange(100)
+        unitType = ["kgs","litros","unidades"]
 
 
-        lixonaatividade = GarbageInActivity(atividadeID=atividadeID.id, lixoID=lixoID.id, quantidade=quantidade, medida=random.choice(medida))
-        session.add(lixonaatividade)
+        garbageInActivity = GarbageInActivity(activityID=activityID.id, garbageID=garbageID.id, amount=amount, unitType=random.choice(unitType))
+        session.add(garbageInActivity)
 
         session.commit()
     print("---GarbageInActivity seed done!")
@@ -190,8 +190,8 @@ if __name__ == '__main__':
     # SEED EQUIPAMENTO
     session.query(Equipment).delete()
     for i in range(6):
-        nome = ["Saco de Garbage", "Luvas", "Pá","Tesoura","Faca","Contentor"]
-        eq = Equipment(nome=nome[i])
+        name = ["Saco de Garbage", "Luvas", "Pá","Tesoura","Faca","Contentor"]
+        eq = Equipment(name=name[i])
         session.add(eq)
         session.commit()
 
@@ -201,16 +201,16 @@ if __name__ == '__main__':
     session.query(EquipmentInEvent).delete()
     for i in range(6):
 
-        equipamento = session.query(Equipment).order_by(func.random()).first()
-        evento = session.query(Event).order_by(func.random()).first()
-        observacoes=""
+        equipment = session.query(Equipment).order_by(func.random()).first()
+        event = session.query(Event).order_by(func.random()).first()
+        observations=""
         for b in range(2):
-            observacoes = str(observacoes) + " " + str(r.get_random_word())
+            observations = str(observations) + " " + str(r.get_random_word())
 
 
         isProvided = bool(random.getrandbits(1))
 
-        eq = EquipmentInEvent(equipamentoID=equipamento.id, eventoID=evento.id, observacoes=observacoes, isProvided=isProvided)
+        eq = EquipmentInEvent(equipmentID=equipment.id, eventID=event.id, observations=observations, isProvided=isProvided)
         session.add(eq)
         session.commit()
 
@@ -220,11 +220,11 @@ if __name__ == '__main__':
     session.query(GarbageSpotInEvent).delete()
     for i in range(6):
 
-        lixeira = session.query(GarbageSpot).order_by(func.random()).first()
-        evento = session.query(Event).order_by(func.random()).first()
+        garbageSpot = session.query(GarbageSpot).order_by(func.random()).first()
+        event = session.query(Event).order_by(func.random()).first()
 
-        lixEv = GarbageSpotInEvent(lixeiraID=lixeira.id, eventoID=evento.id)
-        session.add(lixEv)
+        garbageSpotInEvent = GarbageSpotInEvent(garbageSpotID=garbageSpot.id, eventID=event.id)
+        session.add(garbageSpotInEvent)
         session.commit()
     print("---GarbageSpotInEvent seed done!")
 
@@ -233,12 +233,12 @@ if __name__ == '__main__':
     session.query(UserInEvent).delete()
     for i in range(6):
 
-        utilizador = session.query(User).filter_by(admin=False).order_by(func.random()).first()
-        evento = session.query(Event).order_by(func.random()).first()
-        estado = ["Confirmado","Inscrito","Cancelado"]
+        user = session.query(User).filter_by(admin=False).order_by(func.random()).first()
+        event = session.query(Event).order_by(func.random()).first()
+        status = ["Confirmado","Inscrito","Cancelado"]
 
-        utilizadorNoEvento = UserInEvent(userID=User.id, eventoID=evento.id, estado=random.choice(estado))
-        session.add(lixEv)
+        userInEvent = UserInEvent(userID=User.id, eventID=event.id, status=random.choice(status))
+        session.add(garbageSpotInEvent)
         session.commit()
 
     print("---UserInEvent seed done!")

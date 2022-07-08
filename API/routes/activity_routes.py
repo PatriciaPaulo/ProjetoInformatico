@@ -11,52 +11,52 @@ activity_routes_blueprint = Blueprint('activity_routes', __name__, )
 api = Api(activity_routes_blueprint)
 
 # Create Activity for Logged User
-@activity_routes_blueprint.route('/atividades', methods=['POST'])
+@activity_routes_blueprint.route('/activitys', methods=['POST'])
 @token_required
-def create_atividade(current_user):
+def create_activity(current_user):
     data = request.get_json()
 
-    new_atividade = Activity(eventoID=data['eventID'], userID=current_user.username, distanciaPercorrida=0, passos=0, dataInicio=datetime.datetime.utcnow(), dataFim=None, tipoAtividade=data['activityType'])
-    db.session.add(new_atividade)
+    new_activity = Activity(eventID=data['eventID'], userID=current_user.username, distanceTravelled=0, steps=0, startDate=datetime.datetime.utcnow(), endDate=None, activityType=data['activityType'])
+    db.session.add(new_activity)
     db.session.commit()
-    return make_response(jsonify("message': 'new atividade created'"), 200)
+    return make_response(jsonify("message': 'new activity created'"), 200)
 
 
 # Get Logged User Activities
-@activity_routes_blueprint.route('/atividades', methods=['GET'])
+@activity_routes_blueprint.route('/activitys', methods=['GET'])
 @token_required
-def get_atividades(current_user):
-    atividades = db.session.query(Activity).filter_by(userID=current_user.username).all()
+def get_activitys(current_user):
+    activitys = db.session.query(Activity).filter_by(userID=current_user.username).all()
     output = []
-    for ati in atividades:
-        atividade_data = {}
-        atividade_data['id'] = ati.id
-        atividade_data['eventID'] = ati.eventID
-        atividade_data['userID'] = ati.userID
-        atividade_data['distanceTravelled'] = ati.distanceTravelled
-        atividade_data['steps'] = ati.steps
-        atividade_data['startDate'] = ati.startDate
-        atividade_data['endDate'] = ati.endDate
-        atividade_data['activityType'] = ati.activityType
-        output.append(atividade_data)
+    for ati in activitys:
+        activity_data = {}
+        activity_data['id'] = ati.id
+        activity_data['eventID'] = ati.eventID
+        activity_data['userID'] = ati.userID
+        activity_data['distanceTravelled'] = ati.distanceTravelled
+        activity_data['steps'] = ati.steps
+        activity_data['startDate'] = ati.startDate
+        activity_data['endDate'] = ati.endDate
+        activity_data['activityType'] = ati.activityType
+        output.append(activity_data)
 
     return make_response(jsonify({'date': output}), 200)
 
 
 # Update Logged User Activity
-@activity_routes_blueprint.route('/atividades/<atividade_id>', methods=['PUT'])
+@activity_routes_blueprint.route('/activitys/<activity_id>', methods=['PUT'])
 @token_required
-def update_atividade(current_user, atividade_id):
-    atividade = db.session.query(Activity).filter_by(id=atividade_id, userID=current_user.username).first()
-    if not atividade:
-        return make_response(jsonify({'message': 'atividade does not exist'}), 400)
+def update_activity(current_user, activity_id):
+    activity = db.session.query(Activity).filter_by(id=activity_id, userID=current_user.username).first()
+    if not activity:
+        return make_response(jsonify({'message': 'activity does not exist'}), 400)
 
-    atividade_data = request.get_json()
-    atividade.distanceTravelled = atividade_data['distanceTravelled']
-    atividade.steps = atividade_data['steps']
-    atividade.duration = atividade_data['endDate']
-    atividade.activityType = atividade_data['activityType']
+    activity_data = request.get_json()
+    activity.distanceTravelled = activity_data['distanceTravelled']
+    activity.steps = activity_data['steps']
+    activity.duration = activity_data['endDate']
+    activity.activityType = activity_data['activityType']
 
     db.session.commit()
 
-    return make_response(jsonify({'message': 'atividade atualizada'}), 200)
+    return make_response(jsonify({'message': 'activity atualizada'}), 200)
