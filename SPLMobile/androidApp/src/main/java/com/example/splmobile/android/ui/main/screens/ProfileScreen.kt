@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -55,9 +56,13 @@ fun ProfileScreen(
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
-    var utilizadorInfoState = userInfoViewModel.myInfoUserUIState.collectAsState().value
+    var userInfoState = userInfoViewModel.myInfoUserUIState.collectAsState().value
+    var usersEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
+    var usersActivitiesState = userInfoViewModel.myActivitiesUIState.collectAsState().value
     LaunchedEffect(Unit) {
         userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
+        userInfoViewModel.getMEvents(authViewModel.tokenState.value)
+        userInfoViewModel.getMyActivities(authViewModel.tokenState.value)
     }
     
     Scaffold(
@@ -71,43 +76,86 @@ fun ProfileScreen(
         content =
         { innerPadding ->
             
-            Column(modifier = Modifier.fillMaxWidth()
-                .verticalScroll(rememberScrollState()) ){
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    when(utilizadorInfoState){
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally){
+                Column(modifier = Modifier
+                    .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    when(userInfoState){
                         is UserInfoViewModel.MyInfoUserUIState.Success ->
                         {
                             ProfileSection(
-                                utilizadorInfoState.data,
+                                userInfoState.data,
                                 userInfoViewModel,
                                 authViewModel,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .align(Alignment.CenterHorizontally))
 
-                            Text(text = "123")
+                            
 
 
                         }
                     }
                 }
-                Column(modifier = Modifier.fillMaxWidth()){
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
-                    Text(text="123")
+                Text(text = "Your last Activities", fontStyle = MaterialTheme.typography.h6.fontStyle)
+
+                Column(modifier = Modifier
+                    .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally){
+                    when(usersActivitiesState){
+                        is UserInfoViewModel.MyActivitiesUIState.SuccessLast5 ->
+                        {
+
+                            usersActivitiesState.activities.forEach {
+                                TextButton(onClick = {}){
+                                    Text(text = "Evento ${it.id} que começou em ${it.startDate}. ")
+                                }
+
+                            }
+
+
+                        }
+                        is UserInfoViewModel.MyActivitiesUIState.Error -> {
+                            TextButton(onClick = {}){
+                                Text(text = "No Activities Available!. ")
+                            }
+                        }
+                    }
+                    
+
+
+                }
+                Text(text = "Your last Events", fontStyle = MaterialTheme.typography.h6.fontStyle)
+                Column(modifier = Modifier
+                    .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally){
+                    when(usersEventsState){
+                        is UserInfoViewModel.MyEventsUIState.SuccessLast5 ->
+                        {
+                            usersEventsState.events.forEach {
+                                TextButton(onClick = {}){
+                                    Text(text = "Evento ${it.id} com estado de ${it.status}. ")
+                                }
+
+                            }
+
+                        }
+                        is UserInfoViewModel.MyEventsUIState.Error -> {
+                            TextButton(onClick = {}){
+                                Text(text = "No Events Available!. ")
+                            }
+                        }
+                    }
+
+
+
                 }
             }
         },

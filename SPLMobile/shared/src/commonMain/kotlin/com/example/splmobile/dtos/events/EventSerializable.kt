@@ -11,12 +11,12 @@ data class EventSerializable(
     val longitude: String,
     val status: String,
     val duration: String,
-    val startingDate: String,
+    val startDate: String,
     val description: String,
     val accessibility: String,
     val restrictions: String,
     val garbageType: String,
     val quantity: String,
-    val comments: String?
+    val observations: String?
 
 )

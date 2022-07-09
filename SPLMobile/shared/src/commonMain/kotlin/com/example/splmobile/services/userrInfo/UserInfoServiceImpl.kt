@@ -1,5 +1,7 @@
 import co.touchlab.kermit.Logger
+import com.example.splmobile.dtos.activities.ActivitiesResponse
 import com.example.splmobile.dtos.events.EventsResponse
+import com.example.splmobile.dtos.events.UserInEventResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
 import com.example.splmobile.dtos.myInfo.EmailCheckResponse
 import com.example.splmobile.dtos.myInfo.EmailRequest
@@ -56,10 +58,10 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
 
                 url("api/users/me")
             }.body() as UserResponse
-        }catch (ex :HttpRequestTimeoutException){
-            return UserResponse(UserSerializable(0,"","",""),"error","500")
+        }catch (ex :Exception){
+            return UserResponse(UserSerializable(0,"","",""),"$ex")
         }
-        return UserResponse(UserSerializable(0,"","",""),"error","400")
+
     }
 
     override suspend fun getMyGarbageSpots(
@@ -72,18 +74,44 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
-                url("api/lixeiras/mine")
+                url("api/garbageSpots/mine")
             }.body() as GarbageSpotsResponse
-        }catch (ex :HttpRequestTimeoutException){
-            return GarbageSpotsResponse(emptyList(),"error","500")
+        }catch (ex :Exception){
+            return GarbageSpotsResponse(emptyList(),"$ex")
         }
-        return GarbageSpotsResponse(emptyList(),"error","400")
+
+    }
+
+    override suspend fun getMyActivities(token: String): ActivitiesResponse {
+        log.d { "Fetching my activities from network" }
+        try{
+            return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                url("api/activities")
+            }.body() as ActivitiesResponse
+        }catch (ex :Exception){
+            return ActivitiesResponse(emptyList(),"$ex")
+        }
     }
 
     override suspend fun getMyEvents(
         token: String
-    ): EventsResponse {
-        TODO("Not yet implemented")
+    ): UserInEventResponse {
+        log.d { "Fetching my activities from network" }
+        try{
+            return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                url("api/events/mine")
+            }.body() as UserInEventResponse
+        }catch (ex :Exception){
+            return UserInEventResponse(emptyList(),"$ex")
+        }
     }
 
     override suspend fun checkMyEmail(emailRequest: EmailRequest): EmailCheckResponse {
@@ -94,7 +122,7 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
         utilizador: UserSerializable,
         token: String
     ): UserResponse {
-        log.d { "update Local Lixo" }
+        log.d { "update logged in user" }
         try{
             return client.put {
                 headers {
@@ -105,10 +133,10 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
                 url("api/users/me")
             }.body() as UserResponse
         }
-        catch (ex :HttpRequestTimeoutException){
-            return UserResponse(UserSerializable(0,"","",""),"error","500")
+        catch (ex :Exception){
+            return UserResponse(UserSerializable(0,"","",""),"$ex")
         }
-        return UserResponse(UserSerializable(0,"","",""),"error","400")
+
     }
 
     private fun HttpRequestBuilder.url(path: String) {

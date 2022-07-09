@@ -2,6 +2,9 @@ package com.example.splmobile.models.userInfo
 
 import UserInfoService
 import co.touchlab.kermit.Logger
+import com.example.splmobile.dtos.activities.ActivitySerializable
+import com.example.splmobile.dtos.events.EventSerializable
+import com.example.splmobile.dtos.events.UserInEventSerializable
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.dtos.myInfo.EmailCheckResponse
 import com.example.splmobile.dtos.myInfo.EmailRequest
@@ -44,15 +47,26 @@ class UserInfoViewModel (
         object Empty : MyInfoUserUpdateUIState()
     }
 
-    //state get my locais lixo
-    private val _myGarbageSpotsUIState = MutableStateFlow<MyGarbageSpotsUIState>(MyGarbageSpotsUIState.Empty)
-    val myGarbageSpotsUIState = _myGarbageSpotsUIState.asStateFlow()
-    sealed class MyGarbageSpotsUIState {
-        data class Success(val garbageSpots: List<GarbageSpotSerializable>) : MyGarbageSpotsUIState()
-        data class Error(val error: String) : MyGarbageSpotsUIState()
-        object Loading : MyGarbageSpotsUIState()
-        object Offline : MyGarbageSpotsUIState()
-        object Empty : MyGarbageSpotsUIState()
+    //state get my garbage spots
+    private val _myEventsUIState = MutableStateFlow<MyEventsUIState>(MyEventsUIState.Empty)
+    val myEventsUIState = _myEventsUIState.asStateFlow()
+    sealed class MyEventsUIState {
+        data class Success(val events: List<UserInEventSerializable>) : MyEventsUIState()
+        data class SuccessLast5(val events: List<UserInEventSerializable>) : MyEventsUIState()
+        data class Error(val error: String) : MyEventsUIState()
+        object Loading : MyEventsUIState()
+        object Empty : MyEventsUIState()
+    }
+
+    //state get my activities
+    private val _myActivitiesUIState = MutableStateFlow<MyActivitiesUIState>(MyActivitiesUIState.Empty)
+    val myActivitiesUIState = _myActivitiesUIState.asStateFlow()
+    sealed class MyActivitiesUIState {
+        data class Success(val activities: List<ActivitySerializable>) : MyActivitiesUIState()
+        data class SuccessLast5(val activities: List<ActivitySerializable>) : MyActivitiesUIState()
+        data class Error(val error: String) : MyActivitiesUIState()
+        object Loading : MyActivitiesUIState()
+        object Empty : MyActivitiesUIState()
     }
 
 
@@ -63,17 +77,13 @@ class UserInfoViewModel (
         viewModelScope.launch {
             val response = userInfoService.getUser(token)
 
-            if(response.status == "200"){
+            if(response.message.substring(0,3) == "200"){
                 _myInfoUserUIState.value = MyInfoUserUIState.Success(response.data)
                 log.v("Getting All User Info ID --- ${response.data.id}")
                 _myIDUIState.value = response.data.id
             }else{
-                if(response.status == "500"){
-                    _myInfoUserUIState.value =MyInfoUserUIState.Offline
-                }
-                else{
-                    _myInfoUserUIState.value =MyInfoUserUIState.Error(response.status)
-                }
+                _myInfoUserUIState.value =MyInfoUserUIState.Error(response.message)
+
             }
 
         }
@@ -85,32 +95,42 @@ class UserInfoViewModel (
         viewModelScope.launch {
             val response = userInfoService.putUser(user,token)
 
-            if(response.status == "200"){
+            if(response.message.substring(0,3)  == "200"){
                 _myInfoUserUpdateUIState.value = MyInfoUserUpdateUIState.Success(response.data)
             }else{
-                if(response.status == "500"){
-                    _myInfoUserUpdateUIState.value =MyInfoUserUpdateUIState.Offline
-                }
-                else{
-                    _myInfoUserUpdateUIState.value =MyInfoUserUpdateUIState.Error(response.status)
-                }
+                _myInfoUserUpdateUIState.value =MyInfoUserUpdateUIState.Error(response.message)
             }
+
 
         }
 
     }
 
-
-    fun getMyGarbageSpots(token: String) {
-        _myGarbageSpotsUIState.value = MyGarbageSpotsUIState.Loading
-        log.v("getting all my local lixo ")
+    fun getMEvents(token: String) {
+        _myEventsUIState.value = MyEventsUIState.Loading
+        log.v("getting all my events")
         viewModelScope.launch {
-            val response = userInfoService.getMyGarbageSpots(token)
+            val response = userInfoService.getMyEvents(token)
 
-            if(response.status == "200"){
-                _myGarbageSpotsUIState.value = MyGarbageSpotsUIState.Success(response.data)
+            if(response.message.substring(0,3)  == "200"){
+                _myEventsUIState.value = MyEventsUIState.Success(response.data)
+                _myEventsUIState.value = MyEventsUIState.SuccessLast5(response.data.takeLast(5))
             }else{
-                _myGarbageSpotsUIState.value =MyGarbageSpotsUIState.Error(response.status)
+                _myEventsUIState.value =MyEventsUIState.Error(response.message)
+            }
+        }
+    }
+    fun getMyActivities(token: String) {
+        _myActivitiesUIState.value = MyActivitiesUIState.Loading
+        log.v("getting all my activities")
+        viewModelScope.launch {
+            val response = userInfoService.getMyActivities(token)
+
+            if(response.message.substring(0,3) == "200"){
+                _myActivitiesUIState.value = MyActivitiesUIState.Success(response.data)
+                _myActivitiesUIState.value = MyActivitiesUIState.SuccessLast5(response.data.takeLast(5))
+            }else{
+                _myActivitiesUIState.value =MyActivitiesUIState.Error(response.message)
             }
         }
 

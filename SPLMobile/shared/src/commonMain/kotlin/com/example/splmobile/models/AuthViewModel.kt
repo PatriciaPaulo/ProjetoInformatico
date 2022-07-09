@@ -57,7 +57,7 @@ class AuthViewModel (
             }
         }.await() as LoginResponse
 
-        if(loginResponse.status == "200"){
+        if(loginResponse.message.substring(0,3)  == "200"){
             mutableTokenState.value = loginResponse.access_token
             _loginUIState.value = LoginUIState.Success
         }

@@ -61,7 +61,7 @@ class AuthServiceImpl(
         }
         catch (e: Exception){
             println("Error: ${e.message}")
-            return LoginResponse("error","${e.message}","400")
+            return LoginResponse("error","${e.message}")
         }
 
     }

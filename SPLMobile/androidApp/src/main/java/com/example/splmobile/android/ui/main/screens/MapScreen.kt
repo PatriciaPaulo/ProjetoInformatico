@@ -418,7 +418,7 @@ private fun markerFilterList(
         //todo mudar o icon baseado no estado
         Marker(
             position = lixeiraPosition,
-            title = garbageSpot.nome,
+            title = garbageSpot.name,
             snippet = garbageSpot.status,
             onClick = {
                 garbageSpotState.value = garbageSpot
@@ -517,7 +517,7 @@ fun SheetContent(
                     if ((!(garbageSpot.value.latitude == "0.0" &&
                                         garbageSpot.value.longitude == "0.0")) &&
                         nomeGarbageSpotState.value.text.isNotEmpty() ){
-                        garbageSpot.value.nome = nomeGarbageSpotState.value.text
+                        garbageSpot.value.name = nomeGarbageSpotState.value.text
                         garbageSpot.value.status = selectedOptionText
 
                         createGarbageSpotButtonState.value = true
@@ -553,7 +553,7 @@ fun SheetContent(
                 contentAlignment = Alignment.TopCenter
             ) {
                     Column(Modifier.padding(28.dp)) {
-                        Text(garbageSpot.value.nome)
+                        Text(garbageSpot.value.name)
                         Text(garbageSpot.value.creator.toString())
                     }
                     Spacer(Modifier.height(32.dp))

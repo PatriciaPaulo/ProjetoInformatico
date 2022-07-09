@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GarbageSpotSerializable(
     val id: Long,
-    var nome: String,
+    var name: String,
     val creator: Long,
     var latitude: String,
     var longitude: String,

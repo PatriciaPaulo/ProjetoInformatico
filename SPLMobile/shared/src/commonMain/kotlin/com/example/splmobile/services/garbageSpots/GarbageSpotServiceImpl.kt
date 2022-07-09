@@ -60,10 +60,10 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                 contentType(ContentType.Application.Json)
                 url("api/garbageSpots")
             }.body() as GarbageSpotsResponse
-        }catch (ex :HttpRequestTimeoutException){
-            return GarbageSpotsResponse(emptyList(),"error","500")
+        }catch (ex :Exception){
+            return GarbageSpotsResponse(emptyList(),"$ex")
         }
-        return GarbageSpotsResponse(emptyList(),"error","400")
+
 
     }
 
@@ -80,15 +80,14 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                     }
                 }
                 contentType(ContentType.Application.Json)
-                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.nome, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,garbageSpot.status,garbageSpot.approved,
+                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.name, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,garbageSpot.status,garbageSpot.approved,
                     emptyList()))
                 url("api/garbageSpots")
             }.body() as RequestMessageResponse
         }
-        catch (ex :HttpRequestTimeoutException){
-            return RequestMessageResponse("error","500")
+        catch (ex :Exception){
+            return RequestMessageResponse("$ex")
         }
-        return RequestMessageResponse("error","400")
 
 
     }
@@ -104,15 +103,15 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
-                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.nome, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,status,garbageSpot.approved,
+                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.name, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,status,garbageSpot.approved,
                     emptyList()))
                 url("api/garbageSpots/"+garbageSpot.id+"/mudarEstadoLixeira")
             }.body() as RequestMessageResponse
         }
-        catch (ex :HttpRequestTimeoutException){
-            return RequestMessageResponse("error","500")
+        catch (ex :Exception){
+            return RequestMessageResponse("$ex")
         }
-        return RequestMessageResponse("error","400")
+
     }
 
     private fun HttpRequestBuilder.url(path: String) {

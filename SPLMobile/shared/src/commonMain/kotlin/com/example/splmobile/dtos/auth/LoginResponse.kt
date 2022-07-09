@@ -7,5 +7,4 @@ import kotlinx.serialization.Serializable
 data class LoginResponse(
     val access_token:String,
     val message: String,
-    val status: String,
 )

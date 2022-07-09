@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class EventsResponse(
-    val data: List<EventSerializable>,
+data class UserInEventResponse(
+    val data: List<UserInEventSerializable>,
     val message: String,
 )

@@ -64,10 +64,10 @@ class GarbageSpotViewModel (
         viewModelScope.launch {
             val response = garbageSpotService.getGarbageSpots()
 
-            if(response.status == "200"){
+            if(response.message.substring(0,3)  == "200"){
                 _garbageSpotsUIState.value = GarbageSpotsUIState.Success(response.data)
             }else{
-                _garbageSpotsUIState.value = GarbageSpotsUIState.Error(response.status)
+                _garbageSpotsUIState.value = GarbageSpotsUIState.Error(response.message)
             }
         }
 
@@ -78,7 +78,7 @@ class GarbageSpotViewModel (
          _garbageSpotCreateUIState.value = GarbageSpotCreateUIState.Loading
          viewModelScope.launch {
              val response = garbageSpotService.postGarbageSpot(garbageSpot,token)
-             if(response.status == "200"){
+             if(response.message.substring(0,3)  == "200"){
                  log.v("Creating garbage spot successful")
                  _garbageSpotCreateUIState.value = GarbageSpotCreateUIState.Success
                  getGarbageSpots()
@@ -96,7 +96,7 @@ class GarbageSpotViewModel (
         viewModelScope.launch {
             val response = garbageSpotService.patchGarbageSpotStatus(garbageSpot,estado,token)
 
-            if(response.status == "200"){
+            if(response.message.substring(0,3)  == "200"){
                 log.v("updating garbage spot successful")
                 _garbageSpotUpdateUIState.value = GarbageSpotUpdateUIState.Success
                 getGarbageSpots()
