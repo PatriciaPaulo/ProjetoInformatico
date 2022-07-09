@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent
+from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent,UserInEvent
 from utils import token_required,admin_required,guest
 import jwt
 import datetime
@@ -150,5 +150,36 @@ def get_events_na_garbageSpot(current_user, garbageSpot_id):
         result.append(event_data)
 
     return make_response(jsonify({'data': result,'message': '200 OK - All Events Retrieved From Garbage Spot'}), 200)
+
+
+# Get Garbage Spots created by Logged User
+@event_routes_blueprint.route('/events/mine', methods=['GET'])
+@token_required
+def get_my_events(current_user):
+    myEvents = db.session.query(UserInEvent).filter_by(userID=current_user.id).all()
+
+
+    output = []
+
+    for event in myEvents:
+        event_data = {}
+        event_data['id'] = event.id
+        event_data['userID'] = event.userID
+        event_data['event'] = []
+        for event in db.session.query(Event).filter_by(id=event.eventID):
+            eventSer = Event.serialize(event)
+            event_data['event'].append(eventSer)
+
+
+        event_data['status'] = event.status
+
+        output.append(event_data)
+
+    if len(output) == 0:
+        return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Events Found'}), 404)
+
+    return make_response(jsonify({'data': output, 'message': '200 OK - All Events Retrieved'}), 200)
+
+
 
 # endregion

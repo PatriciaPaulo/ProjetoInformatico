@@ -231,14 +231,23 @@ if __name__ == '__main__':
     # SEED UTILIZADORNOEVENTO
 
     session.query(UserInEvent).delete()
+
+    for i in range(6):
+        event = session.query(Event).order_by(func.random()).first()
+        status = ["Confirmado", "Inscrito", "Cancelado"]
+
+        userInEvent = UserInEvent(userID=1, eventID=event.id, status=random.choice(status))
+        session.add(userInEvent)
+        session.commit()
+
     for i in range(6):
 
         user = session.query(User).filter_by(admin=False).order_by(func.random()).first()
         event = session.query(Event).order_by(func.random()).first()
         status = ["Confirmado","Inscrito","Cancelado"]
 
-        userInEvent = UserInEvent(userID=User.id, eventID=event.id, status=random.choice(status))
-        session.add(garbageSpotInEvent)
+        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status))
+        session.add(userInEvent)
         session.commit()
 
     print("---UserInEvent seed done!")
