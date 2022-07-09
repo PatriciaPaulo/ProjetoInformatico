@@ -13,7 +13,7 @@ class ActivitySerializable (
     var steps: String,
     var activityType: String,
     val startDate: String,
-    val endDate: String
+    val endDate: String?
     )
 
 

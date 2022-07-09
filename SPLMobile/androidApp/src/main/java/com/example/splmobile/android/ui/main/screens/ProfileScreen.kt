@@ -18,7 +18,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -114,7 +116,7 @@ fun ProfileScreen(
 
                             usersActivitiesState.activities.forEach {
                                 TextButton(onClick = {}){
-                                    Text(text = "Evento ${it.id} que começou em ${it.startDate}. ")
+                                    Text(text = "Activity ${it.id} que começou em ${it.startDate}. ")
                                 }
 
                             }
@@ -180,6 +182,7 @@ fun ProfileSection(
     var utilizadorEmail = remember { mutableStateOf(TextFieldValue(utilizador.email)) }
     var utilizadorUsername = remember { mutableStateOf(TextFieldValue(utilizador.username)) }
 
+    var updateUserState = userInfoViewModel.myInfoUserUpdateUIState.collectAsState().value
     Column(modifier = modifier.fillMaxHeight()) {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -258,7 +261,17 @@ fun ProfileSection(
 
             }
             //edit state when(viewmodel state ui)
-
+            when(updateUserState){
+                is UserInfoViewModel.MyInfoUserUpdateUIState.Success -> {
+                    Text(
+                        text = textResource(R.string.txtUserUpdatedSuccess).toString(),
+                        color = MaterialTheme.colors.primary,
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                    )
+                    //editableState.value = false
+                }
+            }
 
         }
 

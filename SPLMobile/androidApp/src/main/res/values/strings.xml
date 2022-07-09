@@ -54,6 +54,7 @@
     <string name="lblUserUsername">Username</string>
     <string name="lblCreateGarbageSpotSuccess">Local de lixo criado com sucesso</string>
     <string name="lblCreateGarbageSpotError">Local de lixo não criado!</string>
+    <string name="txtUserUpdatedSuccess">Dados atualizados com sucesso</string>
 
 
 </resources>
