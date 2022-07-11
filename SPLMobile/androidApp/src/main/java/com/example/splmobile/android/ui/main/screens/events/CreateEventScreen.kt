@@ -3,7 +3,6 @@ package com.example.splmobile.android.ui.main.screens.events
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.graphics.Bitmap
 import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.Image
@@ -23,7 +22,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -32,20 +30,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.garbageTypes.GarbageTypesSerializable
+import com.example.splmobile.dtos.events.EventSerializable
+import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
 import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
 import com.example.splmobile.models.userInfo.UserInfoViewModel
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -53,7 +50,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
-import kotlinx.coroutines.launch
 import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -65,6 +61,7 @@ fun CreateEventScreen(
     garbageSpotViewModel: GarbageSpotViewModel,
     authViewModel: AuthViewModel,
     userInfoViewModel: UserInfoViewModel,
+    eventViewModel: EventViewModel,
     sharedViewModel: SharedViewModel,
     log: Logger
 ) {
@@ -77,7 +74,7 @@ fun CreateEventScreen(
     }
 
     var garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
-    var garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypesSerializable>())}
+    var garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeSerializable>())}
 
 
     //search bar states
@@ -338,6 +335,7 @@ fun CreateEventScreen(
                                         garbageTypeListEvent.value =
                                             garbageTypeListEvent.value.mapIndexed { j, item ->
                                                 if (i == j) {
+
                                                     item.copy(isSelected = !item.isSelected!!)
                                                 } else item
                                             }
@@ -409,11 +407,29 @@ fun CreateEventScreen(
                         descriptionEvent.value.text.isNotEmpty() &&
                         durationEvent.value.text.isNotEmpty() &&
                         startDateEvent.value.isNotEmpty() &&
-                        !locationEvent.value.longitude.equals(0.0) &&
-                        !locationEvent.value.latitude.equals(0.0) &&
+                        (!locationEvent.value.longitude.equals(0.0)) &&
+                        (!locationEvent.value.latitude.equals(0.0)) &&
                         garbageTypeListEvent.value.filter{g -> g.isSelected!!}.isNotEmpty()
                     ){
-
+                        Log.d("create event screen","verificated")
+                        eventViewModel.createEvent(EventSerializable(
+                            0,
+                            nameEvent.value.text,
+                            locationEvent.value.latitude.toString(),
+                            locationEvent.value.longitude.toString(),
+                            statusEvent.value.text,
+                            durationEvent.value.text,
+                            startDateEvent.value,
+                            descriptionEvent.value.text,
+                            accessibilitySelectedOptionText,
+                            restrictionsSelectedOptionText,
+                            garbageTypeListEvent.value.filter{g -> g.isSelected!!},
+                            quantitySelectedOptionText,
+                            observationsEvent.value.text
+                            ),
+                         authViewModel.tokenState.value)
+                    }else{
+                        Log.d("create event screen","failed check fields")
                     }
                 },  ) {
                   Text(text= "Criar")
@@ -546,7 +562,7 @@ fun DatePickerComponent(
             Icon(Icons.Default.List, contentDescription = "DATEPICKER")
         }
     }
-    dateEvent.value ="${mDate.value}  ${mTime.value}"
+    dateEvent.value ="${mDate.value} ${mTime.value}"
 
 
 }

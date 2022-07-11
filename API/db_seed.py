@@ -100,7 +100,7 @@ if __name__ == '__main__':
         session.commit()
 
 
-    
+
     print("---Garbage seed done!")
     # SEED EVENTO
     session.query(Event).delete()
