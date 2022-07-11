@@ -51,10 +51,19 @@
     <string name="lblFilterGarbageSpotsNotAprooved">Não Aprovado</string>
     <string name="lblUserName">Nome</string>
     <string name="lblUserEmail">Email</string>
-    <string name="lblUserUsername">Username</string>
+    <string name="lblUserUsername">Nome de Utilizador</string>
     <string name="lblCreateGarbageSpotSuccess">Local de lixo criado com sucesso</string>
     <string name="lblCreateGarbageSpotError">Local de lixo não criado!</string>
     <string name="txtUserUpdatedSuccess">Dados atualizados com sucesso</string>
+    <string name="lblCommunitySearchBar">Comunidade</string>
+    <string name="btnCommunity">Comunidade</string>
+    <string name="btnFriends">Amigos</string>
+    <string name="btnCreateEvent">Organizar Evento</string>
+    <string name="lblEventsNearMe">Eventos Próximos de mim</string>
+    <string name="lblNoEventForMe">Não existe o evento que procura?</string>
+    <string name="lblGarbageSpotsNearMe">Local de Lixo Próximo de mim</string>
+    <string name="lblSeeMoreItems">Ver mais</string>
+    <string name="lblBarCreateEvent">Criar Evento</string>
 
 
 </resources>
