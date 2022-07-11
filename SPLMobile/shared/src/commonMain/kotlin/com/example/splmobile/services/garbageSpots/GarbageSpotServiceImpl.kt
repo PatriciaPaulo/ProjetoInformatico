@@ -4,6 +4,7 @@ import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
+import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -105,11 +106,23 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                 contentType(ContentType.Application.Json)
                 setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.name, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,status,garbageSpot.approved,
                     emptyList()))
-                url("api/garbageSpots/"+garbageSpot.id+"/mudarEstadoLixeira")
+                url("api/garbageSpots/"+garbageSpot.id+"/updateGarbageSpotStatus")
             }.body() as RequestMessageResponse
         }
         catch (ex :Exception){
             return RequestMessageResponse("$ex")
+        }
+
+    }
+
+    override suspend fun getGarbageTypes(token: String): GarbageTypesResponse {
+        try{
+            return client.get {
+                contentType(ContentType.Application.Json)
+                url("api/garbageTypes")
+            }.body() as GarbageTypesResponse
+        }catch (ex :Exception){
+            return GarbageTypesResponse(emptyList(),"$ex")
         }
 
     }

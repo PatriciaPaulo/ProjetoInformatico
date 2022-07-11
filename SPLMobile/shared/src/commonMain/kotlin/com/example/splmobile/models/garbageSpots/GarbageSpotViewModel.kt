@@ -2,6 +2,8 @@ package com.example.splmobile.models.garbageSpots
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
+import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
+import com.example.splmobile.dtos.garbageTypes.GarbageTypesSerializable
 import com.example.splmobile.models.ViewModel
 
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
@@ -23,7 +25,6 @@ class GarbageSpotViewModel (
         data class Success(val garbageSpots: List<GarbageSpotSerializable>) : GarbageSpotsUIState()
         data class Error(val error: String) : GarbageSpotsUIState()
         object Loading : GarbageSpotsUIState()
-        object Offline : GarbageSpotsUIState()
         object Empty : GarbageSpotsUIState()
     }
 
@@ -34,7 +35,7 @@ class GarbageSpotViewModel (
         object Success: GarbageSpotCreateUIState()
         data class Error(val error: String) : GarbageSpotCreateUIState()
         object Loading : GarbageSpotCreateUIState()
-        object Offline : GarbageSpotCreateUIState()
+
         object Empty : GarbageSpotCreateUIState()
     }
 
@@ -45,8 +46,18 @@ class GarbageSpotViewModel (
         object Success: GarbageSpotUpdateUIState()
         data class Error(val error: String) : GarbageSpotUpdateUIState()
         object Loading : GarbageSpotUpdateUIState()
-        object Offline : GarbageSpotUpdateUIState()
+
         object Empty : GarbageSpotUpdateUIState()
+    }
+
+    //state get garbage types
+    private val _garbageTypeUIState = MutableStateFlow<GarbageTypesUIState>(GarbageTypesUIState.Empty)
+    val garbageTypesUIState = _garbageTypeUIState.asStateFlow()
+    sealed class GarbageTypesUIState {
+        data class Success(val garbageTypes: List<GarbageTypesSerializable>) : GarbageTypesUIState()
+        data class Error(val error: String) : GarbageTypesUIState()
+        object Loading : GarbageTypesUIState()
+        object Empty : GarbageTypesUIState()
     }
 
 
@@ -108,11 +119,23 @@ class GarbageSpotViewModel (
 
     }
 
+    //garbage type section
+    fun getGarbageTypes(token: String) {
+        _garbageTypeUIState.value = GarbageTypesUIState.Loading
+        log.v("getting all garbage spot")
+        viewModelScope.launch {
+            val response = garbageSpotService.getGarbageTypes(token)
 
-    private fun handleGarbageSpotError(throwable: Throwable) {
-        log.e(throwable) { "Error downloading GarbageSpot list" }
+            if(response.message.substring(0,3)  == "200"){
+                _garbageTypeUIState.value = GarbageTypesUIState.Success(response.data)
+            }else{
+                _garbageTypeUIState.value = GarbageTypesUIState.Error(response.message)
+            }
+        }
 
     }
+
+
 
 
 }

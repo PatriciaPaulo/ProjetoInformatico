@@ -94,11 +94,13 @@ if __name__ == '__main__':
     # SEED Garbage
     session.query(Garbage).delete()
     for i in range(6):
-        name = ["Mascara", "Garrafa", "Saco","Plastico","Cartao","Vidro"]
+        name = ["Mascara", "Garrafa", "Saco","Plastico","Cartao","Vidro","Outro"]
         garbage = Garbage(name=name[i])
         session.add(garbage)
         session.commit()
 
+
+    
     print("---Garbage seed done!")
     # SEED EVENTO
     session.query(Event).delete()
@@ -109,7 +111,7 @@ if __name__ == '__main__':
 
         status = ["Criado", "Começado", "Cancelado","Finalizado"]
         accessibility = ["Reduzida", "Suficiente"]
-        quantity = ["Muito", "Pouco","Medio"]
+        quantity = ["Muita", "Pouca","Media"]
         restrictions = ["Todas as idades", "Não indicado para crianças"]
         garbageType = []
         for a in range(2):

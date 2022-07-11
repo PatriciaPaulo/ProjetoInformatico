@@ -1,10 +1,12 @@
 from flask import Flask
 
+from routes.garbagetype_routes import garbagetype_routes_blueprint
 from routes.garbagespot_routes import garbagespot_routes_blueprint
 from routes.admin_routes import admin_routes_blueprint
 from routes.event_routes import event_routes_blueprint
 from routes.activity_routes import activity_routes_blueprint
 from routes.user_routes import user_routes_blueprint
+
 
 from models import db, Base
 
@@ -21,6 +23,7 @@ if __name__ == '__main__':
     app.register_blueprint(event_routes_blueprint, url_prefix='/api')
     app.register_blueprint(activity_routes_blueprint, url_prefix='/api')
     app.register_blueprint(user_routes_blueprint, url_prefix='/api')
+    app.register_blueprint(garbagetype_routes_blueprint, url_prefix='/api')
     # endregion
 
     #mail = Mail(app)
