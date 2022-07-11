@@ -125,5 +125,6 @@ dependencies {
     val ktorVersion = "2.0.1"
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 
-
+    //dialogs
+    implementation ("io.github.vanpra.compose-material-dialogs:core:0.7.0")
 }

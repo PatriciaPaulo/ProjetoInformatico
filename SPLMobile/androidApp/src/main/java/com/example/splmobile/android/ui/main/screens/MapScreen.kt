@@ -391,7 +391,7 @@ fun MapContent(
                         }
 
 
-                        // filterGarbageSpots.filter { garbageSpot -> garbageSpot.aprovado  }
+
 
 
 
@@ -403,7 +403,6 @@ fun MapContent(
         }
         is GarbageSpotViewModel.GarbageSpotsUIState.Loading -> CircularProgressIndicator()
         is GarbageSpotViewModel.GarbageSpotsUIState.Error -> Log.d("screen map", "error")
-        is GarbageSpotViewModel.GarbageSpotsUIState.Offline -> Log.d("screen map", "offline")
     }
 }
 

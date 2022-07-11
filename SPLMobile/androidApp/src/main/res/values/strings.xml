@@ -64,6 +64,24 @@
     <string name="lblGarbageSpotsNearMe">Local de Lixo Próximo de mim</string>
     <string name="lblSeeMoreItems">Ver mais</string>
     <string name="lblBarCreateEvent">Criar Evento</string>
+    <string name="lblNameCreateEvent">Nome do Evento</string>
+    <string name="lblAccessibilityCreateEvent">Acessibilidade</string>
+    <string name="EventAccessibilityElement1">Muita</string>
+    <string name="EventAccessibilityElement2">Suficiente</string>
+    <string name="EventAccessibilityElement3">Reduzida</string>
+    <string name="EventQuantityElement1">Muita</string>
+    <string name="EventQuantityElement2">Pouca</string>
+    <string name="EventQuantityElement3">Media</string>
+    <string name="EventRestrictionsElement1">Todas as idades</string>
+    <string name="EventRestrictionsElement2">Não indicado para crianças</string>
+    <string name="lblDescriptionCreateEvent">Descrição</string>
+    <string name="lblObservationsCreateEvent">Observações</string>
+    <string name="lblRestrictionsCreateEvent">Restrições</string>
+    <string name="lblQuantityCreateEvent">Quantidade</string>
+    <string name="lblDurationCreateEvent">Duração em dias</string>
+    <string name="lblPlaceCreateEvent">Novo evento</string>
+    <string name="txtNecessaryField">Campo Obrigatório</string>
+    <string name="lblGarbageTypeCreateEvent">Tipo de Lixo</string>
 
 
 </resources>
