@@ -120,6 +120,7 @@ fun MapScreen(
         scaffoldState = scaffoldState,
         topBar = {
             MapAppBar(
+                title = textResource(R.string.lblMapSearchBar).toString(),
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState,
                 onTextChange = {

@@ -12,11 +12,13 @@ import com.example.splmobile.android.ui.main.components.SearchBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 
 @Composable
-fun DefaultAppBar(onSearchClicked: ()-> Unit){
+fun DefaultAppBar(
+    title: String,
+    onSearchClicked: ()-> Unit){
     TopAppBar(
         title = {
             Text(
-                textResource(R.string.lblMapSearchBar).toString()
+                text = title
             )
         },
         actions = {
@@ -34,6 +36,7 @@ fun DefaultAppBar(onSearchClicked: ()-> Unit){
 
 @Composable
 fun MapAppBar(
+    title: String,
     searchWidgetState: SearchWidgetState,
     searchTextState: String,
     onTextChange: (String) -> Unit,
@@ -44,6 +47,7 @@ fun MapAppBar(
     when(searchWidgetState){
         SearchWidgetState.CLOSED -> {
             DefaultAppBar (
+                title = title,
                 onSearchClicked = onSearchTriggered
             )
         }
