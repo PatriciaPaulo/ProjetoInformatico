@@ -130,7 +130,7 @@ fun LoginComposableUI(
                     userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
 
                     showRequestState = false
-                    navController.navigate(BottomNavItem.Home.screen_route)
+                    navController.navigate(BottomNavItem.Home.route)
                 }
                 is AuthViewModel.LoginUIState.Error -> {
                     showErrorState = loginUIState.message

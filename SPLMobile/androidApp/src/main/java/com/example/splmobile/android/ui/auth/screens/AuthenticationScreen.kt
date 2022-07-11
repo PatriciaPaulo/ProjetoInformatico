@@ -40,7 +40,7 @@ fun AuthenticationScreen(
                 is AuthViewModel.LoginUIState.Success -> {
                     Log.v("login screen"," login state")
                     userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
-                    navController.navigate(BottomNavItem.Home.screen_route)
+                    navController.navigate(BottomNavItem.Home.route)
 
                 }
                 is AuthViewModel.LoginUIState.Error -> {

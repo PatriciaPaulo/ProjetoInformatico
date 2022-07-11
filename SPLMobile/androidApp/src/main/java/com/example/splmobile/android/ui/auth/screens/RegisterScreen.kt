@@ -129,7 +129,7 @@ fun RegisterComposableUI(
                     }
 
                     showRequestState = false
-                    navController.navigate(BottomNavItem.Home.screen_route)
+                    navController.navigate(BottomNavItem.Home.route)
                 }
                 is AuthViewModel.LoginUIState.Error -> {
                     showErrorState = loginUIState.message
