@@ -10,6 +10,7 @@ import com.example.splmobile.android.ui.auth.screens.LoginScreen
 import com.example.splmobile.android.ui.auth.screens.RecoverPasswordScreen
 import com.example.splmobile.android.ui.auth.screens.RegisterScreen
 import com.example.splmobile.android.ui.main.screens.*
+import com.example.splmobile.android.ui.main.screens.events.CreateEventScreen
 import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
@@ -57,10 +58,10 @@ fun SetupNavGraph(
             RecoverPasswordScreen()
         }
 
-        composable(BottomNavItem.Home.screen_route) {
+        composable(BottomNavItem.Home.route) {
             HomeScreen(navController = navController)
         }
-        composable(BottomNavItem.Map.screen_route) {
+        composable(BottomNavItem.Map.route) {
             MapScreen(navController =navController,
                 mainViewModel = mainViewModel,
                 garbageSpotViewModel = garbageSpotViewModel,
@@ -69,17 +70,32 @@ fun SetupNavGraph(
                 sharedViewModel = sharedViewModel,
                 log = log)
         }
-        composable(BottomNavItem.Community.screen_route) {
-            CommunityScreen(navController = navController)
+        composable(BottomNavItem.Community.route) {
+            CommunityScreen(navController = navController,
+                mainViewModel = mainViewModel,
+                garbageSpotViewModel = garbageSpotViewModel,
+                authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
+                sharedViewModel = sharedViewModel,
+                log = log)
         }
-        composable(BottomNavItem.Chat.screen_route) {
+        composable(BottomNavItem.Chat.route) {
             ChatScreen(navController = navController)
         }
-        composable(BottomNavItem.Profile.screen_route) {
+        composable(BottomNavItem.Profile.route) {
             ProfileScreen(navController =navController,
                 mainViewModel = mainViewModel,
                 userInfoViewModel = userInfoViewModel,
                 authViewModel = authViewModel,
+                sharedViewModel = sharedViewModel,
+                log = log)
+        }
+        composable(Screen.CreateEvent.route) {
+            CreateEventScreen(navController = navController,
+                mainViewModel = mainViewModel,
+                garbageSpotViewModel = garbageSpotViewModel,
+                authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
                 sharedViewModel = sharedViewModel,
                 log = log)
         }
