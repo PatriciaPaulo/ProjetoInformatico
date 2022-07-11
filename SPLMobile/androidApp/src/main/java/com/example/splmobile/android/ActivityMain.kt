@@ -25,6 +25,7 @@ import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.android.viewmodel.SplashViewModel
 import com.example.splmobile.injectLogger
 import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.userInfo.UserInfoViewModel
 import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
@@ -55,6 +56,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
     private val sharedViewModel: SharedViewModel by viewModel()
     private val authViewModel: AuthViewModel by viewModel()
     private val userInfoViewModel: UserInfoViewModel by viewModel()
+    private val eventViewModel: EventViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -79,6 +81,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
                     authViewModel = authViewModel,
                     garbageSpotViewModel = garbageSpotViewModel,
                     userInfoViewModel = userInfoViewModel,
+                    eventViewModel = eventViewModel,
                     sharedViewModel = sharedViewModel
                 )
 

@@ -11,8 +11,9 @@ import com.example.splmobile.services.other.requestsAPI
 import com.example.splmobile.models.garbageSpots.LocalLixoRepository
 import com.example.splmobile.services.auth.AuthService
 import com.example.splmobile.services.auth.AuthServiceImpl
+import com.example.splmobile.services.events.EventService
+import com.example.splmobile.services.events.EventServiceImpl
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
-import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.Clock
 import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
@@ -75,6 +76,12 @@ private val coreModule = module {
     single<UserInfoService> {
         UserInfoServiceImpl(
             getWith("UserInfoServiceImpl"),
+            get()
+        )
+    }
+    single<EventService> {
+        EventServiceImpl(
+            getWith("EventServiceImpl"),
             get()
         )
     }

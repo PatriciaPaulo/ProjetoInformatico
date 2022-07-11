@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class GarbageTypesSerializable(
+data class GarbageTypeSerializable(
     val id: Long,
     val name: String,
     val isSelected: Boolean? = false

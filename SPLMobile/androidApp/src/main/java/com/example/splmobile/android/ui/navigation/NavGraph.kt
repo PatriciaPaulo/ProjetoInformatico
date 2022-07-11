@@ -15,6 +15,7 @@ import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.userInfo.UserInfoViewModel
 
@@ -32,6 +33,7 @@ fun SetupNavGraph(
     authViewModel:AuthViewModel,
     garbageSpotViewModel: GarbageSpotViewModel,
     userInfoViewModel: UserInfoViewModel,
+    eventViewModel: EventViewModel,
     sharedViewModel: SharedViewModel
 ){
     NavHost(
@@ -76,6 +78,7 @@ fun SetupNavGraph(
                 garbageSpotViewModel = garbageSpotViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
+                eventViewModel = eventViewModel,
                 sharedViewModel = sharedViewModel,
                 log = log)
         }
@@ -96,6 +99,7 @@ fun SetupNavGraph(
                 garbageSpotViewModel = garbageSpotViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
+                eventViewModel = eventViewModel,
                 sharedViewModel = sharedViewModel,
                 log = log)
         }

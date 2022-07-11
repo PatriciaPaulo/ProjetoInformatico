@@ -2,8 +2,7 @@ package com.example.splmobile.models.garbageSpots
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
-import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
-import com.example.splmobile.dtos.garbageTypes.GarbageTypesSerializable
+import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
 import com.example.splmobile.models.ViewModel
 
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
@@ -54,7 +53,7 @@ class GarbageSpotViewModel (
     private val _garbageTypeUIState = MutableStateFlow<GarbageTypesUIState>(GarbageTypesUIState.Empty)
     val garbageTypesUIState = _garbageTypeUIState.asStateFlow()
     sealed class GarbageTypesUIState {
-        data class Success(val garbageTypes: List<GarbageTypesSerializable>) : GarbageTypesUIState()
+        data class Success(val garbageTypes: List<GarbageTypeSerializable>) : GarbageTypesUIState()
         data class Error(val error: String) : GarbageTypesUIState()
         object Loading : GarbageTypesUIState()
         object Empty : GarbageTypesUIState()
