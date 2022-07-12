@@ -5,13 +5,12 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.util.Log
 import android.widget.DatePicker
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -132,7 +131,7 @@ fun CreateEventScreen(
             var quantitySelectedOptionText by remember { mutableStateOf(quantityListEvent[0]) }
             var restrictionsExpanded by remember { mutableStateOf(false) }
             var restrictionsSelectedOptionText by remember { mutableStateOf(restrictionsListEvent[0]) }
-
+            var listGarbageTypeInEvent = remember { mutableStateOf(mutableListOf<Long>())}
             val statusEvent = remember {
                 mutableStateOf(TextFieldValue("Criado"))
             }
@@ -322,30 +321,38 @@ fun CreateEventScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                     Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
+
+
+
                     LazyColumn(
-                        modifier = Modifier.height(200.dp).width(200.dp),
+                        modifier = Modifier.height(200.dp).width(200.dp).selectableGroup(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        items(garbageTypeListEvent.value.size) { i ->
+                        items(garbageTypeListEvent.value.size) { index ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        garbageTypeListEvent.value =
-                                            garbageTypeListEvent.value.mapIndexed { j, item ->
-                                                if (i == j) {
-
-                                                    item.copy(isSelected = !item.isSelected!!)
-                                                } else item
+                                    .selectable(
+                                        selected = listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id),
+                                        onClick = {
+                                            if(listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id)){
+                                                listGarbageTypeInEvent.value.remove(garbageTypeListEvent.value.get(index).id)
+                                            }else{
+                                                listGarbageTypeInEvent.value.add(garbageTypeListEvent.value.get(index).id)
                                             }
-                                    }
-                                    .padding(16.dp),
+                                        }
+                                    )
+                                    .background(
+                                        if ((listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id))) Color.Gray
+                                        else Color.Transparent
+                                    )
+                                    .padding(8.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = garbageTypeListEvent.value[i].name)
-                                if (garbageTypeListEvent.value[i].isSelected!!) {
+                                Text(text = garbageTypeListEvent.value[index].name)
+                                if((listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id))){
                                     Icon(
                                         imageVector = Icons.Default.Check,
                                         contentDescription = "Selected",
@@ -353,7 +360,10 @@ fun CreateEventScreen(
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
+
                             }
+
+
                         }
                     }
 
@@ -409,7 +419,7 @@ fun CreateEventScreen(
                         startDateEvent.value.isNotEmpty() &&
                         (!locationEvent.value.longitude.equals(0.0)) &&
                         (!locationEvent.value.latitude.equals(0.0)) &&
-                        garbageTypeListEvent.value.filter{g -> g.isSelected!!}.isNotEmpty()
+                        listGarbageTypeInEvent.value .isNotEmpty()
                     ){
                         Log.d("create event screen","verificated")
                         eventViewModel.createEvent(EventSerializable(
@@ -423,7 +433,7 @@ fun CreateEventScreen(
                             descriptionEvent.value.text,
                             accessibilitySelectedOptionText,
                             restrictionsSelectedOptionText,
-                            garbageTypeListEvent.value.filter{g -> g.isSelected!!},
+                            listGarbageTypeInEvent.value,
                             quantitySelectedOptionText,
                             observationsEvent.value.text
                             ),

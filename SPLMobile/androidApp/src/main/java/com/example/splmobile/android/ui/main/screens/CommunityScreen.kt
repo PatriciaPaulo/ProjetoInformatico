@@ -2,27 +2,22 @@ package com.example.splmobile.android.ui.main.screens
 
 import MapAppBar
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
@@ -31,19 +26,16 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
+import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
-import com.example.splmobile.dtos.myInfo.UserSerializable
+import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
 import com.example.splmobile.models.userInfo.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -64,7 +56,13 @@ fun CommunityScreen(
     val scaffoldState = rememberScaffoldState()
 
     val bottomScaffoldState = rememberBottomSheetScaffoldState()
+    LaunchedEffect(Unit) {
+        eventViewModel.getEvents()
+        garbageSpotViewModel.getGarbageSpots()
 
+    }
+    var eventsListState = eventViewModel.eventsUIState.collectAsState().value
+    var garbageSpotsListState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
 
     //search bar states
     val searchWidgetState by mainViewModel.searchWidgetState
@@ -136,16 +134,31 @@ fun CommunityScreen(
                 }
 
                 if(buttonScreenState.value.equals(R.string.btnCommunity)){
+                    when(eventsListState){
+                        is EventViewModel.EventsUIState.Success -> {
+                            EventsNearMeSection(eventsListState.events)
+                        }
+                        is EventViewModel.EventsUIState.Error -> {
+                            Text(text = "${eventsListState.error}")
+                        }
+                    }
                     //events near me section
-                    EventsNearMeSection()
+
 
 
                     //create event section
                     CreateEventSection(navController)
 
+                    when(garbageSpotsListState){
+                        is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
+                            //garbagespotsnearme section
+                            GarbageSpotsNearMe(garbageSpotsListState.garbageSpots)
+                        }
+                        is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
+                            Text(text = "${garbageSpotsListState.error}")
+                        }
+                    }
 
-                    //garbagespotsnearme section
-                    GarbageSpotsNearMe()
                 }
                 if(buttonScreenState.value.equals(R.string.btnFriends)){
                     Text("friends screen")
@@ -161,7 +174,7 @@ fun CommunityScreen(
 }
 
 @Composable
-private fun GarbageSpotsNearMe() {
+private fun GarbageSpotsNearMe(garbageSpots: List<GarbageSpotSerializable>) {
     Spacer(modifier = Modifier.height(32.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -185,10 +198,27 @@ private fun GarbageSpotsNearMe() {
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        //LazyVerticalGrid(columns = , content = )
-        Text(text = "LOCAL DE LIXO")
-        Text(text = "LOCAL DE LIXO")
-        Text(text = "LOCAL DE LIXO")
+        LazyHorizontalGrid(
+            modifier = Modifier
+                .height(100.dp),
+            rows = GridCells.Fixed(1),
+
+            ){
+
+            garbageSpots.subList(0,10).forEachIndexed { index, card ->
+                item(span = { GridItemSpan(1) }) {
+                    Card(
+                    ){
+                        Column() {
+                            Text(text = card.name )
+                            Text(text = card.status )
+                        }
+
+
+                    }
+                }
+            }
+        }
 
 
     }
@@ -229,7 +259,7 @@ private fun CreateEventSection(
 }
 
 @Composable
-private fun EventsNearMeSection() {
+private fun EventsNearMeSection(events: List<EventSerializable>) {
     Spacer(modifier = Modifier.height(32.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -247,15 +277,38 @@ private fun EventsNearMeSection() {
 
     }
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        //LazyVerticalGrid(columns = , content = )
-        Text(text = "EVENTO")
-        Text(text = "EVENTO")
-        Text(text = "EVENTO")
+
+        LazyHorizontalGrid(
+            modifier = Modifier
+                .height(100.dp),
+            rows = GridCells.Fixed(1),
+
+        ){
+
+            events.subList(0,10).forEachIndexed { index, card ->
+                item(span = { GridItemSpan(1) }) {
+                    Card(
+                    ){
+                        Column() {
+                            Text(text = card.name )
+                            Text(text = card.startDate )
+                            Text(text = card.status )
+                        }
+
+
+                    }
+                }
+            }
+        }
+
+
 
     }
 }

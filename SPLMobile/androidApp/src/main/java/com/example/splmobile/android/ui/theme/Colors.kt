@@ -5,10 +5,14 @@ import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 
 // Define color variables
-private val Purple200 = Color(0xFFBB86FC)
-private val Purple500 = Color(0xFF6200EE)
-private val Purple700 = Color(0xFF3700B3)
-private val Teal200 = Color(0xFF03DAC5)
+//private val Purple200 = Color(0xFFBB86FC)
+//private val Purple500 = Color(0xFF6200EE)
+//private val Purple700 = Color(0xFF3700B3)
+//private val Teal200 = Color(0xFF03DAC5)
+private val Purple200 = Color(0xFF556B2F)
+private val Purple500 = Color(0xFF808000)
+private val Purple700 = Color(0xFF6B8E23)
+private val Teal200 = Color(0xFF6B8E23)
 
 // Colors in Keywords for DarkMode
 val DarkColorsPalette = darkColors(

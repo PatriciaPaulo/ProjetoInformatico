@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, Column, Integer, String, Boolean, ForeignKey, Numeric, Text, Date
+from sqlalchemy import MetaData, Column, Integer, String, Boolean, ForeignKey, Numeric, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 
@@ -21,7 +21,7 @@ class User(Base):
     admin = Column(Boolean, nullable=False, default=False)
     blocked = Column(Boolean, nullable=False, default=False)
     confirmed = Column(Boolean, nullable=False, default=False)
-    deleted_at = Column(String(128))
+    deleted_at = Column(DateTime)
 
     def serialize(self):
         return {
@@ -44,8 +44,8 @@ class Activity(Base):
     distanceTravelled = Column(String(50))
     steps = Column(String(50))
     activityType = Column(String(50))
-    startDate = Column(Date)
-    endDate = Column(Date)
+    startDate = Column( DateTime)
+    endDate = Column( DateTime)
 
     def serialize(self):
         return {
@@ -140,7 +140,7 @@ class Event(Base):
     longitude = Column(Numeric(128), nullable=False)
     status = Column(String(50))
     duration = Column(String(50))
-    startDate = Column(Date)
+    startDate = Column( DateTime)
     description = Column(String(50))
     accessibility = Column(String(50))
     restrictions = Column(String(50))

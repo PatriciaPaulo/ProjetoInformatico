@@ -82,6 +82,7 @@
     <string name="lblPlaceCreateEvent">Novo evento</string>
     <string name="txtNecessaryField">Campo Obrigatório</string>
     <string name="lblGarbageTypeCreateEvent">Tipo de Lixo</string>
+    <string name="lblNoEvents">Eventos Não Encontrados</string>
 
 
 </resources>
