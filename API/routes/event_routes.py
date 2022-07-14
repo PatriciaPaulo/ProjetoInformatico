@@ -47,8 +47,8 @@ def get_events():
         event_data = {}
         event_data['id'] = event.id
         event_data['name'] = event.name
-        event_data['latitude'] = event.name
-        event_data['longitude'] = event.name
+        event_data['latitude'] = event.latitude
+        event_data['longitude'] = event.longitude
         event_data['status'] = event.status
         event_data['duration'] = event.duration
         event_data['startDate'] = event.startDate

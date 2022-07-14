@@ -2,7 +2,9 @@ package com.example.splmobile.android.ui.main.screens
 
 import MapAppBar
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -136,7 +138,7 @@ fun CommunityScreen(
                 if(buttonScreenState.value.equals(R.string.btnCommunity)){
                     when(eventsListState){
                         is EventViewModel.EventsUIState.Success -> {
-                            EventsNearMeSection(eventsListState.events)
+                            EventsNearMeSection(navController,eventsListState.events)
                         }
                         is EventViewModel.EventsUIState.Error -> {
                             Text(text = "${eventsListState.error}")
@@ -259,7 +261,9 @@ private fun CreateEventSection(
 }
 
 @Composable
-private fun EventsNearMeSection(events: List<EventSerializable>) {
+private fun EventsNearMeSection(navController: NavHostController,
+    events: List<EventSerializable>
+) {
     Spacer(modifier = Modifier.height(32.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -291,10 +295,14 @@ private fun EventsNearMeSection(events: List<EventSerializable>) {
             rows = GridCells.Fixed(1),
 
         ){
-
-            events.subList(0,10).forEachIndexed { index, card ->
+            events.filter { ev -> ev.status == "Criado" }.forEachIndexed { index, card ->
                 item(span = { GridItemSpan(1) }) {
                     Card(
+                        Modifier.clickable {
+                            Log.d("community","$card")
+
+                            navController.navigate(Screen.EventInfo.route + "/${card.id}")
+                        },
                     ){
                         Column() {
                             Text(text = card.name )

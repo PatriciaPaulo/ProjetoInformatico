@@ -13,6 +13,7 @@ sealed class Screen (val route: String) {
     object LocalLixo : Screen(route = "local_lixo")
     object CreateLocalLixo : Screen(route = "create_local_lixo")
     object CreateEvent : Screen(route = "create_event")
+    object EventInfo : Screen(route = "event_info")
 
 }
 

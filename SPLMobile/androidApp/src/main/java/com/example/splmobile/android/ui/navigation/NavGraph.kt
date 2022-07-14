@@ -11,6 +11,7 @@ import com.example.splmobile.android.ui.auth.screens.RecoverPasswordScreen
 import com.example.splmobile.android.ui.auth.screens.RegisterScreen
 import com.example.splmobile.android.ui.main.screens.*
 import com.example.splmobile.android.ui.main.screens.events.CreateEventScreen
+import com.example.splmobile.android.ui.main.screens.events.EventInfoScreen
 import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
@@ -102,6 +103,14 @@ fun SetupNavGraph(
                 eventViewModel = eventViewModel,
                 sharedViewModel = sharedViewModel,
                 log = log)
+
+        }
+        composable(Screen.EventInfo.route+"/{eventId}") { backStackEntry ->
+            EventInfoScreen(navController = navController,
+                eventViewModel = eventViewModel,
+                backStackEntry.arguments?.getString("eventId"),
+                log = log)
+
         }
     }
 }
