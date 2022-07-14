@@ -41,11 +41,12 @@ class EventViewModel (
 
     fun getEvents() {
         _eventsUIState.value = EventsUIState.Loading
-        log.v("getting all garbage spot ")
+        log.v("getting all events ")
         viewModelScope.launch {
             val response = eventService.getEvents()
 
             if(response.message.substring(0,3)  == "200"){
+                log.v("getting all  ${response.data}")
                 _eventsUIState.value = EventsUIState.Success(response.data)
             }else{
                 _eventsUIState.value = EventsUIState.Error(response.message)
