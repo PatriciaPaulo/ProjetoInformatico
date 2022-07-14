@@ -88,6 +88,8 @@
     <string name="EventSignUpStatusElement3">Não Confirmado</string>
     <string name="EventSignUpStatusElement2">Inscrito</string>
     <string name="lblEventParticipateStatus">Estado</string>
+    <string name="txtEventCreatedSuccess">Evento Criado</string>
+    <string name="txtGarbageSpotCreateSuccess">Local de Lixo Criado com Sucesso</string>
 
 
 </resources>

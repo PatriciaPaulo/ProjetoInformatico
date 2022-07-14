@@ -73,6 +73,7 @@ fun CreateEventScreen(
     }
 
     var garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
+    var createEventState = eventViewModel.eventCreateUIState.collectAsState().value
     var garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeSerializable>())}
 
 
@@ -325,7 +326,10 @@ fun CreateEventScreen(
 
 
                     LazyColumn(
-                        modifier = Modifier.height(200.dp).width(200.dp).selectableGroup(),
+                        modifier = Modifier
+                            .height(200.dp)
+                            .width(200.dp)
+                            .selectableGroup(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -334,17 +338,29 @@ fun CreateEventScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .selectable(
-                                        selected = listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id),
+                                        selected = listGarbageTypeInEvent.value.contains(
+                                            garbageTypeListEvent.value.get(index).id
+                                        ),
                                         onClick = {
-                                            if(listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id)){
-                                                listGarbageTypeInEvent.value.remove(garbageTypeListEvent.value.get(index).id)
-                                            }else{
-                                                listGarbageTypeInEvent.value.add(garbageTypeListEvent.value.get(index).id)
+                                            if (listGarbageTypeInEvent.value.contains(
+                                                    garbageTypeListEvent.value.get(index).id
+                                                )
+                                            ) {
+                                                listGarbageTypeInEvent.value.remove(
+                                                    garbageTypeListEvent.value.get(index).id
+                                                )
+                                            } else {
+                                                listGarbageTypeInEvent.value.add(
+                                                    garbageTypeListEvent.value.get(index).id
+                                                )
                                             }
                                         }
                                     )
                                     .background(
-                                        if ((listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id))) Color.Gray
+                                        if ((listGarbageTypeInEvent.value.contains(
+                                                garbageTypeListEvent.value.get(index).id
+                                            ))
+                                        ) Color.Gray
                                         else Color.Transparent
                                     )
                                     .padding(8.dp),
@@ -405,13 +421,23 @@ fun CreateEventScreen(
                     }
                 }
 
+
+                when(createEventState){
+                    is EventViewModel.EventCreateUIState.Success -> {
+                        Text(
+                            text = textResource(R.string.txtEventCreatedSuccess).toString(),
+                            color = MaterialTheme.colors.primary,
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                        )
+
+                    }
+                    is EventViewModel.EventCreateUIState.Error -> Text(text = "Error message - " + createEventState.error)
+                    is EventViewModel.EventCreateUIState.Loading -> CircularProgressIndicator()
+                }
+
                 Button(onClick = {
-
-
-
                     //garbageTypeListEvent
-
-
                     if(nameEvent.value.text.isNotEmpty() &&
                         observationsEvent.value.text.isNotEmpty() &&
                         descriptionEvent.value.text.isNotEmpty() &&
@@ -444,6 +470,7 @@ fun CreateEventScreen(
                 },  ) {
                   Text(text= "Criar")
                 }
+
 
             }
         },

@@ -232,13 +232,16 @@ class UserInEvent(Base):
     userID = Column(Integer, ForeignKey('user.id'), nullable=False)
     eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
     status = Column(String(128), nullable=False)
+    creator = Column(Boolean, nullable=False)
+
 
     def serialize(self):
         return {
             'id': self.id,
             'userID': self.userID,
             'eventID': self.eventID,
-            'status': self.status
+            'status': self.status,
+            'creator': self.creator
         }
 # endregion
 

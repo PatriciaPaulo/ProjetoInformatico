@@ -238,7 +238,7 @@ if __name__ == '__main__':
         event = session.query(Event).order_by(func.random()).first()
         status = ["Confirmado", "Não Confirmado", "Inscrito"]
 
-        userInEvent = UserInEvent(userID=1, eventID=event.id, status=random.choice(status))
+        userInEvent = UserInEvent(userID=1, eventID=event.id, status=random.choice(status),creator=True)
         session.add(userInEvent)
         session.commit()
 
@@ -248,7 +248,7 @@ if __name__ == '__main__':
         event = session.query(Event).order_by(func.random()).first()
         status = ["Confirmado","Inscrito","Não Confirmado"]
 
-        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status))
+        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status),creator=False)
         session.add(userInEvent)
         session.commit()
 

@@ -451,13 +451,32 @@ fun SheetContent(
         //id of the current local lixo
         var selectedId = remember { mutableStateOf(garbageSpot.value.id) }
 
-
+        var createGarbageSpot = garbageSpotViewModel.garbageSpotCreateUIState.collectAsState().value
         val statusList = listOf(textResource(R.string.GarbageSpotStatusListElement1).toString(), textResource(R.string.GarbageSpotStatusListElement2).toString(), textResource(R.string.GarbageSpotStatusListElement3).toString())
 
         //if its a new local lixo
         if(garbageSpot.value.id.equals(0L)){
             Column {
                 Column {
+                    when(createGarbageSpot){
+                        is GarbageSpotViewModel.GarbageSpotCreateUIState.Success -> {
+                            Text(
+                                text = textResource(R.string.txtGarbageSpotCreateSuccess).toString(),
+                                color = MaterialTheme.colors.primary,
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                            )
+                        }
+                        is GarbageSpotViewModel.GarbageSpotCreateUIState.Loading -> CircularProgressIndicator()
+                        is GarbageSpotViewModel.GarbageSpotCreateUIState.Error -> {
+                            Text(
+                                text = textResource(R.string.txtGarbageSpotError).toString(),
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                            )
+                        }
+                    }
                     Text(
                         textResource(R.string.lblCreateGarbageSpot).toString(),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp

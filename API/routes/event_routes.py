@@ -41,6 +41,9 @@ def create_event(current_user):
             db.session.add(new_garbageInEvent)
             db.session.commit()
 
+    organizador = UserInEvent(userID=current_user.id,eventID=new_event.id,status="Confirmado",creator=True)
+    db.session.add(organizador)
+
     db.session.commit()
 
     return make_response(jsonify({'data': Event.serialize(new_event), 'message': '200 OK - Event Created'}), 200)

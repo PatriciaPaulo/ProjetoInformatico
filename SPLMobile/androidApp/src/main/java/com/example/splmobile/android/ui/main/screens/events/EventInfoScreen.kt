@@ -5,8 +5,6 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,10 +18,9 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
-import com.example.splmobile.android.ui.navigation.Screen
-import com.example.splmobile.dtos.myInfo.UserSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
+import com.example.splmobile.models.userInfo.UserInfoViewModel
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -39,6 +36,7 @@ fun EventInfoScreen(
 
     LaunchedEffect(Unit) {
         eventViewModel.getEvents()
+
 
     }
     var eventsState = eventViewModel.eventsUIState.collectAsState().value
@@ -67,6 +65,7 @@ fun EventInfoScreen(
                         textAlign = TextAlign.Center,
                         fontSize = 20.sp
                     )
+
                     /*val statusSignUpListEvent = listOf( textResource(R.string.EventSignUpStatusElement1).toString(),textResource(R.string.EventSignUpStatusElement3).toString())
 
                     var expanded by remember { mutableStateOf(false) }

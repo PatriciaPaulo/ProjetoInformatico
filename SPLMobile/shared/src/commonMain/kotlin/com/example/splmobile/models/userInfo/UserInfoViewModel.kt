@@ -106,7 +106,7 @@ class UserInfoViewModel (
 
     }
 
-    fun getMEvents(token: String) {
+    fun getMyEvents(token: String) {
         _myEventsUIState.value = MyEventsUIState.Loading
         log.v("getting all my events")
         viewModelScope.launch {
