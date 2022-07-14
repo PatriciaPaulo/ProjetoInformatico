@@ -104,7 +104,7 @@ if __name__ == '__main__':
     print("---Garbage seed done!")
     # SEED EVENTO
     session.query(Event).delete()
-    for i in range(5):
+    for i in range(10):
         latitude = round(random.uniform(38.779875,41.575756), 5)
         longitude = round(random.uniform(-8.199258, -7.886036), 5)
         #organizer = session.query(User).filter_by(admin=False).order_by(func.random()).first()
