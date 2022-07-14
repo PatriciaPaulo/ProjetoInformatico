@@ -82,6 +82,17 @@ def get_events():
 
     return make_response(jsonify({'data': output, 'message': '200 OK - All Events Retrieved'}), 200)
 
+# Get Event by ID
+@event_routes_blueprint.route('/events/<event_id>', methods=['GET'])
+def get_event_id(event_id):
+    event = db.session.query(Event).filter_by(id=event_id).first()
+    if not event:
+            return make_response(
+                jsonify({'message': '404 NOT OK - Event doesnt exist!'}),404)
+
+
+    return make_response(jsonify({'data': Event.serialize(event), 'message': '200 OK - Event Retrieved'}), 200)
+
 
 
 

@@ -5,6 +5,8 @@ import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.events.EventsResponse
 import com.example.splmobile.dtos.events.EventRequest
+import com.example.splmobile.dtos.events.EventResponse
+import com.example.splmobile.dtos.events.EventSerializable
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -62,6 +64,18 @@ class EventServiceImpl (
             return EventsResponse(emptyList(),"$ex")
         }
 
+    }
+
+    override suspend fun getEventsById(eventId: Long): EventResponse {
+        log.d { "Fetching event by id from network" }
+        try{
+            return client.get {
+                contentType(ContentType.Application.Json)
+                url("api/events/"+eventId)
+            }.body() as EventResponse
+        }catch (ex :Exception){
+            return EventResponse(EventSerializable(0,"","","","","","","","","","",""),"$ex")
+        }
     }
 
     override suspend fun postEvent(

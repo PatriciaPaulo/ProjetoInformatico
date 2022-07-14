@@ -20,7 +20,6 @@ import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -35,20 +34,17 @@ fun EventInfoScreen(
 ) {
 
     LaunchedEffect(Unit) {
-        eventViewModel.getEvents()
-
-
+        //get all events to get info
+        eventViewModel.getEventsByID(eventoId!!)
     }
-    var eventsState = eventViewModel.eventsUIState.collectAsState().value
+    var eventsState = eventViewModel.eventByIdUIState.collectAsState().value
 
     Log.e("event info", "Yes")
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
-
-
         when (eventsState) {
-            is EventViewModel.EventsUIState.Success -> {
+            is EventViewModel.EventByIdUIState.Success -> {
                 //
                 Column(
                     modifier = Modifier
@@ -58,7 +54,7 @@ fun EventInfoScreen(
                         .wrapContentSize(Alignment.Center)
                 ) {
                     Text(
-                        text = "event id $eventoId ${ eventsState.events.find { ev -> eventoId!!.toLong().equals(ev.id) }} Screen",
+                        text = "event id $eventoId ${ eventsState.event }} Screen",
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         modifier = Modifier.align(Alignment.CenterHorizontally),

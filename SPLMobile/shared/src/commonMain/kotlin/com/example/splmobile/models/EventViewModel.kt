@@ -23,6 +23,16 @@ class EventViewModel (
         object Loading : EventsUIState()
         object Empty : EventsUIState()
     }
+    //state get event id
+    private val _eventByIdUIState = MutableStateFlow<EventByIdUIState>(EventByIdUIState.Empty)
+    val eventByIdUIState = _eventByIdUIState.asStateFlow()
+    sealed class EventByIdUIState {
+        data class Success(val event: EventSerializable) : EventByIdUIState()
+        data class Error(val error: String) : EventByIdUIState()
+        object Loading : EventByIdUIState()
+        object Empty : EventByIdUIState()
+    }
+
 
 
     //state create event
@@ -62,6 +72,20 @@ class EventViewModel (
             }
         }
 
+    }
+    fun getEventsByID(eventoId: String) {
+        _eventByIdUIState.value = EventByIdUIState.Loading
+        log.v("getting all events ")
+        viewModelScope.launch {
+            val response = eventService.getEventsById(eventoId.toLong())
+
+            if(response.message.substring(0,3)  == "200"){
+                log.v("getting all  ${response.data}")
+                _eventByIdUIState.value = EventByIdUIState.Success(response.data)
+            }else{
+                _eventByIdUIState.value = EventByIdUIState.Error(response.message)
+            }
+        }
     }
     fun createEvent(event: EventSerializable, garbageType : List<Long>, token: String) {
         log.v("creating event $event")
@@ -111,4 +135,6 @@ class EventViewModel (
             }
         }
     }
+
+
 }
