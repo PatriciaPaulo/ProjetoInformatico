@@ -433,10 +433,10 @@ fun CreateEventScreen(
                             descriptionEvent.value.text,
                             accessibilitySelectedOptionText,
                             restrictionsSelectedOptionText,
-                            listGarbageTypeInEvent.value,
                             quantitySelectedOptionText,
                             observationsEvent.value.text
                             ),
+                            listGarbageTypeInEvent.value,
                          authViewModel.tokenState.value)
                     }else{
                         Log.d("create event screen","failed check fields")

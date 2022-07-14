@@ -114,14 +114,14 @@ if __name__ == '__main__':
         quantity = ["Muita", "Pouca","Media"]
         restrictions = ["Todas as idades", "Não indicado para crianças"]
         garbageType = []
-        for a in range(2):
-            garbage = session.query(Garbage).order_by(func.random()).first()
-            if garbage.id not in garbageType:
-                garbageType.append(garbage.id)
+        #for a in range(2):
+        #    garbage = session.query(Garbage).order_by(func.random()).first()
+        #    if garbage.id not in garbageType:
+        #        garbageType.append(garbage.id)
                 #print(garbage.name)
 
         #to json, so we can insert array in database (sqlite doesnt support arrays in database)
-        garbageTypeJSON = json.dumps(garbageType)
+        #garbageTypeJSON = json.dumps(garbageType)
         # 72 hours ->
         duration = randrange(4320)
 
@@ -137,7 +137,7 @@ if __name__ == '__main__':
                        longitude=longitude,
                        status=random.choice(status), accessibility=random.choice(accessibility),
                        quantity=random.choice(quantity), restrictions=random.choice(restrictions),
-                       garbageType=garbageTypeJSON, duration=duration, startDate=datetime.datetime.utcnow())
+                       duration=duration, startDate=datetime.datetime.utcnow())
         session.add(event)
 
 
@@ -236,7 +236,7 @@ if __name__ == '__main__':
 
     for i in range(6):
         event = session.query(Event).order_by(func.random()).first()
-        status = ["Confirmado", "Inscrito", "Cancelado"]
+        status = ["Confirmado", "Não Confirmado", "Inscrito"]
 
         userInEvent = UserInEvent(userID=1, eventID=event.id, status=random.choice(status))
         session.add(userInEvent)
@@ -246,7 +246,7 @@ if __name__ == '__main__':
 
         user = session.query(User).filter_by(admin=False).order_by(func.random()).first()
         event = session.query(Event).order_by(func.random()).first()
-        status = ["Confirmado","Inscrito","Cancelado"]
+        status = ["Confirmado","Inscrito","Não Confirmado"]
 
         userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status))
         session.add(userInEvent)

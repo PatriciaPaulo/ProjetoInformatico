@@ -108,6 +108,7 @@ fun SetupNavGraph(
         composable(Screen.EventInfo.route+"/{eventId}") { backStackEntry ->
             EventInfoScreen(navController = navController,
                 eventViewModel = eventViewModel,
+                authViewModel = authViewModel,
                 backStackEntry.arguments?.getString("eventId"),
                 log = log)
 

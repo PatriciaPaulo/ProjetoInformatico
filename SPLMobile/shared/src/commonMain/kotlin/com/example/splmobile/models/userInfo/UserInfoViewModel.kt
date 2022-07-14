@@ -47,7 +47,7 @@ class UserInfoViewModel (
         object Empty : MyInfoUserUpdateUIState()
     }
 
-    //state get my garbage spots
+    //state get my events
     private val _myEventsUIState = MutableStateFlow<MyEventsUIState>(MyEventsUIState.Empty)
     val myEventsUIState = _myEventsUIState.asStateFlow()
     sealed class MyEventsUIState {

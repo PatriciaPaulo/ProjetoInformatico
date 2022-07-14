@@ -83,6 +83,11 @@
     <string name="txtNecessaryField">Campo Obrigatório</string>
     <string name="lblGarbageTypeCreateEvent">Tipo de Lixo</string>
     <string name="lblNoEvents">Eventos Não Encontrados</string>
+    <string name="btnParticipateOnEvent">Participar</string>
+    <string name="EventSignUpStatusElement1">Confirmado</string>
+    <string name="EventSignUpStatusElement3">Não Confirmado</string>
+    <string name="EventSignUpStatusElement2">Inscrito</string>
+    <string name="lblEventParticipateStatus">Estado</string>
 
 
 </resources>

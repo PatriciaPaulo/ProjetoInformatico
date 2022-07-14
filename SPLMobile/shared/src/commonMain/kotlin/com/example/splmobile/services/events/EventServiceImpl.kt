@@ -3,8 +3,8 @@ package com.example.splmobile.services.events
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.dtos.events.EventsResponse
+import com.example.splmobile.dtos.events.EventRequest
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -65,19 +65,17 @@ class EventServiceImpl (
     }
 
     override suspend fun postEvent(
-        event: EventSerializable,
+        eventRequest: EventRequest,
         token: String
     ): RequestMessageResponse {
         log.d { "post new event" }
         try{
             return client.post {
-                if(token.isNotEmpty()){
-                    headers {
-                        append(HttpHeaders.Authorization, "Bearer $token")
-                    }
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
-                setBody(event)
+                setBody(eventRequest)
                 url("api/events")
             }.body() as RequestMessageResponse
         }
@@ -87,6 +85,51 @@ class EventServiceImpl (
 
 
     }
+
+    override suspend fun postParticipateInEvent(
+        eventId: Long,
+        token: String
+    ): RequestMessageResponse {
+        log.d { "post participate in event" }
+        try{
+            return client.post {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+
+                url("api/events/"+eventId+"/signUpEvent")
+            }.body() as RequestMessageResponse
+        }
+        catch (ex :Exception){
+            return RequestMessageResponse("$ex")
+        }
+    }
+
+
+    override suspend fun patchStatusParticipateInEvent(
+        eventId: Long,
+        user_eventId: Long,
+        status: String,
+        token: String
+    ): RequestMessageResponse {
+        log.d { "post participate in event" }
+        try{
+            return client.post {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                setBody(status)
+                url("api/events/"+eventId+"/signUpUpdateStatusEvent/"+user_eventId)
+            }.body() as RequestMessageResponse
+        }
+        catch (ex :Exception){
+            return RequestMessageResponse("$ex")
+        }
+    }
+
+
+
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
