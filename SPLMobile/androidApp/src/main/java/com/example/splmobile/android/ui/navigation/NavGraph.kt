@@ -109,6 +109,7 @@ fun SetupNavGraph(
             EventInfoScreen(navController = navController,
                 eventViewModel = eventViewModel,
                 authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
                 backStackEntry.arguments?.getString("eventId"),
                 log = log)
 

@@ -52,7 +52,6 @@ class UserInfoViewModel (
     val myEventsUIState = _myEventsUIState.asStateFlow()
     sealed class MyEventsUIState {
         data class Success(val events: List<UserInEventSerializable>) : MyEventsUIState()
-        data class SuccessLast5(val events: List<UserInEventSerializable>) : MyEventsUIState()
         data class Error(val error: String) : MyEventsUIState()
         object Loading : MyEventsUIState()
         object Empty : MyEventsUIState()
@@ -114,7 +113,6 @@ class UserInfoViewModel (
 
             if(response.message.substring(0,3)  == "200"){
                 _myEventsUIState.value = MyEventsUIState.Success(response.data)
-                _myEventsUIState.value = MyEventsUIState.SuccessLast5(response.data.takeLast(5))
             }else{
                 _myEventsUIState.value =MyEventsUIState.Error(response.message)
             }

@@ -136,9 +136,9 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally){
                     when(usersEventsState){
-                        is UserInfoViewModel.MyEventsUIState.SuccessLast5 ->
+                        is UserInfoViewModel.MyEventsUIState.Success ->
                         {
-                            usersEventsState.events.forEach {
+                            usersEventsState.events.subList(0,5).forEach {
                                 TextButton(onClick = {}){
                                     Text(text = "Evento ${it.id} com estado de ${it.status}. ")
                                 }

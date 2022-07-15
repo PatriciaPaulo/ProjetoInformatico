@@ -20,6 +20,7 @@ import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
+import com.example.splmobile.models.userInfo.UserInfoViewModel
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -29,6 +30,7 @@ fun EventInfoScreen(
     navController: NavController,
     eventViewModel: EventViewModel,
     authViewModel: AuthViewModel,
+    userInfoViewModel: UserInfoViewModel,
     eventoId: String?,
     log: Logger
 ) {
@@ -36,8 +38,11 @@ fun EventInfoScreen(
     LaunchedEffect(Unit) {
         //get all events to get info
         eventViewModel.getEventsByID(eventoId!!)
+        userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
+
     }
     var eventsState = eventViewModel.eventByIdUIState.collectAsState().value
+    var myEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
 
     Log.e("event info", "Yes")
     Scaffold(
@@ -61,62 +66,82 @@ fun EventInfoScreen(
                         textAlign = TextAlign.Center,
                         fontSize = 20.sp
                     )
+                    when(myEventsState){
+                        is UserInfoViewModel.MyEventsUIState.Success -> {
+                            var event = myEventsState.events.find { ev -> ev.event.id.equals(eventoId!!.toLong())}
+                            if(event != null){
+                                val statusSignUpListEvent = listOf( textResource(R.string.EventSignUpStatusElement1).toString(),textResource(R.string.EventSignUpStatusElement3).toString())
 
-                    /*val statusSignUpListEvent = listOf( textResource(R.string.EventSignUpStatusElement1).toString(),textResource(R.string.EventSignUpStatusElement3).toString())
+                                var expanded by remember { mutableStateOf(false) }
+                                var selectedOptionText by remember { mutableStateOf(statusSignUpListEvent[0]) }
 
-                    var expanded by remember { mutableStateOf(false) }
-                    var selectedOptionText by remember { mutableStateOf(statusSignUpListEvent[0]) }
-                    Column(
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
-                        ExposedDropdownMenuBox(
-                            expanded = expanded,
-                            onExpandedChange = {
-                                expanded = !expanded
-                            }
-                        ) {
-                            TextField(
-                                readOnly = true,
-                                value = selectedOptionText,
-                                onValueChange = { },
-                                label = { Text(textResource(R.string.lblEventParticipateStatus).toString()) },
-                                trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(
-                                        expanded = expanded
-                                    )
-                                },
-                                colors = ExposedDropdownMenuDefaults.textFieldColors()
-                            )
-                            ExposedDropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = {
-                                    expanded = false
-                                }
-                            ) {
-                                statusSignUpListEvent.forEach { selectionOption ->
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            selectedOptionText = selectionOption
-                                            expanded = false
+                                Column(
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                ) {
+                                    ExposedDropdownMenuBox(
+                                        expanded = expanded,
+                                        onExpandedChange = {
+                                            expanded = !expanded
                                         }
                                     ) {
-                                        Text(text = selectionOption)
+                                        TextField(
+                                            readOnly = true,
+                                            value = selectedOptionText,
+                                            onValueChange = { },
+                                            label = { Text(textResource(R.string.lblEventParticipateStatus).toString()) },
+                                            trailingIcon = {
+                                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                                    expanded = expanded
+                                                )
+                                            },
+                                            colors = ExposedDropdownMenuDefaults.textFieldColors()
+                                        )
+                                        ExposedDropdownMenu(
+                                            expanded = expanded,
+                                            onDismissRequest = {
+                                                expanded = false
+                                            }
+                                        ) {
+                                            statusSignUpListEvent.forEach { selectionOption ->
+                                                DropdownMenuItem(
+                                                    onClick = {
+                                                        selectedOptionText = selectionOption
+                                                        expanded = false
+                                                    }
+                                                ) {
+                                                    Text(text = selectionOption)
+                                                }
+                                            }
+                                        }
                                     }
+                                }
+                                Button(
+                                    onClick = {
+                                        eventViewModel.participateStatusUpdateInEvent(eventoId!!.toLong(),event.id,selectedOptionText,authViewModel.tokenState.value)
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+
+                                    ) {
+                                    Text(text = textResource(R.string.btnParticipateOnEvent).toString())
+                                }
+                            }
+                            else{
+                                Log.d("info screen event","new event")
+                                Button(
+                                    onClick = {
+                                        eventViewModel.participateInEvent(eventoId!!.toLong(),authViewModel.tokenState.value)
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+
+                                    ) {
+                                    Text(text = textResource(R.string.btnParticipateOnEvent).toString())
                                 }
                             }
                         }
                     }
-                    */
-                    Button(
-                        onClick = {
-                            eventViewModel.participateInEvent(eventoId!!.toLong(),authViewModel.tokenState.value)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth(),
 
-                        ) {
-                        Text(text = textResource(R.string.btnParticipateOnEvent).toString())
-                    }
                 }
 
 
