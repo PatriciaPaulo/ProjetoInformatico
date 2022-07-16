@@ -34,7 +34,6 @@ class EventViewModel (
     }
 
 
-
     //state create event
     private val _eventCreateUIState = MutableStateFlow<EventCreateUIState>(EventCreateUIState.Empty)
     val eventCreateUIState = _eventCreateUIState.asStateFlow()
@@ -50,7 +49,8 @@ class EventViewModel (
     private val _eventParticipateUIState = MutableStateFlow<EventParticipateUIState>(EventParticipateUIState.Empty)
     val eventParticipateUIState = _eventParticipateUIState.asStateFlow()
     sealed class EventParticipateUIState {
-        object Success: EventParticipateUIState()
+        object SuccessParticipate: EventParticipateUIState()
+        object SuccessUpdate: EventParticipateUIState()
         data class Error(val error: String) : EventParticipateUIState()
         object Loading : EventParticipateUIState()
         object Empty : EventParticipateUIState()
@@ -112,7 +112,7 @@ class EventViewModel (
             val response = eventService.postParticipateInEvent(eventID,token)
             if(response.message.substring(0,3)  == "200"){
                 log.v("signing up in event successful")
-                _eventParticipateUIState.value = EventParticipateUIState.Success
+                _eventParticipateUIState.value = EventParticipateUIState.SuccessParticipate
                 getEvents()
             }else{
                 log.v("signing up in event error")
@@ -127,7 +127,7 @@ class EventViewModel (
             val response = eventService.patchStatusParticipateInEvent(eventID,userEventID,status,token)
             if(response.message.substring(0,3)  == "200"){
                 log.v("Creating event successful")
-                _eventParticipateUIState.value = EventParticipateUIState.Success
+                _eventParticipateUIState.value = EventParticipateUIState.SuccessUpdate
                 getEvents()
             }else{
                 log.v("Creating event error")

@@ -90,6 +90,13 @@
     <string name="lblEventParticipateStatus">Estado</string>
     <string name="txtEventCreatedSuccess">Evento Criado</string>
     <string name="txtGarbageSpotCreateSuccess">Local de Lixo Criado com Sucesso</string>
+    <string name="txtParticipateInEventStatusUpdateMessage">Estado de Participação Alterado</string>
+    <string name="txtParticipateInEventMessage">Inscrito no Evento</string>
+    <string name="txtParticipateInEventError">Não foi possivel se inscrever</string>
+    <string name="lblEventListSearchBar">Eventos</string>
+    <string name="txtEventError">Eventos não disponiveis</string>
+    <string name="txtFutureEvents">Eventos Futuros</string>
+    <string name="txtMyEventsList">Os Meus Eventos</string>
 
 
 </resources>

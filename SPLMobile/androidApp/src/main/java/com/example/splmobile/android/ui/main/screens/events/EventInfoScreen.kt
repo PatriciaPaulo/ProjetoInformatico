@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -43,6 +44,7 @@ fun EventInfoScreen(
     }
     var eventsState = eventViewModel.eventByIdUIState.collectAsState().value
     var myEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
+    var participateState = eventViewModel.eventParticipateUIState.collectAsState().value
 
     Log.e("event info", "Yes")
     Scaffold(
@@ -115,6 +117,7 @@ fun EventInfoScreen(
                                         }
                                     }
                                 }
+
                                 Button(
                                     onClick = {
                                         eventViewModel.participateStatusUpdateInEvent(eventoId!!.toLong(),event.id,selectedOptionText,authViewModel.tokenState.value)
@@ -137,6 +140,33 @@ fun EventInfoScreen(
 
                                     ) {
                                     Text(text = textResource(R.string.btnParticipateOnEvent).toString())
+                                }
+                            }
+                            when(participateState){
+                                is EventViewModel.EventParticipateUIState.SuccessParticipate -> {
+                                    Text(
+                                        text = textResource(R.string.txtParticipateInEventMessage).toString(),
+                                        color = MaterialTheme.colors.primary,
+                                        style = MaterialTheme.typography.caption,
+                                        modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                                    )
+                                }
+                                is EventViewModel.EventParticipateUIState.SuccessUpdate -> {
+                                    Text(
+                                        text = textResource(R.string.txtParticipateInEventStatusUpdateMessage).toString(),
+                                        color = MaterialTheme.colors.primary,
+                                        style = MaterialTheme.typography.caption,
+                                        modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                                    )
+                                }
+                                is EventViewModel.EventParticipateUIState.Loading -> CircularProgressIndicator()
+                                is EventViewModel.EventParticipateUIState.Error -> {
+                                    Text(
+                                        text = textResource(R.string.txtParticipateInEventError).toString() + " - " + participateState.error,
+                                        color = MaterialTheme.colors.primary,
+                                        style = MaterialTheme.typography.caption,
+                                        modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                                    )
                                 }
                             }
                         }
