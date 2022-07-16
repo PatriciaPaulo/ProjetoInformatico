@@ -97,6 +97,7 @@
     <string name="txtEventError">Eventos não disponiveis</string>
     <string name="txtFutureEvents">Eventos Futuros</string>
     <string name="txtMyEventsList">Os Meus Eventos</string>
+    <string name="btnUpdateParticipateOnEvent">Alterar estado</string>
 
 
 </resources>

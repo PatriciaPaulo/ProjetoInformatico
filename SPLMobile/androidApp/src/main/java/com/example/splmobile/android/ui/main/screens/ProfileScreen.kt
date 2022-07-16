@@ -6,6 +6,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -29,6 +31,7 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
+import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.myInfo.UserSerializable
 import com.example.splmobile.models.AuthViewModel
@@ -130,7 +133,23 @@ fun ProfileScreen(
 
 
                 }
-                Text(text = "Your last Events", fontStyle = MaterialTheme.typography.h6.fontStyle)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+
+                ) {
+
+                    Text(text = "Your last Events", fontStyle = MaterialTheme.typography.h6.fontStyle)
+                    Spacer(Modifier.width(86.dp))
+                    ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems).toString()),
+                        style = MaterialTheme.typography.body1,
+                        onClick = {
+                            navController.navigate(Screen.MyEventList.route)
+                        })
+
+                }
                 Column(modifier = Modifier
                     .fillMaxWidth(),
                     verticalArrangement = Arrangement.Center,
@@ -138,8 +157,10 @@ fun ProfileScreen(
                     when(usersEventsState){
                         is UserInfoViewModel.MyEventsUIState.Success ->
                         {
-                            usersEventsState.events.subList(0,5).forEach {
-                                TextButton(onClick = {}){
+                            usersEventsState.events.subList(0,5).forEach { it ->
+                                TextButton(onClick = {
+                                    navController.navigate(Screen.EventInfo.route + "/${it.id}")
+                                }){
                                     Text(text = "Evento ${it.id} com estado de ${it.status}. ")
                                 }
 

@@ -70,6 +70,7 @@ fun EventInfoScreen(
                     )
                     when(myEventsState){
                         is UserInfoViewModel.MyEventsUIState.Success -> {
+                            Log.d("event info screen", "state my events success")
                             var event = myEventsState.events.find { ev -> ev.event.id.equals(eventoId!!.toLong())}
                             if(event != null){
                                 val statusSignUpListEvent = listOf( textResource(R.string.EventSignUpStatusElement1).toString(),textResource(R.string.EventSignUpStatusElement3).toString())
@@ -126,7 +127,7 @@ fun EventInfoScreen(
                                         .fillMaxWidth(),
 
                                     ) {
-                                    Text(text = textResource(R.string.btnParticipateOnEvent).toString())
+                                    Text(text = textResource(R.string.btnUpdateParticipateOnEvent).toString())
                                 }
                             }
                             else{

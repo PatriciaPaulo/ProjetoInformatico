@@ -125,7 +125,7 @@ fun SetupNavGraph(
                 log = log)
 
         }
-        composable(Screen.EventList.route) {
+        composable(Screen.MyEventList.route) {
             MyEventListScreen(navController = navController,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,

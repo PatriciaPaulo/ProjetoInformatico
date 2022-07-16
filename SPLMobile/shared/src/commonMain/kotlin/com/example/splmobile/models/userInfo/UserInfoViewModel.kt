@@ -112,6 +112,7 @@ class UserInfoViewModel (
             val response = userInfoService.getMyEvents(token)
 
             if(response.message.substring(0,3)  == "200"){
+                log.v("getting ${response.data}")
                 _myEventsUIState.value = MyEventsUIState.Success(response.data)
             }else{
                 _myEventsUIState.value =MyEventsUIState.Error(response.message)
