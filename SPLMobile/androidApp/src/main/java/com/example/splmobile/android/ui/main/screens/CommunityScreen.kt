@@ -275,7 +275,7 @@ private fun EventsNearMeSection(navController: NavHostController,
         ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems).toString()),
             style = MaterialTheme.typography.body1,
             onClick = {
-
+                navController.navigate(Screen.EventList.route)
             })
 
 
