@@ -128,7 +128,7 @@ class EventServiceImpl (
     ): RequestMessageResponse {
         log.d { "post participate in event" }
         try{
-            return client.post {
+            return client.patch {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }

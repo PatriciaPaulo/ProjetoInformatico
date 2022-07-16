@@ -86,6 +86,7 @@ def login_user():
 @user_routes_blueprint.route('/users/me', methods=['GET'])
 @token_required
 def get_me(current_user):
+
     return make_response(jsonify({'data': User.serialize(current_user), 'message': '200 OK - User Retrieved'}), 200)
 
 

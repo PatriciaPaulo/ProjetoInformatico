@@ -187,6 +187,7 @@ def get_events_na_garbageSpot(current_user, garbageSpot_id):
 @event_routes_blueprint.route('/events/mine', methods=['GET'])
 @token_required
 def get_my_events(current_user):
+
     myEvents = db.session.query(UserInEvent).filter_by(userID=current_user.id).all()
 
 
@@ -196,10 +197,10 @@ def get_my_events(current_user):
         event_data = {}
         event_data['id'] = event.id
         event_data['userID'] = event.userID
-        event_data['event'] = []
+        event_data['event'] = {}
         for event in db.session.query(Event).filter_by(id=event.eventID):
             eventSer = Event.serialize(event)
-            event_data['event'].append(eventSer)
+            event_data['event'] = eventSer
 
 
         event_data['status'] = event.status
@@ -216,7 +217,7 @@ def get_my_events(current_user):
 @event_routes_blueprint.route('/events/<event_id>/signUpEvent', methods=['POST'])
 @token_required
 def add_user_to_event(current_user,event_id):
-    print("Event - "+event_id)
+   # print("Event - "+event_id)
     event = db.session.query(Event).filter_by(id=event_id).first()
     if not event:
         return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
@@ -232,7 +233,7 @@ def add_user_to_event(current_user,event_id):
 
 @event_routes_blueprint.route('/events/<event_id>/signUpUpdateStatusEvent/<user_event_id>', methods=['Patch'])
 @token_required
-def updata_status_user_to_event(current_user,event_id,user_event_id):
+def update_status_user_to_event(current_user,event_id,user_event_id):
     event = db.session.query(Event).filter_by(id=event_id).first()
     if not event:
         return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
