@@ -4,7 +4,7 @@ from models import User,GarbageSpot,Activity,Event,Message,Garbage,GarbageInActi
 from models import Equipment, EquipmentInEvent,IndividualMessage,MessageInEvent
 from models import UserInEvent,GarbageSpotInEvent
 from werkzeug.security import generate_password_hash
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
@@ -236,19 +236,19 @@ if __name__ == '__main__':
 
     for i in range(6):
         event = session.query(Event).order_by(func.random()).first()
-        status = ["Confirmado", "Não Confirmado", "Inscrito"]
+        status2 = ["Confirmado", "Não Confirmado", "Inscrito"]
 
-        userInEvent = UserInEvent(userID=1, eventID=event.id, status=random.choice(status),creator=True)
+        userInEvent = UserInEvent(userID=1, eventID=event.id, status=random.choice(status2),creator=True)
         session.add(userInEvent)
         session.commit()
 
     for i in range(6):
 
         user = session.query(User).filter_by(admin=False).order_by(func.random()).first()
-        event = session.query(Event).order_by(func.random()).first()
-        status = ["Confirmado","Inscrito","Não Confirmado"]
+        event = session.query(Event).order_by(desc(Event.id)).first()
+        status2 = ["Confirmado","Inscrito","Não Confirmado"]
 
-        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status),creator=False)
+        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status2),creator=False)
         session.add(userInEvent)
         session.commit()
 

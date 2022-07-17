@@ -14,6 +14,8 @@ import com.example.splmobile.android.ui.main.screens.events.CreateEventScreen
 import com.example.splmobile.android.ui.main.screens.events.EventInfoScreen
 import com.example.splmobile.android.ui.main.screens.events.EventListScreen
 import com.example.splmobile.android.ui.main.screens.events.MyEventListScreen
+import com.example.splmobile.android.ui.main.screens.garbageSpots.GarbageSpotInfoScreen
+import com.example.splmobile.android.ui.main.screens.garbageSpots.GarbageSpotsListScreen
 import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
@@ -116,6 +118,15 @@ fun SetupNavGraph(
                 log = log)
 
         }
+        composable(Screen.GarbageSpotInfo.route+"/{garbageSpotId}") { backStackEntry ->
+            GarbageSpotInfoScreen(navController = navController,
+                garbageSpotViewModel = garbageSpotViewModel,
+                authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
+                backStackEntry.arguments?.getString("garbageSpotId"),
+                log = log)
+
+        }
         composable(Screen.EventList.route) {
             EventListScreen(navController = navController,
                 eventViewModel = eventViewModel,
@@ -127,6 +138,15 @@ fun SetupNavGraph(
         }
         composable(Screen.MyEventList.route) {
             MyEventListScreen(navController = navController,
+                authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
+                mainViewModel = mainViewModel,
+                log = log)
+
+        }
+        composable(Screen.GarbageSpotList.route) {
+            GarbageSpotsListScreen(navController = navController,
+                garbageSpotViewModel = garbageSpotViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 mainViewModel = mainViewModel,

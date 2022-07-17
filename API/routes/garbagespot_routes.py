@@ -35,28 +35,29 @@ def create_garbageSpot(current_user):
 
 # Get All Garbage Spots
 @garbagespot_routes_blueprint.route('/garbageSpots', methods=['GET'])
-def get_all_garbageSpots():
+@guest
+def get_all_garbageSpots(current_user):
 
     garbageSpots = db.session.query(GarbageSpot).all()
 
     output = []
     for garbageSpot in garbageSpots:
         garbageSpot_data = {}
-        garbageSpot_data['id'] = garbageSpot.id
-        garbageSpot_data['name'] = garbageSpot.name
-        garbageSpot_data['latitude'] = garbageSpot.latitude
-        garbageSpot_data['longitude'] = garbageSpot.longitude
-        garbageSpot_data['creator'] = garbageSpot.creator
-        garbageSpot_data['status'] = garbageSpot.status
-        garbageSpot_data['approved'] = garbageSpot.approved
-        garbageSpot_data['events'] = []
+        if garbageSpot.approved is True or garbageSpot.creator is current_user.id:
+            garbageSpot_data['id'] = garbageSpot.id
+            garbageSpot_data['name'] = garbageSpot.name
+            garbageSpot_data['latitude'] = garbageSpot.latitude
+            garbageSpot_data['longitude'] = garbageSpot.longitude
+            garbageSpot_data['creator'] = garbageSpot.creator
+            garbageSpot_data['status'] = garbageSpot.status
+            garbageSpot_data['approved'] = garbageSpot.approved
+            garbageSpot_data['events'] = []
+            for ev in db.session.query(GarbageSpotInEvent).filter_by(garbageSpotID=garbageSpot.id):
+                evSer = GarbageSpotInEvent.serialize(ev)
+                garbageSpot_data['events'].append(evSer)
 
-        for ev in db.session.query(GarbageSpotInEvent).filter_by(garbageSpotID=garbageSpot.id):
-            evSer = GarbageSpotInEvent.serialize(ev)
-            garbageSpot_data['events'].append(evSer)
 
-
-        output.append(garbageSpot_data)
+            output.append(garbageSpot_data)
 
     if len(output) == 0:
         return make_response(jsonify({'data':[],'message':'404 NOT OK - No Garbage Spot Found'}), 404)
@@ -64,13 +65,28 @@ def get_all_garbageSpots():
     return make_response(jsonify({'data': output, 'message': '200 OK - All Garbage Spot Retrieved'}), 200)
 
 
+
 # Get Garbage Spot by ID
 @garbagespot_routes_blueprint.route('/garbageSpots/<garbageSpot_id>', methods=['GET'])
-def get_garbageSpot(garbageSpot_id):
+@guest
+def get_garbageSpot(current_user,garbageSpot_id):
     garbageSpot = db.session.query(GarbageSpot).filter_by(id=garbageSpot_id).first()
+    if not garbageSpot:
+        return make_response(
+            jsonify({'message': '404 NOT OK - Garbage Spot doesnt exist!'}), 404)
+    if not garbageSpot.approved and garbageSpot.creator is not current_user.id:
+        return make_response(
+            jsonify({'message': '403 NOT OK - Garbage Spot is no approved or belong to you!'}), 403)
+
+    output = GarbageSpot.serialize(garbageSpot)
+    output["events"] = []
+    for ev in db.session.query(GarbageSpotInEvent).filter_by(garbageSpotID=garbageSpot.id):
+        evSer = GarbageSpotInEvent.serialize(ev)
+        output["events"].append(evSer)
+
 
     return make_response(
-        jsonify({'data': GarbageSpot.serialize(garbageSpot), 'message': '200 OK - All Garbage Spot Retrieved'}), 200)
+        jsonify({'data': output, 'message': '200 OK - All Garbage Spot Retrieved'}), 200)
 
 
 # Update Garbage Spot by User

@@ -1,22 +1,20 @@
-package com.example.splmobile.android.ui.main.screens.events
+package com.example.splmobile.android.ui.main.screens.garbageSpots
+
 
 
 import MapAppBar
 import android.annotation.SuppressLint
-import android.preference.PreferenceActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
@@ -27,17 +25,18 @@ import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.events.EventSerializable
-import com.example.splmobile.dtos.events.UserInEventSerializable
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
 import com.example.splmobile.models.userInfo.UserInfoViewModel
 import kotlinx.coroutines.launch
-
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MyEventListScreen(
+fun GarbageSpotsListScreen(
     navController: NavHostController,
+    garbageSpotViewModel: GarbageSpotViewModel,
     authViewModel: AuthViewModel,
     userInfoViewModel: UserInfoViewModel,
     mainViewModel: MainViewModel,
@@ -46,12 +45,11 @@ fun MyEventListScreen(
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
-    val bottomScaffoldState = rememberBottomSheetScaffoldState()
-    LaunchedEffect(Unit) {
-        userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
-    }
-    var eventsListState = userInfoViewModel.myEventsUIState.collectAsState().value
 
+    LaunchedEffect(Unit) {
+        garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+    }
+    var garbageSpotsListState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
     //search bar states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
@@ -61,7 +59,7 @@ fun MyEventListScreen(
         scaffoldState = scaffoldState,
         topBar = {
             MapAppBar(
-                title = textResource(R.string.txtMyEventsList).toString(),
+                title = textResource(R.string.lblEventListSearchBar).toString(),
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState,
                 onTextChange = {
@@ -88,28 +86,29 @@ fun MyEventListScreen(
         content =
         { innerPadding ->
 
-
-            when(eventsListState){
-                is UserInfoViewModel.MyEventsUIState.Success -> {
+            Text(text = textResource(id = R.string.txtGarbageSpotsList).toString(),
+                style = MaterialTheme.typography.h4)
+            when(garbageSpotsListState){
+                is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
                     LazyColumn(modifier = Modifier
                         .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
 
-                        items(eventsListState.events.size){ index ->
-                            UserInEventsList(user_event = eventsListState.events.get(index), navController = navController)
+                        items(garbageSpotsListState.garbageSpots.size){ index ->
+                            GarbageSpotsList(gs = garbageSpotsListState.garbageSpots.get(index), navController = navController)
                         }
 
 
                     }
                 }
-                is UserInfoViewModel.MyEventsUIState.Error -> {
+                is  GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
                     Text(
-                        text = textResource(R.string.txtEventError).toString() ,
+                        text = textResource(R.string.txtGarbageSpotError).toString() ,
                         color = MaterialTheme.colors.primary,
                         style = MaterialTheme.typography.caption,
                         modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                     )
                 }
-                is UserInfoViewModel.MyEventsUIState.Loading -> CircularProgressIndicator()
+                is  GarbageSpotViewModel.GarbageSpotsUIState.Loading -> CircularProgressIndicator()
             }
 
 
@@ -121,7 +120,7 @@ fun MyEventListScreen(
 }
 
 @Composable
-fun UserInEventsList(navController: NavHostController,user_event :UserInEventSerializable){
+fun GarbageSpotsList(navController: NavHostController, gs :GarbageSpotSerializable){
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -129,7 +128,7 @@ fun UserInEventsList(navController: NavHostController,user_event :UserInEventSer
             .padding(8.dp)
             .clickable(
                 onClick = {
-                    navController.navigate(Screen.EventInfo.route + "/${user_event.event.id}")
+                    navController.navigate(Screen.GarbageSpotInfo.route + "/${gs.id}")
                 },
 
                 )
@@ -138,10 +137,9 @@ fun UserInEventsList(navController: NavHostController,user_event :UserInEventSer
     ){
         Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
         Column() {
-            Text(text = user_event.status, style = MaterialTheme.typography.h6)
-            Text(text = user_event.event.name, style = MaterialTheme.typography.h6)
-            Text(text = user_event.event.status, style = MaterialTheme.typography.body1)
-            Text(text = user_event.event.startDate, style = MaterialTheme.typography.body2)
+            Text(text = gs.name, style = MaterialTheme.typography.h6)
+            Text(text = gs.status, style = MaterialTheme.typography.body1)
+            Text(text = gs.approved.toString(), style = MaterialTheme.typography.body2)
 
         }
     }

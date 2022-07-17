@@ -60,7 +60,7 @@ fun CommunityScreen(
     val bottomScaffoldState = rememberBottomSheetScaffoldState()
     LaunchedEffect(Unit) {
         eventViewModel.getEvents()
-        garbageSpotViewModel.getGarbageSpots()
+        garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
 
     }
     var eventsListState = eventViewModel.eventsUIState.collectAsState().value
@@ -154,7 +154,7 @@ fun CommunityScreen(
                     when(garbageSpotsListState){
                         is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
                             //garbagespotsnearme section
-                            GarbageSpotsNearMe(garbageSpotsListState.garbageSpots)
+                            GarbageSpotsNearMe(navController,garbageSpotsListState.garbageSpots)
                         }
                         is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
                             Text(text = "${garbageSpotsListState.error}")
@@ -176,7 +176,7 @@ fun CommunityScreen(
 }
 
 @Composable
-private fun GarbageSpotsNearMe(garbageSpots: List<GarbageSpotSerializable>) {
+private fun GarbageSpotsNearMe(navController: NavHostController,garbageSpots: List<GarbageSpotSerializable>) {
     Spacer(modifier = Modifier.height(32.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -189,7 +189,7 @@ private fun GarbageSpotsNearMe(garbageSpots: List<GarbageSpotSerializable>) {
         ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems).toString()),
             style = MaterialTheme.typography.body1,
             onClick = {
-
+                navController.navigate(Screen.GarbageSpotList.route)
             })
 
     }
@@ -209,7 +209,11 @@ private fun GarbageSpotsNearMe(garbageSpots: List<GarbageSpotSerializable>) {
 
             garbageSpots.subList(0,10).forEachIndexed { index, card ->
                 item(span = { GridItemSpan(1) }) {
-                    Card(
+                    Card(Modifier.clickable {
+                        Log.d("community","$card")
+
+                        navController.navigate(Screen.GarbageSpotInfo.route + "/${card.id}")
+                    },
                     ){
                         Column() {
                             Text(text = card.name )

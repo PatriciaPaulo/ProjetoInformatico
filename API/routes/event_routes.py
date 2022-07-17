@@ -189,21 +189,21 @@ def get_events_na_garbageSpot(current_user, garbageSpot_id):
 def get_my_events(current_user):
 
     myEvents = db.session.query(UserInEvent).filter_by(userID=current_user.id).all()
-
+    print(myEvents)
 
     output = []
 
-    for event in myEvents:
+    for user_event in myEvents:
         event_data = {}
-        event_data['id'] = event.id
-        event_data['userID'] = event.userID
+        event_data['id'] = user_event.id
+        event_data['userID'] = user_event.userID
         event_data['event'] = {}
-        for event in db.session.query(Event).filter_by(id=event.eventID):
+        for event in db.session.query(Event).filter_by(id=user_event.eventID):
             eventSer = Event.serialize(event)
             event_data['event'] = eventSer
 
 
-        event_data['status'] = event.status
+        event_data['status'] = user_event.status
 
         output.append(event_data)
 
@@ -223,8 +223,12 @@ def add_user_to_event(current_user,event_id):
         return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
 
 
+    user_event = db.session.query(UserInEvent).filter_by(userID=current_user.id).first()
+    if user_event:
+        if user_event.eventID == event_id:
+            return make_response(jsonify({'message': '405 NOT OK - Already signed up to Event! Update your status instead!'}), 409)
 
-    signUp = UserInEvent(userID=current_user.id, eventID=event_id,status="Inscrito")
+    signUp = UserInEvent(userID=current_user.id, eventID=event_id,status="Inscrito",creator = False)
 
     db.session.add(signUp)
     db.session.commit()

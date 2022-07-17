@@ -1,7 +1,10 @@
 package com.example.splmobile.services.garbageSpots
 
+import GarbageSpotResponse
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
+import com.example.splmobile.dtos.events.EventResponse
+import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
@@ -54,10 +57,15 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
         ensureNeverFrozen()
     }
 
-    override suspend fun getGarbageSpots(): GarbageSpotsResponse {
+    override suspend fun getGarbageSpots(token: String): GarbageSpotsResponse {
         log.d { "Fetching garbageSpots from network" }
         try{
             return client.get {
+                if(token.isNotEmpty()){
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $token")
+                    }
+                }
                 contentType(ContentType.Application.Json)
                 url("api/garbageSpots")
             }.body() as GarbageSpotsResponse
@@ -123,6 +131,20 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
             }.body() as GarbageTypesResponse
         }catch (ex :Exception){
             return GarbageTypesResponse(emptyList(),"$ex")
+        }
+
+    }
+
+    override suspend fun getGarbageSpotById(
+        gsId: Long, token: String
+    ): GarbageSpotResponse {
+        try{
+            return client.get {
+                contentType(ContentType.Application.Json)
+                url("api/garbageSpots/"+gsId)
+            }.body() as GarbageSpotResponse
+        }catch (ex :Exception){
+            return GarbageSpotResponse(GarbageSpotSerializable(0,"",0,"","","",false, emptyList()),"$ex")
         }
 
     }

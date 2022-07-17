@@ -22,6 +22,7 @@ class GarbageSpotViewModel (
     val garbageSpotsUIState = _garbageSpotsUIState.asStateFlow()
     sealed class GarbageSpotsUIState {
         data class Success(val garbageSpots: List<GarbageSpotSerializable>) : GarbageSpotsUIState()
+        data class GarbageSpotByIdSuccess(val garbageSpot: GarbageSpotSerializable) : GarbageSpotsUIState()
         data class Error(val error: String) : GarbageSpotsUIState()
         object Loading : GarbageSpotsUIState()
         object Empty : GarbageSpotsUIState()
@@ -34,7 +35,6 @@ class GarbageSpotViewModel (
         object Success: GarbageSpotCreateUIState()
         data class Error(val error: String) : GarbageSpotCreateUIState()
         object Loading : GarbageSpotCreateUIState()
-
         object Empty : GarbageSpotCreateUIState()
     }
 
@@ -60,19 +60,17 @@ class GarbageSpotViewModel (
     }
 
 
-    init {
-        getGarbageSpots()
-    }
+
 
     override fun onCleared() {
         log.v("Clearing GarbageSpotViewModel")
     }
 
-    fun getGarbageSpots() {
+    fun getGarbageSpots(token: String) {
         _garbageSpotsUIState.value = GarbageSpotsUIState.Loading
         log.v("getting all garbage spot ")
         viewModelScope.launch {
-            val response = garbageSpotService.getGarbageSpots()
+            val response = garbageSpotService.getGarbageSpots(token)
 
             if(response.message.substring(0,3)  == "200"){
                 _garbageSpotsUIState.value = GarbageSpotsUIState.Success(response.data)
@@ -82,7 +80,20 @@ class GarbageSpotViewModel (
         }
 
     }
+    fun getGarbageSpotById(gsId: String,token: String) {
+        _garbageSpotsUIState.value = GarbageSpotsUIState.Loading
+        log.v("getting all events ")
+        viewModelScope.launch {
+            val response = garbageSpotService.getGarbageSpotById(gsId.toLong(),token)
 
+            if(response.message.substring(0,3)  == "200"){
+                log.v("getting all  ${response.data}")
+                _garbageSpotsUIState.value = GarbageSpotsUIState.GarbageSpotByIdSuccess(response.data)
+            }else{
+                _garbageSpotsUIState.value = GarbageSpotsUIState.Error(response.message)
+            }
+        }
+    }
      fun createGarbageSpot(garbageSpot: GarbageSpotSerializable, token: String) {
          log.v("creating garbage spot $garbageSpot")
          _garbageSpotCreateUIState.value = GarbageSpotCreateUIState.Loading
@@ -91,7 +102,7 @@ class GarbageSpotViewModel (
              if(response.message.substring(0,3)  == "200"){
                  log.v("Creating garbage spot successful")
                  _garbageSpotCreateUIState.value = GarbageSpotCreateUIState.Success
-                 getGarbageSpots()
+
              }else{
                  log.v("Creating garbage spot error")
                  _garbageSpotCreateUIState.value = GarbageSpotCreateUIState.Error(response.message)
@@ -109,7 +120,7 @@ class GarbageSpotViewModel (
             if(response.message.substring(0,3)  == "200"){
                 log.v("updating garbage spot successful")
                 _garbageSpotUpdateUIState.value = GarbageSpotUpdateUIState.Success
-                getGarbageSpots()
+
             }else{
                 log.v("updating garbage spot error")
                 _garbageSpotUpdateUIState.value = GarbageSpotUpdateUIState.Error(response.message)

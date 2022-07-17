@@ -91,10 +91,15 @@ fun MapScreen(
     var nomeGarbageSpotState = remember { mutableStateOf(TextFieldValue("")) }
     var newGarbageSpotPos = remember { mutableStateOf(LatLng(0.0,0.0)) }
 
+    LaunchedEffect(Unit) {
+        garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+    }
 
     when(garbageSpotViewModel.garbageSpotCreateUIState.collectAsState().value){
         is GarbageSpotViewModel.GarbageSpotCreateUIState.Success -> {
             Log.v("screen map", "success created local lixo")
+            //update list
+            garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
             //reset create local lixo
             createGarbageSpotButtonState.value = false
             garbageSpotState.value = GarbageSpotSerializable(0,"new",0,"0.0","0.0","Muito sujo",false,
@@ -466,6 +471,7 @@ fun SheetContent(
                                 style = MaterialTheme.typography.caption,
                                 modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                             )
+                            garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
                         }
                         is GarbageSpotViewModel.GarbageSpotCreateUIState.Loading -> CircularProgressIndicator()
                         is GarbageSpotViewModel.GarbageSpotCreateUIState.Error -> {

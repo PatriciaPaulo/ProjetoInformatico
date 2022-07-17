@@ -46,7 +46,7 @@ fun EventListScreen(
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
-    val bottomScaffoldState = rememberBottomSheetScaffoldState()
+
     LaunchedEffect(Unit) {
         eventViewModel.getEvents()
     }

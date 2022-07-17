@@ -10,11 +10,11 @@ sealed class Screen (val route: String) {
     object Register : Screen(route = "register_screen")
     object RecoverPassword : Screen(route = "recover_password")
 
-    object LocalLixo : Screen(route = "local_lixo")
-    object CreateLocalLixo : Screen(route = "create_local_lixo")
+    object GarbageSpotInfo : Screen(route = "garbage_spot_info")
     object CreateEvent : Screen(route = "create_event")
     object EventInfo : Screen(route = "event_info")
     object EventList : Screen(route = "event_list")
+    object GarbageSpotList : Screen(route = "garbage_spot_list")
     object MyEventList : Screen(route = "my_event_list")
 
 }
