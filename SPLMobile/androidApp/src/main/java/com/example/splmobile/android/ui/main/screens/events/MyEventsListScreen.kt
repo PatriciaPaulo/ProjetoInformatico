@@ -3,20 +3,17 @@ package com.example.splmobile.android.ui.main.screens.events
 
 import MapAppBar
 import android.annotation.SuppressLint
-import android.preference.PreferenceActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
@@ -26,10 +23,9 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.dtos.events.UserInEventSerializable
 import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import kotlinx.coroutines.launch
 
 

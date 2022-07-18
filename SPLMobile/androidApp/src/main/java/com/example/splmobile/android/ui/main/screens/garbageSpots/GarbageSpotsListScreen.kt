@@ -24,11 +24,10 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)

@@ -39,8 +39,8 @@ import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
-import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
+import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*

@@ -21,7 +21,7 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.UserInfoViewModel
 
 
 @OptIn(ExperimentalMaterialApi::class)

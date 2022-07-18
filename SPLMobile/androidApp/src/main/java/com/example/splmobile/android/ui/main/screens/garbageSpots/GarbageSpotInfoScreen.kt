@@ -3,7 +3,6 @@ package com.example.splmobile.android.ui.main.screens.garbageSpots
 
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -12,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -22,9 +20,8 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.models.UserInfoViewModel
 
 
 @OptIn(ExperimentalMaterialApi::class)

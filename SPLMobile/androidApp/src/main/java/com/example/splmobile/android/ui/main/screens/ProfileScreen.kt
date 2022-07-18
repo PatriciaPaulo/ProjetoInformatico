@@ -34,7 +34,7 @@ import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.myInfo.UserSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)

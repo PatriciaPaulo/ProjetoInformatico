@@ -3,7 +3,6 @@ package com.example.splmobile.android.ui.main.screens.events
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -40,8 +39,8 @@ import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
