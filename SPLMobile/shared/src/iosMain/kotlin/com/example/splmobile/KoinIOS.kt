@@ -27,7 +27,7 @@ fun initKoinIos(
 )
 
 actual val platformModule = module {
-    single<SqlDriver> { NativeSqliteDriver(SPLDatabase.Schema, "SPLDatabase") }
+
 
     single { Darwin.create() }
 

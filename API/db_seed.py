@@ -234,11 +234,11 @@ if __name__ == '__main__':
 
     session.query(UserInEvent).delete()
 
-    for i in range(6):
+    for i in range(3):
         event = session.query(Event).order_by(func.random()).first()
-        status2 = ["Confirmado", "Não Confirmado", "Inscrito"]
+        #status2 = ["Confirmado", "Não Confirmado", "Inscrito"]
 
-        userInEvent = UserInEvent(userID=1, eventID=event.id, status=random.choice(status2),creator=True)
+        userInEvent = UserInEvent(userID=1, eventID=event.id, status="Organizer",creator=True)
         session.add(userInEvent)
         session.commit()
 

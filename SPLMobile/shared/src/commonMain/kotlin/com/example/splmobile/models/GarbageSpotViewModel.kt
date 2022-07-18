@@ -1,16 +1,14 @@
-package com.example.splmobile.models.garbageSpots
+package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
-import com.example.splmobile.models.ViewModel
 
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class GarbageSpotViewModel (
-    private val garbageSpotRepository: LocalLixoRepository,
     private val garbageSpotService: GarbageSpotService,
     log: Logger
 ) : ViewModel() {
@@ -29,7 +27,9 @@ class GarbageSpotViewModel (
     }
 
     //state create garbage spot
-    private val _garbageSpotCreateUIState = MutableStateFlow<GarbageSpotCreateUIState>(GarbageSpotCreateUIState.Empty)
+    private val _garbageSpotCreateUIState = MutableStateFlow<GarbageSpotCreateUIState>(
+        GarbageSpotCreateUIState.Empty
+    )
     val garbageSpotCreateUIState = _garbageSpotCreateUIState.asStateFlow()
     sealed class GarbageSpotCreateUIState {
         object Success: GarbageSpotCreateUIState()
@@ -39,7 +39,9 @@ class GarbageSpotViewModel (
     }
 
     //state update garbage spot
-    private val _garbageSpotUpdateUIState = MutableStateFlow<GarbageSpotUpdateUIState>(GarbageSpotUpdateUIState.Empty)
+    private val _garbageSpotUpdateUIState = MutableStateFlow<GarbageSpotUpdateUIState>(
+        GarbageSpotUpdateUIState.Empty
+    )
     val garbageSpotUpdateUIState = _garbageSpotUpdateUIState.asStateFlow()
     sealed class GarbageSpotUpdateUIState {
         object Success: GarbageSpotUpdateUIState()
@@ -88,7 +90,8 @@ class GarbageSpotViewModel (
 
             if(response.message.substring(0,3)  == "200"){
                 log.v("getting all  ${response.data}")
-                _garbageSpotsUIState.value = GarbageSpotsUIState.GarbageSpotByIdSuccess(response.data)
+                _garbageSpotsUIState.value =
+                    GarbageSpotsUIState.GarbageSpotByIdSuccess(response.data)
             }else{
                 _garbageSpotsUIState.value = GarbageSpotsUIState.Error(response.message)
             }

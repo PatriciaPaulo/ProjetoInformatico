@@ -9,8 +9,8 @@ import com.example.splmobile.initKoin
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
-import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
+import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
 
 import dagger.hilt.android.HiltAndroidApp
 
@@ -25,7 +25,7 @@ class SPLMobileApplication : Application() {
         initKoin(
             module {
                 single<Context> { this@SPLMobileApplication }
-                viewModel { GarbageSpotViewModel(get(), get { parametersOf("LocalLixoViewModel") }, get { parametersOf("LocalLixoRepository") }) }
+                viewModel { GarbageSpotViewModel(get(), get { parametersOf("LocalLixoViewModel") }) }
                 viewModel { SharedViewModel(get(), get { parametersOf("SharedViewModel") }) }
                 viewModel { UserInfoViewModel(get(), get { parametersOf("UserInfoViewModel") }) }
                 viewModel { EventViewModel(get(), get { parametersOf("EventViewModel") }) }

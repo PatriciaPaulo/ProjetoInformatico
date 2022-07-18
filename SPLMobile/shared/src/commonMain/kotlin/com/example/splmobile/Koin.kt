@@ -8,7 +8,6 @@ import co.touchlab.kermit.platformLogWriter
 import com.example.splmobile.services.garbageSpots.GarbageSpotServiceImpl
 import com.example.splmobile.services.other.requestsApiImpl
 import com.example.splmobile.services.other.requestsAPI
-import com.example.splmobile.models.garbageSpots.LocalLixoRepository
 import com.example.splmobile.services.auth.AuthService
 import com.example.splmobile.services.auth.AuthServiceImpl
 import com.example.splmobile.services.events.EventService
@@ -48,13 +47,7 @@ fun initKoin(appModule: Module): KoinApplication {
 }
 
 private val coreModule = module {
-  /*  single {
-        DatabaseHelper(
-            get(),
-            getWith("DatabaseHelper"),
-            Dispatchers.Default
-        )
-    }*/
+
     single<GarbageSpotService> {
         GarbageSpotServiceImpl(
             getWith("GarbageSpotServiceImpl"),
@@ -96,15 +89,7 @@ private val coreModule = module {
     val baseLogger = Logger(config = StaticConfig(logWriterList = listOf(platformLogWriter())), "KampKit")
     factory { (tag: String?) -> if (tag != null) baseLogger.withTag(tag) else baseLogger }
 
-    single {
-        LocalLixoRepository(
-           // get(),
-            get(),
-            get(),
-            getWith("LocalLixoRepository"),
-            get()
-        )
-    }
+
 }
 
 internal inline fun <reified T> Scope.getWith(vararg params: Any?): T {

@@ -1,15 +1,12 @@
-package com.example.splmobile.models.userInfo
+package com.example.splmobile.models
 
 import UserInfoService
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.activities.ActivitySerializable
-import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.dtos.events.UserInEventSerializable
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.dtos.myInfo.EmailCheckResponse
 import com.example.splmobile.dtos.myInfo.EmailRequest
 import com.example.splmobile.dtos.myInfo.UserSerializable
-import com.example.splmobile.models.ViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +34,9 @@ class UserInfoViewModel (
     }
 
     //state put me user
-    private val _myInfoUserUpdateUIState = MutableStateFlow<MyInfoUserUpdateUIState>(MyInfoUserUpdateUIState.Empty)
+    private val _myInfoUserUpdateUIState = MutableStateFlow<MyInfoUserUpdateUIState>(
+        MyInfoUserUpdateUIState.Empty
+    )
     val myInfoUserUpdateUIState = _myInfoUserUpdateUIState.asStateFlow()
     sealed class MyInfoUserUpdateUIState {
         data class Success(val data: UserSerializable) : MyInfoUserUpdateUIState()
@@ -81,7 +80,7 @@ class UserInfoViewModel (
                 log.v("Getting All User Info ID --- ${response.data.id}")
                 _myIDUIState.value = response.data.id
             }else{
-                _myInfoUserUIState.value =MyInfoUserUIState.Error(response.message)
+                _myInfoUserUIState.value = MyInfoUserUIState.Error(response.message)
 
             }
 
@@ -97,7 +96,7 @@ class UserInfoViewModel (
             if(response.message.substring(0,3)  == "200"){
                 _myInfoUserUpdateUIState.value = MyInfoUserUpdateUIState.Success(response.data)
             }else{
-                _myInfoUserUpdateUIState.value =MyInfoUserUpdateUIState.Error(response.message)
+                _myInfoUserUpdateUIState.value = MyInfoUserUpdateUIState.Error(response.message)
             }
 
 
@@ -115,7 +114,7 @@ class UserInfoViewModel (
                 log.v("getting ${response.data}")
                 _myEventsUIState.value = MyEventsUIState.Success(response.data)
             }else{
-                _myEventsUIState.value =MyEventsUIState.Error(response.message)
+                _myEventsUIState.value = MyEventsUIState.Error(response.message)
             }
         }
     }
@@ -127,9 +126,10 @@ class UserInfoViewModel (
 
             if(response.message.substring(0,3) == "200"){
                 _myActivitiesUIState.value = MyActivitiesUIState.Success(response.data)
-                _myActivitiesUIState.value = MyActivitiesUIState.SuccessLast5(response.data.takeLast(5))
+                _myActivitiesUIState.value =
+                    MyActivitiesUIState.SuccessLast5(response.data.takeLast(5))
             }else{
-                _myActivitiesUIState.value =MyActivitiesUIState.Error(response.message)
+                _myActivitiesUIState.value = MyActivitiesUIState.Error(response.message)
             }
         }
 
@@ -137,7 +137,7 @@ class UserInfoViewModel (
 
     // Check Email
     fun checkEmail(email: String) = viewModelScope.launch {
-        _myInfoUserUIState.value = UserInfoViewModel.MyInfoUserUIState.Loading
+        _myInfoUserUIState.value = MyInfoUserUIState.Loading
 
         var emailResponse : EmailCheckResponse = viewModelScope.async() {
             log.v { "getEmailExists" }
