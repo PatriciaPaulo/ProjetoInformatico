@@ -9,5 +9,6 @@ data class UserInEventSerializable(
     val event: EventSerializable,
     val userID: Long,
     val status: String,
+    val creator: Boolean,
 
 )

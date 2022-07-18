@@ -42,6 +42,7 @@ fun GarbageSpotsListScreen(
     mainViewModel: MainViewModel,
     log: Logger
 ) {
+    val log = log.withTag("GarbageSpotsListScreen")
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
@@ -72,7 +73,7 @@ fun GarbageSpotsListScreen(
                 },
                 onSearchClicked = {
                     coroutineScope.launch {
-
+                        //todo
 
                     }
                 },
@@ -90,6 +91,7 @@ fun GarbageSpotsListScreen(
                 style = MaterialTheme.typography.h4)
             when(garbageSpotsListState){
                 is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
+                    log.d{"Get garbage spots state -> Success"}
                     LazyColumn(modifier = Modifier
                         .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
 
@@ -101,6 +103,7 @@ fun GarbageSpotsListScreen(
                     }
                 }
                 is  GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
+                    log.d{"Get garbage spots state -> Error"}
                     Text(
                         text = textResource(R.string.txtGarbageSpotError).toString() ,
                         color = MaterialTheme.colors.primary,

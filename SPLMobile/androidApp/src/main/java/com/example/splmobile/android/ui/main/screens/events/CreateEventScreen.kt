@@ -64,6 +64,7 @@ fun CreateEventScreen(
     sharedViewModel: SharedViewModel,
     log: Logger
 ) {
+    val log = log.withTag("CreateEventScreen")
 
 
     val coroutineScope = rememberCoroutineScope()
@@ -77,9 +78,6 @@ fun CreateEventScreen(
     var garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeSerializable>())}
 
 
-    //search bar states
-    val searchWidgetState by mainViewModel.searchWidgetState
-    val searchTextState by mainViewModel.searchTextState
 
 
     Scaffold(
@@ -172,9 +170,9 @@ fun CreateEventScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                     Text("PONTO DE ENCONTRO")
-                    PlacePickerComponent(locationEvent)
+                    PlacePickerComponent(locationEvent,log)
                     Spacer(modifier = Modifier.height(32.dp))
-                    DatePickerComponent(startDateEvent)
+                    DatePickerComponent(startDateEvent,log)
                     if(startDateEvent.value.isEmpty()){
                         Text(
                             text = stringResource(R.string.txtNecessaryField),
@@ -322,9 +320,7 @@ fun CreateEventScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                     Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
-
-
-
+                    //todo redo , select only updating after state change and not when clicked
                     LazyColumn(
                         modifier = Modifier
                             .height(200.dp)
@@ -383,7 +379,6 @@ fun CreateEventScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
 
 
                     Spacer(modifier = Modifier.height(32.dp))
@@ -424,6 +419,7 @@ fun CreateEventScreen(
 
                 when(createEventState){
                     is EventViewModel.EventCreateUIState.Success -> {
+                        log.d{"event create state -> success"}
                         Text(
                             text = textResource(R.string.txtEventCreatedSuccess).toString(),
                             color = MaterialTheme.colors.primary,
@@ -432,7 +428,11 @@ fun CreateEventScreen(
                         )
 
                     }
-                    is EventViewModel.EventCreateUIState.Error -> Text(text = "Error message - " + createEventState.error)
+                    is EventViewModel.EventCreateUIState.Error -> {
+                        log.d{"event create state -> Error"}
+                        log.d{"Error -> ${ createEventState.error}"}
+                        Text(text = "Error message - " + createEventState.error)
+                    }
                     is EventViewModel.EventCreateUIState.Loading -> CircularProgressIndicator()
                 }
 
@@ -447,7 +447,8 @@ fun CreateEventScreen(
                         (!locationEvent.value.latitude.equals(0.0)) &&
                         listGarbageTypeInEvent.value .isNotEmpty()
                     ){
-                        Log.d("create event screen","verificated")
+                        log.d{"create event fields verified"}
+
                         eventViewModel.createEvent(EventSerializable(
                             0,
                             nameEvent.value.text,
@@ -465,7 +466,9 @@ fun CreateEventScreen(
                             listGarbageTypeInEvent.value,
                          authViewModel.tokenState.value)
                     }else{
-                        Log.d("create event screen","failed check fields")
+                        log.d{"create event fields failed"}
+
+
                     }
                 },  ) {
                   Text(text= "Criar")
@@ -481,8 +484,10 @@ fun CreateEventScreen(
 }
 
 @Composable
-fun PlacePickerComponent(locationEvent: MutableState<LatLng>) {
-
+fun PlacePickerComponent(
+    locationEvent: MutableState<LatLng>, log: Logger
+) {
+    log.d{"Picking place"}
     val dialogState = rememberMaterialDialogState()
     MaterialDialog(
         dialogState = dialogState,
@@ -545,8 +550,10 @@ fun PlacePickerComponent(locationEvent: MutableState<LatLng>) {
 
 @Composable
 fun DatePickerComponent(
-    dateEvent: MutableState<String>
+    dateEvent: MutableState<String>,
+    log: Logger
 ) {
+    log.d{"Picking date"}
     // Fetching the Local Context
     val mContext = LocalContext.current
     // Declaring integer values

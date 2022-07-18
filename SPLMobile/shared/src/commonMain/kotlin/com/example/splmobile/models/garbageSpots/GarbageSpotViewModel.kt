@@ -40,7 +40,7 @@ class GarbageSpotViewModel (
 
     //state update garbage spot
     private val _garbageSpotUpdateUIState = MutableStateFlow<GarbageSpotUpdateUIState>(GarbageSpotUpdateUIState.Empty)
-    val garbageSpotUpdateUIState = _garbageSpotCreateUIState.asStateFlow()
+    val garbageSpotUpdateUIState = _garbageSpotUpdateUIState.asStateFlow()
     sealed class GarbageSpotUpdateUIState {
         object Success: GarbageSpotUpdateUIState()
         data class Error(val error: String) : GarbageSpotUpdateUIState()

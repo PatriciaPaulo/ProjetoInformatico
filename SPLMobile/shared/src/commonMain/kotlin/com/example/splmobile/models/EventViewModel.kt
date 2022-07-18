@@ -23,6 +23,7 @@ class EventViewModel (
         object Loading : EventsUIState()
         object Empty : EventsUIState()
     }
+
     //state get event id
     private val _eventByIdUIState = MutableStateFlow<EventByIdUIState>(EventByIdUIState.Empty)
     val eventByIdUIState = _eventByIdUIState.asStateFlow()
@@ -41,8 +42,18 @@ class EventViewModel (
         object Success: EventCreateUIState()
         data class Error(val error: String) : EventCreateUIState()
         object Loading : EventCreateUIState()
-
         object Empty : EventCreateUIState()
+    }
+
+    //state UPDATE event
+    private val _eventUpdateUIState = MutableStateFlow<EventUpdateUIState>(EventUpdateUIState.Empty)
+    val eventUpdateUIState = _eventCreateUIState.asStateFlow()
+    sealed class EventUpdateUIState {
+        object UpdateStatusSuccess: EventUpdateUIState()
+        object UpdateSuccess: EventUpdateUIState()
+        data class Error(val error: String) : EventUpdateUIState()
+        object Loading : EventUpdateUIState()
+        object Empty : EventUpdateUIState()
     }
 
     //state participate in event
@@ -104,6 +115,37 @@ class EventViewModel (
         }
 
     }
+    fun updateEventStatus(eventId: Long, status: String, token: String) {
+        log.v("update event $eventId status")
+        _eventUpdateUIState.value = EventUpdateUIState.Loading
+        viewModelScope.launch {
+            val response = eventService.patchEventStatus(eventId,status,token)
+            if(response.message.substring(0,3)  == "200"){
+                log.v("Creating event successful")
+                _eventUpdateUIState.value = EventUpdateUIState.UpdateStatusSuccess
+                getEvents()
+            }else{
+                log.v("Creating event error")
+                _eventUpdateUIState.value = EventUpdateUIState.Error(response.message)
+            }
+        }
+    }
+
+    fun updateEvent(eventId: Long, event: EventSerializable, token: String) {
+        log.v("update event $eventId status")
+        _eventUpdateUIState.value = EventUpdateUIState.Loading
+        viewModelScope.launch {
+            val response = eventService.putEvent(eventId,event,token)
+            if(response.message.substring(0,3)  == "200"){
+                log.v("Creating event successful")
+                _eventUpdateUIState.value = EventUpdateUIState.UpdateSuccess
+                getEvents()
+            }else{
+                log.v("Creating event error")
+                _eventUpdateUIState.value = EventUpdateUIState.Error(response.message)
+            }
+        }
+    }
 
     fun participateInEvent(eventID: Long,token: String) {
         log.v("signing up in event $eventID")
@@ -120,8 +162,9 @@ class EventViewModel (
             }
         }
     }
+
     fun participateStatusUpdateInEvent(eventID: Long,userEventID: Long,status: String,token: String) {
-        log.v("signing up in event $eventID")
+        log.v("update user in event $eventID")
         _eventParticipateUIState.value = EventParticipateUIState.Loading
         viewModelScope.launch {
             val response = eventService.patchStatusParticipateInEvent(eventID,userEventID,status,token)
@@ -135,6 +178,8 @@ class EventViewModel (
             }
         }
     }
+
+
 
 
 }

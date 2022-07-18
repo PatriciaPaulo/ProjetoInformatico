@@ -5,7 +5,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -52,17 +50,17 @@ fun ProfileScreen(
     sharedViewModel: SharedViewModel,
     log: Logger
 ) {
+    val log = log.withTag("ProfileScreen")
 
-    //android view model states
-    val searchWidgetState by mainViewModel.searchWidgetState
-    val searchTextState by mainViewModel.searchTextState
-    val coroutineScope = rememberCoroutineScope()
+
     val scaffoldState = rememberScaffoldState()
 
     var userInfoState = userInfoViewModel.myInfoUserUIState.collectAsState().value
     var usersEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
     var usersActivitiesState = userInfoViewModel.myActivitiesUIState.collectAsState().value
+
     LaunchedEffect(Unit) {
+        log.d{"get my info get my events and get my activities launched"}
         userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
         userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
         userInfoViewModel.getMyActivities(authViewModel.tokenState.value)
@@ -90,15 +88,19 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally) {
                     when(userInfoState){
+
                         is UserInfoViewModel.MyInfoUserUIState.Success ->
                         {
+                            log.d{"User info State -> Success"}
                             ProfileSection(
                                 userInfoState.data,
                                 userInfoViewModel,
                                 authViewModel,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .align(Alignment.CenterHorizontally))
+                                    .align(Alignment.CenterHorizontally),
+                                log
+                            )
                         }
                         is UserInfoViewModel.MyInfoUserUIState.Loading -> CircularProgressIndicator()
                         is UserInfoViewModel.MyInfoUserUIState.Error -> Text(text = "Error message - " + userInfoState.error)
@@ -150,39 +152,58 @@ fun ProfileScreen(
                         })
 
                 }
-                Column(modifier = Modifier
-                    .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally){
-                    when(usersEventsState){
-                        is UserInfoViewModel.MyEventsUIState.Success ->
-                        {
-                            usersEventsState.events.subList(0,5).forEach { it ->
-                                TextButton(onClick = {
-                                    navController.navigate(Screen.EventInfo.route + "/${it.id}")
-                                }){
-                                    Text(text = "Evento ${it.id} com estado de ${it.status}. ")
-                                }
-
-                            }
-
-                        }
-                        is UserInfoViewModel.MyEventsUIState.Loading -> CircularProgressIndicator()
-                        is UserInfoViewModel.MyEventsUIState.Error -> {
-                            TextButton(onClick = {}){
-                                Text(text = "No Events Available!. ")
-                            }
-                        }
-                    }
-
-
-
-                }
+                MyEventsSection(usersEventsState, navController,log)
             }
         },
     )
 }
 
+@Composable
+private fun MyEventsSection(
+    usersEventsState: UserInfoViewModel.MyEventsUIState,
+    navController: NavHostController,
+    log: Logger
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        when (usersEventsState) {
+            is UserInfoViewModel.MyEventsUIState.Success -> {
+                log.d{"Get my events state -> Success"}
+                var sizeOfList = 0
+                if (usersEventsState.events.size > 5) {
+                    sizeOfList = 5
+                } else {
+                    sizeOfList = usersEventsState.events.size
+                }
+                usersEventsState.events.subList(0, sizeOfList).forEach { it ->
+                    TextButton(onClick = {
+                        navController.navigate(Screen.EventInfo.route + "/${it.event.id}")
+                    }) {
+                        Text(text = "Evento ${it.event.id} com estado de ${it.status}. ")
+                    }
+
+                }
+
+            }
+            is UserInfoViewModel.MyEventsUIState.Loading -> {
+                log.d{"Get my events state -> Loading"}
+                CircularProgressIndicator()
+            }
+            is UserInfoViewModel.MyEventsUIState.Error -> {
+                log.d{"Get my events state -> Error"}
+                TextButton(onClick = {}) {
+                    Text(text = "No Events Available!. ")
+                }
+            }
+        }
+
+
+    }
+}
 
 
 @Composable
@@ -191,6 +212,7 @@ fun ProfileSection(
     userInfoViewModel: UserInfoViewModel,
     authViewModel: AuthViewModel,
     modifier: Modifier = Modifier,
+    log: Logger,
 ) {
     var editableState = remember { mutableStateOf(false) }
     var editableFieldsAlteredState = remember { mutableStateOf(false) }
@@ -204,16 +226,20 @@ fun ProfileSection(
     var updateUserState = userInfoViewModel.myInfoUserUpdateUIState.collectAsState().value
 
     if(editableFieldsAlteredState.value){
+        log.d{"User can make update request"}
         btnEditarState.value = true
     }else{
+        log.d{"User cant make update request"}
         btnEditarState.value = false
     }
 
     if((utilizadorName.value.text != utilizador.name && utilizadorName.value.text.isNotEmpty())||
         (utilizadorEmail.value.text != utilizador.email && utilizadorEmail.value.text.isNotEmpty())||
         (utilizadorUsername.value.text != utilizador.username && utilizadorUsername.value.text.isNotEmpty())){
+        log.d{" User Info fields were changed"}
         editableFieldsAlteredState.value = true
     }else{
+        log.d{" User Info fields were not changed"}
         editableFieldsAlteredState.value = false
     }
 
@@ -235,9 +261,11 @@ fun ProfileSection(
             Spacer(Modifier.height(20.dp))
             when (editableState.value) {
                 true-> {
-                      EditableProfileDescription(utilizadorName, utilizadorEmail, utilizadorUsername,editableFieldsAlteredState)
+                    log.d{"In editable mode"}
+                    EditableProfileDescription(utilizadorName, utilizadorEmail, utilizadorUsername)
                 }
                 false -> {
+                    log.d{"In view only mode"}
                     ProfileDescription(
                         utilizador.name, utilizador.email, utilizador.username
                     )
@@ -246,6 +274,7 @@ fun ProfileSection(
             //edit state when(viewmodel state ui)
             when(updateUserState){
                 is UserInfoViewModel.MyInfoUserUpdateUIState.Success -> {
+                    log.d{"User update info state -> Success"}
                     Text(
                         text = textResource(R.string.txtUserUpdatedSuccess).toString(),
                         color = MaterialTheme.colors.primary,
@@ -255,8 +284,13 @@ fun ProfileSection(
 
 
                 }
-                is UserInfoViewModel.MyInfoUserUpdateUIState.Loading -> CircularProgressIndicator()
+                is UserInfoViewModel.MyInfoUserUpdateUIState.Loading -> {
+                    log.d{"User update info state -> Loading"}
+                    CircularProgressIndicator()
+                }
+
                 is UserInfoViewModel.MyInfoUserUpdateUIState.Error ->{
+                    log.d{"User update info state -> Error"}
                     Text(
                         text = "Error message - " + updateUserState.error,
                         color = MaterialTheme.colors.error,
@@ -269,12 +303,15 @@ fun ProfileSection(
             Button(
                 onClick = {
                     if(editableState.value){
+                        log.d{"Values that were not updated reseted"}
                         utilizadorName.value = TextFieldValue(text = utilizador.name)
                         utilizadorEmail.value = TextFieldValue(text = utilizador.email)
                         utilizadorUsername.value =  TextFieldValue(text = utilizador.username)
 
                     }
-                    editableState.value = !editableState.value },
+                    //close and open editable state
+                    editableState.value = !editableState.value
+                          },
 
                 modifier = Modifier.align(Alignment.End)) {
                 if(editableState.value){
@@ -288,6 +325,7 @@ fun ProfileSection(
                 Button(
                     onClick = {
                         if(editableFieldsAlteredState.value){
+                            log.d{"Update my info request sent"}
                             userInfoViewModel.putMyInfo(
                                 UserSerializable(
                                     0,
@@ -299,6 +337,7 @@ fun ProfileSection(
                         //utilizador.email = utilizadorEmail.value.text
                         //utilizador.username = utilizadorUsername.value.text
                         //utilizador.name = utilizadorName.value.text
+                        //change from editable to view only after request sent
                         editableState.value = false
                               },
                     enabled = btnEditarState.value,
@@ -385,10 +424,9 @@ fun EditableProfileDescription(
     utilizadorName: MutableState<TextFieldValue>,
     utilizadorEmail: MutableState<TextFieldValue>,
     utilizadorUsername: MutableState<TextFieldValue>,
-    editableFieldsAlteredState: MutableState<Boolean>,
+
 ) {
-    val letterSpacing = 0.5.sp
-    val lineHeight = 20.sp
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -456,76 +494,8 @@ fun ProfileDescription(
     }
 }
 
-@Composable
-fun ButtonSection(
-    modifier: Modifier = Modifier
-) {
-    val minWidth = 95.dp
-    val height = 30.dp
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = modifier
-    ) {
-        ActionButton(
-            text = "Following",
-            icon = Icons.Default.KeyboardArrowDown,
-            modifier = Modifier
-                .defaultMinSize(minWidth = minWidth)
-                .height(height)
-        )
-        ActionButton(
-            text = "Message",
-            modifier = Modifier
-                .defaultMinSize(minWidth = minWidth)
-                .height(height)
-        )
-        ActionButton(
-            text = "Email",
-            modifier = Modifier
-                .defaultMinSize(minWidth = minWidth)
-                .height(height)
-        )
-        ActionButton(
-            icon = Icons.Default.KeyboardArrowDown,
-            modifier = Modifier
-                .size(height)
-        )
-    }
-}
 
-@Composable
-fun ActionButton(
-    modifier: Modifier = Modifier,
-    text: String? = null,
-    icon: ImageVector? = null
-) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .border(
-                width = 1.dp,
-                color = Color.LightGray,
-                shape = RoundedCornerShape(5.dp)
-            )
-            .padding(6.dp)
-    ) {
-        if(text != null) {
-            Text(
-                text = text,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp
-            )
-        }
-        if(icon != null) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Color.Black
-            )
-        }
-    }
-}
+
 
 @ExperimentalFoundationApi
 @Composable
@@ -537,12 +507,3 @@ fun ActivitySection(
 
 }
 
-@ExperimentalFoundationApi
-@Composable
-fun NextEventsSection(
-    posts: List<Painter>,
-    modifier: Modifier = Modifier
-) {
-
-
-}

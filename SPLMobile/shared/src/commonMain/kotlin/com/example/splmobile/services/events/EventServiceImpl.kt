@@ -142,7 +142,47 @@ class EventServiceImpl (
         }
     }
 
+    override suspend fun putEvent(
+        eventId: Long,
+        event: EventSerializable,
+        token: String
+    ): RequestMessageResponse {
+        log.d { "put event" }
+        try{
+            return client.put {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                setBody(event)
+                url("api/events/"+eventId)
+            }.body() as RequestMessageResponse
+        }
+        catch (ex :Exception){
+            return RequestMessageResponse("$ex")
+        }
+    }
 
+    override suspend fun patchEventStatus(
+        eventId: Long,
+        status: String,
+        token: String
+    ): RequestMessageResponse {
+        log.d { "patch event status" }
+        try{
+            return client.patch {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                setBody(status)
+                url("api/events/"+eventId+"/updateStatus")
+            }.body() as RequestMessageResponse
+        }
+        catch (ex :Exception){
+            return RequestMessageResponse("$ex")
+        }
+    }
 
 
     private fun HttpRequestBuilder.url(path: String) {

@@ -41,7 +41,7 @@ def create_event(current_user):
             db.session.add(new_garbageInEvent)
             db.session.commit()
 
-    organizador = UserInEvent(userID=current_user.id,eventID=new_event.id,status="Confirmado",creator=True)
+    organizador = UserInEvent(userID=current_user.id,eventID=new_event.id,status="Organizer",creator=True)
     db.session.add(organizador)
 
     db.session.commit()
@@ -126,6 +126,30 @@ def update_event(current_user, event_id):
     return make_response(jsonify({'message': '200 OK - Event Updated'}), 200)
 
 
+# Update Event by Event Organizer (User)
+@event_routes_blueprint.route('/events/<event_id>/updateStatus', methods=['PATCH'])
+@token_required
+def update_status_event(current_user, event_id):
+    event = db.session.query(Event).filter_by(id=event_id).first()
+
+    if not event:
+        return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
+    userInEvent = db.session.query(UserInEvent).filter_by(userID=current_user.id, eventID=event_id).first()
+
+    if not userInEvent:
+        return make_response(jsonify({'message': '404 NOT OK - User in Event Not Found'}), 404)
+
+    if userInEvent.status != "Organizer":
+        return make_response(jsonify({'message': '403 NOT OK - You Can\'t Update This Event'}), 403)
+
+    event_data = request.get_json()
+
+    event.status = event_data
+
+    db.session.commit()
+
+
+    return make_response(jsonify({'message': '200 OK - Event Updated'}), 200)
 
 # Region Event Operations Regarding Garbage Spots
 
@@ -189,7 +213,7 @@ def get_events_na_garbageSpot(current_user, garbageSpot_id):
 def get_my_events(current_user):
 
     myEvents = db.session.query(UserInEvent).filter_by(userID=current_user.id).all()
-    print(myEvents)
+
 
     output = []
 
@@ -204,6 +228,7 @@ def get_my_events(current_user):
 
 
         event_data['status'] = user_event.status
+        event_data['creator'] = user_event.creator
 
         output.append(event_data)
 
@@ -247,7 +272,7 @@ def update_status_user_to_event(current_user,event_id,user_event_id):
         return make_response(jsonify({'message': '404 NOT OK - User In Event Not Found! '}), 404)
 
     data = request.get_json()
-    #print(data)
+    print(data)
     user_event.status = data
 
     db.session.commit()

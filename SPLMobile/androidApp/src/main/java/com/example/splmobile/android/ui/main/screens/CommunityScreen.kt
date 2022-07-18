@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
@@ -17,7 +16,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -30,7 +28,6 @@ import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
-import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
@@ -54,11 +51,14 @@ fun CommunityScreen(
     sharedViewModel: SharedViewModel,
     log: Logger
 ) {
+    val log = log.withTag("CommunityScreen")
+
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
     val bottomScaffoldState = rememberBottomSheetScaffoldState()
     LaunchedEffect(Unit) {
+        log.d{"get events and get garbage spots launched"}
         eventViewModel.getEvents()
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
 
@@ -88,7 +88,7 @@ fun CommunityScreen(
                 },
                 onSearchClicked = {
                     coroutineScope.launch {
-
+                        //todo search for
 
                     }
                 },
@@ -138,7 +138,7 @@ fun CommunityScreen(
                 if(buttonScreenState.value.equals(R.string.btnCommunity)){
                     when(eventsListState){
                         is EventViewModel.EventsUIState.Success -> {
-                            EventsNearMeSection(navController,eventsListState.events)
+                            EventsNearMeSection(navController,eventsListState.events,log)
                         }
                         is EventViewModel.EventsUIState.Error -> {
                             Text(text = "${eventsListState.error}")
@@ -149,14 +149,17 @@ fun CommunityScreen(
 
 
                     //create event section
-                    CreateEventSection(navController)
+                    CreateEventSection(navController,log)
 
                     when(garbageSpotsListState){
                         is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
+                            log.d{"get garbage spots state -> success"}
                             //garbagespotsnearme section
-                            GarbageSpotsNearMe(navController,garbageSpotsListState.garbageSpots)
+                            GarbageSpotsNearMe(navController,garbageSpotsListState.garbageSpots,log)
                         }
                         is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
+                            log.d{"get garbage spots state -> Error"}
+                            log.d{"Error -> ${garbageSpotsListState.error}"}
                             Text(text = "${garbageSpotsListState.error}")
                         }
                     }
@@ -176,7 +179,11 @@ fun CommunityScreen(
 }
 
 @Composable
-private fun GarbageSpotsNearMe(navController: NavHostController,garbageSpots: List<GarbageSpotSerializable>) {
+private fun GarbageSpotsNearMe(
+    navController: NavHostController,
+    garbageSpots: List<GarbageSpotSerializable>,
+    log: Logger
+) {
     Spacer(modifier = Modifier.height(32.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -210,8 +217,8 @@ private fun GarbageSpotsNearMe(navController: NavHostController,garbageSpots: Li
             garbageSpots.subList(0,10).forEachIndexed { index, card ->
                 item(span = { GridItemSpan(1) }) {
                     Card(Modifier.clickable {
-                        Log.d("community","$card")
-
+                        log.d{"Clicked garbage spot -> $card"}
+                        log.d{"Navigated to new screen"}
                         navController.navigate(Screen.GarbageSpotInfo.route + "/${card.id}")
                     },
                     ){
@@ -232,7 +239,8 @@ private fun GarbageSpotsNearMe(navController: NavHostController,garbageSpots: Li
 
 @Composable
 private fun CreateEventSection(
-    navController: NavHostController
+    navController: NavHostController,
+    log: Logger
 ) {
     Spacer(modifier = Modifier.height(32.dp))
     Row(
@@ -252,6 +260,7 @@ private fun CreateEventSection(
 
         Button(
             onClick = {
+                log.d{"Navigated to new screen"}
                 navController.navigate(Screen.CreateEvent.route)
             },
             modifier = Modifier
@@ -265,8 +274,10 @@ private fun CreateEventSection(
 }
 
 @Composable
-private fun EventsNearMeSection(navController: NavHostController,
-    events: List<EventSerializable>
+private fun EventsNearMeSection(
+    navController: NavHostController,
+    events: List<EventSerializable>,
+    log: Logger
 ) {
     Spacer(modifier = Modifier.height(32.dp))
     Row(
@@ -279,6 +290,7 @@ private fun EventsNearMeSection(navController: NavHostController,
         ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems).toString()),
             style = MaterialTheme.typography.body1,
             onClick = {
+                log.d{"Navigated to new screen"}
                 navController.navigate(Screen.EventList.route)
             })
 
@@ -303,8 +315,9 @@ private fun EventsNearMeSection(navController: NavHostController,
                 item(span = { GridItemSpan(1) }) {
                     Card(
                         Modifier.clickable {
-                            Log.d("community","$card")
 
+                            log.d{"Event clicked -> $card"}
+                            log.d{"Navigated to new screen"}
                             navController.navigate(Screen.EventInfo.route + "/${card.id}")
                         },
                     ){

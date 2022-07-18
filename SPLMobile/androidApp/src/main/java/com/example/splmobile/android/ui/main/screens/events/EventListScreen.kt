@@ -43,6 +43,8 @@ fun EventListScreen(
     mainViewModel: MainViewModel,
     log: Logger
 ) {
+
+    val log = log.withTag("EventListScreen")
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
@@ -74,7 +76,7 @@ fun EventListScreen(
             },
             onSearchClicked = {
                 coroutineScope.launch {
-
+                    //todo
 
                 }
             },
@@ -92,6 +94,7 @@ fun EventListScreen(
             style = MaterialTheme.typography.h4)
             when(eventsListState){
                 is EventViewModel.EventsUIState.Success -> {
+                    log.d{"all events state -> Success"}
                     LazyColumn(modifier = Modifier
                                 .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
 
@@ -103,6 +106,7 @@ fun EventListScreen(
                     }
                 }
                 is EventViewModel.EventsUIState.Error -> {
+                    log.d{"all events state -> Error"}
                     Text(
                         text = textResource(R.string.txtEventError).toString() ,
                         color = MaterialTheme.colors.primary,

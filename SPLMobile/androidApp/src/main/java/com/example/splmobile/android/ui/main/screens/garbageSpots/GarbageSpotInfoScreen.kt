@@ -38,7 +38,7 @@ fun GarbageSpotInfoScreen(
     garbageSpotId: String?,
     log: Logger
 ) {
-
+    val log = log.withTag("GarbageSpotInfoScreen")
     LaunchedEffect(Unit) {
 
         //garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
@@ -48,7 +48,7 @@ fun GarbageSpotInfoScreen(
     }
     var garbageSpotByIdState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
 
-    Log.e("event info", "Yes")
+
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
@@ -118,8 +118,8 @@ fun GarbageSpotInfoScreen(
 
                     Button(
                         onClick = {
-                           // eventViewModel.participateStatusUpdateInEvent(eventoId!!.toLong(),event.id,selectedOptionText,authViewModel.tokenState.value)
-                        },
+
+                                 },
                         modifier = Modifier
                             .fillMaxWidth(),
 

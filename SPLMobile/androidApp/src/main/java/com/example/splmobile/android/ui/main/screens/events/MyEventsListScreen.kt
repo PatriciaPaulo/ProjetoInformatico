@@ -43,6 +43,7 @@ fun MyEventListScreen(
     mainViewModel: MainViewModel,
     log: Logger
 ) {
+    val log = log.withTag("MyEventListScreen")
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
@@ -74,7 +75,7 @@ fun MyEventListScreen(
                 },
                 onSearchClicked = {
                     coroutineScope.launch {
-
+                        //todo
 
                     }
                 },
