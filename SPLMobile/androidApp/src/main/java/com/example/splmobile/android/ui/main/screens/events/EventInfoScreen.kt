@@ -18,9 +18,11 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
+import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
+import com.example.splmobile.models.UserInEventViewModel
 import com.example.splmobile.models.UserInfoViewModel
 
 
@@ -30,6 +32,7 @@ import com.example.splmobile.models.UserInfoViewModel
 fun EventInfoScreen(
     navController: NavController,
     eventViewModel: EventViewModel,
+    userInEventViewModel: UserInEventViewModel,
     authViewModel: AuthViewModel,
     userInfoViewModel: UserInfoViewModel,
     eventoId: String?,
@@ -74,8 +77,10 @@ fun EventInfoScreen(
                     is UserInfoViewModel.MyEventsUIState.Success -> {
                         log.d{"my events state  -> Success"}
                         MainComponent(
+                            navController,
                             myEventsState,
                             eventState.event,
+                            userInEventViewModel,
                             eventViewModel,
                             authViewModel,
                             participateState,
@@ -101,8 +106,10 @@ fun EventInfoScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MainComponent(
+    navController: NavController,
     myEventsState: UserInfoViewModel.MyEventsUIState.Success,
     event: EventSerializable,
+    userInEventViewModel: UserInEventViewModel,
     eventViewModel: EventViewModel,
     authViewModel: AuthViewModel,
     participateState: EventViewModel.EventParticipateUIState,
@@ -193,7 +200,7 @@ private fun MainComponent(
                 //button for organizers only to update event status
                 Button(
                     onClick = {
-                              eventViewModel.updateEventStatus(event.id,selectedOptionText,authViewModel.tokenState.value)
+                        eventViewModel.updateEventStatus(event.id,selectedOptionText,authViewModel.tokenState.value)
 
                     },
                     modifier = Modifier
@@ -202,6 +209,19 @@ private fun MainComponent(
                     ) {
                     Text(text = textResource(R.string.btnUpdateParticipateOnEvent).toString())
                 }
+                //button for organizers to add new organizers
+                Button(
+                    onClick = {
+                        navController.navigate(Screen.UsersInEventList.route+"/${event.id}")
+
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+
+                    ) {
+                    Text(text = textResource(R.string.btnCheckParticipantsOnEvent).toString())
+                }
+
             }
             else{
                 log.d{"user in event sign up"}
@@ -255,7 +275,7 @@ private fun MainComponent(
                 //button for participator only to update user_event status
                 Button(
                     onClick = {
-                        eventViewModel.participateStatusUpdateInEvent(
+                        userInEventViewModel.participateStatusUpdateInEvent(
                             event.id,
                             user_event.id,
                             selectedOptionText,
@@ -276,7 +296,7 @@ private fun MainComponent(
             Log.d("EventInfoSc", "sign in event")
             Button(
                 onClick = {
-                    eventViewModel.participateInEvent(
+                    userInEventViewModel.participateInEvent(
                         event.id,
                         authViewModel.tokenState.value
                     )

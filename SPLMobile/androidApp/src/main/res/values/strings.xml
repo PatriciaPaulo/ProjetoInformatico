@@ -104,6 +104,8 @@
     <string name="EventOrganizerStatusElement1">Criado</string>
     <string name="EventOrganizerStatusElement3">Finalizado</string>
     <string name="EventOrganizerStatusElement4">Cancelado</string>
+    <string name="btnCheckParticipantsOnEvent">Ver participantes</string>
+    <string name="lblPartipantsInEvent">Participantes</string>
 
 
 </resources>

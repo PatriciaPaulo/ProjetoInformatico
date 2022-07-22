@@ -6,11 +6,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.example.splmobile.AppInfo
 import com.example.splmobile.initKoin
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.UserInfoViewModel
-import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.models.*
 
 import dagger.hilt.android.HiltAndroidApp
 
@@ -29,6 +25,7 @@ class SPLMobileApplication : Application() {
                 viewModel { SharedViewModel(get(), get { parametersOf("SharedViewModel") }) }
                 viewModel { UserInfoViewModel(get(), get { parametersOf("UserInfoViewModel") }) }
                 viewModel { EventViewModel(get(), get { parametersOf("EventViewModel") }) }
+                viewModel { UserInEventViewModel(get(), get(),get { parametersOf("UserInEventViewModel") }) }
                 viewModel { AuthViewModel(get(), get { parametersOf("AuthViewModel") }) }
                 single<SharedPreferences> {
                     get<Context>().getSharedPreferences("KAMPSTARTER_SETTINGS", Context.MODE_PRIVATE)

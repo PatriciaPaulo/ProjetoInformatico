@@ -13,6 +13,8 @@ import com.example.splmobile.services.auth.AuthServiceImpl
 import com.example.splmobile.services.events.EventService
 import com.example.splmobile.services.events.EventServiceImpl
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
+import com.example.splmobile.services.userInEvent.UserInEventService
+import com.example.splmobile.services.userInEvent.UserInEventServiceImpl
 import kotlinx.datetime.Clock
 import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
@@ -75,6 +77,12 @@ private val coreModule = module {
     single<EventService> {
         EventServiceImpl(
             getWith("EventServiceImpl"),
+            get()
+        )
+    }
+    single<UserInEventService> {
+        UserInEventServiceImpl(
+            getWith("UserInEventServiceImpl"),
             get()
         )
     }

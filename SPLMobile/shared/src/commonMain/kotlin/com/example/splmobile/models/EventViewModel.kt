@@ -3,6 +3,7 @@ package com.example.splmobile.models
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.dtos.events.EventRequest
+import com.example.splmobile.dtos.events.UserInEventSerializable
 import com.example.splmobile.services.events.EventService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,9 +66,9 @@ class EventViewModel (
         data class Error(val error: String) : EventParticipateUIState()
         object Loading : EventParticipateUIState()
         object Empty : EventParticipateUIState()
+
+
     }
-
-
 
     fun getEvents() {
         _eventsUIState.value = EventsUIState.Loading
@@ -147,37 +148,7 @@ class EventViewModel (
         }
     }
 
-    fun participateInEvent(eventID: Long,token: String) {
-        log.v("signing up in event $eventID")
-        _eventParticipateUIState.value = EventParticipateUIState.Loading
-        viewModelScope.launch {
-            val response = eventService.postParticipateInEvent(eventID,token)
-            if(response.message.substring(0,3)  == "200"){
-                log.v("signing up in event successful")
-                _eventParticipateUIState.value = EventParticipateUIState.SuccessParticipate
-                getEvents()
-            }else{
-                log.v("signing up in event error")
-                _eventParticipateUIState.value = EventParticipateUIState.Error(response.message)
-            }
-        }
-    }
 
-    fun participateStatusUpdateInEvent(eventID: Long,userEventID: Long,status: String,token: String) {
-        log.v("update user in event $eventID")
-        _eventParticipateUIState.value = EventParticipateUIState.Loading
-        viewModelScope.launch {
-            val response = eventService.patchStatusParticipateInEvent(eventID,userEventID,status,token)
-            if(response.message.substring(0,3)  == "200"){
-                log.v("Creating event successful")
-                _eventParticipateUIState.value = EventParticipateUIState.SuccessUpdate
-                getEvents()
-            }else{
-                log.v("Creating event error")
-                _eventParticipateUIState.value = EventParticipateUIState.Error(response.message)
-            }
-        }
-    }
 
 
 

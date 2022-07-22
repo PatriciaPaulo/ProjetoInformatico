@@ -24,11 +24,7 @@ import com.example.splmobile.android.ui.theme.SPLTheme
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.android.viewmodel.SplashViewModel
 import com.example.splmobile.injectLogger
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.UserInfoViewModel
-import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.models.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 //import dagger.hilt.android.AndroidEntryPoint
@@ -57,6 +53,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
     private val authViewModel: AuthViewModel by viewModel()
     private val userInfoViewModel: UserInfoViewModel by viewModel()
     private val eventViewModel: EventViewModel by viewModel()
+    private val userInEventViewModel: UserInEventViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -82,6 +79,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
                     garbageSpotViewModel = garbageSpotViewModel,
                     userInfoViewModel = userInfoViewModel,
                     eventViewModel = eventViewModel,
+                    userInEventViewModel = userInEventViewModel,
                     sharedViewModel = sharedViewModel
                 )
 

@@ -93,24 +93,55 @@ def get_me(current_user):
 # Get All Users
 @user_routes_blueprint.route('/users', methods=['GET'])
 @admin_required
-def get_all_users():
+def get_all_users(current_user):
     # Query for all users
     result = []
     users = db.session.query(User).filter_by(deleted_at=None)
 
     for user in users:
-        user_data = {
-            'id': user.id,
-            'username': user.username,
-            'name': user.name,
-            'email': user.email,
-            'admin': user.admin,
-            'blocked': user.blocked
-        }
-        result.append(User.serialize(user_data))
+        user_data = {}
+        user_data['id'] = user.id
+        user_data['username'] = user.username
+        user_data['name'] = user.name
+        user_data['email'] = user.email
+        user_data['admin'] = user.admin
+        user_data['blocked'] = user.blocked
+
+        result.append(user_data)
 
     return make_response(jsonify({'data': result, 'message': '200 OK - All Users Retrieved'}), 200)
 
+
+# Get users and stats by user
+@user_routes_blueprint.route('/users', methods=['GET'])
+@token_required
+def get_users(current_user):
+    # Query for all users
+    result = []
+    users = db.session.query(User).filter_by(deleted_at=None)
+
+    for user in users:
+        if not user.admin:
+            if not user.blocked:
+                events_participated = db.session.query(Event).filter_by(userID=user.id,status="Finalizado").count()
+                from datetime import date
+
+                today = date.today()
+                activities_completed = db.session.query(Activity).filter(userID== user.id,endDate <= today).count()
+
+                garbage_spots_created = db.session.query(GarbageSpot).filter_by(userID=user.id,creator=True).count()
+
+                user_data = {}
+                user_data['id'] = user.id
+                user_data['username'] = user.username
+                user_data['name'] = user.name
+                user_data['events_participated'] = events_participated
+                user_data['activities_completed'] = activities_completed
+                user_data['garbage_spots_created'] = garbage_spots_created
+
+                result.append(User.serialize(user_data))
+
+    return make_response(jsonify({'data': result, 'message': '200 OK - All Users Retrieved'}), 200)
 
 # Get User by ID
 @user_routes_blueprint.route('/users/<user_id>', methods=['GET'])

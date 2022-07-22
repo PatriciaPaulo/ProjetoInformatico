@@ -16,15 +16,12 @@ import com.example.splmobile.android.ui.main.screens.events.EventListScreen
 import com.example.splmobile.android.ui.main.screens.events.MyEventListScreen
 import com.example.splmobile.android.ui.main.screens.garbageSpots.GarbageSpotInfoScreen
 import com.example.splmobile.android.ui.main.screens.garbageSpots.GarbageSpotsListScreen
+import com.example.splmobile.android.ui.main.screens.users.UsersInEventListScreen
 import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.models.*
 
-import com.example.splmobile.models.GarbageSpotViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @ExperimentalPagerApi
@@ -39,6 +36,7 @@ fun SetupNavGraph(
     garbageSpotViewModel: GarbageSpotViewModel,
     userInfoViewModel: UserInfoViewModel,
     eventViewModel: EventViewModel,
+    userInEventViewModel: UserInEventViewModel,
     sharedViewModel: SharedViewModel
 ){
     NavHost(
@@ -112,6 +110,7 @@ fun SetupNavGraph(
         composable(Screen.EventInfo.route+"/{eventId}") { backStackEntry ->
             EventInfoScreen(navController = navController,
                 eventViewModel = eventViewModel,
+                userInEventViewModel = userInEventViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 backStackEntry.arguments?.getString("eventId"),
@@ -150,6 +149,17 @@ fun SetupNavGraph(
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 mainViewModel = mainViewModel,
+                log = log)
+
+        }
+        composable(Screen.UsersInEventList.route+"/{eventId}") {backStackEntry ->
+            UsersInEventListScreen(navController = navController,
+                eventViewModel = eventViewModel,
+                userInEventViewModel = userInEventViewModel,
+                authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
+                mainViewModel = mainViewModel,
+                backStackEntry.arguments?.getString("eventId"),
                 log = log)
 
         }

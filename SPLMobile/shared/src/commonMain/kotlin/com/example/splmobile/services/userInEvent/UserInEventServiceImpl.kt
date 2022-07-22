@@ -1,9 +1,10 @@
-package com.example.splmobile.services.events
+package com.example.splmobile.services.userInEvent
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.events.*
+import com.example.splmobile.dtos.users.UsersResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -15,9 +16,9 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
-class EventServiceImpl (
+class UserInEventServiceImpl (
     private val log: Logger, engine: HttpClientEngine
-) : EventService {
+) : UserInEventService {
     private val client = HttpClient(engine) {
         expectSuccess = true
         install(ContentNegotiation) {
@@ -50,67 +51,19 @@ class EventServiceImpl (
         ensureNeverFrozen()
     }
 
-    override suspend fun getEvents(): EventsResponse {
-        log.d { "Fetching events from network" }
-        try{
-            return client.get {
-                contentType(ContentType.Application.Json)
-                url("api/events")
-            }.body() as EventsResponse
-        }catch (ex :Exception){
-            return EventsResponse(emptyList(),"$ex")
-        }
 
-    }
-
-    override suspend fun getEventsById(eventId: Long): EventResponse {
-        log.d { "Fetching event by id from network" }
-        try{
-            return client.get {
-                contentType(ContentType.Application.Json)
-                url("api/events/"+eventId)
-            }.body() as EventResponse
-        }catch (ex :Exception){
-            return EventResponse(EventSerializable(0,"","","","","","","","","","",""),"$ex")
-        }
-    }
-
-    override suspend fun postEvent(
-        eventRequest: EventRequest,
+    override suspend fun postParticipateInEvent(
+        eventId: Long,
         token: String
     ): RequestMessageResponse {
-        log.d { "post new event" }
+        log.d { "post participate in event" }
         try{
             return client.post {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
-                contentType(ContentType.Application.Json)
-                setBody(eventRequest)
-                url("api/events")
-            }.body() as RequestMessageResponse
-        }
-        catch (ex :Exception){
-            return RequestMessageResponse("$ex")
-        }
 
-
-    }
-
-    override suspend fun putEvent(
-        eventId: Long,
-        event: EventSerializable,
-        token: String
-    ): RequestMessageResponse {
-        log.d { "put event" }
-        try{
-            return client.put {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $token")
-                }
-                contentType(ContentType.Application.Json)
-                setBody(event)
-                url("api/events/"+eventId)
+                url("api/events/"+eventId+"/signUpEvent")
             }.body() as RequestMessageResponse
         }
         catch (ex :Exception){
@@ -118,12 +71,14 @@ class EventServiceImpl (
         }
     }
 
-    override suspend fun patchEventStatus(
+
+    override suspend fun patchStatusParticipateInEvent(
         eventId: Long,
+        user_eventId: Long,
         status: String,
         token: String
     ): RequestMessageResponse {
-        log.d { "patch event status" }
+        log.d { "post participate in event" }
         try{
             return client.patch {
                 headers {
@@ -131,13 +86,49 @@ class EventServiceImpl (
                 }
                 contentType(ContentType.Application.Json)
                 setBody(status)
-                url("api/events/"+eventId+"/updateStatus")
+                url("api/events/"+eventId+"/signUpUpdateStatusEvent/"+user_eventId)
             }.body() as RequestMessageResponse
         }
         catch (ex :Exception){
             return RequestMessageResponse("$ex")
         }
     }
+
+
+    override suspend fun getUsersInEvent(user_eventId: Long, token: String): UserInEventResponse {
+        log.d { "Fetching events from network" }
+        try{
+            return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                url("api/events/"+ user_eventId +"/usersinevent")
+            }.body() as UserInEventResponse
+        }catch (ex :Exception){
+            return UserInEventResponse(emptyList(),"$ex")
+        }
+
+
+    }
+
+
+    override suspend fun getAllUsersStats(token: String): UsersResponse {
+        log.d { "Fetching users from network" }
+        try{
+            return client.get {
+                contentType(ContentType.Application.Json)
+                url("api/users")
+            }.body() as UsersResponse
+        }catch (ex :Exception){
+            return UsersResponse(emptyList(),"$ex")
+        }
+    }
+
+    override suspend fun postUserInEvent(user_eventID: Long, userID: Long): RequestMessageResponse {
+        TODO("Not yet implemented")
+    }
+
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
