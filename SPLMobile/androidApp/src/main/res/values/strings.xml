@@ -106,6 +106,7 @@
     <string name="EventOrganizerStatusElement4">Cancelado</string>
     <string name="btnCheckParticipantsOnEvent">Ver participantes</string>
     <string name="lblPartipantsInEvent">Participantes</string>
+    <string name="txtUsersInEventError">Erro a encontrar participants</string>
 
 
 </resources>

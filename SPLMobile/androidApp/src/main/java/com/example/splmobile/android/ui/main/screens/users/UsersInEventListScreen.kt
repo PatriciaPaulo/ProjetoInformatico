@@ -4,17 +4,14 @@ import MapAppBar
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -28,6 +25,7 @@ import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.events.UserInEventSerializable
 import com.example.splmobile.dtos.users.UserSerializable
 import com.example.splmobile.models.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -57,6 +55,9 @@ fun UsersInEventListScreen(
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
 
+    var listSearch = remember{ mutableStateOf(emptyList<UserSerializable>())}
+    var usersInEventListSearch = remember{ mutableStateOf(emptyList<UserInEventSerializable>())}
+
     var screenState = remember{ mutableStateOf(false)}
     val listState = rememberLazyListState()
     var selectedIndex by remember{mutableStateOf(-1L)}
@@ -69,6 +70,7 @@ fun UsersInEventListScreen(
                 searchTextState = searchTextState,
                 onTextChange = {
                     mainViewModel.updateSearchTextState(newValue = it)
+
                 },
                 onCloseClicked = {
                     mainViewModel.updateSearchTextState(newValue = "")
@@ -79,7 +81,17 @@ fun UsersInEventListScreen(
 
                 },
                 onSearchClicked = {
+                    coroutineScope.launch {
+                        var search = it
+                        if(it.isNotEmpty()){
+                            listSearch.value.filter{
+                                it.username.contains(search) || it.name.contains(search)
+                            }
+                        }else{
+                            userInEventViewModel.getAllUsers(authViewModel.tokenState.value)
+                        }
 
+                    }
 
 
 
@@ -100,21 +112,30 @@ fun UsersInEventListScreen(
                     when(usersListState){
 
                         is UserInEventViewModel.UsersUIState.Success -> {
-                            log.d{"Get garbage spots state -> Success"}
+                            if(mainViewModel.searchTextState.value.isNotEmpty()){
+                                listSearch.value  =  usersListState.users.filter{
+                                    log.d{"mainViewModel.searchTextState.value"}
+                                    it.username.contains(mainViewModel.searchTextState.value) || it.name.contains(mainViewModel.searchTextState.value)
+                                }
+                            }else{
+                                listSearch.value = usersListState.users
+                            }
+                            log.d{"Get all users state -> Success"}
                             LazyColumn(modifier = Modifier
                                 .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
 
-                                items(usersListState.users.size){ index ->
-                                    AllUsersList(gs = usersListState.users.get(index), navController = navController)
+                                items(listSearch.value.size){ index ->
+
+                                    AllUsersList(gs = listSearch.value.get(index), navController = navController,usersInEventListSearch = usersInEventListSearch.value)
                                 }
 
 
                             }
                         }
                         is  UserInEventViewModel.UsersUIState.Error -> {
-                            log.d{"Get garbage spots state -> Error"}
+                            log.d{"Get all users state -> Error"}
                             Text(
-                                text = textResource(R.string.txtGarbageSpotError).toString() ,
+                                text = textResource(R.string.txtUsersInEventError).toString() ,
                                 color = MaterialTheme.colors.primary,
                                 style = MaterialTheme.typography.caption,
                                 modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
@@ -128,7 +149,8 @@ fun UsersInEventListScreen(
                     when(usersEventListState){
 
                         is UserInEventViewModel.UsersInEventUIState.Success -> {
-                            log.d{"Get garbage spots state -> Success"}
+                            usersInEventListSearch.value = usersEventListState.user_events
+                            log.d{"Get users in event state -> Success"}
                             LazyColumn(modifier = Modifier
                                 .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
 
@@ -140,9 +162,9 @@ fun UsersInEventListScreen(
                             }
                         }
                         is  UserInEventViewModel.UsersInEventUIState.Error -> {
-                            log.d{"Get garbage spots state -> Error"}
+                            log.d{"Get user in event state -> Error"}
                             Text(
-                                text = textResource(R.string.txtGarbageSpotError).toString() ,
+                                text = textResource(R.string.txtUsersInEventError).toString() ,
                                 color = MaterialTheme.colors.primary,
                                 style = MaterialTheme.typography.caption,
                                 modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
@@ -161,11 +183,6 @@ fun UsersInEventListScreen(
 
 }
 
-@Composable
-fun AllUsersList(usersListState: UserInEventViewModel.UsersUIState) {
-
-
-}
 
 @Composable
 fun UserComponent(){
@@ -197,7 +214,12 @@ fun UsersList(navController: NavHostController, gs :UserInEventSerializable){
     }
 }
 @Composable
-fun AllUsersList(navController: NavHostController, gs : UserSerializable){
+fun AllUsersList(
+    navController: NavHostController,
+    gs: UserSerializable,
+    usersInEventListSearch: List<UserInEventSerializable>
+){
+    var expanded by remember { mutableStateOf(false) }
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -205,7 +227,7 @@ fun AllUsersList(navController: NavHostController, gs : UserSerializable){
             .padding(8.dp)
             .clickable(
                 onClick = {
-
+                    expanded =true
                 },
 
                 )
@@ -216,8 +238,54 @@ fun AllUsersList(navController: NavHostController, gs : UserSerializable){
         Column() {
             Text(text = gs.id.toString(), style = MaterialTheme.typography.h6)
             Text(text = gs.name, style = MaterialTheme.typography.body1)
+            Text(text = gs.username, style = MaterialTheme.typography.body1)
 
 
         }
+    }
+    Box(contentAlignment = Alignment.CenterEnd) {
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(onClick = {
+                /* Handle refresh! */
+                if(usersInEventListSearch
+                        .any{
+                            it.userID == gs.id && it.status == "Organizer"
+                        }){
+                    //TODO REMOVE PEDIDO
+                }else{
+                    //TODO ADD TO LIST PEDIDO
+                }
+            }) {
+                //check if in event
+                if(usersInEventListSearch.any{ it.userID == gs.id }){
+                    if(usersInEventListSearch
+                            .any{
+                                it.status == "Organizer"
+                            }){
+                        Text("Remover como organizador")
+                    }else{
+                        Text("Cancelar a sua participação")
+                    }
+                }else{
+                    Text("Adicionar como organizador")
+                }
+
+
+            }
+            Divider()
+            DropdownMenuItem(onClick = {
+                //TODO NAVIGATE TO PERFIL
+                //navController.navigate()
+            }) {
+                Text("Ver perfil")
+            }
+    }
+
+
+
+
     }
 }

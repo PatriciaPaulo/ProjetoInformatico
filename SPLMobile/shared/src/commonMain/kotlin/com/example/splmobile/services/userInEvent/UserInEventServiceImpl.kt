@@ -117,8 +117,11 @@ class UserInEventServiceImpl (
         log.d { "Fetching users from network" }
         try{
             return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
                 contentType(ContentType.Application.Json)
-                url("api/users")
+                url("api/usersStats")
             }.body() as UsersResponse
         }catch (ex :Exception){
             return UsersResponse(emptyList(),"$ex")
