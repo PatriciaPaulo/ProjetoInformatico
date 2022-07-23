@@ -4,7 +4,7 @@
     <hr />
     <div class="mb-3">
       <div class="mb-3">
-        <label for="inputUsername" class="form-label">Username</label>
+        <label for="inputUsername" class="form-label text-light">Username</label>
         <input
           type="text"
           class="form-control"
@@ -14,7 +14,7 @@
         />
       </div>
       <div class="mb-3">
-        <label for="inputPassword" class="form-label">Password</label>
+        <label for="inputPassword" class="form-label text-light">Password</label>
         <input
           type="password"
           class="form-control"
@@ -24,7 +24,7 @@
         />
       </div>
       <div class="mb-3">
-        <label for="inputPasswordConfirmation" class="form-label"
+        <label for="inputPasswordConfirmation" class="form-label text-light"
           >Password Confirmation</label
         >
         <input
@@ -37,7 +37,7 @@
       </div>
       <div class="mb-3">
         <div class="mb-3">
-          <label for="inputName" class="form-label">Name</label>
+          <label for="inputName" class="form-label text-light">Name</label>
           <input
             type="text"
             class="form-control"
@@ -49,7 +49,7 @@
       </div>
       <div class="mb-3">
         <div class="mb-3">
-          <label for="inputEmail" class="form-label">Email</label>
+          <label for="inputEmail" class="form-label text-light">Email</label>
           <input
             type="email"
             class="form-control"

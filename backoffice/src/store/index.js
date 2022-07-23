@@ -10,7 +10,6 @@ export default createStore({
     users: [],
     events: [],
     garbageSpots: [],
-    atividades: []
   },
   mutations: {
     //LOGGED USER
@@ -62,13 +61,13 @@ export default createStore({
     resetEvents(state) {
       state.events = null
     },
-    insertEvento(state, newEvento) {
-      state.events.push(newEvento)
+    insertEvent(state, newEvent) {
+      state.events.push(newEvent)
     },
-    updateEvento(state, updateEvento) {
-      let idx = state.events.findIndex((t) => t.id === updateEvento.id)
+    updateEvent(state, updateEvent) {
+      let idx = state.events.findIndex((t) => t.id === updateEvent.id)
       if (idx >= 0) {
-        state.events[idx] = updateEvento
+        state.events[idx] = updateEvent
       }
     },
 
@@ -148,7 +147,11 @@ export default createStore({
     async loadGarbageSpots(context) {
       try {
         let response = await axios.get('garbageSpots')
+      
         context.commit('setGarbageSpotss', response.data.data)
+        response.data.data.forEach(element => {
+          console.log("garbage spots retrieved" + element.approved)
+        });
         return response.data.data
       } catch (error) {
         context.commit('resetGarbageSpotss', null)
@@ -165,13 +168,13 @@ export default createStore({
         throw error
       }
     },
-    async aprovarGarbageSpots(context, garbageSpot) {
-      let response = await axios.patch('garbageSpots/' + garbageSpot.id + '/aprovar', { 'aprovado': garbageSpot.aprovado })
+    async aprovarGarbageSpot(context, garbageSpot) {
+      let response = await axios.patch('garbageSpots/' + garbageSpot.id + '/approve', { 'approved': garbageSpot.approved })
       context.commit('updateGarbageSpots', garbageSpot)
       return response.data
     },
     async updateStatusGarbageSpots(context, garbageSpot) {
-      let response = await axios.patch('garbageSpots/' + garbageSpot.id + '/updateStatusGarbageSpots', { 'estado': garbageSpot.estado })
+      let response = await axios.patch('garbageSpots/' + garbageSpot.id + '/updateGarbageSpotStatus', { 'status': garbageSpot.estado })
       context.commit('updateGarbageSpots', garbageSpot)
       return response.data
     },
@@ -198,7 +201,7 @@ export default createStore({
     async refresh(context) {
       let userPromise = context.dispatch('loadLoggedInUser')
       let usersPromise = context.dispatch('loadUsers')
-      let garbageSpotsPromise = context.dispatch('loadGarbageSpotss')
+      let garbageSpotsPromise = context.dispatch('loadGarbageSpots')
       let eventsPromise = context.dispatch('loadEvents')
       await userPromise
       await usersPromise
