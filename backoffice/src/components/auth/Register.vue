@@ -23,8 +23,10 @@
           v-model="credentials.password"
         />
       </div>
-       <div class="mb-3">
-        <label for="inputPasswordConfirmation" class="form-label">Password Confirmation</label>
+      <div class="mb-3">
+        <label for="inputPasswordConfirmation" class="form-label"
+          >Password Confirmation</label
+        >
         <input
           type="password"
           class="form-control"
@@ -80,7 +82,6 @@ export default {
         password: "",
         passwordConfirmation: "",
         email: "",
-       
       },
       errors: null,
     };
@@ -88,16 +89,13 @@ export default {
   emits: ["register"],
   methods: {
     async register() {
-      
       await axios
         .post("registerAdmin", this.credentials)
         .then(() => {
-          this.$toast.success(
-            `${this.credentials.name}'s admin was created.`
-          );
+          this.$toast.success(`${this.credentials.name}'s admin was created.`);
           this.$emit("register");
           this.$router.push({
-            name: "Dashboard"
+            name: "Dashboard",
           });
         })
         .catch(() => {

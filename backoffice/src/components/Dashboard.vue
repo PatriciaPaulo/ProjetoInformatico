@@ -1,5 +1,5 @@
 <template>
-  
+ 
   <div v-if="$store.state.loggedInUser" >
     <div class="d-flex flex-wrap justify-content-between">
       DASHBOOAARD
@@ -13,9 +13,12 @@
               </router-link>
     </div>
   </div>
+   <!--
   <div v-else>
-    backoffice
-  </div>
+    NO ACCESS
+    ??
+    
+  </div>-->
 </template>
 
 <script>
