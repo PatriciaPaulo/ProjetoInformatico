@@ -36,6 +36,7 @@ def guest(f):
 def token_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
+        print("token required")
         token = None
         if 'authorization' in request.headers:
             token = request.headers['authorization']
@@ -48,6 +49,7 @@ def token_required(f):
            # print(data['email'])
             current_user = db.session.query(User).filter_by(email=data['email']).first()
             #print(current_user.id)
+
         except Exception as ex:
             print(ex)
             return make_response(jsonify({'message': 'token is invalid'}), 400)

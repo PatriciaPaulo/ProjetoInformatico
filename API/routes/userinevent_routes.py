@@ -1,16 +1,27 @@
 
+from flask import jsonify, make_response, request, current_app, Flask
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_restful import Api
+from flask import Blueprint
+from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent,UserInEvent,GarbageInEvent,Garbage
+from utils import token_required,admin_required,guest
+import jwt
+from datetime import datetime
+
+users_event_routes_blueprint = Blueprint('users_event_routes', __name__, )
+api = Api(users_event_routes_blueprint)
 
 
 
 # Get All Events by User
-@event_routes_blueprint.route('/events/<event_id>/usersinevent', methods=['GET'])
+@users_event_routes_blueprint.route('/events/<event_id>/usersinevent', methods=['GET'])
 @token_required
 def get_user_in_event(current_user,event_id):
     #todo order by date
-    users_events = db.session.query(UserInEvent).filter(eventID=event_id).all()
+
+    users_events = db.session.query(UserInEvent).filter_by(eventID=event_id).all()
+
     output = []
-    if(current_user.status != "Organizer"):
-        return make_response(jsonify({'data': [], 'message': '403 NOT OK - Forbidden'}), 403)
 
     for event in users_events:
         event_data = {}
@@ -27,7 +38,7 @@ def get_user_in_event(current_user,event_id):
 
 
 # Add user to Event by User
-@event_routes_blueprint.route('/events/<event_id>/signUpEvent', methods=['POST'])
+@users_event_routes_blueprint.route('/events/<event_id>/signUpEvent', methods=['POST'])
 @token_required
 def add_user_to_event(current_user,event_id):
    # print("Event - "+event_id)
@@ -48,7 +59,7 @@ def add_user_to_event(current_user,event_id):
 
     return make_response(jsonify({'message': '200 OK - User Sign Up to Event'}), 200)
 
-@event_routes_blueprint.route('/events/<event_id>/signUpUpdateStatusEvent/<user_event_id>', methods=['Patch'])
+@users_event_routes_blueprint.route('/events/<event_id>/signUpUpdateStatusEvent/<user_event_id>', methods=['Patch'])
 @token_required
 def update_status_user_to_event(current_user,event_id,user_event_id):
     event = db.session.query(Event).filter_by(id=event_id).first()

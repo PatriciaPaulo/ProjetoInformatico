@@ -2,9 +2,8 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent
-from utils import token_required, admin_required, guest, name_validation, username_validation, email_validation, \
-    password_validation, password_confirmation
+from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent,UserInEvent
+from utils import token_required, admin_required, guest, name_validation, username_validation, email_validation,  password_validation, password_confirmation
 import jwt
 import datetime
 
@@ -113,23 +112,26 @@ def get_all_users(current_user):
 
 
 # Get users and stats by user
-@user_routes_blueprint.route('/users', methods=['GET'])
+@user_routes_blueprint.route('/usersStats', methods=['GET'])
 @token_required
 def get_users(current_user):
     # Query for all users
+    print("im here")
     result = []
-    users = db.session.query(User).filter_by(deleted_at=None)
+    users = db.session.query(User).filter_by(deleted_at=None).all()
+
 
     for user in users:
         if not user.admin:
             if not user.blocked:
-                events_participated = db.session.query(Event).filter_by(userID=user.id,status="Finalizado").count()
+                events_participated = db.session.query(UserInEvent).filter_by(userID=user.id,status="Confirmado").count()
+                print(events_participated)
                 from datetime import date
 
                 today = date.today()
-                activities_completed = db.session.query(Activity).filter(userID== user.id,endDate <= today).count()
+                activities_completed = db.session.query(Activity).filter(Activity.userID== user.id,Activity.endDate <= today).count()
 
-                garbage_spots_created = db.session.query(GarbageSpot).filter_by(userID=user.id,creator=True).count()
+                garbage_spots_created = db.session.query(GarbageSpot).filter(GarbageSpot.creator==user.id).count()
 
                 user_data = {}
                 user_data['id'] = user.id
@@ -139,7 +141,7 @@ def get_users(current_user):
                 user_data['activities_completed'] = activities_completed
                 user_data['garbage_spots_created'] = garbage_spots_created
 
-                result.append(User.serialize(user_data))
+                result.append(user_data)
 
     return make_response(jsonify({'data': result, 'message': '200 OK - All Users Retrieved'}), 200)
 
