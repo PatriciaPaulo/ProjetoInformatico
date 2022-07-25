@@ -257,7 +257,7 @@ fun ProfileSection(
 
             )
             Spacer(Modifier.height(20.dp))
-            StatSection()
+            StatSection(userInfoViewModel)
             Spacer(Modifier.height(20.dp))
             when (editableState.value) {
                 true-> {
@@ -378,17 +378,17 @@ fun RoundImage(
 }
 
 @Composable
-fun StatSection(modifier: Modifier = Modifier) {
+fun StatSection(myInfoViewModel: UserInfoViewModel) {
     Row(
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
         //todo stats
-        ProfileStat(numberText = "601", text = "Atividades")
+        ProfileStat(numberText = myInfoViewModel.myActivitiesCountUIState.collectAsState().value.toString(), text = "Atividades")
         Spacer(modifier = Modifier.width(40.dp))
-        ProfileStat(numberText = "72", text = "Distancia percorrida")
+        ProfileStat(numberText =  myInfoViewModel.myDistanceTravelled.collectAsState().value.toString()+"Km", text = "Distancia percorrida")
         Spacer(modifier = Modifier.width(40.dp))
-        ProfileStat(numberText = "100K", text = "Eventos")
+        ProfileStat(numberText =  myInfoViewModel.myEventsCountUIState.collectAsState().value.toString(), text = "Eventos")
 
     }
 }

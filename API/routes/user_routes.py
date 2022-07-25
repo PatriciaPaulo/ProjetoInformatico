@@ -145,6 +145,43 @@ def get_users(current_user):
 
     return make_response(jsonify({'data': result, 'message': '200 OK - All Users Retrieved'}), 200)
 
+
+# Get users and stats by user
+@user_routes_blueprint.route('/usersStats/<user_id>', methods=['GET'])
+@token_required
+def get_user_stat(current_user,user_id):
+    # Query for all users
+    print("im here")
+    result = []
+    user = db.session.query(User).filter_by(id=user_id).first()
+
+
+
+    if not user.admin:
+        if not user.blocked:
+            events_participated = db.session.query(UserInEvent).filter_by(userID=user.id,status="Confirmado").count()
+            # print(events_participated)
+            from datetime import date
+
+            today = date.today()
+            activities_completed = db.session.query(Activity).filter(Activity.userID== user.id,Activity.endDate <= today).count()
+
+
+
+            garbage_spots_created = db.session.query(GarbageSpot).filter(GarbageSpot.creator==user.id).count()
+
+            user_data = {}
+            user_data['id'] = user.id
+            user_data['username'] = user.username
+            user_data['name'] = user.name
+            user_data['events_participated'] = events_participated
+            user_data['activities_completed'] = activities_completed
+            user_data['garbage_spots_created'] = garbage_spots_created
+
+
+
+    return make_response(jsonify({'data': user_data, 'message': '200 OK - All Users Retrieved'}), 200)
+
 # Get User by ID
 @user_routes_blueprint.route('/users/<user_id>', methods=['GET'])
 @admin_required

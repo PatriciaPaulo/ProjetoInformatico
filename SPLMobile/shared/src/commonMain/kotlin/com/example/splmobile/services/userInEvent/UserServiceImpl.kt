@@ -5,7 +5,9 @@ import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestDataResponse
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.events.*
-import com.example.splmobile.dtos.users.UsersResponse
+import com.example.splmobile.dtos.users.UserSerializable
+import com.example.splmobile.dtos.users.UserStatsResponse
+import com.example.splmobile.dtos.users.UsersStatsResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -17,9 +19,9 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
-class UserInEventServiceImpl (
+class UserServiceImpl (
     private val log: Logger, engine: HttpClientEngine
-) : UserInEventService {
+) : UserService {
     private val client = HttpClient(engine) {
         expectSuccess = true
         install(ContentNegotiation) {
@@ -136,7 +138,7 @@ class UserInEventServiceImpl (
     }
 
 
-    override suspend fun getAllUsersStats(token: String): UsersResponse {
+    override suspend fun getAllUsersStats(token: String): UsersStatsResponse {
         log.d { "Fetching users from network" }
         try{
             return client.get {
@@ -145,9 +147,23 @@ class UserInEventServiceImpl (
                 }
                 contentType(ContentType.Application.Json)
                 url("api/usersStats")
-            }.body() as UsersResponse
+            }.body() as UsersStatsResponse
         }catch (ex :Exception){
-            return UsersResponse(emptyList(),"$ex")
+            return UsersStatsResponse(emptyList(),"$ex")
+        }
+    }
+
+    override suspend fun getUserStats(userID: Long, token: String): UserStatsResponse {
+        log.d { "Fetching users from network" }
+        try{
+            return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                url("api/usersStats/"+userID)
+            }.body() as UserStatsResponse
+        }catch (ex :Exception){
+            return UserStatsResponse(UserSerializable(0,"","","","",""),"$ex")
         }
     }
 

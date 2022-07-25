@@ -24,10 +24,10 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.myInfo.UserSerializable
+import com.example.splmobile.dtos.users.UserSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.UserInEventViewModel
+import com.example.splmobile.models.UserViewModel
 import com.example.splmobile.models.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 
@@ -39,21 +39,23 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 fun UserProfile(
     navController: NavHostController,
     mainViewModel: MainViewModel,
-    userInEventViewModel: UserInEventViewModel,
+    userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
     sharedViewModel: SharedViewModel,
+    userID: String?,
     log: Logger
 ) {
     val log = log.withTag("UserProfile")
 
-/*
+
     val scaffoldState = rememberScaffoldState()
 
 
     LaunchedEffect(Unit) {
         log.d{"get my info get my events and get my activities launched"}
-
+        userViewModel.getUserStats(userID!!.toLong(),authViewModel.tokenState.value)
     }
+    var userInfoState = userViewModel.usersUIState.collectAsState().value
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -78,24 +80,25 @@ fun UserProfile(
                     horizontalAlignment = Alignment.CenterHorizontally) {
                     when(userInfoState){
 
-                        is UserInfoViewModel.MyInfoUserUIState.Success ->
+                        is UserViewModel.UsersUIState.SuccessUser ->
                         {
                             log.d{"User info State -> Success"}
                             ProfileSection(
-                                userInfoState.data,
-                                userInfoViewModel,
-                                authViewModel,
+                                userInfoState.user,
+                                userViewModel,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .align(Alignment.CenterHorizontally),
                                 log
                             )
                         }
-                        is UserInfoViewModel.MyInfoUserUIState.Loading -> CircularProgressIndicator()
-                        is UserInfoViewModel.MyInfoUserUIState.Error -> Text(text = "Error message - " + userInfoState.error)
+                        is UserViewModel.UsersUIState.Loading -> CircularProgressIndicator()
+                        is UserViewModel.UsersUIState.Error -> Text(text = "Error message - " + userInfoState.error)
                     }
                 }
             }
+
+            //todo button for friend request
         },
     )
 }
@@ -105,8 +108,7 @@ fun UserProfile(
 @Composable
 fun ProfileSection(
     utilizador: UserSerializable,
-    userInfoViewModel: UserInfoViewModel,
-    authViewModel: AuthViewModel,
+    userViewModel: UserViewModel,
     modifier: Modifier = Modifier,
     log: Logger,
 ) {
@@ -126,13 +128,13 @@ fun ProfileSection(
 
             )
             Spacer(Modifier.height(20.dp))
-            StatSection()
+            StatSection(utilizador)
             Spacer(Modifier.height(20.dp))
 
 
             log.d{"In view only mode"}
             ProfileDescription(
-                utilizador.name, utilizador.email, utilizador.username
+                utilizador.name, utilizador.username
             )
 
 
@@ -161,17 +163,27 @@ fun RoundImage(
 }
 
 @Composable
-fun StatSection(modifier: Modifier = Modifier) {
+fun StatSection(user: UserSerializable) {
     Row(
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
         //todo stats
-        ProfileStat(numberText = "601", text = "Atividades")
+        com.example.splmobile.android.ui.main.screens.ProfileStat(
+            numberText = user.activities_completed,
+            text = "Atividades"
+        )
         Spacer(modifier = Modifier.width(40.dp))
-        ProfileStat(numberText = "72", text = "Distancia percorrida")
+        com.example.splmobile.android.ui.main.screens.ProfileStat(
+            numberText = user.garbage_spots_created,
+            text = "Garbage Spots"
+        )
         Spacer(modifier = Modifier.width(40.dp))
-        ProfileStat(numberText = "100K", text = "Eventos")
+        com.example.splmobile.android.ui.main.screens.ProfileStat(
+            numberText = user.events_participated,
+            text = "Eventos"
+        )
+
 
     }
 }
@@ -206,7 +218,6 @@ fun ProfileStat(
 @Composable
 fun ProfileDescription(
     utilizadorName: String,
-    utilizadorEmail: String,
     utilizadorUsername: String,
 ) {
     val letterSpacing = 0.5.sp
@@ -223,17 +234,13 @@ fun ProfileDescription(
             letterSpacing = letterSpacing,
             lineHeight = lineHeight
         )
-        Text(
-            text = utilizadorEmail,
-            letterSpacing = letterSpacing,
-            lineHeight = lineHeight
-        )
+
         Text(
             text = utilizadorUsername,
             letterSpacing = letterSpacing,
             lineHeight = lineHeight
         )
-    }*/
+    }
 }
 
 

@@ -22,6 +22,18 @@ class UserInfoViewModel (
     private val _myIDUIState = MutableStateFlow<Long>(0L)
     val myIdUIState = _myIDUIState.asStateFlow()
 
+    // _myEvents
+    private val _myEventsCount = MutableStateFlow<Long>(0L)
+    val myEventsCountUIState = _myEventsCount.asStateFlow()
+
+    //_myActivitiesCountUIState
+    private val _myActivitiesCountUIState = MutableStateFlow<Long>(0L)
+    val myActivitiesCountUIState = _myActivitiesCountUIState.asStateFlow()
+
+    // _myGarbageSpotCountUIState
+    private var _distanceTravelledUIState = MutableStateFlow<Long>(0L)
+    val myDistanceTravelled = _distanceTravelledUIState.asStateFlow()
+
     //state get me user
     private val _myInfoUserUIState = MutableStateFlow<MyInfoUserUIState>(MyInfoUserUIState.Empty)
     val myInfoUserUIState = _myInfoUserUIState.asStateFlow()
@@ -68,7 +80,6 @@ class UserInfoViewModel (
     }
 
 
-
     fun getMyInfo(token: String) {
         _myInfoUserUIState.value = MyInfoUserUIState.Loading
         log.v("Getting All User Info ")
@@ -112,6 +123,8 @@ class UserInfoViewModel (
 
             if(response.message.substring(0,3)  == "200"){
                 log.v("getting ${response.data}")
+                _myEventsCount.value = response.data.size.toLong()
+
                 _myEventsUIState.value = MyEventsUIState.Success(response.data)
             }else{
                 _myEventsUIState.value = MyEventsUIState.Error(response.message)
@@ -125,9 +138,14 @@ class UserInfoViewModel (
             val response = userInfoService.getMyActivities(token)
 
             if(response.message.substring(0,3) == "200"){
+                _distanceTravelledUIState.value = 0
+                _myActivitiesCountUIState.value = response.data.size.toLong()
+                response.data.forEach {
+                    _distanceTravelledUIState.value = it.distanceTravelled.toLong() + _distanceTravelledUIState.value
+                }
                 _myActivitiesUIState.value = MyActivitiesUIState.Success(response.data)
                 _myActivitiesUIState.value =
-                    MyActivitiesUIState.SuccessLast5(response.data.takeLast(5))
+                    MyActivitiesUIState.SuccessLast5(response.data.take(5))
             }else{
                 _myActivitiesUIState.value = MyActivitiesUIState.Error(response.message)
             }

@@ -53,7 +53,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
     private val authViewModel: AuthViewModel by viewModel()
     private val userInfoViewModel: UserInfoViewModel by viewModel()
     private val eventViewModel: EventViewModel by viewModel()
-    private val userInEventViewModel: UserInEventViewModel by viewModel()
+    private val userViewModel: UserViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -79,7 +79,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
                     garbageSpotViewModel = garbageSpotViewModel,
                     userInfoViewModel = userInfoViewModel,
                     eventViewModel = eventViewModel,
-                    userInEventViewModel = userInEventViewModel,
+                    userViewModel = userViewModel,
                     sharedViewModel = sharedViewModel
                 )
 

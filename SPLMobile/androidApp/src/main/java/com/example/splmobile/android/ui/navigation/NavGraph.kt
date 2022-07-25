@@ -16,6 +16,7 @@ import com.example.splmobile.android.ui.main.screens.events.EventListScreen
 import com.example.splmobile.android.ui.main.screens.events.MyEventListScreen
 import com.example.splmobile.android.ui.main.screens.garbageSpots.GarbageSpotInfoScreen
 import com.example.splmobile.android.ui.main.screens.garbageSpots.GarbageSpotsListScreen
+import com.example.splmobile.android.ui.main.screens.users.UserProfile
 import com.example.splmobile.android.ui.main.screens.users.UsersInEventListScreen
 import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
@@ -36,7 +37,7 @@ fun SetupNavGraph(
     garbageSpotViewModel: GarbageSpotViewModel,
     userInfoViewModel: UserInfoViewModel,
     eventViewModel: EventViewModel,
-    userInEventViewModel: UserInEventViewModel,
+    userViewModel: UserViewModel,
     sharedViewModel: SharedViewModel
 ){
     NavHost(
@@ -110,7 +111,7 @@ fun SetupNavGraph(
         composable(Screen.EventInfo.route+"/{eventId}") { backStackEntry ->
             EventInfoScreen(navController = navController,
                 eventViewModel = eventViewModel,
-                userInEventViewModel = userInEventViewModel,
+                userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 backStackEntry.arguments?.getString("eventId"),
@@ -152,16 +153,25 @@ fun SetupNavGraph(
                 log = log)
 
         }
-        composable(Screen.UsersInEventList.route+"/{eventId}") {backStackEntry ->
+        composable(Screen.UsersInEventList.route+"/{eventID}") {backStackEntry ->
             UsersInEventListScreen(navController = navController,
                 eventViewModel = eventViewModel,
-                userInEventViewModel = userInEventViewModel,
+                userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 mainViewModel = mainViewModel,
-                backStackEntry.arguments?.getString("eventId"),
+                backStackEntry.arguments?.getString("eventID"),
                 log = log)
 
+        }
+        composable(Screen.UserProfile.route+"/{userID}") {backStackEntry ->
+            UserProfile(navController =navController,
+                mainViewModel = mainViewModel,
+                userViewModel = userViewModel,
+                authViewModel = authViewModel,
+                sharedViewModel = sharedViewModel,
+                backStackEntry.arguments?.getString("userID"),
+                log = log)
         }
     }
 }

@@ -21,6 +21,7 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
+import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.events.UserInEventSerializable
 import com.example.splmobile.dtos.users.UserSerializable
@@ -33,7 +34,7 @@ import kotlinx.coroutines.launch
 fun UsersInEventListScreen(
     navController: NavHostController,
     eventViewModel: EventViewModel,
-    userInEventViewModel: UserInEventViewModel,
+    userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
     userInfoViewModel:  UserInfoViewModel,
     mainViewModel: MainViewModel,
@@ -46,12 +47,12 @@ fun UsersInEventListScreen(
 
 
     LaunchedEffect(Unit) {
-        userInEventViewModel.getUsersInEvent(eventID!!.toLong(),authViewModel.tokenState.value)
-        userInEventViewModel.getAllUsers(authViewModel.tokenState.value)
+        userViewModel.getUsersInEvent(eventID!!.toLong(),authViewModel.tokenState.value)
+        userViewModel.getAllUsers(authViewModel.tokenState.value)
         userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
     }
-    var usersEventListState = userInEventViewModel.usersInEventUIState.collectAsState().value
-    var usersListState = userInEventViewModel.usersUIState.collectAsState().value
+    var usersEventListState = userViewModel.usersInEventUIState.collectAsState().value
+    var usersListState = userViewModel.usersUIState.collectAsState().value
     var userID = userInfoViewModel.myIdUIState.collectAsState().value
     //search bar states
     val searchWidgetState by mainViewModel.searchWidgetState
@@ -90,7 +91,7 @@ fun UsersInEventListScreen(
                                 it.username.contains(search) || it.name.contains(search)
                             }
                         }else{
-                            userInEventViewModel.getAllUsers(authViewModel.tokenState.value)
+                            userViewModel.getAllUsers(authViewModel.tokenState.value)
                         }
 
                     }
@@ -113,7 +114,7 @@ fun UsersInEventListScreen(
                     log.d{ "true"}
                     when(usersListState){
 
-                        is UserInEventViewModel.UsersUIState.Success -> {
+                        is UserViewModel.UsersUIState.SuccessUsers -> {
                             if(mainViewModel.searchTextState.value.isNotEmpty()){
                                 listSearch.value  =  usersListState.users.filter{
                                     log.d{"mainViewModel.searchTextState.value"}
@@ -135,13 +136,13 @@ fun UsersInEventListScreen(
                                         userID = userID,
                                         log=log,
                                         authViewModel=authViewModel,
-                                        userInEventViewModel = userInEventViewModel)
+                                        userViewModel = userViewModel)
                                 }
 
 
                             }
                         }
-                        is  UserInEventViewModel.UsersUIState.Error -> {
+                        is  UserViewModel.UsersUIState.Error -> {
                             log.d{"Get all users state -> Error"}
                             Text(
                                 text = textResource(R.string.txtUsersInEventError).toString() ,
@@ -150,14 +151,14 @@ fun UsersInEventListScreen(
                                 modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                             )
                         }
-                        is  UserInEventViewModel.UsersUIState.Loading -> CircularProgressIndicator()
+                        is  UserViewModel.UsersUIState.Loading -> CircularProgressIndicator()
                     }
                 }
                 false->{
                     log.d{"false"}
                     when(usersEventListState){
 
-                        is UserInEventViewModel.UsersInEventUIState.Success -> {
+                        is UserViewModel.UsersInEventUIState.Success -> {
                             usersInEventListSearch.value = usersEventListState.user_events
                             log.d{"Get users in event state -> Success"}
                             LazyColumn(modifier = Modifier
@@ -170,7 +171,7 @@ fun UsersInEventListScreen(
 
                             }
                         }
-                        is  UserInEventViewModel.UsersInEventUIState.Error -> {
+                        is  UserViewModel.UsersInEventUIState.Error -> {
                             log.d{"Get user in event state -> Error"}
                             Text(
                                 text = textResource(R.string.txtUsersInEventError).toString() ,
@@ -179,7 +180,7 @@ fun UsersInEventListScreen(
                                 modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                             )
                         }
-                        is  UserInEventViewModel.UsersInEventUIState.Loading -> CircularProgressIndicator()
+                        is  UserViewModel.UsersInEventUIState.Loading -> CircularProgressIndicator()
                 }}
             }
 
@@ -227,7 +228,7 @@ fun AllUsersList(
     navController: NavHostController,
     user: UserSerializable,
     usersInEventListSearch: List<UserInEventSerializable>,
-    userInEventViewModel: UserInEventViewModel,
+    userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
     log: Logger,
     userID: Long,
@@ -263,16 +264,16 @@ fun AllUsersList(
 
             }
         }
-        var stateParticipate = userInEventViewModel.eventParticipateUIState.collectAsState().value
+        var stateParticipate = userViewModel.eventParticipateUIState.collectAsState().value
 
         when(stateParticipate){
-            is UserInEventViewModel.EventParticipateUIState.SuccessUpdate -> {
+            is UserViewModel.EventParticipateUIState.SuccessUpdate -> {
                 if(user.id == stateParticipate.userID){
                     Text(text = "Atualizado", style = MaterialTheme.typography.body1)
                 }
 
             }
-            is UserInEventViewModel.EventParticipateUIState.SuccessOrganizer -> {
+            is UserViewModel.EventParticipateUIState.SuccessOrganizer -> {
                 if(user.id == stateParticipate.userID){
                     Text(text = "Adicionado", style = MaterialTheme.typography.body1)
                 }
@@ -308,7 +309,7 @@ fun AllUsersList(
                             it.userID == user.id
                         }
 
-                        userInEventViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event!!.id,"Inscrito",authViewModel.tokenState.value)
+                        userViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event!!.id,"Inscrito",authViewModel.tokenState.value)
 
 
                     }else{
@@ -318,12 +319,12 @@ fun AllUsersList(
                         }
                         if(user_event == null){
                             //create signup
-                            userInEventViewModel.participateInEventOrganizer(eventID!!.toLong(), user.id,authViewModel.tokenState.value)
+                            userViewModel.participateInEventOrganizer(eventID!!.toLong(), user.id,authViewModel.tokenState.value)
 
                         }
                         else{
                             //update status
-                            userInEventViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event.id,"Organizer",authViewModel.tokenState.value)
+                            userViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event.id,"Organizer",authViewModel.tokenState.value)
 
                         }
                     }
@@ -348,12 +349,12 @@ fun AllUsersList(
                             }
                             if(user_event == null){
                                 //create signup
-                                userInEventViewModel.participateInEventOrganizer(eventID!!.toLong(),userID,authViewModel.tokenState.value)
+                                userViewModel.participateInEventOrganizer(eventID!!.toLong(),userID,authViewModel.tokenState.value)
 
                             }
                             else{
                                 //update status
-                                userInEventViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event.id,"Organizer",authViewModel.tokenState.value)
+                                userViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event.id,"Organizer",authViewModel.tokenState.value)
 
                             }
                         }
@@ -405,7 +406,7 @@ fun AllUsersList(
             Divider()
             DropdownMenuItem(onClick = {
                 //TODO NAVIGATE TO PERFIL
-                //navController.navigate()
+                navController.navigate(Screen.UserProfile.route+"/${user.id}")
             }) {
                 Text("Ver perfil")
             }

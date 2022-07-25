@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class UsersResponse(
+data class UsersStatsResponse(
     val data: List<UserSerializable>,
     val message: String,
 )

@@ -22,7 +22,7 @@ import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.UserInEventViewModel
+import com.example.splmobile.models.UserViewModel
 import com.example.splmobile.models.UserInfoViewModel
 
 
@@ -32,7 +32,7 @@ import com.example.splmobile.models.UserInfoViewModel
 fun EventInfoScreen(
     navController: NavController,
     eventViewModel: EventViewModel,
-    userInEventViewModel: UserInEventViewModel,
+    userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
     userInfoViewModel: UserInfoViewModel,
     eventoId: String?,
@@ -48,7 +48,7 @@ fun EventInfoScreen(
     }
     var eventState = eventViewModel.eventByIdUIState.collectAsState().value
     var myEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
-    var participateState = userInEventViewModel.eventParticipateUIState.collectAsState().value
+    var participateState = userViewModel.eventParticipateUIState.collectAsState().value
     var eventStatusState = eventViewModel.eventUpdateUIState.collectAsState().value
 
 
@@ -81,7 +81,7 @@ fun EventInfoScreen(
                             navController,
                             myEventsState,
                             eventState.event,
-                            userInEventViewModel,
+                            userViewModel,
                             eventViewModel,
                             authViewModel,
                             participateState,
@@ -111,10 +111,10 @@ private fun MainComponent(
     navController: NavController,
     myEventsState: UserInfoViewModel.MyEventsUIState.Success,
     event: EventSerializable,
-    userInEventViewModel: UserInEventViewModel,
+    userViewModel: UserViewModel,
     eventViewModel: EventViewModel,
     authViewModel: AuthViewModel,
-    participateState: UserInEventViewModel.EventParticipateUIState,
+    participateState: UserViewModel.EventParticipateUIState,
     eventStatusState: EventViewModel.EventUpdateUIState,
     innerPadding: PaddingValues,
     log: Logger
@@ -282,7 +282,7 @@ private fun MainComponent(
                 //button for participator only to update user_event status
                 Button(
                     onClick = {
-                        userInEventViewModel.participateStatusUpdateInEvent(
+                        userViewModel.participateStatusUpdateInEvent(
                             event.id,
                             user_event.id,
                             selectedOptionText,
@@ -304,7 +304,7 @@ private fun MainComponent(
             if(event.status == textResource(R.string.EventOrganizerStatusElement1).toString()){
                 Button(
                     onClick = {
-                        userInEventViewModel.participateInEvent(
+                        userViewModel.participateInEvent(
                             event.id,
                             authViewModel.tokenState.value
                         )
@@ -338,7 +338,7 @@ private fun MainComponent(
         }
 
         when (participateState) {
-            is UserInEventViewModel.EventParticipateUIState.SuccessParticipate -> {
+            is UserViewModel.EventParticipateUIState.SuccessParticipate -> {
                 Text(
                     text = textResource(R.string.txtParticipateInEventMessage).toString(),
                     color = MaterialTheme.colors.primary,
@@ -346,7 +346,7 @@ private fun MainComponent(
                     modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                 )
             }
-            is UserInEventViewModel.EventParticipateUIState.SuccessUpdate -> {
+            is UserViewModel.EventParticipateUIState.SuccessUpdate -> {
                 Text(
                     text = textResource(R.string.txtParticipateInEventStatusUpdateMessage).toString(),
                     color = MaterialTheme.colors.primary,
@@ -354,8 +354,8 @@ private fun MainComponent(
                     modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                 )
             }
-            is UserInEventViewModel.EventParticipateUIState.Loading -> CircularProgressIndicator()
-            is UserInEventViewModel.EventParticipateUIState.Error -> {
+            is UserViewModel.EventParticipateUIState.Loading -> CircularProgressIndicator()
+            is UserViewModel.EventParticipateUIState.Error -> {
                 Text(
                     text = textResource(R.string.txtParticipateInEventError).toString() + " - " + participateState.error,
                     color = MaterialTheme.colors.primary,

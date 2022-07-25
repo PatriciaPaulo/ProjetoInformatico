@@ -3,14 +3,14 @@ package com.example.splmobile.models
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.events.UserInEventSerializable
 import com.example.splmobile.dtos.users.UserSerializable
-import com.example.splmobile.services.userInEvent.UserInEventService
+import com.example.splmobile.services.userInEvent.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 
-class UserInEventViewModel (
-    private val userInEventService: UserInEventService,
+class UserViewModel (
+    private val userService: UserService,
     private val eventViewModel: EventViewModel,
     log: Logger
 ) : ViewModel() {
@@ -45,7 +45,8 @@ class UserInEventViewModel (
     private val _usersUIState = MutableStateFlow<UsersUIState>(UsersUIState.Empty)
     val usersUIState = _usersUIState.asStateFlow()
     sealed class UsersUIState {
-        data class Success(val users: List<UserSerializable>) : UsersUIState()
+        data class SuccessUsers(val users: List<UserSerializable>) : UsersUIState()
+        data class SuccessUser(val user: UserSerializable) : UsersUIState()
         data class Error(val error: String) : UsersUIState()
         object Loading : UsersUIState()
         object Empty : UsersUIState()
@@ -55,7 +56,7 @@ class UserInEventViewModel (
         _usersInEventUIState.value = UsersInEventUIState.Loading
         log.v("getting all users in event ")
         viewModelScope.launch {
-            val response = userInEventService.getUsersInEvent(eventId,token)
+            val response = userService.getUsersInEvent(eventId,token)
 
             if(response.message.substring(0,3)  == "200"){
                 log.v("getting all  ${response.data}")
@@ -71,11 +72,27 @@ class UserInEventViewModel (
 
         log.v("getting all users in event ")
         viewModelScope.launch {
-            val response = userInEventService.getAllUsersStats(token)
+            val response = userService.getAllUsersStats(token)
 
             if(response.message.substring(0,3)  == "200"){
                 log.v("getting all  ${response.data}")
-                _usersUIState.value = UsersUIState.Success(response.data)
+                _usersUIState.value = UsersUIState.SuccessUsers(response.data)
+            }else{
+                _usersUIState.value = UsersUIState.Error(response.message)
+            }
+        }
+
+    }
+
+    fun getUserStats(userID: Long,token: String) {
+        _usersUIState.value = UsersUIState.Loading
+        log.v("getting all users in event ")
+        viewModelScope.launch {
+            val response = userService.getUserStats(userID,token)
+
+            if(response.message.substring(0,3)  == "200"){
+                log.v("getting all  ${response.data}")
+                _usersUIState.value = UsersUIState.SuccessUser(response.data)
             }else{
                 _usersUIState.value = UsersUIState.Error(response.message)
             }
@@ -89,7 +106,7 @@ class UserInEventViewModel (
         log.v("signing up in event $eventID")
         _eventParticipateUIState.value = EventParticipateUIState.Loading
         viewModelScope.launch {
-            val response = userInEventService.postParticipateInEvent(eventID,token)
+            val response = userService.postParticipateInEvent(eventID,token)
             if(response.message.substring(0,3)  == "200"){
                 log.v("signing up in event successful")
                 _eventParticipateUIState.value = EventParticipateUIState.SuccessParticipate(response.data.toLong())
@@ -105,7 +122,7 @@ class UserInEventViewModel (
         log.v("signing up in event $eventID")
         _eventParticipateUIState.value = EventParticipateUIState.Loading
         viewModelScope.launch {
-            val response = userInEventService.postParticipateInEventByOrganizer(eventID,userID,token)
+            val response = userService.postParticipateInEventByOrganizer(eventID,userID,token)
             if(response.message.substring(0,3)  == "200"){
                 log.v("signing up in event successful")
                 _eventParticipateUIState.value = EventParticipateUIState.SuccessOrganizer(response.data.toLong())
@@ -121,7 +138,7 @@ class UserInEventViewModel (
         log.v("update user in event $eventID")
         _eventParticipateUIState.value = EventParticipateUIState.Loading
         viewModelScope.launch {
-            val response = userInEventService.patchStatusParticipateInEvent(eventID,userEventID,status,token)
+            val response = userService.patchStatusParticipateInEvent(eventID,userEventID,status,token)
             if(response.message.substring(0,3)  == "200"){
                 log.v("Creating event successful")
                 _eventParticipateUIState.value = EventParticipateUIState.SuccessUpdate(response.data.toLong())

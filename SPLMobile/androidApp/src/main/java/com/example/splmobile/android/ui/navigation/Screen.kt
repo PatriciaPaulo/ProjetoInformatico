@@ -4,6 +4,7 @@ import com.example.splmobile.android.R
 
 sealed class Screen (val route: String) {
 
+
     object Onboarding : Screen(route = "onboarding_screen")
     object Authentication : Screen(route = "authentication_screen")
     object Login : Screen(route = "login_screen")
@@ -17,6 +18,7 @@ sealed class Screen (val route: String) {
     object UsersInEventList : Screen(route = "users_in_event_list")
     object GarbageSpotList : Screen(route = "garbage_spot_list")
     object MyEventList : Screen(route = "my_event_list")
+    object UserProfile : Screen(route = "user_profile")
 
 }
 

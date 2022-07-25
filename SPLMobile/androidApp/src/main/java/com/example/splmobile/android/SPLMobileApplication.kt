@@ -25,7 +25,7 @@ class SPLMobileApplication : Application() {
                 viewModel { SharedViewModel(get(), get { parametersOf("SharedViewModel") }) }
                 viewModel { UserInfoViewModel(get(), get { parametersOf("UserInfoViewModel") }) }
                 viewModel { EventViewModel(get(), get { parametersOf("EventViewModel") }) }
-                viewModel { UserInEventViewModel(get(), get(),get { parametersOf("UserInEventViewModel") }) }
+                viewModel { UserViewModel(get(), get(),get { parametersOf("UserInEventViewModel") }) }
                 viewModel { AuthViewModel(get(), get { parametersOf("AuthViewModel") }) }
                 single<SharedPreferences> {
                     get<Context>().getSharedPreferences("KAMPSTARTER_SETTINGS", Context.MODE_PRIVATE)
