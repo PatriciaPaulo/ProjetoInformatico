@@ -138,6 +138,7 @@ if __name__ == '__main__':
                        status=random.choice(status), accessibility=random.choice(accessibility),
                        quantity=random.choice(quantity), restrictions=random.choice(restrictions),
                        duration=duration, startDate=datetime.datetime.utcnow())
+
         session.add(event)
 
 

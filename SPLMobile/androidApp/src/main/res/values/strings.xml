@@ -78,7 +78,7 @@
     <string name="lblObservationsCreateEvent">Observações</string>
     <string name="lblRestrictionsCreateEvent">Restrições</string>
     <string name="lblQuantityCreateEvent">Quantidade</string>
-    <string name="lblDurationCreateEvent">Duração em dias</string>
+    <string name="lblDurationCreateEvent">Duração em horas</string>
     <string name="lblPlaceCreateEvent">Novo evento</string>
     <string name="txtNecessaryField">Campo Obrigatório</string>
     <string name="lblGarbageTypeCreateEvent">Tipo de Lixo</string>

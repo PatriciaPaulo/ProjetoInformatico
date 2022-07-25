@@ -26,8 +26,10 @@ def create_garbageSpot(current_user):
                                   longitude=data['longitude'], creator=current_user.id,
                                   status=data['status'], approved=data['approved'])
 
+
     db.session.add(new_garbageSpot)
     db.session.commit()
+
 
     return make_response(jsonify({'data': GarbageSpot.serialize(new_garbageSpot), 'message': '200 OK - Garbage Spot Created'}), 200)
 
@@ -43,7 +45,7 @@ def get_all_garbageSpots(current_user):
     output = []
     for garbageSpot in garbageSpots:
         garbageSpot_data = {}
-        if garbageSpot.approved is True or garbageSpot.creator is current_user.id:
+        if garbageSpot.approved is True or garbageSpot.creator is current_user.id or current_user.admin:
             garbageSpot_data['id'] = garbageSpot.id
             garbageSpot_data['name'] = garbageSpot.name
             garbageSpot_data['latitude'] = garbageSpot.latitude
@@ -116,12 +118,17 @@ def approve_garbageSpot(current_user,garbageSpot_id):
 
     garbageSpot_data = request.get_json()
     garbageSpot.approved = garbageSpot_data['approved']
+    print( garbageSpot_data['approved'])
+
+    """
     if garbageSpot_data['approved'] == 'false':
         garbageSpot.approved = False
     elif garbageSpot_data['approved'] == 'true':
         garbageSpot.approved = True
+    """
 
     db.session.commit()
+    print(garbageSpot.approved)
     return make_response(jsonify({'message': '200 OK - Garbage Spot Approved'}), 200)
 
 

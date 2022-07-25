@@ -77,8 +77,8 @@ def get_events():
         event_data['garbageType'] = []
 
 
-    if len(output) == 0:
-        return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Event Found'}), 404)
+   # if len(output) == 0:
+   #    return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Event Found'}), 404)
 
     return make_response(jsonify({'data': output, 'message': '200 OK - All Events Retrieved'}), 200)
 

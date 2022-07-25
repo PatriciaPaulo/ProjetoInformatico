@@ -126,7 +126,7 @@ fun UsersInEventListScreen(
 
                                 items(listSearch.value.size){ index ->
 
-                                    AllUsersList(gs = listSearch.value.get(index), navController = navController,usersInEventListSearch = usersInEventListSearch.value)
+                                    AllUsersList(user = listSearch.value.get(index), navController = navController,usersInEventListSearch = usersInEventListSearch.value,log=log)
                                 }
 
 
@@ -216,8 +216,9 @@ fun UsersList(navController: NavHostController, gs :UserInEventSerializable){
 @Composable
 fun AllUsersList(
     navController: NavHostController,
-    gs: UserSerializable,
-    usersInEventListSearch: List<UserInEventSerializable>
+    user: UserSerializable,
+    usersInEventListSearch: List<UserInEventSerializable>,
+    log: Logger
 ){
     var expanded by remember { mutableStateOf(false) }
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -236,31 +237,36 @@ fun AllUsersList(
     ){
         Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
         Column() {
-            Text(text = gs.id.toString(), style = MaterialTheme.typography.h6)
-            Text(text = gs.name, style = MaterialTheme.typography.body1)
-            Text(text = gs.username, style = MaterialTheme.typography.body1)
+            Text(text = user.id.toString(), style = MaterialTheme.typography.h6)
+            Text(text = user.name, style = MaterialTheme.typography.body1)
+            Text(text = user.username, style = MaterialTheme.typography.body1)
 
 
         }
     }
     Box(contentAlignment = Alignment.CenterEnd) {
+
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
             DropdownMenuItem(onClick = {
                 /* Handle refresh! */
+                log.d{"clicked"}
+                log.d{"${usersInEventListSearch.size}"}
                 if(usersInEventListSearch
                         .any{
-                            it.userID == gs.id && it.status == "Organizer"
+                            log.d{"$it"}
+                            it.userID == user.id && it.status == "Organizer"
                         }){
+                    log.d{"cliicked by me"}
                     //TODO REMOVE PEDIDO
                 }else{
                     //TODO ADD TO LIST PEDIDO
                 }
             }) {
                 //check if in event
-                if(usersInEventListSearch.any{ it.userID == gs.id }){
+                if(usersInEventListSearch.any{ it.userID == user.id }){
                     if(usersInEventListSearch
                             .any{
                                 it.status == "Organizer"
