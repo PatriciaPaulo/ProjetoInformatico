@@ -48,7 +48,7 @@ class EventViewModel (
 
     //state UPDATE event
     private val _eventUpdateUIState = MutableStateFlow<EventUpdateUIState>(EventUpdateUIState.Empty)
-    val eventUpdateUIState = _eventCreateUIState.asStateFlow()
+    val eventUpdateUIState = _eventUpdateUIState.asStateFlow()
     sealed class EventUpdateUIState {
         object UpdateStatusSuccess: EventUpdateUIState()
         object UpdateSuccess: EventUpdateUIState()
@@ -57,7 +57,7 @@ class EventViewModel (
         object Empty : EventUpdateUIState()
     }
 
-    //state participate in event
+    /*state participate in event
     private val _eventParticipateUIState = MutableStateFlow<EventParticipateUIState>(EventParticipateUIState.Empty)
     val eventParticipateUIState = _eventParticipateUIState.asStateFlow()
     sealed class EventParticipateUIState {
@@ -68,7 +68,7 @@ class EventViewModel (
         object Empty : EventParticipateUIState()
 
 
-    }
+    */
 
     fun getEvents() {
         _eventsUIState.value = EventsUIState.Loading

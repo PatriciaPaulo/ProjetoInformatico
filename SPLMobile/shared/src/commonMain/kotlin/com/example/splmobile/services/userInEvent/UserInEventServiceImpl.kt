@@ -2,6 +2,7 @@ package com.example.splmobile.services.userInEvent
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
+import com.example.splmobile.dtos.RequestDataResponse
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.events.*
 import com.example.splmobile.dtos.users.UsersResponse
@@ -53,9 +54,9 @@ class UserInEventServiceImpl (
 
 
     override suspend fun postParticipateInEvent(
-        eventId: Long,
+        eventID: Long,
         token: String
-    ): RequestMessageResponse {
+    ): RequestDataResponse {
         log.d { "post participate in event" }
         try{
             return client.post {
@@ -63,21 +64,41 @@ class UserInEventServiceImpl (
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
 
-                url("api/events/"+eventId+"/signUpEvent")
-            }.body() as RequestMessageResponse
+                url("api/events/"+eventID+"/signUpEvent")
+            }.body() as RequestDataResponse
         }
         catch (ex :Exception){
-            return RequestMessageResponse("$ex")
+            return RequestDataResponse("","$ex")
         }
     }
 
+    override suspend fun postParticipateInEventByOrganizer(
+        eventID: Long,
+        userID: Long,
+        token: String
+    ): RequestDataResponse {
+        log.d { "post participate in event" }
+        try{
+            return client.post {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                setBody(userID)
+                url("api/events/"+eventID+"/signUpEventOrganizer")
+            }.body() as RequestDataResponse
+        }
+        catch (ex :Exception){
+            return RequestDataResponse("","$ex")
+        }
+    }
 
     override suspend fun patchStatusParticipateInEvent(
         eventId: Long,
         user_eventId: Long,
         status: String,
         token: String
-    ): RequestMessageResponse {
+    ): RequestDataResponse {
         log.d { "post participate in event" }
         try{
             return client.patch {
@@ -87,12 +108,14 @@ class UserInEventServiceImpl (
                 contentType(ContentType.Application.Json)
                 setBody(status)
                 url("api/events/"+eventId+"/signUpUpdateStatusEvent/"+user_eventId)
-            }.body() as RequestMessageResponse
+            }.body() as RequestDataResponse
         }
         catch (ex :Exception){
-            return RequestMessageResponse("$ex")
+            return RequestDataResponse("","$ex")
         }
     }
+
+
 
 
     override suspend fun getUsersInEvent(user_eventId: Long, token: String): UserInEventResponse {

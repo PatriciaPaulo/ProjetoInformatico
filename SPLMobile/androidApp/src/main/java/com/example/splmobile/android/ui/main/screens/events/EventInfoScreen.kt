@@ -48,7 +48,8 @@ fun EventInfoScreen(
     }
     var eventState = eventViewModel.eventByIdUIState.collectAsState().value
     var myEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
-    var participateState = eventViewModel.eventParticipateUIState.collectAsState().value
+    var participateState = userInEventViewModel.eventParticipateUIState.collectAsState().value
+    var eventStatusState = eventViewModel.eventUpdateUIState.collectAsState().value
 
 
     Scaffold(
@@ -84,6 +85,7 @@ fun EventInfoScreen(
                             eventViewModel,
                             authViewModel,
                             participateState,
+                            eventStatusState,
                             innerPadding,log
                         )
                     }
@@ -112,7 +114,8 @@ private fun MainComponent(
     userInEventViewModel: UserInEventViewModel,
     eventViewModel: EventViewModel,
     authViewModel: AuthViewModel,
-    participateState: EventViewModel.EventParticipateUIState,
+    participateState: UserInEventViewModel.EventParticipateUIState,
+    eventStatusState: EventViewModel.EventUpdateUIState,
     innerPadding: PaddingValues,
     log: Logger
 ) {
@@ -122,7 +125,7 @@ private fun MainComponent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = innerPadding.calculateBottomPadding())
-           // .background(colorResource(id = R.color.cardview_dark_background))
+            // .background(colorResource(id = R.color.cardview_dark_background))
             .wrapContentSize(Alignment.Center),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -210,17 +213,20 @@ private fun MainComponent(
                     Text(text = textResource(R.string.btnUpdateParticipateOnEvent).toString())
                 }
                 //button for organizers to add new organizers
-                Button(
-                    onClick = {
-                        navController.navigate(Screen.UsersInEventList.route+"/${event.id}")
+                if(event.status.equals(textResource(R.string.EventOrganizerStatusElement1).toString())){
+                    Button(
+                        onClick = {
+                            navController.navigate(Screen.UsersInEventList.route+"/${event.id}")
 
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(),
 
-                    ) {
-                    Text(text = textResource(R.string.btnCheckParticipantsOnEvent).toString())
+                        ) {
+                        Text(text = textResource(R.string.btnCheckParticipantsOnEvent).toString())
+                    }
                 }
+
 
             }
             else{
@@ -228,6 +234,7 @@ private fun MainComponent(
                 val statusSignUpListEvent = listOf(
                     textResource(R.string.EventSignUpStatusElement1).toString(),
                     textResource(R.string.EventSignUpStatusElement3).toString(),
+                    textResource(R.string.EventSignUpStatusElement4).toString(),
 
                 )
                 var expanded by remember { mutableStateOf(false) }
@@ -294,22 +301,44 @@ private fun MainComponent(
 
         } else {
             Log.d("EventInfoSc", "sign in event")
-            Button(
-                onClick = {
-                    userInEventViewModel.participateInEvent(
-                        event.id,
-                        authViewModel.tokenState.value
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth(),
+            if(event.status == textResource(R.string.EventOrganizerStatusElement1).toString()){
+                Button(
+                    onClick = {
+                        userInEventViewModel.participateInEvent(
+                            event.id,
+                            authViewModel.tokenState.value
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
 
-                ) {
-                Text(text = textResource(R.string.btnParticipateOnEvent).toString())
+                    ) {
+                    Text(text = textResource(R.string.btnParticipateOnEvent).toString())
+                }
             }
+
         }
+        when(eventStatusState){
+            is EventViewModel.EventUpdateUIState.UpdateStatusSuccess -> {
+                Text(
+                    text = textResource(R.string.txtEventStatusUpdate).toString(),
+                    color = MaterialTheme.colors.primary,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                )
+            }
+            is EventViewModel.EventUpdateUIState.Loading -> {CircularProgressIndicator()}
+            is EventViewModel.EventUpdateUIState.Error -> {
+                Text(
+                text = textResource(R.string.txtParticipateInEventError).toString() + " - " + eventStatusState.error,
+                color = MaterialTheme.colors.primary,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+            )}
+        }
+
         when (participateState) {
-            is EventViewModel.EventParticipateUIState.SuccessParticipate -> {
+            is UserInEventViewModel.EventParticipateUIState.SuccessParticipate -> {
                 Text(
                     text = textResource(R.string.txtParticipateInEventMessage).toString(),
                     color = MaterialTheme.colors.primary,
@@ -317,7 +346,7 @@ private fun MainComponent(
                     modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                 )
             }
-            is EventViewModel.EventParticipateUIState.SuccessUpdate -> {
+            is UserInEventViewModel.EventParticipateUIState.SuccessUpdate -> {
                 Text(
                     text = textResource(R.string.txtParticipateInEventStatusUpdateMessage).toString(),
                     color = MaterialTheme.colors.primary,
@@ -325,8 +354,8 @@ private fun MainComponent(
                     modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                 )
             }
-            is EventViewModel.EventParticipateUIState.Loading -> CircularProgressIndicator()
-            is EventViewModel.EventParticipateUIState.Error -> {
+            is UserInEventViewModel.EventParticipateUIState.Loading -> CircularProgressIndicator()
+            is UserInEventViewModel.EventParticipateUIState.Error -> {
                 Text(
                     text = textResource(R.string.txtParticipateInEventError).toString() + " - " + participateState.error,
                     color = MaterialTheme.colors.primary,

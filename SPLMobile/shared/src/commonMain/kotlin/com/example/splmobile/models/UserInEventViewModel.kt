@@ -22,8 +22,9 @@ class UserInEventViewModel (
     private val _eventParticipateUIState = MutableStateFlow<EventParticipateUIState>(EventParticipateUIState.Empty)
     val eventParticipateUIState = _eventParticipateUIState.asStateFlow()
     sealed class EventParticipateUIState {
-        object SuccessParticipate: EventParticipateUIState()
-        object SuccessUpdate: EventParticipateUIState()
+        data class SuccessParticipate(val userID: Long): EventParticipateUIState()
+        data class SuccessUpdate(val userID: Long): EventParticipateUIState()
+        data class SuccessOrganizer(val userID: Long): EventParticipateUIState()
         data class Error(val error: String) : EventParticipateUIState()
         object Loading : EventParticipateUIState()
         object Empty : EventParticipateUIState()
@@ -52,7 +53,6 @@ class UserInEventViewModel (
 
     fun getUsersInEvent(eventId: Long,token: String) {
         _usersInEventUIState.value = UsersInEventUIState.Loading
-
         log.v("getting all users in event ")
         viewModelScope.launch {
             val response = userInEventService.getUsersInEvent(eventId,token)
@@ -92,7 +92,23 @@ class UserInEventViewModel (
             val response = userInEventService.postParticipateInEvent(eventID,token)
             if(response.message.substring(0,3)  == "200"){
                 log.v("signing up in event successful")
-                _eventParticipateUIState.value = EventParticipateUIState.SuccessParticipate
+                _eventParticipateUIState.value = EventParticipateUIState.SuccessParticipate(response.data.toLong())
+
+            }else{
+                log.v("signing up in event error")
+                _eventParticipateUIState.value = EventParticipateUIState.Error(response.message)
+            }
+        }
+    }
+
+    fun participateInEventOrganizer(eventID: Long,userID: Long,token: String) {
+        log.v("signing up in event $eventID")
+        _eventParticipateUIState.value = EventParticipateUIState.Loading
+        viewModelScope.launch {
+            val response = userInEventService.postParticipateInEventByOrganizer(eventID,userID,token)
+            if(response.message.substring(0,3)  == "200"){
+                log.v("signing up in event successful")
+                _eventParticipateUIState.value = EventParticipateUIState.SuccessOrganizer(response.data.toLong())
 
             }else{
                 log.v("signing up in event error")
@@ -108,7 +124,7 @@ class UserInEventViewModel (
             val response = userInEventService.patchStatusParticipateInEvent(eventID,userEventID,status,token)
             if(response.message.substring(0,3)  == "200"){
                 log.v("Creating event successful")
-                _eventParticipateUIState.value = EventParticipateUIState.SuccessUpdate
+                _eventParticipateUIState.value = EventParticipateUIState.SuccessUpdate(response.data.toLong())
                 eventViewModel.getEvents()
             }else{
                 log.v("Creating event error")

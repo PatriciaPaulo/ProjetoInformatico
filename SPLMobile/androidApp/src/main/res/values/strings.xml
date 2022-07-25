@@ -107,6 +107,8 @@
     <string name="btnCheckParticipantsOnEvent">Ver participantes</string>
     <string name="lblPartipantsInEvent">Participantes</string>
     <string name="txtUsersInEventError">Erro a encontrar participants</string>
+    <string name="txtEventStatusUpdate">Estado do evento alterado</string>
+    <string name="EventSignUpStatusElement4">Interesse</string>
 
 
 </resources>

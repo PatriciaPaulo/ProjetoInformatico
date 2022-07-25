@@ -35,7 +35,7 @@ fun UsersInEventListScreen(
     eventViewModel: EventViewModel,
     userInEventViewModel: UserInEventViewModel,
     authViewModel: AuthViewModel,
-    userInfoViewModel: UserInfoViewModel,
+    userInfoViewModel:  UserInfoViewModel,
     mainViewModel: MainViewModel,
     eventID: String?,
     log: Logger
@@ -48,9 +48,11 @@ fun UsersInEventListScreen(
     LaunchedEffect(Unit) {
         userInEventViewModel.getUsersInEvent(eventID!!.toLong(),authViewModel.tokenState.value)
         userInEventViewModel.getAllUsers(authViewModel.tokenState.value)
+        userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
     }
     var usersEventListState = userInEventViewModel.usersInEventUIState.collectAsState().value
     var usersListState = userInEventViewModel.usersUIState.collectAsState().value
+    var userID = userInfoViewModel.myIdUIState.collectAsState().value
     //search bar states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
@@ -126,7 +128,14 @@ fun UsersInEventListScreen(
 
                                 items(listSearch.value.size){ index ->
 
-                                    AllUsersList(user = listSearch.value.get(index), navController = navController,usersInEventListSearch = usersInEventListSearch.value,log=log)
+                                    AllUsersList(user = listSearch.value.get(index),
+                                        eventID=eventID,
+                                        navController = navController,
+                                        usersInEventListSearch = usersInEventListSearch.value,
+                                        userID = userID,
+                                        log=log,
+                                        authViewModel=authViewModel,
+                                        userInEventViewModel = userInEventViewModel)
                                 }
 
 
@@ -218,7 +227,11 @@ fun AllUsersList(
     navController: NavHostController,
     user: UserSerializable,
     usersInEventListSearch: List<UserInEventSerializable>,
-    log: Logger
+    userInEventViewModel: UserInEventViewModel,
+    authViewModel: AuthViewModel,
+    log: Logger,
+    userID: Long,
+    eventID: String?
 ){
     var expanded by remember { mutableStateOf(false) }
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -228,21 +241,45 @@ fun AllUsersList(
             .padding(8.dp)
             .clickable(
                 onClick = {
-                    expanded =true
+                    expanded = true
                 },
 
                 )
 
 
     ){
-        Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
-        Column() {
-            Text(text = user.id.toString(), style = MaterialTheme.typography.h6)
-            Text(text = user.name, style = MaterialTheme.typography.body1)
-            Text(text = user.username, style = MaterialTheme.typography.body1)
+        if(userID != user.id) {
+            Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
+            Column() {
+
+                Text(text = user.id.toString(), style = MaterialTheme.typography.h6)
+                Text(text = user.name, style = MaterialTheme.typography.body1)
+                Text(text = user.username, style = MaterialTheme.typography.body1)
 
 
+            }
+            if(usersInEventListSearch.find{it.userID == user.id }!= null){
+                Text(text = "in event", style = MaterialTheme.typography.h6)
+
+            }
         }
+        var stateParticipate = userInEventViewModel.eventParticipateUIState.collectAsState().value
+
+        when(stateParticipate){
+            is UserInEventViewModel.EventParticipateUIState.SuccessUpdate -> {
+                if(user.id == stateParticipate.userID){
+                    Text(text = "Atualizado", style = MaterialTheme.typography.body1)
+                }
+
+            }
+            is UserInEventViewModel.EventParticipateUIState.SuccessOrganizer -> {
+                if(user.id == stateParticipate.userID){
+                    Text(text = "Adicionado", style = MaterialTheme.typography.body1)
+                }
+            }
+        }
+
+
     }
     Box(contentAlignment = Alignment.CenterEnd) {
 
@@ -252,33 +289,117 @@ fun AllUsersList(
         ) {
             DropdownMenuItem(onClick = {
                 /* Handle refresh! */
-                log.d{"clicked"}
-                log.d{"${usersInEventListSearch.size}"}
+
+                //if logged in user is the creator ->
                 if(usersInEventListSearch
                         .any{
                             log.d{"$it"}
-                            it.userID == user.id && it.status == "Organizer"
+                            it.creator && it.userID == userID
                         }){
-                    log.d{"cliicked by me"}
-                    //TODO REMOVE PEDIDO
-                }else{
-                    //TODO ADD TO LIST PEDIDO
-                }
-            }) {
-                //check if in event
-                if(usersInEventListSearch.any{ it.userID == user.id }){
+                    //if user is already organizer
                     if(usersInEventListSearch
                             .any{
-                                it.status == "Organizer"
+                                log.d{"$it"}
+                                it.status=="Organizer" && it.userID == user.id
                             }){
-                        Text("Remover como organizador")
+                        //if user is already organizer
+                        //remove
+                        var user_event = usersInEventListSearch.find{
+                            it.userID == user.id
+                        }
+
+                        userInEventViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event!!.id,"Inscrito",authViewModel.tokenState.value)
+
+
                     }else{
-                        Text("Cancelar a sua participação")
+                        //add
+                        var user_event = usersInEventListSearch.find{
+                            it.userID == user.id
+                        }
+                        if(user_event == null){
+                            //create signup
+                            userInEventViewModel.participateInEventOrganizer(eventID!!.toLong(), user.id,authViewModel.tokenState.value)
+
+                        }
+                        else{
+                            //update status
+                            userInEventViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event.id,"Organizer",authViewModel.tokenState.value)
+
+                        }
                     }
                 }else{
-                    Text("Adicionar como organizador")
+                    //not the creator but is an organizer
+                    if(usersInEventListSearch
+                            .any{
+                                log.d{"$it"}
+                                it.status=="Organizer" && it.userID == userID
+                            }){
+                        //if user is already organizer
+                        if(usersInEventListSearch
+                                .any{
+                                    log.d{"$it"}
+                                    it.status=="Organizer" && it.userID == user.id
+                                }){
+                            //if user is already organizer
+                        }else{
+                            //add
+                            var user_event = usersInEventListSearch.find{
+                                it.userID == user.id
+                            }
+                            if(user_event == null){
+                                //create signup
+                                userInEventViewModel.participateInEventOrganizer(eventID!!.toLong(),userID,authViewModel.tokenState.value)
+
+                            }
+                            else{
+                                //update status
+                                userInEventViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event.id,"Organizer",authViewModel.tokenState.value)
+
+                            }
+                        }
+
+                    }
                 }
 
+                //profile
+            }) {
+                //check if in event
+                //if logged in user is the creator ->
+                if(usersInEventListSearch
+                        .any{
+                            log.d{"$it"}
+                            it.creator && it.userID == userID
+                        }){
+                    //if user is already organizer
+                    if(usersInEventListSearch
+                            .any{
+                                log.d{"$it"}
+                                it.status=="Organizer" && it.userID == user.id
+                            }){
+                        //if user is already organizer
+                        Text("Remover como organizador")
+                    }else{
+                        Text("Adicionar como organizador")
+                    }
+                }else{
+                    //not the creator but is an organizer
+                    if(usersInEventListSearch
+                            .any{
+                                log.d{"$it"}
+                                it.status=="Organizer" && it.userID == userID
+                            }){
+                        //if user is already organizer
+                        if(usersInEventListSearch
+                                .any{
+                                    log.d{"$it"}
+                                    it.status=="Organizer" && it.userID == user.id
+                                }){
+                            //if user is already organizer
+                        }else{
+                            Text("Adicionar como organizador")
+                        }
+                    }
+                }
 
             }
             Divider()

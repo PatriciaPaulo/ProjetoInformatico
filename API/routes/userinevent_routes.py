@@ -24,13 +24,17 @@ def get_user_in_event(current_user,event_id):
     output = []
 
     for event in users_events:
+        print(event)
         event_data = {}
         event_data['id'] = event.id
         event_data['userID'] = event.userID
-        event_data['eventID'] = event.eventID
+        event_data['event'] = {}
+        for ev in db.session.query(Event).filter_by(id=event.eventID):
+            event_data['event'] = Event.serialize(ev)
+
         event_data['status'] = event.status
         event_data['creator'] = event.creator
-
+        output.append(event_data)
     if len(output) == 0:
         return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Event Found'}), 404)
 
@@ -44,31 +48,56 @@ def add_user_to_event(current_user,event_id):
    # print("Event - "+event_id)
     event = db.session.query(Event).filter_by(id=event_id).first()
     if not event:
-        return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
+        return make_response(jsonify({'data': {},'message': '404 NOT OK - No Event Found'}), 404)
 
 
-    user_event = db.session.query(UserInEvent).filter_by(userID=current_user.id).first()
+    user_event = db.session.query(UserInEvent).filter_by(userID=current_user.id,eventID=event_id).first()
     if user_event:
-        if user_event.eventID == event_id:
-            return make_response(jsonify({'message': '405 NOT OK - Already signed up to Event! Update your status instead!'}), 409)
+        return make_response(jsonify({'data': {},'message': '409 NOT OK - Already signed up to Event! Update your status instead!'}), 409)
 
     signUp = UserInEvent(userID=current_user.id, eventID=event_id,status="Inscrito",creator = False)
 
     db.session.add(signUp)
     db.session.commit()
 
-    return make_response(jsonify({'message': '200 OK - User Sign Up to Event'}), 200)
+
+    return make_response(jsonify({'data': current_user.id, 'message': '200 OK - User Sign Up to Event'}), 200)
+
+
+# Add user to Event by Organizer
+@users_event_routes_blueprint.route('/events/<event_id>/signUpEventOrganizer', methods=['POST'])
+@token_required
+def add_organizer_to_event(current_user,event_id):
+   # print("Event - "+event_id)
+    data =  request.get_json()
+    event = db.session.query(Event).filter_by(id=event_id).first()
+    if not event:
+        return make_response(jsonify({'data': {},'message': '404 NOT OK - No Event Found'}), 404)
+
+    if event.status != "Criado":
+        return make_response(jsonify({'data': {},'message': '404 NOT OK - Event status doesn\'t allow action'}), 400)
+
+    user_event = db.session.query(UserInEvent).filter_by(userID=data,eventID=event_id).first()
+    if user_event:
+        return make_response(jsonify({'data': {},'message': '409 NOT OK - Already signed up to Event! Update your status instead!'}), 409)
+
+    signUp = UserInEvent(userID=data, eventID=event_id,status="Organizer",creator = False)
+
+    db.session.add(signUp)
+    db.session.commit()
+
+    return make_response(jsonify({'data': data,'message': '200 OK - User Sign Up to Event'}), 200)
 
 @users_event_routes_blueprint.route('/events/<event_id>/signUpUpdateStatusEvent/<user_event_id>', methods=['Patch'])
 @token_required
 def update_status_user_to_event(current_user,event_id,user_event_id):
     event = db.session.query(Event).filter_by(id=event_id).first()
     if not event:
-        return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
+        return make_response(jsonify({'data': {},'message': '404 NOT OK - No Event Found'}), 404)
 
     user_event = db.session.query(UserInEvent).filter_by(id=user_event_id).first()
     if not user_event:
-        return make_response(jsonify({'message': '404 NOT OK - User In Event Not Found! '}), 404)
+        return make_response(jsonify({'data': {},'message': '404 NOT OK - User In Event Not Found! '}), 404)
 
     data = request.get_json()
     print(data)
@@ -76,5 +105,5 @@ def update_status_user_to_event(current_user,event_id,user_event_id):
 
     db.session.commit()
 
-    return make_response(jsonify({'message': '200 OK - User Sign Up to Event Status Updated'}), 200)
+    return make_response(jsonify({'data': user_event.userID,'message': '200 OK - User Sign Up to Event Status Updated'}), 200)
 # endregion

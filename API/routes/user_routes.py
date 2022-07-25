@@ -125,7 +125,7 @@ def get_users(current_user):
         if not user.admin:
             if not user.blocked:
                 events_participated = db.session.query(UserInEvent).filter_by(userID=user.id,status="Confirmado").count()
-                print(events_participated)
+                # print(events_participated)
                 from datetime import date
 
                 today = date.today()

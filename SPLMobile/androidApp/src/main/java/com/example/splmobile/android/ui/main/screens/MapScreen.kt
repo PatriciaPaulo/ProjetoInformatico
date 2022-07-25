@@ -329,7 +329,6 @@ fun MapContent(
     }
 
 
-
     when(garbageSpotsState){
         is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
             log.d {" All garbage spots state -> Success "}
