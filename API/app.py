@@ -7,6 +7,7 @@ from routes.event_routes import event_routes_blueprint
 from routes.activity_routes import activity_routes_blueprint
 from routes.user_routes import user_routes_blueprint
 from routes.userinevent_routes import users_event_routes_blueprint
+from routes.friends_routes import friends_routes_blueprint
 
 
 from models import db, Base
@@ -26,6 +27,7 @@ if __name__ == '__main__':
     app.register_blueprint(user_routes_blueprint, url_prefix='/api')
     app.register_blueprint(garbagetype_routes_blueprint, url_prefix='/api')
     app.register_blueprint(users_event_routes_blueprint, url_prefix='/api')
+    app.register_blueprint(friends_routes_blueprint, url_prefix='/api')
     # endregion
 
     #mail = Mail(app)

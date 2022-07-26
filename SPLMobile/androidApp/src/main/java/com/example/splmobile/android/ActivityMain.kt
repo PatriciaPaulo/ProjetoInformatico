@@ -1,7 +1,10 @@
 package com.example.splmobile.android
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -54,7 +57,11 @@ class ActivityMain : ComponentActivity() , KoinComponent{
     private val userInfoViewModel: UserInfoViewModel by viewModel()
     private val eventViewModel: EventViewModel by viewModel()
     private val userViewModel: UserViewModel by viewModel()
+    private val friendViewModel: FriendViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
+    //notifcations system
+    private val channel1ID = "package com.example.splmobile.android.channel1"
+    private var notificationManager: NotificationManager? = null
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,6 +87,7 @@ class ActivityMain : ComponentActivity() , KoinComponent{
                     userInfoViewModel = userInfoViewModel,
                     eventViewModel = eventViewModel,
                     userViewModel = userViewModel,
+                    friendViewModel = friendViewModel,
                     sharedViewModel = sharedViewModel
                 )
 
@@ -89,8 +97,20 @@ class ActivityMain : ComponentActivity() , KoinComponent{
 
         }
 
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        createNotificationChannel(channel1ID,"devo","descriptio")
 
 
+    }
+
+    private fun createNotificationChannel(id :String, name: String,channelDescription:String){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(id,name,importance).apply {
+                description = channelDescription
+            }
+            notificationManager?.createNotificationChannel(channel)
+        }
     }
 }
 
@@ -100,26 +120,3 @@ class ActivityMain : ComponentActivity() , KoinComponent{
 fun textResource(@StringRes id: Int) : CharSequence =
     LocalContext.current.resources.getText(id)
 
-/*setContent {
-           SPLTheme() {
-               val screen by splashViewModel.startDestination
-
-               val navController = rememberNavController()
-               Scaffold(
-                   bottomBar = { BottomNavigationBar(navController = navController)}
-               ) { innerPadding ->
-                   // Apply the padding globally to the whole BottomNavScreensController
-                   Box(modifier = Modifier.padding(innerPadding)) {
-                       SetupNavGraph(
-                           navController = navController,
-                           startDestination = screen,
-                           log,
-                           mainViewModel = mainViewModel,
-                           localLixoViewModel = localLixoViewModel,
-                           sharedViewModel = sharedViewModel
-                       )
-                   }
-
-               }
-
-           }*/

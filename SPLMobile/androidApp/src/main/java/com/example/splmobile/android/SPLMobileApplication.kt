@@ -25,6 +25,7 @@ class SPLMobileApplication : Application() {
                 viewModel { SharedViewModel(get(), get { parametersOf("SharedViewModel") }) }
                 viewModel { UserInfoViewModel(get(), get { parametersOf("UserInfoViewModel") }) }
                 viewModel { EventViewModel(get(), get { parametersOf("EventViewModel") }) }
+                viewModel { FriendViewModel(get(), get { parametersOf("FriendViewModel") }) }
                 viewModel { UserViewModel(get(), get(),get { parametersOf("UserInEventViewModel") }) }
                 viewModel { AuthViewModel(get(), get { parametersOf("AuthViewModel") }) }
                 single<SharedPreferences> {

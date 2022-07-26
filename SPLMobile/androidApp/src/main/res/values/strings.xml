@@ -109,6 +109,7 @@
     <string name="txtUsersInEventError">Erro a encontrar participants</string>
     <string name="txtEventStatusUpdate">Estado do evento alterado</string>
     <string name="EventSignUpStatusElement4">Interesse</string>
+    <string name="btnAddFriend">Adicionar Amigo</string>
 
 
 </resources>

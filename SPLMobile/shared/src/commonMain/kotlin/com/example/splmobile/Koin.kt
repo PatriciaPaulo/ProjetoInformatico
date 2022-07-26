@@ -12,6 +12,8 @@ import com.example.splmobile.services.auth.AuthService
 import com.example.splmobile.services.auth.AuthServiceImpl
 import com.example.splmobile.services.events.EventService
 import com.example.splmobile.services.events.EventServiceImpl
+import com.example.splmobile.services.friends.FriendService
+import com.example.splmobile.services.friends.FriendServiceImpl
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
 import com.example.splmobile.services.userInEvent.UserService
 import com.example.splmobile.services.userInEvent.UserServiceImpl
@@ -83,6 +85,12 @@ private val coreModule = module {
     single<UserService> {
         UserServiceImpl(
             getWith("UserInEventServiceImpl"),
+            get()
+        )
+    }
+    single<FriendService> {
+        FriendServiceImpl(
+            getWith("FriendServiceImpl"),
             get()
         )
     }

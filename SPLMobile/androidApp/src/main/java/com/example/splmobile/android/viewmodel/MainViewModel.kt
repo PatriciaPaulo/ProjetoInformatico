@@ -1,5 +1,7 @@
 package com.example.splmobile.android.viewmodel
 
+import android.content.Context
+import android.os.Build
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -22,3 +24,4 @@ class MainViewModel : ViewModel() {
         _searchTextState.value = newValue
     }
 }
+

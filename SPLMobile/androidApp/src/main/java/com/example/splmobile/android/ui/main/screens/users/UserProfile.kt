@@ -6,6 +6,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
 
 import androidx.compose.material.*
 
@@ -22,13 +23,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.users.UserSerializable
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.UserViewModel
-import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.models.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -41,7 +40,7 @@ fun UserProfile(
     mainViewModel: MainViewModel,
     userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
-    sharedViewModel: SharedViewModel,
+    friendViewModel: FriendViewModel,
     userID: String?,
     log: Logger
 ) {
@@ -99,6 +98,11 @@ fun UserProfile(
             }
 
             //todo button for friend request
+            Button(onClick = {
+                friendViewModel.sendFrendRequest(userID!!.toLong(),authViewModel.tokenState.value)
+            }, shape = CutCornerShape(10)) {
+                Text(text = textResource(R.string.btnAddFriend).toString())
+            }
         },
     )
 }

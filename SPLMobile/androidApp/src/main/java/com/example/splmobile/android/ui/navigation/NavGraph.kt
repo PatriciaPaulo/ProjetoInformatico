@@ -38,6 +38,7 @@ fun SetupNavGraph(
     userInfoViewModel: UserInfoViewModel,
     eventViewModel: EventViewModel,
     userViewModel: UserViewModel,
+    friendViewModel: FriendViewModel,
     sharedViewModel: SharedViewModel
 ){
     NavHost(
@@ -169,7 +170,7 @@ fun SetupNavGraph(
                 mainViewModel = mainViewModel,
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,
-                sharedViewModel = sharedViewModel,
+                friendViewModel = friendViewModel,
                 backStackEntry.arguments?.getString("userID"),
                 log = log)
         }
