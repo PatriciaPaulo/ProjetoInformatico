@@ -2,9 +2,6 @@ package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.events.EventSerializable
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
-import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
-import com.example.splmobile.services.auth.AuthService
 import com.example.splmobile.services.events.EventService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

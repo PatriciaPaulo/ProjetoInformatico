@@ -1,6 +1,5 @@
 package com.example.splmobile.dtos.events
 
-import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
 import kotlinx.serialization.Serializable
 
 
@@ -19,5 +18,4 @@ data class EventSerializable(
     val garbageType: List<Long>,
     val quantity: String,
     val observations: String?
-
 )

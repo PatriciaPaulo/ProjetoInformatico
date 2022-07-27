@@ -10,10 +10,13 @@ import com.example.splmobile.android.ui.auth.screens.LoginScreen
 import com.example.splmobile.android.ui.auth.screens.RecoverPasswordScreen
 import com.example.splmobile.android.ui.auth.screens.RegisterScreen
 import com.example.splmobile.android.ui.main.screens.*
+import com.example.splmobile.android.ui.main.screens.activities.OngoingActivity
 import com.example.splmobile.android.ui.main.screens.events.CreateEventScreen
 import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
+import com.example.splmobile.android.viewmodel.MapViewModel
+import com.example.splmobile.models.ActivityViewModel
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
@@ -34,7 +37,9 @@ fun SetupNavGraph(
     garbageSpotViewModel: GarbageSpotViewModel,
     userInfoViewModel: UserInfoViewModel,
     eventViewModel: EventViewModel,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
+    activityViewModel: ActivityViewModel,
+    mapViewModel: MapViewModel,
 ){
     NavHost(
         navController = navController,
@@ -61,7 +66,18 @@ fun SetupNavGraph(
         }
 
         composable(BottomNavItem.Home.route) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController,
+                authViewModel = authViewModel,
+                activityViewModel = activityViewModel,
+                mapViewModel = mapViewModel,
+            )
+        }
+
+        composable(route = Screen.OngoingActivity.route) {
+            OngoingActivity(
+                navController = navController,
+                mapViewModel = mapViewModel
+            )
         }
         composable(BottomNavItem.Map.route) {
             MapScreen(navController =navController,

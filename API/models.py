@@ -44,8 +44,8 @@ class Activity(Base):
     distanceTravelled = Column(String(50))
     steps = Column(String(50))
     activityType = Column(String(50))
-    startDate = Column( DateTime)
-    endDate = Column( DateTime)
+    startDate = Column(DateTime)
+    endDate = Column(DateTime)
 
     def serialize(self):
         return {

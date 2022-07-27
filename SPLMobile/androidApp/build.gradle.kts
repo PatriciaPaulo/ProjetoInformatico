@@ -53,6 +53,7 @@ dependencies {
     implementation ("com.google.android.material:material:1.6.0")
     implementation ("com.google.maps.android:maps-compose:1.0.0")
     implementation ("com.google.android.gms:play-services-maps:18.0.2")
+    implementation("com.google.android.gms:play-services-location:20.0.0")
 
     val composeVersion = "1.1.1"
     val koin_version = "3.2.0"
@@ -68,7 +69,7 @@ dependencies {
     implementation ("androidx.compose.ui:ui-tooling:$composeVersion")
         // Integration with ViewModels
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
-        // UI Tests
+    // UI Tests
     androidTestImplementation ("androidx.compose.ui:ui-test-junit4:$composeVersion")
         // KOIN
         implementation ("io.insert-koin:koin-androidx-compose:$koin_version")
@@ -106,6 +107,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // ViewModel utilities for Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    implementation ("androidx.compose.runtime:runtime-livedata:$composeVersion")
     // LiveData
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     // Lifecycles only (without ViewModel or LiveData)

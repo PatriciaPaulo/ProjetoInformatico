@@ -14,6 +14,8 @@ sealed class Screen (val route: String) {
     object CreateLocalLixo : Screen(route = "create_local_lixo")
     object CreateEvent : Screen(route = "create_event")
 
+    object OngoingActivity : Screen(route = "ongoing_activity")
+
 }
 
 sealed class BottomNavItem(var title:String, var icon:Int, var route:String){
