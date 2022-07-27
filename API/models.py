@@ -154,8 +154,8 @@ class Event(Base):
     __tablename__ = "event"
     id = Column(Integer, primary_key=True)
     name = Column(String(128), nullable=False)
-    latitude = Column(Numeric(128), nullable=False)
-    longitude = Column(Numeric(128), nullable=False)
+    latitude = Column(Integer, nullable=False)
+    longitude = Column(Integer, nullable=False)
     status = Column(String(50))
     duration = Column(String(50))
     startDate = Column( DateTime)
@@ -269,6 +269,7 @@ class Friendship(Base):
     id = Column(Integer, primary_key=True)
     requestorID = Column(Integer, ForeignKey('user.id'), nullable=False)
     addresseeID = Column(Integer, ForeignKey('user.id'), nullable=False)
+    status = Column(String(128), nullable=False)
     date = Column(String(50), nullable=False)
 
     def serialize(self):
@@ -276,6 +277,7 @@ class Friendship(Base):
             'id': self.id,
             'requestorID': self.requestorID,
             'addresseeID': self.addresseeID,
+            'status': self.status,
             'date': self.date
         }
 # endregion

@@ -23,9 +23,13 @@ if __name__ == '__main__':
     r = RandomWords()
 
     # CREATE DEFAULTS
-    userDefault = User(username="user", password=generate_password_hash("123"), name="Nome", email="user@mail.pt",
+    userDefault1 = User(username="user", password=generate_password_hash("123"), name="Nome", email="user@mail.pt",
                        admin=False, blocked=False)
-    session.add(userDefault)
+
+    userDefault2 = User(username="user2", password=generate_password_hash("123"), name="Nome2", email="user2@mail.pt",
+                       admin=False, blocked=False)
+    session.add(userDefault1)
+    session.add(userDefault2)
     session.commit()
 
     adminDefault = User(username="admin", password=generate_password_hash("123"), name="Nome",

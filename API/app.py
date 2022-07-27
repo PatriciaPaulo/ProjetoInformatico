@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 
 if __name__ == '__main__':
     app = Flask(__name__)
+
     app.config['SECRET_KEY'] = '6e129cb9707e18357de8b945656c430f'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///spl.db'
     # region Register App Routes
@@ -41,4 +42,6 @@ if __name__ == '__main__':
         session = Session(engine)
 
         session.commit()
-        app.run(debug=True)
+
+        app.run(host='0.0.0.0', port=5000,debug=True)
+        #app.run(debug=True)
