@@ -35,7 +35,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Composable
-fun UserProfile(
+fun UserProfileScreen(
     navController: NavHostController,
     mainViewModel: MainViewModel,
     userViewModel: UserViewModel,

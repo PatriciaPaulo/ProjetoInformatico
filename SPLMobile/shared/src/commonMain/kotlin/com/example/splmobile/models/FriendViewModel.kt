@@ -1,7 +1,7 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.users.UserSerializable
+import com.example.splmobile.dtos.users.FriendSerializable
 import com.example.splmobile.services.friends.FriendService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +20,7 @@ class FriendViewModel  (
     sealed class FriendRequestUIState {
         object SuccessRequestAccepted: FriendRequestUIState()
         object SuccessRequestSent: FriendRequestUIState()
+        object SuccessFriendRemoved: FriendRequestUIState()
         data class Error(val error: String) : FriendRequestUIState()
         object Loading : FriendRequestUIState()
         object Empty : FriendRequestUIState()
@@ -30,7 +31,7 @@ class FriendViewModel  (
     val friendsUIState = _friendsUIState.asStateFlow()
     sealed class FriendsUIState {
         object SuccessByUserID: FriendsUIState()
-        data class SuccessAll(val friends: List<UserSerializable>) : FriendsUIState()
+        data class SuccessAll(val friends: List<FriendSerializable>) : FriendsUIState()
         data class Error(val error: String) : FriendsUIState()
         object Loading : FriendsUIState()
         object Empty : FriendsUIState()
@@ -43,20 +44,20 @@ class FriendViewModel  (
         log.v("sendFrendRequest to $userID")
         _friendRequestUIState.value = FriendRequestUIState.Loading
         viewModelScope.launch {
-            val response_event = friendService.postFriendRequest(userID, token)
+            val response = friendService.postFriendRequest(userID, token)
             //val response_garbage_in_event = eventService.postGarbageTypeInEvent(GarbageInEventRequest(garbageType,event.id),token)
-            if (response_event.message.substring(0, 3) == "200") {
+            if (response.message.substring(0, 3) == "200") {
                 log.v("Creating event successful")
                 _friendRequestUIState.value = FriendRequestUIState.SuccessRequestAccepted
 
             } else {
-                if (response_event.message.substring(0, 3) == "202") {
+                if (response.message.substring(0, 3) == "202") {
                     log.v("Creating event successful")
                     _friendRequestUIState.value = FriendRequestUIState.SuccessRequestAccepted
 
                 } else {
                     log.v("Creating event error")
-                    _friendRequestUIState.value = FriendRequestUIState.Error(response_event.message)
+                    _friendRequestUIState.value = FriendRequestUIState.Error(response.message)
                 }
             }
 
@@ -93,6 +94,24 @@ class FriendViewModel  (
             }
         }
 
+    }
+
+    fun removeFriend(friendshipID: Long,token: String) {
+        log.v("removeFriend $friendshipID")
+        _friendRequestUIState.value = FriendRequestUIState.Loading
+
+        viewModelScope.launch {
+            val response = friendService.removeFriend(friendshipID, token)
+               if (response.message.substring(0, 3) == "200") {
+                log.v("removing friend successful")
+                _friendRequestUIState.value = FriendRequestUIState.SuccessFriendRemoved
+
+            } else {
+                log.v("Creating event error")
+                _friendRequestUIState.value = FriendRequestUIState.Error(response.message)
+            }
+
+        }
     }
 
 }

@@ -16,7 +16,8 @@ import com.example.splmobile.android.ui.main.screens.events.EventListScreen
 import com.example.splmobile.android.ui.main.screens.events.MyEventListScreen
 import com.example.splmobile.android.ui.main.screens.garbageSpots.GarbageSpotInfoScreen
 import com.example.splmobile.android.ui.main.screens.garbageSpots.GarbageSpotsListScreen
-import com.example.splmobile.android.ui.main.screens.users.UserProfile
+import com.example.splmobile.android.ui.main.screens.users.FriendsListScreen
+import com.example.splmobile.android.ui.main.screens.users.UserProfileScreen
 import com.example.splmobile.android.ui.main.screens.users.UsersInEventListScreen
 import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
@@ -166,12 +167,20 @@ fun SetupNavGraph(
 
         }
         composable(Screen.UserProfile.route+"/{userID}") {backStackEntry ->
-            UserProfile(navController =navController,
+            UserProfileScreen(navController =navController,
                 mainViewModel = mainViewModel,
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 friendViewModel = friendViewModel,
                 backStackEntry.arguments?.getString("userID"),
+                log = log)
+        }
+        composable(Screen.FriendsList.route) {
+            FriendsListScreen(navController =navController,
+                mainViewModel = mainViewModel,
+                userViewModel = userViewModel,
+                authViewModel = authViewModel,
+                friendViewModel = friendViewModel,
                 log = log)
         }
     }

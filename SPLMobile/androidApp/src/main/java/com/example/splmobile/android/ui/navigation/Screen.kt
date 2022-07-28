@@ -19,6 +19,7 @@ sealed class Screen (val route: String) {
     object GarbageSpotList : Screen(route = "garbage_spot_list")
     object MyEventList : Screen(route = "my_event_list")
     object UserProfile : Screen(route = "user_profile")
+    object FriendsList : Screen(route = "friends_list")
 
 }
 

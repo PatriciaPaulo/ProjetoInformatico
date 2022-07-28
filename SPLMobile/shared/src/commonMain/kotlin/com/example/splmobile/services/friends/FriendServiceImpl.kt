@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.events.EventsResponse
+import com.example.splmobile.dtos.users.FriendsResponse
 import com.example.splmobile.dtos.users.UsersStatsResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -51,18 +52,18 @@ class FriendServiceImpl (private val log: Logger, engine: HttpClientEngine) : Fr
 
     override suspend fun getAllFriends(
         token: String
-    ): UsersStatsResponse {
+    ): FriendsResponse {
         log.d { "Fetching events from network" }
         try{
             return client.get {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
-                contentType(ContentType.Application.Json)
+
                 url("api/friends/me")
-            }.body() as UsersStatsResponse
+            }.body() as FriendsResponse
         }catch (ex :Exception){
-            return UsersStatsResponse(emptyList(),"$ex")
+            return FriendsResponse(emptyList(),"$ex")
         }
     }
 
@@ -91,15 +92,30 @@ class FriendServiceImpl (private val log: Logger, engine: HttpClientEngine) : Fr
         log.d { "post new Garbage Spot" }
         try{
             return client.post {
-                if(token.isNotEmpty()){
-                    headers {
-                        append(HttpHeaders.Authorization, "Bearer $token")
-                    }
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
                 setBody(userID)
 
                 url("api/friends")
+            }.body() as RequestMessageResponse
+        }
+        catch (ex :Exception){
+            return RequestMessageResponse("$ex")
+        }
+    }
+
+    override suspend fun removeFriend(
+        friendshipID: Long, token: String
+    ): RequestMessageResponse {
+        log.d { "remove friend" }
+        try{
+            return client.delete() {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                url("api/friends/"+friendshipID)
             }.body() as RequestMessageResponse
         }
         catch (ex :Exception){

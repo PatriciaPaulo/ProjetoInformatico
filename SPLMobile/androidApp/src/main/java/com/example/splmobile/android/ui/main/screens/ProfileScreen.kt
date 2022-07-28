@@ -105,6 +105,14 @@ fun ProfileScreen(
                         is UserInfoViewModel.MyInfoUserUIState.Loading -> CircularProgressIndicator()
                         is UserInfoViewModel.MyInfoUserUIState.Error -> Text(text = "Error message - " + userInfoState.error)
                     }
+
+                    Button(
+                        onClick = {
+                            navController.navigate(Screen.FriendsList.route)
+                        },
+                        modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                        Text(text= textResource(R.string.btnFriends).toString())
+                    }
                 }
                 Text(text = "Your last Activities", fontStyle = MaterialTheme.typography.h6.fontStyle)
 
@@ -346,7 +354,6 @@ fun ProfileSection(
                     }
 
             }
-
 
 
 

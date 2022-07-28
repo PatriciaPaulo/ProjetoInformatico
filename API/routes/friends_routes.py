@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import User, Activity, Event, db, Friendship
+from models import User, Activity, Event, db, Friendship,UserInEvent, GarbageSpot
 from utils import token_required, admin_required, guest, name_validation, username_validation, email_validation,  password_validation, password_confirmation
 import jwt
 from datetime import date
@@ -87,3 +87,83 @@ def get_friendship(current_user,user_id):
 
     #if friendship completed
     return make_response(jsonify({'message': '200 OK - Friends with User'}), 200)
+
+
+
+# Get all logged in users friends
+@friends_routes_blueprint.route('/friends/me', methods=['GET'])
+@token_required
+def get_user_friends(current_user):
+
+    result = []
+    friendsReq = db.session.query(Friendship).filter_by(requestorID=current_user.id,status="Completo").all()
+
+    for friend in friendsReq:
+        friend_data = {}
+        friend_data['id'] = friend.id
+
+
+        user = db.session.query(User).filter_by(id=friend.id).first()
+        if not user.admin:
+            if not user.blocked:
+                events_participated = db.session.query(UserInEvent).filter_by(userID=user.id,
+                                                                              status="Confirmado").count()
+                # print(events_participated)
+                from datetime import date
+
+                today = date.today()
+                activities_completed = db.session.query(Activity).filter(Activity.userID == user.id,
+                                                                         Activity.endDate <= today).count()
+
+                garbage_spots_created = db.session.query(GarbageSpot).filter(GarbageSpot.creator == user.id).count()
+
+                user_data = {}
+                user_data['id'] = user.id
+                user_data['username'] = user.username
+                user_data['name'] = user.name
+                user_data['events_participated'] = events_participated
+                user_data['activities_completed'] = activities_completed
+                user_data['garbage_spots_created'] = garbage_spots_created
+
+        friend_data['user'] = user_data
+        friend_data['status'] = friend.status
+        friend_data['date'] = friend.date
+
+        result.append(friend_data)
+
+
+    friendsAddr = db.session.query(Friendship).filter_by(addresseeID=current_user.id, status="Completo").all()
+    for friend in friendsAddr:
+        friend_data = {}
+        friend_data['id'] = friend.id
+
+        user = db.session.query(User).filter_by(id=friend.id).first()
+        if not user.admin:
+            if not user.blocked:
+                events_participated = db.session.query(UserInEvent).filter_by(userID=user.id,
+                                                                              status="Confirmado").count()
+                # print(events_participated)
+                from datetime import date
+
+                today = date.today()
+                activities_completed = db.session.query(Activity).filter(Activity.userID == user.id,
+                                                                         Activity.endDate <= today).count()
+
+                garbage_spots_created = db.session.query(GarbageSpot).filter(GarbageSpot.creator == user.id).count()
+
+                user_data = {}
+                user_data['id'] = user.id
+                user_data['username'] = user.username
+                user_data['name'] = user.name
+                user_data['events_participated'] = events_participated
+                user_data['activities_completed'] = activities_completed
+                user_data['garbage_spots_created'] = garbage_spots_created
+
+        friend_data['user'] = user_data
+        friend_data['status'] = friend.status
+        friend_data['date'] = friend.date
+
+        result.append(friend_data)
+    #if friendship completed
+    print(result)
+    return make_response(jsonify({'data':result,'message': '200 OK - All Friends Retrieved'}), 200)
