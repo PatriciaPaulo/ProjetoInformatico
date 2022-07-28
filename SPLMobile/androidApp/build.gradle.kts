@@ -10,7 +10,7 @@ android {
     compileSdk = 32
     defaultConfig {
         applicationId = "com.example.splmobile.android"
-        minSdk = 30
+        minSdk = 29
         targetSdk = 32
         versionCode = 1
         versionName = "1.0"
