@@ -3,6 +3,8 @@ package com.example.splmobile.services.friends
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
+import com.example.splmobile.dtos.events.EventsResponse
+import com.example.splmobile.dtos.users.UsersStatsResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -47,13 +49,41 @@ class FriendServiceImpl (private val log: Logger, engine: HttpClientEngine) : Fr
         ensureNeverFrozen()
     }
 
-    override suspend fun getAllFriends(): RequestMessageResponse {
-        TODO("Not yet implemented")
+    override suspend fun getAllFriends(
+        token: String
+    ): UsersStatsResponse {
+        log.d { "Fetching events from network" }
+        try{
+            return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                url("api/friends/me")
+            }.body() as UsersStatsResponse
+        }catch (ex :Exception){
+            return UsersStatsResponse(emptyList(),"$ex")
+        }
     }
 
-    override suspend fun getFriendByID(id: Long): RequestMessageResponse {
-        TODO("Not yet implemented")
+    override suspend fun getFriendByID(
+        id: Long, token: String
+    ): RequestMessageResponse {
+        log.d { "Fetching events from network" }
+        try{
+            return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                url("api/users/"+id+"/friend")
+            }.body() as RequestMessageResponse
+        }catch (ex :Exception){
+            return RequestMessageResponse("$ex")
+        }
     }
+
+
 
     override suspend fun postFriendRequest(
         userID: Long, token: String

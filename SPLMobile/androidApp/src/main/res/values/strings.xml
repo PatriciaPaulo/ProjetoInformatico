@@ -110,6 +110,8 @@
     <string name="txtEventStatusUpdate">Estado do evento alterado</string>
     <string name="EventSignUpStatusElement4">Interesse</string>
     <string name="btnAddFriend">Adicionar Amigo</string>
+    <string name="lblMyFriends">Os meus amigos</string>
+    <string name="txtFriendsError">Erro a encontrar amigos!</string>
 
 
 </resources>

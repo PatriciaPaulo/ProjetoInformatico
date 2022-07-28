@@ -49,12 +49,15 @@ fun UserProfile(
 
     val scaffoldState = rememberScaffoldState()
 
-
+    //todo test if button state working
     LaunchedEffect(Unit) {
         log.d{"get my info get my events and get my activities launched"}
         userViewModel.getUserStats(userID!!.toLong(),authViewModel.tokenState.value)
+        friendViewModel.getFriendByID(userID!!.toLong(),authViewModel.tokenState.value)
     }
     var userInfoState = userViewModel.usersUIState.collectAsState().value
+    var friendRequestState = friendViewModel.friendRequestUIState.collectAsState().value
+    var friendsState = friendViewModel.friendsUIState.collectAsState().value
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -96,13 +99,42 @@ fun UserProfile(
                     }
                 }
             }
-
-            //todo button for friend request
-            Button(onClick = {
-                friendViewModel.sendFrendRequest(userID!!.toLong(),authViewModel.tokenState.value)
-            }, shape = CutCornerShape(10)) {
-                Text(text = textResource(R.string.btnAddFriend).toString())
+            //todo state
+            when(friendRequestState){
+                is FriendViewModel.FriendRequestUIState.SuccessRequestAccepted->{
+                    Text(text = "you are friends now!")
+                }
+                is FriendViewModel.FriendRequestUIState.SuccessRequestSent ->{
+                    Text(text = "request sent!")
+                }
+                is FriendViewModel.FriendRequestUIState.Error->{
+                    Text(text = "Error message - " + friendRequestState.error)
+                }
+                is FriendViewModel.FriendRequestUIState.Loading->{
+                    CircularProgressIndicator()
+                }
             }
+
+            when(friendsState){
+                is FriendViewModel.FriendsUIState.SuccessByUserID ->{
+                    Text(text = "Friends already")
+                }
+                is FriendViewModel.FriendsUIState.Error->{
+                    Box(contentAlignment = Alignment.Center){
+                        //todo button for friend request
+                        Button(onClick = {
+                            friendViewModel.sendFrendRequest(userID!!.toLong(),authViewModel.tokenState.value)
+                        }, shape = CutCornerShape(10)) {
+                            Text(text = textResource(R.string.btnAddFriend).toString())
+                        }
+                    }
+                }
+                is FriendViewModel.FriendsUIState.Loading->{
+                    CircularProgressIndicator()
+                }
+            }
+
+
         },
     )
 }
