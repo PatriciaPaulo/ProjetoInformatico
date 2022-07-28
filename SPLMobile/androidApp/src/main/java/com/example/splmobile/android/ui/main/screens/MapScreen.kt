@@ -73,11 +73,10 @@ fun MapScreen(
 
 
 
-     //default camera position
+    //default camera position
     var portugal = LatLng(39.5, -8.0)
     var cameraPosition = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(portugal, 7f)
-
     }
     //default variables
     var garbageSpotState = mutableStateOf(

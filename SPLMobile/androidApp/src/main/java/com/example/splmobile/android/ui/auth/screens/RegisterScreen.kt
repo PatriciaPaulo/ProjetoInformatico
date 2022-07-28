@@ -118,11 +118,11 @@ fun RegisterComposableUI(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        authViewModel.loginUIState.collect { loginUIState ->
+        authViewModel.registerUIState.collect { registerUIState ->
 
-            when (loginUIState) {
-                is AuthViewModel.LoginUIState.Loading -> showRequestState = true
-                is AuthViewModel.LoginUIState.Success -> {
+            when (registerUIState) {
+                is AuthViewModel.RegisterUIState.Loading -> showRequestState = true
+                is AuthViewModel.RegisterUIState.Success -> {
                     context.dataStore.edit { settings ->
                         settings[stringPreferencesKey(EMAIL_KEY)] = email
                         settings[stringPreferencesKey(PASSWORD_KEY)] = password
@@ -131,8 +131,8 @@ fun RegisterComposableUI(
                     showRequestState = false
                     navController.navigate(BottomNavItem.Home.route)
                 }
-                is AuthViewModel.LoginUIState.Error -> {
-                    showErrorState = loginUIState.message
+                is AuthViewModel.RegisterUIState.Error -> {
+                    showErrorState = registerUIState.message
                     showRequestState = false
                 }
             }

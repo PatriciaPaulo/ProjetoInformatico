@@ -21,6 +21,8 @@ sealed class Screen (val route: String) {
     object UserProfile : Screen(route = "user_profile")
     object FriendsList : Screen(route = "friends_list")
 
+    object OngoingActivity : Screen(route = "ongoing_activity")
+
 }
 
 sealed class BottomNavItem(var title:String, var icon:Int, var route:String){

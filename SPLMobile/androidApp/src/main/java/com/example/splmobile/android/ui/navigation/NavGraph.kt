@@ -6,9 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import co.touchlab.kermit.Logger
-import com.example.splmobile.android.ui.auth.screens.LoginScreen
-import com.example.splmobile.android.ui.auth.screens.RecoverPasswordScreen
-import com.example.splmobile.android.ui.auth.screens.RegisterScreen
+import com.example.splmobile.android.ui.auth.screens.*
 import com.example.splmobile.android.ui.main.screens.*
 import com.example.splmobile.android.ui.main.screens.events.CreateEventScreen
 import com.example.splmobile.android.ui.main.screens.events.EventInfoScreen
@@ -22,6 +20,12 @@ import com.example.splmobile.android.ui.main.screens.users.UsersInEventListScree
 import com.example.splmobile.android.ui.onboarding.screens.AuthenticationScreen
 import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
+import com.example.splmobile.android.ui.main.screens.activities.OngoingActivity
+import com.example.splmobile.android.ui.main.screens.events.*
+import com.example.splmobile.android.ui.main.screens.garbageSpots.*
+import com.example.splmobile.android.ui.main.screens.users.*
+import com.example.splmobile.android.ui.onboarding.screens.*
+import com.example.splmobile.android.viewmodel.*
 import com.example.splmobile.models.*
 
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -38,6 +42,9 @@ fun SetupNavGraph(
     garbageSpotViewModel: GarbageSpotViewModel,
     userInfoViewModel: UserInfoViewModel,
     eventViewModel: EventViewModel,
+    sharedViewModel: SharedViewModel,
+    activityViewModel: ActivityViewModel,
+    mapViewModel: MapViewModel,
     userViewModel: UserViewModel,
     friendViewModel: FriendViewModel,
     sharedViewModel: SharedViewModel
@@ -67,7 +74,18 @@ fun SetupNavGraph(
         }
 
         composable(BottomNavItem.Home.route) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController,
+                authViewModel = authViewModel,
+                activityViewModel = activityViewModel,
+                mapViewModel = mapViewModel,
+            )
+        }
+
+        composable(route = Screen.OngoingActivity.route) {
+            OngoingActivity(
+                navController = navController,
+                mapViewModel = mapViewModel
+            )
         }
         composable(BottomNavItem.Map.route) {
             MapScreen(navController =navController,
@@ -167,7 +185,7 @@ fun SetupNavGraph(
 
         }
         composable(Screen.UserProfile.route+"/{userID}") {backStackEntry ->
-            UserProfileScreen(navController =navController,
+            UserProfile(navController =navController,
                 mainViewModel = mainViewModel,
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,

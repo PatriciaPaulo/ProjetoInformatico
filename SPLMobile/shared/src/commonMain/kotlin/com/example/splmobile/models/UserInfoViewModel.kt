@@ -141,7 +141,7 @@ class UserInfoViewModel (
                 _distanceTravelledUIState.value = 0
                 _myActivitiesCountUIState.value = response.data.size.toLong()
                 response.data.forEach {
-                    _distanceTravelledUIState.value = it.distanceTravelled.toLong() + _distanceTravelledUIState.value
+                    _distanceTravelledUIState.value = it.distanceTravelled!!.toLong() + _distanceTravelledUIState.value
                 }
                 _myActivitiesUIState.value = MyActivitiesUIState.Success(response.data)
                 _myActivitiesUIState.value =

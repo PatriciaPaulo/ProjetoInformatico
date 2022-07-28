@@ -147,10 +147,4 @@ class EventViewModel (
             }
         }
     }
-
-
-
-
-
-
 }

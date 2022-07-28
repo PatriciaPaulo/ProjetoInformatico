@@ -10,13 +10,22 @@ import datetime
 activity_routes_blueprint = Blueprint('activity_routes', __name__, )
 api = Api(activity_routes_blueprint)
 
+
 # Create Activity for Logged User
 @activity_routes_blueprint.route('/activities', methods=['POST'])
 @token_required
 def start_activity(current_user):
     data = request.get_json()
 
-    new_activity = Activity(eventID=data['eventID'], userID=current_user.username, distanceTravelled=0, steps=0, startDate=datetime.datetime.utcnow(), endDate=None, activityType=data['activityType'])
+    print(data["eventID"])
+
+    new_activity = Activity(eventID=data['eventID'] if data['eventID'] is not None else None,
+                            userID=current_user.id,
+                            distanceTravelled=0,
+                            steps=0,
+                            startDate=datetime.datetime.utcnow(),
+                            endDate=None,
+                            activityType="")
     db.session.add(new_activity)
     db.session.commit()
 
@@ -27,9 +36,9 @@ def start_activity(current_user):
 @activity_routes_blueprint.route('/activities', methods=['GET'])
 @token_required
 def get_activities(current_user):
-    activitys = db.session.query(Activity).filter_by(userID=current_user.id).all()
+    activities = db.session.query(Activity).filter_by(userID=current_user.id).all()
     output = []
-    for ati in activitys:
+    for ati in activities:
         activity_data = {}
         activity_data['id'] = ati.id
         activity_data['eventID'] = ati.eventID
@@ -52,7 +61,7 @@ def get_activities(current_user):
 @activity_routes_blueprint.route('/activities/<activity_id>', methods=['PUT'])
 @token_required
 def update_activity(current_user, activity_id):
-    activity = db.session.query(Activity).filter_by(id=activity_id, userID=current_user.username).first()
+    activity = db.session.query(Activity).filter_by(id=activity_id, userID=current_user.id).first()
     if not activity:
         return make_response(jsonify({'message': '404 NOT OK - No Activity Found'}), 404)
 

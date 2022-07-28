@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.example.splmobile.AppInfo
+import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.initKoin
 import com.example.splmobile.models.*
 
 import dagger.hilt.android.HiltAndroidApp
+import org.koin.android.ext.koin.androidApplication
 
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.parameter.parametersOf
@@ -28,6 +30,8 @@ class SPLMobileApplication : Application() {
                 viewModel { FriendViewModel(get(), get { parametersOf("FriendViewModel") }) }
                 viewModel { UserViewModel(get(), get(),get { parametersOf("UserInEventViewModel") }) }
                 viewModel { AuthViewModel(get(), get { parametersOf("AuthViewModel") }) }
+                viewModel { ActivityViewModel(get(), get { parametersOf("ActivityViewModel") }) }
+                viewModel { MapViewModel(androidApplication()) }
                 single<SharedPreferences> {
                     get<Context>().getSharedPreferences("KAMPSTARTER_SETTINGS", Context.MODE_PRIVATE)
                 }

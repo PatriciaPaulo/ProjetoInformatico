@@ -8,6 +8,8 @@ import co.touchlab.kermit.platformLogWriter
 import com.example.splmobile.services.garbageSpots.GarbageSpotServiceImpl
 import com.example.splmobile.services.other.requestsApiImpl
 import com.example.splmobile.services.other.requestsAPI
+import com.example.splmobile.services.activities.ActivityService
+import com.example.splmobile.services.activities.ActivityServiceImpl
 import com.example.splmobile.services.auth.AuthService
 import com.example.splmobile.services.auth.AuthServiceImpl
 import com.example.splmobile.services.events.EventService
@@ -79,6 +81,12 @@ private val coreModule = module {
     single<EventService> {
         EventServiceImpl(
             getWith("EventServiceImpl"),
+            get()
+        )
+    }
+    single<ActivityService> {
+        ActivityServiceImpl(
+            getWith("ActivityServiceImpl"),
             get()
         )
     }
