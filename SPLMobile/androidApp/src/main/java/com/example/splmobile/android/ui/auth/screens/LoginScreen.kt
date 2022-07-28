@@ -246,7 +246,7 @@ fun LoginValidationUI(
                 value = password,
                 onValueChange = passwordUpdate,
                 leadingIcon = {
-                    Image(
+                    Icon(
                         painterResource(R.drawable.ic_main_home),
                         contentDescription = null
                     )
@@ -279,6 +279,9 @@ fun LoginValidationUI(
                     modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                 )
             }
+
+            // TODO On action click fazer login (no password textfield)
+            // TODO Manipular error messages
 
             if(!showErrorState.isBlank()) {
                 Text(
