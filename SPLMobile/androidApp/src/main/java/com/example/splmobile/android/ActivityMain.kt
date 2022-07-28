@@ -71,8 +71,6 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     private val mainViewModel: MainViewModel by viewModels()
     private val mapViewModel : MapViewModel by viewModels<MapViewModel>()
 
-
-
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +102,16 @@ class ActivityMain : ComponentActivity() , KoinComponent {
                 )
             }
             prepLocationUpdates()
+            prepStepCounter()
+        }
+    }
+
+    private fun prepStepCounter() {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+            println("prepStepCounter")
+        } else {
+            println("prepStepCounter")
+            requestSinglePermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
         }
     }
 
@@ -121,14 +129,6 @@ class ActivityMain : ComponentActivity() , KoinComponent {
             isGranted ->
         if (isGranted) {
             requestLocationUpdates()
-        } else {
-            // Default Location (Center of Portugal)
-            var defaultLocation = LatLng(39.5, -8.0)
-
-            var fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-
-
         }
     }
 
@@ -145,26 +145,3 @@ class ActivityMain : ComponentActivity() , KoinComponent {
 fun textResource(@StringRes id: Int) : CharSequence =
     LocalContext.current.resources.getText(id)
 
-/*setContent {
-           SPLTheme() {
-               val screen by splashViewModel.startDestination
-
-               val navController = rememberNavController()
-               Scaffold(
-                   bottomBar = { BottomNavigationBar(navController = navController)}
-               ) { innerPadding ->
-                   // Apply the padding globally to the whole BottomNavScreensController
-                   Box(modifier = Modifier.padding(innerPadding)) {
-                       SetupNavGraph(
-                           navController = navController,
-                           startDestination = screen,
-                           log,
-                           mainViewModel = mainViewModel,
-                           localLixoViewModel = localLixoViewModel,
-                           sharedViewModel = sharedViewModel
-                       )
-                   }
-
-               }
-
-           }*/

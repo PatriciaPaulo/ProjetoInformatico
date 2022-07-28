@@ -88,6 +88,7 @@ fun startNewActivity(
     mapViewModel: MapViewModel
 ){
     // Create Activity in DB
+
     activityViewModel.createActivity(
         CreateActivitySerializable(null),
         authViewModel.tokenState.value,
