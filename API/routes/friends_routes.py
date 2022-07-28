@@ -40,7 +40,7 @@ def friend_request(current_user):
         if friendImAddressee:
             friendImAddressee.status = "Completo"
             db.session.commit()
-            return make_response(jsonify({'message': '200 OK - Friend request accepted'}), 200)
+            return make_response(jsonify({'message': '200 OK - Friend request accepted'}), 202)
 
         # if not create new one
         else:
