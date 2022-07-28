@@ -8,9 +8,8 @@ export default createStore({
     loggedInUser: null,
     admins: [],
     users: [],
-    eventos: [],
-    lixeiras: [],
-    atividades: []
+    events: [],
+    garbageSpots: [],
   },
   mutations: {
     //LOGGED USER
@@ -39,36 +38,36 @@ export default createStore({
         state.users.splice(idx, 1)
       }
     },
-    //Lixeiras
-    setLixeiras(state, lixeiras) {
-      state.lixeiras = lixeiras
+    //GarbageSpotss
+    setGarbageSpotss(state, garbageSpots) {
+      state.garbageSpots = garbageSpots
     },
-    resetLixeiras(state) {
-      state.lixeiras = null
+    resetGarbageSpotss(state) {
+      state.garbageSpots = null
     },
-    insertLixeira(state, newLixeira) {
-      state.lixeiras.push(newLixeira)
+    insertGarbageSpots(state, newGarbageSpots) {
+      state.garbageSpots.push(newGarbageSpots)
     },
-    updateLixeira(state, updateLixeira) {
-      let idx = state.lixeiras.findIndex((t) => t.id === updateLixeira.id)
+    updateGarbageSpots(state, updateGarbageSpots) {
+      let idx = state.garbageSpots.findIndex((t) => t.id === updateGarbageSpots.id)
       if (idx >= 0) {
-        state.lixeiras[idx] = updateLixeira
+        state.garbageSpots[idx] = updateGarbageSpots
       }
     },
-    //Eventos
-    setEventos(state, eventos) {
-      state.eventos = eventos
+    //Events
+    setEvents(state, events) {
+      state.events = events
     },
-    resetEventos(state) {
-      state.eventos = null
+    resetEvents(state) {
+      state.events = null
     },
-    insertEvento(state, newEvento) {
-      state.eventos.push(newEvento)
+    insertEvent(state, newEvent) {
+      state.events.push(newEvent)
     },
-    updateEvento(state, updateEvento) {
-      let idx = state.eventos.findIndex((t) => t.id === updateEvento.id)
+    updateEvent(state, updateEvent) {
+      let idx = state.events.findIndex((t) => t.id === updateEvent.id)
       if (idx >= 0) {
-        state.eventos[idx] = updateEvento
+        state.events[idx] = updateEvent
       }
     },
 
@@ -83,11 +82,11 @@ export default createStore({
     totalUsers: (state) => {
       return state.users.length
     },
-    lixeiras: (state) => {
-      return state.lixeiras
+    garbageSpots: (state) => {
+      return state.garbageSpots
     },
-    eventos: (state) => {
-      return state.eventos
+    events: (state) => {
+      return state.events
     },
 
   },
@@ -145,34 +144,38 @@ export default createStore({
         throw error
       }
     },
-    async loadLixeiras(context) {
+    async loadGarbageSpots(context) {
       try {
-        let response = await axios.get('lixeiras')
-        context.commit('setLixeiras', response.data.data)
+        let response = await axios.get('garbageSpots')
+      
+        context.commit('setGarbageSpotss', response.data.data)
+        response.data.data.forEach(element => {
+          console.log("garbage spots retrieved" + element.approved)
+        });
         return response.data.data
       } catch (error) {
-        context.commit('resetLixeiras', null)
+        context.commit('resetGarbageSpotss', null)
         throw error
       }
     },
-    async loadEventos(context) {
+    async loadEvents(context) {
       try {
-        let response = await axios.get('eventos')
-        context.commit('setEventos', response.data.data)
+        let response = await axios.get('events')
+        context.commit('setEvents', response.data.data)
         return response.data.data
       } catch (error) {
-        context.commit('resetEventos', null)
+        context.commit('resetEvents', null)
         throw error
       }
     },
-    async aprovarLixeira(context, lixeira) {
-      let response = await axios.patch('lixeiras/' + lixeira.id + '/aprovar', { 'aprovado': lixeira.aprovado })
-      context.commit('updateLixeira', lixeira)
+    async aprovarGarbageSpot(context, garbageSpot) {
+      let response = await axios.patch('garbageSpots/' + garbageSpot.id + '/approve', { 'approved': garbageSpot.approved })
+      context.commit('updateGarbageSpots', garbageSpot)
       return response.data
     },
-    async mudarEstadoLixeira(context, lixeira) {
-      let response = await axios.patch('lixeiras/' + lixeira.id + '/mudarEstadoLixeira', { 'estado': lixeira.estado })
-      context.commit('updateLixeira', lixeira)
+    async updateStatusGarbageSpots(context, garbageSpot) {
+      let response = await axios.patch('garbageSpots/' + garbageSpot.id + '/updateGarbageSpotStatus', { 'status': garbageSpot.estado })
+      context.commit('updateGarbageSpots', garbageSpot)
       return response.data
     },
     async deleteUser(context, user) {
@@ -198,12 +201,12 @@ export default createStore({
     async refresh(context) {
       let userPromise = context.dispatch('loadLoggedInUser')
       let usersPromise = context.dispatch('loadUsers')
-      let lixeirasPromise = context.dispatch('loadLixeiras')
-      let eventosPromise = context.dispatch('loadEventos')
+      let garbageSpotsPromise = context.dispatch('loadGarbageSpots')
+      let eventsPromise = context.dispatch('loadEvents')
       await userPromise
       await usersPromise
-      await lixeirasPromise
-      await eventosPromise
+      await garbageSpotsPromise
+      await eventsPromise
 
     },
   },

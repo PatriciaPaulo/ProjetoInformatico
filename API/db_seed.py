@@ -4,7 +4,7 @@ from models import User,GarbageSpot,Activity,Event,Message,Garbage,GarbageInActi
 from models import Equipment, EquipmentInEvent,IndividualMessage,MessageInEvent
 from models import UserInEvent,GarbageSpotInEvent
 from werkzeug.security import generate_password_hash
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
@@ -23,9 +23,13 @@ if __name__ == '__main__':
     r = RandomWords()
 
     # CREATE DEFAULTS
-    userDefault = User(username="user", password=generate_password_hash("123"), name="Nome", email="user@mail.pt",
+    userDefault1 = User(username="user", password=generate_password_hash("123"), name="Nome", email="user@mail.pt",
                        admin=False, blocked=False)
-    session.add(userDefault)
+
+    userDefault2 = User(username="user2", password=generate_password_hash("123"), name="Nome2", email="user2@mail.pt",
+                       admin=False, blocked=False)
+    session.add(userDefault1)
+    session.add(userDefault2)
     session.commit()
 
     adminDefault = User(username="admin", password=generate_password_hash("123"), name="Nome",
@@ -104,7 +108,7 @@ if __name__ == '__main__':
     print("---Garbage seed done!")
     # SEED EVENTO
     session.query(Event).delete()
-    for i in range(5):
+    for i in range(10):
         latitude = round(random.uniform(38.779875,41.575756), 5)
         longitude = round(random.uniform(-8.199258, -7.886036), 5)
         #organizer = session.query(User).filter_by(admin=False).order_by(func.random()).first()
@@ -114,14 +118,14 @@ if __name__ == '__main__':
         quantity = ["Muita", "Pouca","Media"]
         restrictions = ["Todas as idades", "Não indicado para crianças"]
         garbageType = []
-        for a in range(2):
-            garbage = session.query(Garbage).order_by(func.random()).first()
-            if garbage.id not in garbageType:
-                garbageType.append(garbage.id)
+        #for a in range(2):
+        #    garbage = session.query(Garbage).order_by(func.random()).first()
+        #    if garbage.id not in garbageType:
+        #        garbageType.append(garbage.id)
                 #print(garbage.name)
 
         #to json, so we can insert array in database (sqlite doesnt support arrays in database)
-        garbageTypeJSON = json.dumps(garbageType)
+        #garbageTypeJSON = json.dumps(garbageType)
         # 72 hours ->
         duration = randrange(4320)
 
@@ -137,7 +141,8 @@ if __name__ == '__main__':
                        longitude=longitude,
                        status=random.choice(status), accessibility=random.choice(accessibility),
                        quantity=random.choice(quantity), restrictions=random.choice(restrictions),
-                       garbageType=garbageTypeJSON, duration=duration, startDate=datetime.datetime.utcnow())
+                       duration=duration, startDate=datetime.datetime.utcnow())
+
         session.add(event)
 
 
@@ -234,21 +239,21 @@ if __name__ == '__main__':
 
     session.query(UserInEvent).delete()
 
-    for i in range(6):
+    for i in range(3):
         event = session.query(Event).order_by(func.random()).first()
-        status = ["Confirmado", "Inscrito", "Cancelado"]
+        #status2 = ["Confirmado", "Não Confirmado", "Inscrito"]
 
-        userInEvent = UserInEvent(userID=1, eventID=event.id, status=random.choice(status))
+        userInEvent = UserInEvent(userID=1, eventID=event.id, status="Organizer",creator=True)
         session.add(userInEvent)
         session.commit()
 
     for i in range(6):
 
         user = session.query(User).filter_by(admin=False).order_by(func.random()).first()
-        event = session.query(Event).order_by(func.random()).first()
-        status = ["Confirmado","Inscrito","Cancelado"]
+        event = session.query(Event).order_by(desc(Event.id)).first()
+        status2 = ["Confirmado","Inscrito","Não Confirmado"]
 
-        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status))
+        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status2),creator=False)
         session.add(userInEvent)
         session.commit()
 

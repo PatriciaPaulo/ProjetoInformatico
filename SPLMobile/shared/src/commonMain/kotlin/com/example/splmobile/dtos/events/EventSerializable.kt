@@ -15,7 +15,6 @@ data class EventSerializable(
     val description: String,
     val accessibility: String,
     val restrictions: String,
-    val garbageType: List<Long>,
     val quantity: String,
     val observations: String?
 )

@@ -2,27 +2,31 @@
   <hr />
 
   <div class="wrapper">
-    <div class="child">
+    <div class="child" >
       <ConfirmDialog></ConfirmDialog>
       <DataTable
-        :value="this.eventos"
+        :value="filteredGarbageSpots"
         :paginator="true"
         stripedRows
         :rows="10"
         :loading="isLoading"
-        :globalFilterFields="['nome', 'estado', 'organizador']"
+        :globalFilterFields="['nome', 'estado', 'criador', 'aprovado']"
         :filters="filters"
         class="p-datatable-sm"
       >
-        <template #empty> No lixeiras found. </template>
-        <template #loading> Loading lixeiras data. Please wait. </template>
-         <template #header>
+        <template #empty> No garbageSpots found. </template>
+        <template #loading> Loading garbageSpots data. Please wait. </template>
+        <template #header>
           <div class="flex justify-content-between">
             <div class="">
-           
+              <select class="form-select" id="selectBlocked" v-model="filter">
+                <option value="-1">Todos</option>
+                <option value="1">Aprovadas</option>
+                <option value="0">Não Aprovadas</option>
+              </select>
             </div>
             <div>
-              <h1 class="">Eventos</h1>
+              <h1 class="">GarbageSpots</h1>
             </div>
 
             <div>
@@ -36,20 +40,27 @@
             </div>
           </div>
         </template>
-        <Column field="nome" header="Nome" :sortable="true"></Column>
-        <Column field="organizador" header="Organizador" :sortable="true">
+        <Column field="name" header="Nome" :sortable="true"></Column>
+        <Column field="criador" header="Criador" :sortable="true">
           <template #body="{ data }">
-            {{ userName(data.organizador) }}
+            {{ userName(data.creator) }}
           </template>
         </Column>
-        <Column field="estado" header="Estado" :sortable="true"></Column>
-        <Column field="dataInicio" header="dataInicio" :sortable="true"></Column>
+        <Column field="status" header="Estado" :sortable="true"></Column>
+        <Column header="Aprovada">
+          <template #body="{ data }">
+            <div class="d-flex justify-content-between">
+              <i v-if="data.approved" class="bi bi-xs bi-check2"></i>
+              <i v-else class="bi bi-xs bi-file"></i>
+            </div>
+          </template>
+        </Column>
         <Column header="Editar">
           <template #body="{ data }">
             <div class="d-flex justify-content-between">
               <button
                 class="btn btn-xs btn-light"
-                @click="editEvento(data)"
+                @click="editGarbageSpot(data)"
                 label="Confirm"
               >
                 <i class="bi bi-xs bi-pencil"></i>
@@ -62,7 +73,7 @@
             <div class="d-flex justify-content-between">
               <button
                 class="btn btn-xs btn-light"
-                @click="deleteEvento(data)"
+                @click="deleteGarbageSpot(data)"
                 label="Confirm"
               >
                 <i class="bi bi-xs bi-x-square-fill"></i>
@@ -74,7 +85,11 @@
     </div>
 
     <div class="child">
-      {{ "map" }}
+      <garbageSpot-map
+      :garbageSpots="this.garbageSpots"
+      :center="center"
+      >
+      </garbageSpot-map>
     </div>
   </div>
 </template>
@@ -82,51 +97,56 @@
 <script>
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import ConfirmDialog from "primevue/confirmdialog";
-import InputText from "primevue/inputtext";
+import GarbageSpotMap from "./GarbageSpotMap";
+
 export default {
-  name: "Eventos",
+  name: "GarbageSpots",
   components: {
+    GarbageSpotMap,
     DataTable,
     Column,
+    InputText,
     ConfirmDialog,
-    InputText
   },
   data() {
     return {
-      eventos: [],
+      filter: "-1",
+      garbageSpots: [],
       isLoading: false,
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
       },
-      lixeiraToDelete: null,
+      garbageSpotToDelete: null,
       center: { lat: 38.093048, lng: -9.84212 },
     };
   },
   methods: {
-    editEvento(evento) {
-      console.log("id  - " + evento.id);
-      this.$router.push({ name: "Evento", params: { id: evento.id } });
+    editGarbageSpot(garbageSpot) {
+      console.log("id  - "+ garbageSpot.id)
+      this.$router.push({ name: "GarbageSpot", params: { id: garbageSpot.id } });
     },
-    deleteEvento(evento) {
+    deleteGarbageSpot(garbageSpot) {
       this.$store
-        .dispatch("deleteEvento", evento)
+        .dispatch("deleteGarbageSpot", garbageSpot)
         .then(() => {
           this.$toast.success(
-            "evento " + evento.name + " was deleted successfully."
+            "GarbageSpot " + garbageSpot.name + " was deleted successfully."
           );
+          
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    loadEventos() {
+    loadGarbageSpots() {
       this.isLoading = true;
       this.$store
-        .dispatch("loadEventos")
+        .dispatch("loadGarbageSpots")
         .then((response) => {
-          this.eventos = response;
+          this.garbageSpots = response;
           this.isLoading = false;
         })
         .catch((error) => {
@@ -134,15 +154,26 @@ export default {
           this.isLoading = false;
         });
     },
-      userName(id) {
+     userName(id) {
       var r = this.$store.getters.users.filter(user => {
         return user.id === id
       })
       return r[0] ? r[0].username : "Not found"
     },
+   
+  },
+  computed:{
+    filteredGarbageSpots() {
+      return this.garbageSpots.filter(
+        (t) =>
+          this.filter === "-1" ||
+          (this.filter === "0" && !t.approved) ||
+          (this.filter === "1" && t.approved)
+      );
+    }
   },
   mounted() {
-    this.loadEventos(), (document.title = "Eventos");
+    this.loadGarbageSpots(), (document.title = "GarbageSpots");
   },
 };
 </script>
@@ -150,12 +181,14 @@ export default {
 <style scoped>
 .wrapper {
   margin-right: -100%;
+  display: flex;
+
 }
 .child {
-  box-sizing: border-box;
   width: 25%;
   height: 100%;
-  padding-right: 20px;
+  padding-right: 1%;
+  margin-right: 2%;
   float: left;
 }
 </style>

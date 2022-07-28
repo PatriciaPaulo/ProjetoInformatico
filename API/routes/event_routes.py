@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent,UserInEvent
+from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent,UserInEvent,GarbageInEvent,Garbage
 from utils import token_required,admin_required,guest
 import jwt
 from datetime import datetime
@@ -15,23 +15,35 @@ api = Api(event_routes_blueprint)
 @token_required
 def create_event(current_user):
     data = request.get_json()
-
-    event = db.session.query(Event).filter_by(latitude=data['latitude']).first()
+    print(data)
+    event = db.session.query(Event).filter_by(latitude=data['event']['latitude']).first()
     if event:
-        if event.longitude == float(data['longitude']):
+        if event.longitude == float(data['event']['longitude']):
             return make_response(jsonify({'message': '409 NOT OK - Event already exists! Try to sign up as organizer instead!'}),
                                  409)
 
-    start_date_time_obj = datetime.strptime(data['startDate'], '%d/%m/%Y %H:%M')
+    start_date_time_obj = datetime.strptime(data['event']['startDate'], '%d/%m/%Y %H:%M')
 
 
 
-    new_event = Event(name=data['name'], latitude=data['latitude'], longitude=data['longitude'],
-                       status=data['status'], duration=data['duration'], description=data['description'],
-                       accessibility=data['accessibility'], restrictions=data['restrictions'],
-                       quantity=data['quantity'], observations=data['observations'], startDate=start_date_time_obj,
+    new_event = Event(name=data['event']['name'], latitude=data['event']['latitude'], longitude=data['event']['longitude'],
+                       status=data['event']['status'], duration=data['event']['duration'], description=data['event']['description'],
+                       accessibility=data['event']['accessibility'], restrictions=data['event']['restrictions'],
+                       quantity=data['event']['quantity'], observations=data['event']['observations'], startDate=start_date_time_obj,
                        )
+
     db.session.add(new_event)
+
+    for garbageID in data['garbageList']:
+        garbageExists = db.session.query(Garbage).filter_by(id=garbageID).first()
+        if garbageExists:
+            new_garbageInEvent = GarbageInEvent(eventID=new_event.id, garbageID=garbageID)
+            db.session.add(new_garbageInEvent)
+            db.session.commit()
+
+    organizador = UserInEvent(userID=current_user.id,eventID=new_event.id,status="Organizer",creator=True)
+    db.session.add(organizador)
+
     db.session.commit()
 
     return make_response(jsonify({'data': Event.serialize(new_event), 'message': '200 OK - Event Created'}), 200)
@@ -47,8 +59,8 @@ def get_events():
         event_data = {}
         event_data['id'] = event.id
         event_data['name'] = event.name
-        event_data['latitude'] = event.name
-        event_data['longitude'] = event.name
+        event_data['latitude'] = event.latitude
+        event_data['longitude'] = event.longitude
         event_data['status'] = event.status
         event_data['duration'] = event.duration
         event_data['startDate'] = event.startDate
@@ -65,10 +77,21 @@ def get_events():
         event_data['garbageType'] = []
 
 
-    if len(output) == 0:
-        return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Event Found'}), 404)
+   # if len(output) == 0:
+   #    return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Event Found'}), 404)
 
     return make_response(jsonify({'data': output, 'message': '200 OK - All Events Retrieved'}), 200)
+
+# Get Event by ID
+@event_routes_blueprint.route('/events/<event_id>', methods=['GET'])
+def get_event_id(event_id):
+    event = db.session.query(Event).filter_by(id=event_id).first()
+    if not event:
+            return make_response(
+                jsonify({'message': '404 NOT OK - Event doesnt exist!'}),404)
+
+
+    return make_response(jsonify({'data': Event.serialize(event), 'message': '200 OK - Event Retrieved'}), 200)
 
 
 
@@ -103,6 +126,30 @@ def update_event(current_user, event_id):
     return make_response(jsonify({'message': '200 OK - Event Updated'}), 200)
 
 
+# Update Event by Event Organizer (User)
+@event_routes_blueprint.route('/events/<event_id>/updateStatus', methods=['PATCH'])
+@token_required
+def update_status_event(current_user, event_id):
+    event = db.session.query(Event).filter_by(id=event_id).first()
+
+    if not event:
+        return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
+    userInEvent = db.session.query(UserInEvent).filter_by(userID=current_user.id, eventID=event_id).first()
+
+    if not userInEvent:
+        return make_response(jsonify({'message': '404 NOT OK - User in Event Not Found'}), 404)
+
+    if userInEvent.status != "Organizer":
+        return make_response(jsonify({'message': '403 NOT OK - You Can\'t Update This Event'}), 403)
+
+    event_data = request.get_json()
+
+    event.status = event_data
+
+    db.session.commit()
+
+
+    return make_response(jsonify({'message': '200 OK - Event Updated'}), 200)
 
 # Region Event Operations Regarding Garbage Spots
 
@@ -164,22 +211,24 @@ def get_events_na_garbageSpot(current_user, garbageSpot_id):
 @event_routes_blueprint.route('/events/mine', methods=['GET'])
 @token_required
 def get_my_events(current_user):
+
     myEvents = db.session.query(UserInEvent).filter_by(userID=current_user.id).all()
 
 
     output = []
 
-    for event in myEvents:
+    for user_event in myEvents:
         event_data = {}
-        event_data['id'] = event.id
-        event_data['userID'] = event.userID
-        event_data['event'] = []
-        for event in db.session.query(Event).filter_by(id=event.eventID):
+        event_data['id'] = user_event.id
+        event_data['userID'] = user_event.userID
+        event_data['event'] = {}
+        for event in db.session.query(Event).filter_by(id=user_event.eventID):
             eventSer = Event.serialize(event)
-            event_data['event'].append(eventSer)
+            event_data['event'] = eventSer
 
 
-        event_data['status'] = event.status
+        event_data['status'] = user_event.status
+        event_data['creator'] = user_event.creator
 
         output.append(event_data)
 
@@ -189,5 +238,3 @@ def get_my_events(current_user):
     return make_response(jsonify({'data': output, 'message': '200 OK - All Events Retrieved'}), 200)
 
 
-
-# endregion

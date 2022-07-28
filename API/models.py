@@ -79,6 +79,24 @@ class GarbageInActivity(Base):
             'unitType': self.unitType
         }
 # endregion
+# region GarbageInEvent
+class GarbageInEvent(Base):
+    __tablename__ = "garbage_in_event"
+    id = Column(Integer, primary_key=True)
+    eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
+    garbageID = Column(Integer, ForeignKey('garbage.id'), nullable=False)
+    #amount = Column(String(128), nullable=False)
+    #unitType = Column(String(128), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'eventID': self.eventID,
+            'garbageID': self.garbageID,
+           # 'amount': self.amount,
+          #  'unitType': self.unitType
+        }
+# endregion
 
 
 # region Garbage
@@ -136,15 +154,14 @@ class Event(Base):
     __tablename__ = "event"
     id = Column(Integer, primary_key=True)
     name = Column(String(128), nullable=False)
-    latitude = Column(Numeric(128), nullable=False)
-    longitude = Column(Numeric(128), nullable=False)
+    latitude = Column(Integer, nullable=False)
+    longitude = Column(Integer, nullable=False)
     status = Column(String(50))
     duration = Column(String(50))
     startDate = Column( DateTime)
     description = Column(String(50))
     accessibility = Column(String(50))
     restrictions = Column(String(50))
-    garbageType = Column(String(50))
     quantity = Column(String(50))
     observations = Column(String(50))
 
@@ -160,7 +177,6 @@ class Event(Base):
             'description': self.description,
             'accessibility': self.accessibility,
             'restrictions': self.restrictions,
-            'garbageType': self.garbageType,
             'quantity': self.quantity,
             'observations': self.observations
         }
@@ -216,13 +232,16 @@ class UserInEvent(Base):
     userID = Column(Integer, ForeignKey('user.id'), nullable=False)
     eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
     status = Column(String(128), nullable=False)
+    creator = Column(Boolean, nullable=False)
+
 
     def serialize(self):
         return {
             'id': self.id,
             'userID': self.userID,
             'eventID': self.eventID,
-            'status': self.status
+            'status': self.status,
+            'creator': self.creator
         }
 # endregion
 
@@ -250,6 +269,7 @@ class Friendship(Base):
     id = Column(Integer, primary_key=True)
     requestorID = Column(Integer, ForeignKey('user.id'), nullable=False)
     addresseeID = Column(Integer, ForeignKey('user.id'), nullable=False)
+    status = Column(String(128), nullable=False)
     date = Column(String(50), nullable=False)
 
     def serialize(self):
@@ -257,6 +277,7 @@ class Friendship(Base):
             'id': self.id,
             'requestorID': self.requestorID,
             'addresseeID': self.addresseeID,
+            'status': self.status,
             'date': self.date
         }
 # endregion

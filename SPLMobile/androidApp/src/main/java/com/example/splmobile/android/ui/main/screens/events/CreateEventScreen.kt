@@ -3,7 +3,6 @@ package com.example.splmobile.android.ui.main.screens.events
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -40,8 +39,8 @@ import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -64,6 +63,7 @@ fun CreateEventScreen(
     sharedViewModel: SharedViewModel,
     log: Logger
 ) {
+    val log = log.withTag("CreateEventScreen")
 
 
     val coroutineScope = rememberCoroutineScope()
@@ -73,12 +73,10 @@ fun CreateEventScreen(
     }
 
     var garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
+    var createEventState = eventViewModel.eventCreateUIState.collectAsState().value
     var garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeSerializable>())}
 
 
-    //search bar states
-    val searchWidgetState by mainViewModel.searchWidgetState
-    val searchTextState by mainViewModel.searchTextState
 
 
     Scaffold(
@@ -171,9 +169,9 @@ fun CreateEventScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                     Text("PONTO DE ENCONTRO")
-                    PlacePickerComponent(locationEvent)
+                    PlacePickerComponent(locationEvent,log)
                     Spacer(modifier = Modifier.height(32.dp))
-                    DatePickerComponent(startDateEvent)
+                    DatePickerComponent(startDateEvent,log)
                     if(startDateEvent.value.isEmpty()){
                         Text(
                             text = stringResource(R.string.txtNecessaryField),
@@ -321,11 +319,12 @@ fun CreateEventScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                     Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
-
-
-
+                    //todo redo , select only updating after state change and not when clicked
                     LazyColumn(
-                        modifier = Modifier.height(200.dp).width(200.dp).selectableGroup(),
+                        modifier = Modifier
+                            .height(200.dp)
+                            .width(200.dp)
+                            .selectableGroup(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -334,17 +333,29 @@ fun CreateEventScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .selectable(
-                                        selected = listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id),
+                                        selected = listGarbageTypeInEvent.value.contains(
+                                            garbageTypeListEvent.value.get(index).id
+                                        ),
                                         onClick = {
-                                            if(listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id)){
-                                                listGarbageTypeInEvent.value.remove(garbageTypeListEvent.value.get(index).id)
-                                            }else{
-                                                listGarbageTypeInEvent.value.add(garbageTypeListEvent.value.get(index).id)
+                                            if (listGarbageTypeInEvent.value.contains(
+                                                    garbageTypeListEvent.value.get(index).id
+                                                )
+                                            ) {
+                                                listGarbageTypeInEvent.value.remove(
+                                                    garbageTypeListEvent.value.get(index).id
+                                                )
+                                            } else {
+                                                listGarbageTypeInEvent.value.add(
+                                                    garbageTypeListEvent.value.get(index).id
+                                                )
                                             }
                                         }
                                     )
                                     .background(
-                                        if ((listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id))) Color.Gray
+                                        if ((listGarbageTypeInEvent.value.contains(
+                                                garbageTypeListEvent.value.get(index).id
+                                            ))
+                                        ) Color.Gray
                                         else Color.Transparent
                                     )
                                     .padding(8.dp),
@@ -367,7 +378,6 @@ fun CreateEventScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
 
 
                     Spacer(modifier = Modifier.height(32.dp))
@@ -405,13 +415,28 @@ fun CreateEventScreen(
                     }
                 }
 
+
+                when(createEventState){
+                    is EventViewModel.EventCreateUIState.Success -> {
+                        log.d{"event create state -> success"}
+                        Text(
+                            text = textResource(R.string.txtEventCreatedSuccess).toString(),
+                            color = MaterialTheme.colors.primary,
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                        )
+
+                    }
+                    is EventViewModel.EventCreateUIState.Error -> {
+                        log.d{"event create state -> Error"}
+                        log.d{"Error -> ${ createEventState.error}"}
+                        Text(text = "Error message - " + createEventState.error)
+                    }
+                    is EventViewModel.EventCreateUIState.Loading -> CircularProgressIndicator()
+                }
+
                 Button(onClick = {
-
-
-
                     //garbageTypeListEvent
-
-
                     if(nameEvent.value.text.isNotEmpty() &&
                         observationsEvent.value.text.isNotEmpty() &&
                         descriptionEvent.value.text.isNotEmpty() &&
@@ -421,7 +446,8 @@ fun CreateEventScreen(
                         (!locationEvent.value.latitude.equals(0.0)) &&
                         listGarbageTypeInEvent.value .isNotEmpty()
                     ){
-                        Log.d("create event screen","verificated")
+                        log.d{"create event fields verified"}
+
                         eventViewModel.createEvent(EventSerializable(
                             0,
                             nameEvent.value.text,
@@ -433,17 +459,20 @@ fun CreateEventScreen(
                             descriptionEvent.value.text,
                             accessibilitySelectedOptionText,
                             restrictionsSelectedOptionText,
-                            listGarbageTypeInEvent.value,
                             quantitySelectedOptionText,
                             observationsEvent.value.text
                             ),
+                            listGarbageTypeInEvent.value,
                          authViewModel.tokenState.value)
                     }else{
-                        Log.d("create event screen","failed check fields")
+                        log.d{"create event fields failed"}
+
+
                     }
                 },  ) {
                   Text(text= "Criar")
                 }
+
 
             }
         },
@@ -454,8 +483,10 @@ fun CreateEventScreen(
 }
 
 @Composable
-fun PlacePickerComponent(locationEvent: MutableState<LatLng>) {
-
+fun PlacePickerComponent(
+    locationEvent: MutableState<LatLng>, log: Logger
+) {
+    log.d{"Picking place"}
     val dialogState = rememberMaterialDialogState()
     MaterialDialog(
         dialogState = dialogState,
@@ -518,8 +549,10 @@ fun PlacePickerComponent(locationEvent: MutableState<LatLng>) {
 
 @Composable
 fun DatePickerComponent(
-    dateEvent: MutableState<String>
+    dateEvent: MutableState<String>,
+    log: Logger
 ) {
+    log.d{"Picking date"}
     // Fetching the Local Context
     val mContext = LocalContext.current
     // Declaring integer values

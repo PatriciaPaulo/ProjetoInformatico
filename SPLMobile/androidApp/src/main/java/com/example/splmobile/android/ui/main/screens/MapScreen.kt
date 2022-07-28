@@ -39,8 +39,8 @@ import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
-import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
+import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
@@ -61,6 +61,7 @@ fun MapScreen(
     sharedViewModel: SharedViewModel,
     log: Logger
 ) {
+    val log = log.withTag("MapScreen")
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
@@ -77,23 +78,28 @@ fun MapScreen(
     var cameraPosition = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(portugal, 7f)
     }
-
+    //default variables
     var garbageSpotState = mutableStateOf(
         GarbageSpotSerializable(0,"new",userInfoViewModel.myIdUIState.value,"0.0","0.0","Muito sujo",false,
             emptyList())
     )
     var garbageSpotsFilterState = mutableStateOf(textResource(R.string.lblFilterGarbageSpotsAll).toString())
-
     var createGarbageSpotButtonState = mutableStateOf(false)
 
     //variables to create a local lixo
     var nomeGarbageSpotState = remember { mutableStateOf(TextFieldValue("")) }
     var newGarbageSpotPos = remember { mutableStateOf(LatLng(0.0,0.0)) }
 
-
-    when(garbageSpotViewModel.garbageSpotCreateUIState.collectAsState().value){
+    LaunchedEffect(Unit) {
+        log.d {"Get garbage spots launched"}
+        garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+    }
+    var garbageSpotsState = garbageSpotViewModel.garbageSpotCreateUIState.collectAsState().value
+    when(garbageSpotsState){
         is GarbageSpotViewModel.GarbageSpotCreateUIState.Success -> {
-            Log.v("screen map", "success created local lixo")
+            log.d {"Get garbage spots state -> Success "}
+            //update list
+            garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
             //reset create local lixo
             createGarbageSpotButtonState.value = false
             garbageSpotState.value = GarbageSpotSerializable(0,"new",0,"0.0","0.0","Muito sujo",false,
@@ -110,7 +116,13 @@ fun MapScreen(
 
         }
         is GarbageSpotViewModel.GarbageSpotCreateUIState.Error -> {
-            Log.v("screen map", "error created local lixo")
+            log.d {"Get garbage spots state -> Error "}
+            Text(
+                text = garbageSpotsState.error,
+                color = MaterialTheme.colors.primary,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+            )
 
         }
     }
@@ -132,7 +144,7 @@ fun MapScreen(
                 },
                 onSearchClicked = {
                     coroutineScope.launch {
-                        Log.d("Map","Searched text, $it")
+                        log.d {"Searched text, $it "}
                         //only change camera position if word written is a place
                         if( !Json.parseToJsonElement(getGeocode(sharedViewModel,it)).jsonObject.containsKey("error") ){
                             cameraPosition.position = CameraPosition.fromLatLngZoom(
@@ -141,7 +153,8 @@ fun MapScreen(
                                     Json.parseToJsonElement(getGeocode(sharedViewModel,it)).jsonObject.get("longt").toString().removePrefix("\"").removeSuffix("\"").toDouble()), 10f)
 
                         }else{
-                            Log.d("Map","error, ${Json.parseToJsonElement(getGeocode(sharedViewModel,it)).jsonObject.get("error")}")
+                            log.d {"error, ${Json.parseToJsonElement(getGeocode(sharedViewModel,it)).jsonObject.get("error")}"}
+
                         }
 
                     }
@@ -167,22 +180,21 @@ fun MapScreen(
                     FloatingActionButton(
                         onClick = {
                             //if not a new local lixo selected
+
                             if(!garbageSpotState.value.id.equals(0L)){
-                                garbageSpotState.value =
-                                    GarbageSpotSerializable(0,"new",userInfoViewModel.myIdUIState.value,"","",
+                                log.d {" Garbage Spot selected "}
+                                garbageSpotState.value = GarbageSpotSerializable(0,"new",userInfoViewModel.myIdUIState.value,"","",
                                         "",false, emptyList())
                                 coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
                             }
                             else{
+                                log.d {" new Garbage Spot "}
                                 coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
                                 if(createGarbageSpotButtonState.value){
-                                    Log.v("screen map", "button clicked while true")
+                                    log.d {" Create Garbage Spot request sent "}
                                     garbageSpotViewModel.createGarbageSpot(garbageSpotState.value,authViewModel.tokenState.value)
                                     coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
                                     //todo create error/success message
-
-                                }
-                                else{
 
                                 }
 
@@ -208,7 +220,7 @@ fun MapScreen(
                             nomeGarbageSpotState,
                             bottomScaffoldState,
                             garbageSpotViewModel,
-                            authViewModel)
+                            authViewModel,log)
                     }
                 },
                 drawerContent = { DrawerFilterCompose(garbageSpotsFilterState) },
@@ -217,9 +229,10 @@ fun MapScreen(
 
             ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
+                        log.d {"In MapContent "}
                         MapContent(
                             garbageSpotViewModel.garbageSpotsUIState.collectAsState().value,
-                            garbageSpotState,newGarbageSpotPos,garbageSpotsFilterState, userInfoViewModel,authViewModel )
+                            garbageSpotState,newGarbageSpotPos,garbageSpotsFilterState, userInfoViewModel,authViewModel, log)
 
                 }
             }
@@ -294,6 +307,7 @@ fun customDrawerShape() = object : Shape {
 
 //todo redo with state
  suspend fun getGeocode(mainViewModel:SharedViewModel, nome : String):  String{
+
     return mainViewModel.getCoordenadas(nome)
 
 }
@@ -306,16 +320,17 @@ fun MapContent(
     newGarbageSpotPos: MutableState<LatLng>,
     garbageSpotsFilterState: MutableState<String>,
     userInfoViewModel: UserInfoViewModel,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    log: Logger
 ) {
     var filteredGarbageSpots by remember {
         mutableStateOf(emptyList<GarbageSpotSerializable>())
     }
 
 
-
     when(garbageSpotsState){
         is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
+            log.d {" All garbage spots state -> Success "}
             Box(
                 modifier = Modifier
                     .background(colorResource(id = R.color.cardview_dark_background))
@@ -347,69 +362,88 @@ fun MapContent(
                     ) {
 
                         if (garbageSpotState.value.id.equals(0L)) {
-                            Log.d("screen map", "-$newGarbageSpotPos")
+
+                            log.d {"new garbage spot position $newGarbageSpotPos"}
+
                             garbageSpotState.value.longitude =  newGarbageSpotPos.value.longitude.toString()
                             garbageSpotState.value.latitude =  newGarbageSpotPos.value.latitude.toString()
                             Marker(position =  newGarbageSpotPos.value, title = "new lixeira")
                         }else{
+                            log.d {"no position selected"}
                             newGarbageSpotPos.value = LatLng(0.0,0.0)
                         }
+
                         filteredGarbageSpots = garbageSpots.filter { garbageSpot ->
                             garbageSpot.approved }
-                        Log.d("screen map", "FITLER STATE-${garbageSpotsFilterState.value}")
+                        log.d {"Filter state value -> ${garbageSpotsFilterState.value}"}
+
                         when(garbageSpotsFilterState.value){
                             textResource(R.string.lblFilterGarbageSpotsAll).toString() -> {
-                                Log.d("screen map", "FITLER STATE- TODAS")
-                                markerFilterList(filteredGarbageSpots, garbageSpotState)
+                                log.d {"Filter state -> ${textResource(R.string.lblFilterGarbageSpotsAll)}"}
+                                markerFilterList(filteredGarbageSpots, garbageSpotState,log)
                             }
                             textResource(R.string.lblFilterGarbageSpotsMine).toString() ->{
-                                //todo my id
-                                Log.d("screen map", "FITLER STATE- ${ userInfoViewModel.myIdUIState.value}")
-                                markerFilterList( garbageSpots.filter {
-                                        garbageSpot -> garbageSpot.creator ==  userInfoViewModel.myIdUIState.value }, garbageSpotState)
-                                 }
+                                log.d {"Filter state -> ${textResource(R.string.lblFilterGarbageSpotsMine)}"}
+                                log.d {"My id -> ${ userInfoViewModel.myIdUIState.value}"}
+
+                                markerFilterList(
+                                    garbageSpots.filter {
+                                            garbageSpot -> garbageSpot.creator ==  userInfoViewModel.myIdUIState.value
+                                                        },
+                                    garbageSpotState,
+                                    log
+                                )
+                            }
                             textResource(R.string.lblFilterGarbageSpotsStatus1).toString() -> {
-                                Log.d("screen map", "FITLER STATE- MT SUJO")
+                                log.d {"Filter state -> ${textResource(R.string.lblFilterGarbageSpotsStatus1)}"}
                                  markerFilterList(
                                      filteredGarbageSpots.filter {
                                              garbageSpot ->
                                          garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus1).toString() }
-                                     , garbageSpotState)
+                                     , garbageSpotState, log)
                             }
                             textResource(R.string.lblFilterGarbageSpotsStatus2).toString() -> {
-
-                                markerFilterList(filteredGarbageSpots.filter { garbageSpot -> garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus2).toString() }, garbageSpotState)
+                                log.d {"Filter state -> ${textResource(R.string.lblFilterGarbageSpotsStatus2)}"}
+                                markerFilterList(
+                                    filteredGarbageSpots.filter { garbageSpot -> garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus2).toString() },
+                                    garbageSpotState,
+                                    log
+                                )
                             }
                             textResource(R.string.lblFilterGarbageSpotsStatus3).toString() -> {
-                                 markerFilterList( filteredGarbageSpots.filter {
-                                         garbageSpot ->
-                                     garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus3).toString() },
-                                     garbageSpotState)
+                                log.d {"Filter state -> ${textResource(R.string.lblFilterGarbageSpotsStatus3)}"}
+                                 markerFilterList(
+                                     filteredGarbageSpots.filter {
+                                             garbageSpot ->
+                                         garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus3).toString() },
+                                     garbageSpotState,
+                                     log
+                                 )
                             }
 
                         }
-
-
-
-
-
-
                     }
-
-
                 }
             }
         }
-        is GarbageSpotViewModel.GarbageSpotsUIState.Loading -> CircularProgressIndicator()
-        is GarbageSpotViewModel.GarbageSpotsUIState.Error -> Log.d("screen map", "error")
+        is GarbageSpotViewModel.GarbageSpotsUIState.Loading -> {
+            log.d {"Get all garbage spots state -> Loading"}
+            CircularProgressIndicator()
+        }
+        is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
+            log.d {"Get all garbage spots state -> Error"}
+            log.d {"Error -> ${garbageSpotsState.error}"}
+        }
     }
 }
 
 @Composable
 private fun markerFilterList(
     filteredGarbageSpots: List<GarbageSpotSerializable>,
-    garbageSpotState: MutableState<GarbageSpotSerializable>
+    garbageSpotState: MutableState<GarbageSpotSerializable>,
+    log: Logger
 ) {
+    log.d {"Marker filtering list"}
     filteredGarbageSpots.forEach { garbageSpot ->
         val lixeiraPosition = LatLng(garbageSpot.latitude.toDouble(), garbageSpot.longitude.toDouble())
         //Log.d("Map", "lixeirrrraa, $garbageSpot")
@@ -420,6 +454,7 @@ private fun markerFilterList(
             title = garbageSpot.name,
             snippet = garbageSpot.status,
             onClick = {
+                //selects garbage spot to read info
                 garbageSpotState.value = garbageSpot
                 true
             }
@@ -438,10 +473,11 @@ fun SheetContent(
     nomeGarbageSpotState: MutableState<TextFieldValue>,
     bottomScaffoldState: BottomSheetScaffoldState,
     garbageSpotViewModel: GarbageSpotViewModel,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    log: Logger
 ){
     BoxWithConstraints {
-        Log.d("SHEET LOCAL LIXO ID", garbageSpot.value.id.toString())
+
         var coroutineScope = rememberCoroutineScope()
         //state that determines if the button is disabled or not
         val updateGarbageSpot = remember { mutableStateOf(false) }
@@ -450,13 +486,45 @@ fun SheetContent(
         //id of the current local lixo
         var selectedId = remember { mutableStateOf(garbageSpot.value.id) }
 
-
+        var createGarbageSpotState = garbageSpotViewModel.garbageSpotCreateUIState.collectAsState().value
+        var updateGarbageSpotState = garbageSpotViewModel.garbageSpotUpdateUIState.collectAsState().value
         val statusList = listOf(textResource(R.string.GarbageSpotStatusListElement1).toString(), textResource(R.string.GarbageSpotStatusListElement2).toString(), textResource(R.string.GarbageSpotStatusListElement3).toString())
+
+
+
+
 
         //if its a new local lixo
         if(garbageSpot.value.id.equals(0L)){
+            log.d {"New garbage spot"}
             Column {
                 Column {
+                    when(createGarbageSpotState){
+                        is GarbageSpotViewModel.GarbageSpotCreateUIState.Success -> {
+                            log.d {"Create Garbage Spot state -> Success"}
+                            Text(
+                                text = textResource(R.string.txtGarbageSpotCreateSuccess).toString(),
+                                color = MaterialTheme.colors.primary,
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                            )
+                            garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+                        }
+                        is GarbageSpotViewModel.GarbageSpotCreateUIState.Loading -> {
+                            log.d {"Create Garbage Spot state -> Loading"}
+                            CircularProgressIndicator()
+                        }
+                        is GarbageSpotViewModel.GarbageSpotCreateUIState.Error -> {
+                            log.d {"Create Garbage Spot state -> Error"}
+                            log.d {"Error -> ${createGarbageSpotState.error}"}
+                            Text(
+                                text = createGarbageSpotState.error,
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                            )
+                        }
+                    }
                     Text(
                         textResource(R.string.lblCreateGarbageSpot).toString(),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
@@ -511,7 +579,7 @@ fun SheetContent(
                             }
                         }
                     }
-
+                    //todo redo, it bugs sometimes while placing the marker and changing name
                     //make createlocallixobutton available and assign the values inserted
                     if ((!(garbageSpot.value.latitude == "0.0" &&
                                         garbageSpot.value.longitude == "0.0")) &&
@@ -545,8 +613,25 @@ fun SheetContent(
                     }
 
                 }
+
             }
         }else{ // displays info on already existent local lixo
+            when(updateGarbageSpotState){
+                is GarbageSpotViewModel.GarbageSpotUpdateUIState.Success -> {
+                    garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+                    log.d {"Update Garbage Spot state -> Success"}
+                    Text(text = "Update Success")
+                }
+                is GarbageSpotViewModel.GarbageSpotUpdateUIState.Loading -> {
+                    log.d {"Update Garbage Spot state -> Loading"}
+                    CircularProgressIndicator()
+                }
+                is GarbageSpotViewModel.GarbageSpotUpdateUIState.Error -> {
+                    log.d {"Update Garbage Spot state -> Error"}
+                    log.d {"Error -> ${updateGarbageSpotState.error}"}
+                    Text(text = "Update Error")
+                }
+            }
             Box(
                 modifier = Modifier.align(Alignment.TopCenter),
                 contentAlignment = Alignment.TopCenter
@@ -575,9 +660,10 @@ fun SheetContent(
             ) {
                 Button(
                     onClick = {
+                        garbageSpotViewModel.updateGarbageSpotEstado(garbageSpot.value,selectedStatus.value,authViewModel.tokenState.value)
+
                         coroutineScope.launch {
-                            garbageSpotViewModel.updateGarbageSpotEstado(garbageSpot.value,selectedStatus.value,authViewModel.tokenState.value)
-                            bottomScaffoldState.bottomSheetState.collapse()
+                             bottomScaffoldState.bottomSheetState.collapse()
                             //todo show success/error message
                         }
 

@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import db, Garbage
+from models import db, Garbage , GarbageInEvent
 from utils import token_required,admin_required,guest
 import jwt
 import datetime
@@ -11,29 +11,32 @@ import datetime
 garbagetype_routes_blueprint = Blueprint('garbagetype_routes', __name__, )
 api = Api(garbagetype_routes_blueprint)
 
-# Create Garbage Spot
-@garbagetype_routes_blueprint.route('/garbageTypes', methods=['POST'])
-@guest
-def create_garbageType(current_user):
+# Create Garbage Type
+@garbagetype_routes_blueprint.route('/garbage', methods=['POST'])
+@token_required
+def create_garbage(current_user):
     data = request.get_json()
     # Checks if garbageSpot with same coordinates exists
-    garbageType = db.session.query(GarbageType).filter_by(name=data['name']).first()
+    garbageType = db.session.query(Garbage).filter_by(name=data['name']).first()
     if garbageType:
               return make_response(jsonify({'message': '409 NOT OK - GarbageType already exists!'}), 409)
 
 
-    new_garbageType = GarbageType(name=data['name'])
+    new_garbageType = Garbage(name=data['name'])
 
 
     db.session.add(new_garbageType)
     db.session.commit()
 
-    return make_response(jsonify({'data': GarbageType.serialize(new_garbageType), 'message': '200 OK - Garbage Type Created'}), 200)
+    return make_response(jsonify({'data': GarbageType.serialize(new_garbageType), 'message': '200 OK - Garbage Type Created'}), 200)\
+
+
+
 
 
 # Get All Garbage Types
 @garbagetype_routes_blueprint.route('/garbageTypes', methods=['GET'])
-def get_all_garbageSpots():
+def get_all_garbageTypes():
 
     garbageTypes= db.session.query(Garbage).all()
 

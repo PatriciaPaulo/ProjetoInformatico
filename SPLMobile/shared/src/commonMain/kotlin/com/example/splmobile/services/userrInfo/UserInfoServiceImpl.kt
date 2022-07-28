@@ -54,7 +54,7 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
-                contentType(ContentType.Application.Json)
+
 
                 url("api/users/me")
             }.body() as UserResponse

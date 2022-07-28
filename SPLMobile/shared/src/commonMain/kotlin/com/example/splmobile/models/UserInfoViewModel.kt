@@ -1,15 +1,12 @@
-package com.example.splmobile.models.userInfo
+package com.example.splmobile.models
 
 import UserInfoService
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.activities.ActivitySerializable
-import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.dtos.events.UserInEventSerializable
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.dtos.myInfo.EmailCheckResponse
 import com.example.splmobile.dtos.myInfo.EmailRequest
 import com.example.splmobile.dtos.myInfo.UserSerializable
-import com.example.splmobile.models.ViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +22,18 @@ class UserInfoViewModel (
     private val _myIDUIState = MutableStateFlow<Long>(0L)
     val myIdUIState = _myIDUIState.asStateFlow()
 
+    // _myEvents
+    private val _myEventsCount = MutableStateFlow<Long>(0L)
+    val myEventsCountUIState = _myEventsCount.asStateFlow()
+
+    //_myActivitiesCountUIState
+    private val _myActivitiesCountUIState = MutableStateFlow<Long>(0L)
+    val myActivitiesCountUIState = _myActivitiesCountUIState.asStateFlow()
+
+    // _myGarbageSpotCountUIState
+    private var _distanceTravelledUIState = MutableStateFlow<Long>(0L)
+    val myDistanceTravelled = _distanceTravelledUIState.asStateFlow()
+
     //state get me user
     private val _myInfoUserUIState = MutableStateFlow<MyInfoUserUIState>(MyInfoUserUIState.Empty)
     val myInfoUserUIState = _myInfoUserUIState.asStateFlow()
@@ -37,7 +46,9 @@ class UserInfoViewModel (
     }
 
     //state put me user
-    private val _myInfoUserUpdateUIState = MutableStateFlow<MyInfoUserUpdateUIState>(MyInfoUserUpdateUIState.Empty)
+    private val _myInfoUserUpdateUIState = MutableStateFlow<MyInfoUserUpdateUIState>(
+        MyInfoUserUpdateUIState.Empty
+    )
     val myInfoUserUpdateUIState = _myInfoUserUpdateUIState.asStateFlow()
     sealed class MyInfoUserUpdateUIState {
         data class Success(val data: UserSerializable) : MyInfoUserUpdateUIState()
@@ -47,12 +58,11 @@ class UserInfoViewModel (
         object Empty : MyInfoUserUpdateUIState()
     }
 
-    //state get my garbage spots
+    //state get my events
     private val _myEventsUIState = MutableStateFlow<MyEventsUIState>(MyEventsUIState.Empty)
     val myEventsUIState = _myEventsUIState.asStateFlow()
     sealed class MyEventsUIState {
         data class Success(val events: List<UserInEventSerializable>) : MyEventsUIState()
-        data class SuccessLast5(val events: List<UserInEventSerializable>) : MyEventsUIState()
         data class Error(val error: String) : MyEventsUIState()
         object Loading : MyEventsUIState()
         object Empty : MyEventsUIState()
@@ -70,7 +80,6 @@ class UserInfoViewModel (
     }
 
 
-
     fun getMyInfo(token: String) {
         _myInfoUserUIState.value = MyInfoUserUIState.Loading
         log.v("Getting All User Info ")
@@ -82,7 +91,7 @@ class UserInfoViewModel (
                 log.v("Getting All User Info ID --- ${response.data.id}")
                 _myIDUIState.value = response.data.id
             }else{
-                _myInfoUserUIState.value =MyInfoUserUIState.Error(response.message)
+                _myInfoUserUIState.value = MyInfoUserUIState.Error(response.message)
 
             }
 
@@ -98,7 +107,7 @@ class UserInfoViewModel (
             if(response.message.substring(0,3)  == "200"){
                 _myInfoUserUpdateUIState.value = MyInfoUserUpdateUIState.Success(response.data)
             }else{
-                _myInfoUserUpdateUIState.value =MyInfoUserUpdateUIState.Error(response.message)
+                _myInfoUserUpdateUIState.value = MyInfoUserUpdateUIState.Error(response.message)
             }
 
 
@@ -106,17 +115,19 @@ class UserInfoViewModel (
 
     }
 
-    fun getMEvents(token: String) {
+    fun getMyEvents(token: String) {
         _myEventsUIState.value = MyEventsUIState.Loading
         log.v("getting all my events")
         viewModelScope.launch {
             val response = userInfoService.getMyEvents(token)
 
             if(response.message.substring(0,3)  == "200"){
+                log.v("getting ${response.data}")
+                _myEventsCount.value = response.data.size.toLong()
+
                 _myEventsUIState.value = MyEventsUIState.Success(response.data)
-                _myEventsUIState.value = MyEventsUIState.SuccessLast5(response.data.takeLast(5))
             }else{
-                _myEventsUIState.value =MyEventsUIState.Error(response.message)
+                _myEventsUIState.value = MyEventsUIState.Error(response.message)
             }
         }
     }
@@ -127,10 +138,16 @@ class UserInfoViewModel (
             val response = userInfoService.getMyActivities(token)
 
             if(response.message.substring(0,3) == "200"){
+                _distanceTravelledUIState.value = 0
+                _myActivitiesCountUIState.value = response.data.size.toLong()
+                response.data.forEach {
+                    _distanceTravelledUIState.value = it.distanceTravelled.toLong() + _distanceTravelledUIState.value
+                }
                 _myActivitiesUIState.value = MyActivitiesUIState.Success(response.data)
-                _myActivitiesUIState.value = MyActivitiesUIState.SuccessLast5(response.data.takeLast(5))
+                _myActivitiesUIState.value =
+                    MyActivitiesUIState.SuccessLast5(response.data.take(5))
             }else{
-                _myActivitiesUIState.value =MyActivitiesUIState.Error(response.message)
+                _myActivitiesUIState.value = MyActivitiesUIState.Error(response.message)
             }
         }
 
@@ -138,7 +155,7 @@ class UserInfoViewModel (
 
     // Check Email
     fun checkEmail(email: String) = viewModelScope.launch {
-        _myInfoUserUIState.value = UserInfoViewModel.MyInfoUserUIState.Loading
+        _myInfoUserUIState.value = MyInfoUserUIState.Loading
 
         var emailResponse : EmailCheckResponse = viewModelScope.async() {
             log.v { "getEmailExists" }

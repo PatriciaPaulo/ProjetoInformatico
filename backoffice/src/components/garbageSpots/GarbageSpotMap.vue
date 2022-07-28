@@ -7,12 +7,12 @@
   >
     <GMapCluster>
       <GMapMarker
-        v-for="lixeira in lixeiras"
-        :key="lixeira.id"
-        :position="position(lixeira.latitude, lixeira.longitude)"
+        v-for="garbageSpot in garbageSpots"
+        :key="garbageSpot.id"
+        :position="position(garbageSpot.latitude, garbageSpot.longitude)"
         :clickable="true"
         :draggable="false"
-        @click="centerLix = position(lixeira.latitude, lixeira.longitude)"
+        @click="centerLix = position(garbageSpot.latitude, garbageSpot.longitude)"
       />
       
     </GMapCluster>
@@ -20,9 +20,9 @@
 </template>
 <script>
 export default {
-  name: "LixeiraMap",
+  name: "GarbageSpotMap",
   props: {
-    lixeiras: {
+    garbageSpots: {
       type: Object,
       required: true,
     },
@@ -41,8 +41,8 @@ export default {
   },
    mounted() {
     //when f5 
-   // this.lixeiras.forEach(element => {
-   //     console.log(element + "lixeira")
+   // this.garbageSpots.forEach(element => {
+   //     console.log(element + "garbageSpots")
    // });
   },
 

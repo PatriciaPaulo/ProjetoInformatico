@@ -78,11 +78,40 @@
     <string name="lblObservationsCreateEvent">Observações</string>
     <string name="lblRestrictionsCreateEvent">Restrições</string>
     <string name="lblQuantityCreateEvent">Quantidade</string>
-    <string name="lblDurationCreateEvent">Duração em dias</string>
+    <string name="lblDurationCreateEvent">Duração em horas</string>
     <string name="lblPlaceCreateEvent">Novo evento</string>
     <string name="txtNecessaryField">Campo Obrigatório</string>
     <string name="lblGarbageTypeCreateEvent">Tipo de Lixo</string>
     <string name="lblNoEvents">Eventos Não Encontrados</string>
+    <string name="btnParticipateOnEvent">Participar</string>
+    <string name="EventSignUpStatusElement1">Confirmado</string>
+    <string name="EventSignUpStatusElement3">Não Confirmado</string>
+    <string name="EventSignUpStatusElement2">Inscrito</string>
+    <string name="lblEventParticipateStatus">Estado</string>
+    <string name="txtEventCreatedSuccess">Evento Criado</string>
+    <string name="txtGarbageSpotCreateSuccess">Local de Lixo Criado com Sucesso</string>
+    <string name="txtParticipateInEventStatusUpdateMessage">Estado de Participação Alterado</string>
+    <string name="txtParticipateInEventMessage">Inscrito no Evento</string>
+    <string name="txtParticipateInEventError">Não foi possivel se inscrever</string>
+    <string name="lblEventListSearchBar">Eventos</string>
+    <string name="txtEventError">Eventos não disponiveis</string>
+    <string name="txtFutureEvents">Eventos Futuros</string>
+    <string name="txtMyEventsList">Os Meus Eventos</string>
+    <string name="btnUpdateParticipateOnEvent">Alterar estado</string>
+    <string name="txtGarbageSpotsList">Todos os Locais de Lixo</string>
+    <string name="lblEventInfoDescription">Descrição</string>
+    <string name="EventOrganizerStatusElement2">Começado</string>
+    <string name="EventOrganizerStatusElement1">Criado</string>
+    <string name="EventOrganizerStatusElement3">Finalizado</string>
+    <string name="EventOrganizerStatusElement4">Cancelado</string>
+    <string name="btnCheckParticipantsOnEvent">Ver participantes</string>
+    <string name="lblPartipantsInEvent">Participantes</string>
+    <string name="txtUsersInEventError">Erro a encontrar participants</string>
+    <string name="txtEventStatusUpdate">Estado do evento alterado</string>
+    <string name="EventSignUpStatusElement4">Interesse</string>
+    <string name="btnAddFriend">Adicionar Amigo</string>
+    <string name="lblMyFriends">Os meus amigos</string>
+    <string name="txtFriendsError">Erro a encontrar amigos!</string>
 
 
 </resources>

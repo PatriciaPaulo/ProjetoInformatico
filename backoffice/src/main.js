@@ -30,6 +30,7 @@ const app = createApp(App)
             .use(Toaster, toastOptions)
             .use(PrimeVue)
             .use(ConfirmationService)
+            
 app.use(VueGoogleMaps, {
     load: {
         key: 'AIzaSyDaoUX0GkumMWqpcwKq3cQ-XqT51wR51kM',

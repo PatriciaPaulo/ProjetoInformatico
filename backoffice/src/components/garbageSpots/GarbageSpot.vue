@@ -1,27 +1,27 @@
 <template>
-  <h3 class="mt-5 mb-3">lixeira #{{ arrayLixeira[0].id }}</h3>
+  <h3 class="mt-5 mb-3">garbageSpot #{{ arrayGarbageSpot[0].id }}</h3>
   <hr />
   <div class="d-flex flex-wrap justify-content-between">
     <div class="w-75 pe-4">
       <div class="mb-3">
-        <label for="inputName" class="form-label">Nome</label>
+        <label for="inputName" class="form-label text-light">Nome</label>
         <input
           type="text"
           class="form-control"
           id="inputNome"
-          placeholder="Lixeira nome"
+          placeholder="GarbageSpot nome"
           required
-          v-model="arrayLixeira[0].nome"
+          v-model="arrayGarbageSpot[0].name"
           disabled
         />
       </div>
       <ConfirmDialog></ConfirmDialog>
-      <div v-if="arrayLixeira[0].aprovado">
-        <label for="inputAprovado" class="form-label" label="Confirm"
+      <div v-if="arrayGarbageSpot[0].approved">
+        <label for="inputAprovado" class="form-label text-light" label="Confirm"
           >Aprovado</label
         >
         <button
-          @click="nAprovar(arrayLixeira[0])"
+          @click="nAprovar(arrayGarbageSpot[0])"
           type="button"
           class="btn btn-danger"
         >
@@ -33,7 +33,7 @@
           >Não Aprovado</label
         >
         <button
-          @click="Aprovar(arrayLixeira[0])"
+          @click="Aprovar(arrayGarbageSpot[0])"
           type="button"
           class="btn btn-success"
         >
@@ -42,11 +42,11 @@
       </div>
 
       <div class="mb-3">
-        <label for="inputType" class="form-label">Estado</label>
+        <label for="inputType" class="form-label text-light">Estado</label>
         <select
-          v-model="arrayLixeira[0].estado"
+          v-model="arrayGarbageSpot[0].status"
           name="inputType"
-          @change="mudarEstado(arrayLixeira[0])"
+          @change="mudarEstado(arrayGarbageSpot[0])"
         >
           <option v-for="(value, key) in estados" :value="value" :key="key">
             {{ value }}
@@ -60,18 +60,20 @@
       Voltar
     </button>
   </div>
-  <lixeira-map
-    :lixeiras="arrayLixeira"
-    :center="position(arrayLixeira[0].latitude, arrayLixeira[0].longitude)"
-  ></lixeira-map>
+  <GarbageSpotMap
+    :garbageSpots="arrayGarbageSpot"
+    :center="
+      position(arrayGarbageSpot[0].latitude, arrayGarbageSpot[0].longitude)
+    "
+  ></GarbageSpotMap>
 </template>
 
 <script>
 import ConfirmDialog from "primevue/confirmdialog";
-import LixeiraMap from "./LixeiraMap";
+import GarbageSpotMap from "./GarbageSpotMap";
 export default {
-  name: "Lixeira",
-  components: { LixeiraMap, ConfirmDialog },
+  name: "GarbageSpot",
+  components: { GarbageSpotMap, ConfirmDialog },
   props: {
     id: {
       type: Number,
@@ -80,23 +82,23 @@ export default {
   },
   data() {
     return {
-      arrayLixeira: [],
+      arrayGarbageSpot: [],
       estados: ["Muito sujo", "Pouco sujo", "Limpo"],
       errors: null,
     };
   },
   methods: {
-    Aprovar(lixeira) {
+    Aprovar(garbageSpot) {
       this.$confirm.require({
-        message: "Certeza que queres aprovar a lixeira?",
+        message: "Certeza que queres aprovar a garbageSpot?",
         header: "Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: () => {
           //callback to execute when user confirms the action
           this.$nextTick(() => {
-            lixeira.aprovado = true;
-            this.$store.dispatch("aprovarLixeira", lixeira).then(() => {
-              this.$toast.success("lixeira " + lixeira.nome);
+            garbageSpot.approved = true;
+            this.$store.dispatch("aprovarGarbageSpot", garbageSpot).then(() => {
+              this.$toast.success("garbageSpot " + garbageSpot.name);
             });
           });
         },
@@ -104,37 +106,39 @@ export default {
         reject: () => {},
       });
     },
-    nAprovar(lixeira) {
+    nAprovar(garbageSpot) {
       this.$confirm.require({
-        message: "Certeza que queres não aprovar a lixeira?",
+        message: "Certeza que queres não aprovar a garbageSpot?",
         header: "Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: () => {
           //callback to execute when user confirms the action
           this.$nextTick(() => {
-            lixeira.aprovado = false;
-            this.$store.dispatch("aprovarLixeira", lixeira).then(() => {
-              this.$toast.success("lixeira " + lixeira.nome);
+            garbageSpot.approved = false;
+            this.$store.dispatch("aprovarGarbageSpot", garbageSpot).then(() => {
+              this.$toast.success("garbageSpot " + garbageSpot.name);
             });
           });
         },
         reject: () => {},
       });
     },
-    mudarEstado(lixeira) {
-      console.log(lixeira + " - lixeira");
+    mudarEstado(garbageSpot) {
+      console.log(garbageSpot + " - garbageSpot");
 
-      console.log(lixeira.estado + " - lixeira");
+      console.log(garbageSpot.status + " - garbageSpot");
       this.$confirm.require({
-        message: "Certeza que queres mudar o estado da lixeira?",
+        message: "Certeza que queres mudar o estado da garbageSpot?",
         header: "Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: () => {
           //callback to execute when user confirms the action
           this.$nextTick(() => {
-            this.$store.dispatch("mudarEstadoLixeira", lixeira).then(() => {
-              this.$toast.success("lixeira " + lixeira.nome);
-            });
+            this.$store
+              .dispatch("updateStatusGarbageSpots", garbageSpot)
+              .then(() => {
+                this.$toast.success("garbageSpot " + garbageSpot.name);
+              });
           });
         },
         reject: () => {},
@@ -147,12 +151,12 @@ export default {
       };
     },
     cancel() {
-      this.$router.push({ name: "Lixeiras" });
+      this.$router.push({ name: "GarbageSpots" });
     },
   },
   created() {
     //when f5
-    this.arrayLixeira = this.$store.getters.lixeiras.filter((lix) => {
+    this.arrayGarbageSpot = this.$store.getters.garbageSpots.filter((lix) => {
       return lix.id === this.id;
     });
   },

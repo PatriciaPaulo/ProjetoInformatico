@@ -3,8 +3,7 @@ package com.example.splmobile.services.events
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.events.EventSerializable
-import com.example.splmobile.dtos.events.EventsResponse
+import com.example.splmobile.dtos.events.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -64,20 +63,30 @@ class EventServiceImpl (
 
     }
 
+    override suspend fun getEventsById(eventId: Long): EventResponse {
+        log.d { "Fetching event by id from network" }
+        try{
+            return client.get {
+                contentType(ContentType.Application.Json)
+                url("api/events/"+eventId)
+            }.body() as EventResponse
+        }catch (ex :Exception){
+            return EventResponse(EventSerializable(0,"","","","","","","","","","",""),"$ex")
+        }
+    }
+
     override suspend fun postEvent(
-        event: EventSerializable,
+        eventRequest: EventRequest,
         token: String
     ): RequestMessageResponse {
         log.d { "post new event" }
         try{
             return client.post {
-                if(token.isNotEmpty()){
-                    headers {
-                        append(HttpHeaders.Authorization, "Bearer $token")
-                    }
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
-                setBody(event)
+                setBody(eventRequest)
                 url("api/events")
             }.body() as RequestMessageResponse
         }
@@ -86,6 +95,48 @@ class EventServiceImpl (
         }
 
 
+    }
+
+    override suspend fun putEvent(
+        eventId: Long,
+        event: EventSerializable,
+        token: String
+    ): RequestMessageResponse {
+        log.d { "put event" }
+        try{
+            return client.put {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                setBody(event)
+                url("api/events/"+eventId)
+            }.body() as RequestMessageResponse
+        }
+        catch (ex :Exception){
+            return RequestMessageResponse("$ex")
+        }
+    }
+
+    override suspend fun patchEventStatus(
+        eventId: Long,
+        status: String,
+        token: String
+    ): RequestMessageResponse {
+        log.d { "patch event status" }
+        try{
+            return client.patch {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                contentType(ContentType.Application.Json)
+                setBody(status)
+                url("api/events/"+eventId+"/updateStatus")
+            }.body() as RequestMessageResponse
+        }
+        catch (ex :Exception){
+            return RequestMessageResponse("$ex")
+        }
     }
 
     private fun HttpRequestBuilder.url(path: String) {

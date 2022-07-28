@@ -4,7 +4,7 @@
     <hr />
     <div class="mb-3">
       <div class="mb-3">
-        <label for="inputUsername" class="form-label">Username</label>
+        <label for="inputUsername" class="form-label text-light">Username</label>
         <input
           type="text"
           class="form-control"
@@ -14,7 +14,7 @@
         />
       </div>
       <div class="mb-3">
-        <label for="inputPassword" class="form-label">Password</label>
+        <label for="inputPassword" class="form-label text-light">Password</label>
         <input
           type="password"
           class="form-control"
@@ -23,8 +23,10 @@
           v-model="credentials.password"
         />
       </div>
-       <div class="mb-3">
-        <label for="inputPasswordConfirmation" class="form-label">Password Confirmation</label>
+      <div class="mb-3">
+        <label for="inputPasswordConfirmation" class="form-label text-light"
+          >Password Confirmation</label
+        >
         <input
           type="password"
           class="form-control"
@@ -35,7 +37,7 @@
       </div>
       <div class="mb-3">
         <div class="mb-3">
-          <label for="inputName" class="form-label">Name</label>
+          <label for="inputName" class="form-label text-light">Name</label>
           <input
             type="text"
             class="form-control"
@@ -47,7 +49,7 @@
       </div>
       <div class="mb-3">
         <div class="mb-3">
-          <label for="inputEmail" class="form-label">Email</label>
+          <label for="inputEmail" class="form-label text-light">Email</label>
           <input
             type="email"
             class="form-control"
@@ -80,7 +82,6 @@ export default {
         password: "",
         passwordConfirmation: "",
         email: "",
-       
       },
       errors: null,
     };
@@ -88,16 +89,13 @@ export default {
   emits: ["register"],
   methods: {
     async register() {
-      
       await axios
         .post("registerAdmin", this.credentials)
         .then(() => {
-          this.$toast.success(
-            `${this.credentials.name}'s admin was created.`
-          );
+          this.$toast.success(`${this.credentials.name}'s admin was created.`);
           this.$emit("register");
           this.$router.push({
-            name: "Dashboard"
+            name: "Dashboard",
           });
         })
         .catch(() => {

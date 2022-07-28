@@ -2,31 +2,27 @@
   <hr />
 
   <div class="wrapper">
-    <div class="child" >
+    <div class="child">
       <ConfirmDialog></ConfirmDialog>
       <DataTable
-        :value="filteredLixeiras"
+        :value="this.events"
         :paginator="true"
         stripedRows
         :rows="10"
         :loading="isLoading"
-        :globalFilterFields="['nome', 'estado', 'criador', 'aprovado']"
+        :globalFilterFields="['nome', 'estado', 'organizador']"
         :filters="filters"
         class="p-datatable-sm"
       >
-        <template #empty> No lixeiras found. </template>
-        <template #loading> Loading lixeiras data. Please wait. </template>
-        <template #header>
+        <template #empty> No garbageSpots found. </template>
+        <template #loading> Loading garbageSpots data. Please wait. </template>
+         <template #header>
           <div class="flex justify-content-between">
             <div class="">
-              <select class="form-select" id="selectBlocked" v-model="filter">
-                <option value="-1">Todos</option>
-                <option value="1">Aprovadas</option>
-                <option value="0">Não Aprovadas</option>
-              </select>
+           
             </div>
             <div>
-              <h1 class="">Lixeiras</h1>
+              <h1 class="">Events</h1>
             </div>
 
             <div>
@@ -40,27 +36,20 @@
             </div>
           </div>
         </template>
-        <Column field="nome" header="Nome" :sortable="true"></Column>
-        <Column field="criador" header="Criador" :sortable="true">
+        <Column field="name" header="Nome" :sortable="true"></Column>
+        <Column field="organizador" header="Organizador" :sortable="true">
           <template #body="{ data }">
-            {{ userName(data.criador) }}
+            {{ userName(data) }}
           </template>
         </Column>
-        <Column field="estado" header="Estado" :sortable="true"></Column>
-        <Column header="Aprovada">
-          <template #body="{ data }">
-            <div class="d-flex justify-content-between">
-              <i v-if="data.aprovado" class="bi bi-xs bi-check2"></i>
-              <i v-else class="bi bi-xs bi-file"></i>
-            </div>
-          </template>
-        </Column>
+        <Column field="status" header="Estado" :sortable="true"></Column>
+        <Column field="startDate" header="dataInicio" :sortable="true"></Column>
         <Column header="Editar">
           <template #body="{ data }">
             <div class="d-flex justify-content-between">
               <button
                 class="btn btn-xs btn-light"
-                @click="editLixeira(data)"
+                @click="editEvent(data)"
                 label="Confirm"
               >
                 <i class="bi bi-xs bi-pencil"></i>
@@ -70,10 +59,10 @@
         </Column>
         <Column header="Eliminar">
           <template #body="{ data }">
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between" >
               <button
                 class="btn btn-xs btn-light"
-                @click="deleteLixeira(data)"
+                @click="deleteEvent(data)"
                 label="Confirm"
               >
                 <i class="bi bi-xs bi-x-square-fill"></i>
@@ -85,11 +74,7 @@
     </div>
 
     <div class="child">
-      <lixeira-map
-      :lixeiras="this.lixeiras"
-      :center="center"
-      >
-      </lixeira-map>
+      {{ "map" }}
     </div>
   </div>
 </template>
@@ -97,56 +82,51 @@
 <script>
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import ConfirmDialog from "primevue/confirmdialog";
-import LixeiraMap from "./LixeiraMap";
-
+import InputText from "primevue/inputtext";
 export default {
-  name: "Lixeiras",
+  name: "Events",
   components: {
-    LixeiraMap,
     DataTable,
     Column,
-    InputText,
     ConfirmDialog,
+    InputText
   },
   data() {
     return {
-      filter: "-1",
-      lixeiras: [],
+      events: [],
       isLoading: false,
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
       },
-      lixeiraToDelete: null,
+      garbageSpotToDelete: null,
       center: { lat: 38.093048, lng: -9.84212 },
     };
   },
   methods: {
-    editLixeira(lixeira) {
-      console.log("id  - "+ lixeira.id)
-      this.$router.push({ name: "Lixeira", params: { id: lixeira.id } });
+    editEvent(event) {
+      console.log("id  - " + event.id);
+      this.$router.push({ name: "Event", params: { id: event.id } });
     },
-    deleteLixeira(lixeira) {
+    deleteEvent(event) {
       this.$store
-        .dispatch("deleteLixeira", lixeira)
+        .dispatch("deleteEvent", event)
         .then(() => {
           this.$toast.success(
-            "Lixeira " + lixeira.name + " was deleted successfully."
+            "event " + event.name + " was deleted successfully."
           );
-          
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    loadLixeiras() {
+    loadEvents() {
       this.isLoading = true;
       this.$store
-        .dispatch("loadLixeiras")
+        .dispatch("loadEvents")
         .then((response) => {
-          this.lixeiras = response;
+          this.events = response;
           this.isLoading = false;
         })
         .catch((error) => {
@@ -154,26 +134,15 @@ export default {
           this.isLoading = false;
         });
     },
-     userName(id) {
+      userName(id) {
       var r = this.$store.getters.users.filter(user => {
         return user.id === id
       })
       return r[0] ? r[0].username : "Not found"
     },
-   
-  },
-  computed:{
-    filteredLixeiras() {
-      return this.lixeiras.filter(
-        (t) =>
-          this.filter === "-1" ||
-          (this.filter === "0" && !t.aprovado) ||
-          (this.filter === "1" && t.aprovado)
-      );
-    }
   },
   mounted() {
-    this.loadLixeiras(), (document.title = "Lixeiras");
+    this.loadEvents(), (document.title = "Events");
   },
 };
 </script>
@@ -181,14 +150,12 @@ export default {
 <style scoped>
 .wrapper {
   margin-right: -100%;
-  display: flex;
-
 }
 .child {
+  box-sizing: border-box;
   width: 25%;
   height: 100%;
-  padding-right: 1%;
-  margin-right: 2%;
+  padding-right: 20px;
   float: left;
 }
 </style>

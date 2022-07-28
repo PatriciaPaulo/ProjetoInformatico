@@ -15,7 +15,11 @@ import com.example.splmobile.services.auth.AuthService
 import com.example.splmobile.services.auth.AuthServiceImpl
 import com.example.splmobile.services.events.EventService
 import com.example.splmobile.services.events.EventServiceImpl
+import com.example.splmobile.services.friends.FriendService
+import com.example.splmobile.services.friends.FriendServiceImpl
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
+import com.example.splmobile.services.userInEvent.UserService
+import com.example.splmobile.services.userInEvent.UserServiceImpl
 import kotlinx.datetime.Clock
 import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
@@ -50,13 +54,7 @@ fun initKoin(appModule: Module): KoinApplication {
 }
 
 private val coreModule = module {
-  /*  single {
-        DatabaseHelper(
-            get(),
-            getWith("DatabaseHelper"),
-            Dispatchers.Default
-        )
-    }*/
+
     single<GarbageSpotService> {
         GarbageSpotServiceImpl(
             getWith("GarbageSpotServiceImpl"),
@@ -93,6 +91,18 @@ private val coreModule = module {
             get()
         )
     }
+    single<UserService> {
+        UserServiceImpl(
+            getWith("UserInEventServiceImpl"),
+            get()
+        )
+    }
+    single<FriendService> {
+        FriendServiceImpl(
+            getWith("FriendServiceImpl"),
+            get()
+        )
+    }
     single<Clock> {
         Clock.System
     }
@@ -104,15 +114,7 @@ private val coreModule = module {
     val baseLogger = Logger(config = StaticConfig(logWriterList = listOf(platformLogWriter())), "KampKit")
     factory { (tag: String?) -> if (tag != null) baseLogger.withTag(tag) else baseLogger }
 
-    single {
-        LocalLixoRepository(
-           // get(),
-            get(),
-            get(),
-            getWith("LocalLixoRepository"),
-            get()
-        )
-    }
+
 }
 
 internal inline fun <reified T> Scope.getWith(vararg params: Any?): T {

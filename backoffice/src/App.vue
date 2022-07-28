@@ -1,8 +1,9 @@
 <template>
+  <!-- app bar-->
   <nav
     class="
       navbar navbar-expand-md navbar-dark
-      bg-dark
+      bg-secondary
       sticky-top
       flex-md-nowrap
       p-0
@@ -93,15 +94,15 @@
       </div>
     </div>
   </nav>
-
-  <div class="container-fluid">
-    <div class="row">
+  <!-- side bar-->
+  <div class="container-fluid" v-if="$store.state.loggedInUser">
+    <div class="row" >
       <nav
         id="sidebarMenu"
-        class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
+        class="col-md-3 col-lg-2 d-md-block bg-secondary sidebar collapse"
       >
-        <div class="position-sticky pt-3">
-          <ul class="nav flex-column" v-show="$store.state.loggedInUser">
+        <div class="position-sticky pt-3"  >
+          <ul class="nav flex-column">
             <li
               class="
                 nav-item
@@ -149,11 +150,11 @@
             >
               <router-link
                 class="nav-link w-100 me-3"
-                :class="{ active: $route.name === 'Lixeiras' }"
-                :to="{ name: 'Lixeiras' }"
+                :class="{ active: $route.name === 'GarbageSpots' }"
+                :to="{ name: 'GarbageSpots' }"
               >
                 <i class="bi bi-list-check"></i>
-                Lixeiras
+                GarbageSpots
               </router-link>
             </li>
              <li
@@ -167,14 +168,15 @@
             >
               <router-link
                 class="nav-link w-100 me-3"
-                :class="{ active: $route.name === 'Eventos' }"
-                :to="{ name: 'Eventos' }"
+                :class="{ active: $route.name === 'Events' }"
+                :to="{ name: 'Events' }"
               >
                 <i class="bi bi-list-check"></i>
-                Eventos
+                Events
               </router-link>
             </li>
           </ul>
+          
 
           <div class="d-block d-md-none">
             <h6
@@ -244,11 +246,14 @@
         </div>
       </nav>
 
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
+    </div>
+    </div>
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <router-view></router-view>
       </main>
-    </div>
-  </div>
+ 
+  
 </template>
 
 <script>
@@ -288,6 +293,20 @@ export default {
 
 <style lang="css">
 @import "./assets/css/dashboard.css";
+
+
+body, html {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+body {
+  color: #B0B3B8;
+  background-color:	#b0b3b8;
+}
+
+
 
 .avatar-img {
   margin: -1.2rem 0.8rem -2rem 0.8rem;

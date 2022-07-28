@@ -7,12 +7,7 @@ import android.util.Log
 import com.example.splmobile.AppInfo
 import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.initKoin
-import com.example.splmobile.models.ActivityViewModel
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
-import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
+import com.example.splmobile.models.*
 
 import dagger.hilt.android.HiltAndroidApp
 import org.koin.android.ext.koin.androidApplication
@@ -28,10 +23,12 @@ class SPLMobileApplication : Application() {
         initKoin(
             module {
                 single<Context> { this@SPLMobileApplication }
-                viewModel { GarbageSpotViewModel(get(), get { parametersOf("LocalLixoViewModel") }, get { parametersOf("LocalLixoRepository") }) }
+                viewModel { GarbageSpotViewModel(get(), get { parametersOf("LocalLixoViewModel") }) }
                 viewModel { SharedViewModel(get(), get { parametersOf("SharedViewModel") }) }
                 viewModel { UserInfoViewModel(get(), get { parametersOf("UserInfoViewModel") }) }
                 viewModel { EventViewModel(get(), get { parametersOf("EventViewModel") }) }
+                viewModel { FriendViewModel(get(), get { parametersOf("FriendViewModel") }) }
+                viewModel { UserViewModel(get(), get(),get { parametersOf("UserInEventViewModel") }) }
                 viewModel { AuthViewModel(get(), get { parametersOf("AuthViewModel") }) }
                 viewModel { ActivityViewModel(get(), get { parametersOf("ActivityViewModel") }) }
                 viewModel { MapViewModel(androidApplication()) }

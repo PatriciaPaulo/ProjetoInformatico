@@ -32,7 +32,7 @@ import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.isEmailValid
 import com.example.splmobile.isTextFieldEmpty
 import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.UserInfoViewModel
 
 @Composable
 fun LoginScreen(

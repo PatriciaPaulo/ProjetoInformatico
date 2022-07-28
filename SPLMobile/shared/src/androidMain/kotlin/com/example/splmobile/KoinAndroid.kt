@@ -9,13 +9,7 @@ import org.koin.dsl.module
 import io.ktor.client.engine.okhttp.OkHttp
 
 actual val platformModule: Module = module {
-    single<SqlDriver> {
-        AndroidSqliteDriver(
-            SPLDatabase.Schema,
-            get(),
-            "SPLDatabase"
-        )
-    }
+
 
     single<Settings> {
         AndroidSettings(get())

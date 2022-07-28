@@ -3,9 +3,12 @@ package com.example.splmobile.android
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -37,6 +40,7 @@ import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.userInfo.UserInfoViewModel
 import com.example.splmobile.models.garbageSpots.GarbageSpotViewModel
+import com.example.splmobile.models.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -68,8 +72,13 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     private val userInfoViewModel: UserInfoViewModel by viewModel()
     private val eventViewModel: EventViewModel by viewModel()
     private val activityViewModel: ActivityViewModel by viewModel()
+    private val userViewModel: UserViewModel by viewModel()
+    private val friendViewModel: FriendViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
     private val mapViewModel : MapViewModel by viewModels<MapViewModel>()
+    //notifcations system
+    private val channel1ID = "package com.example.splmobile.android.channel1"
+    private var notificationManager: NotificationManager? = null
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,11 +108,17 @@ class ActivityMain : ComponentActivity() , KoinComponent {
                     activityViewModel = activityViewModel,
                     mapViewModel = mapViewModel,
                     log = log,
+                    userViewModel = userViewModel,
+                    friendViewModel = friendViewModel,
+                    sharedViewModel = sharedViewModel
                 )
             }
             prepLocationUpdates()
             prepStepCounter()
         }
+
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        createNotificationChannel(channel1ID,"devo","descriptio")
     }
 
     private fun prepStepCounter() {
@@ -135,6 +150,17 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     private fun requestLocationUpdates() {
         println("requestLocationUpdates")
         mapViewModel.startLocationUpdates()
+    }
+
+
+    private fun createNotificationChannel(id :String, name: String,channelDescription:String){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(id,name,importance).apply {
+                description = channelDescription
+            }
+            notificationManager?.createNotificationChannel(channel)
+        }
     }
 }
 

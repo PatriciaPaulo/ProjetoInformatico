@@ -1,20 +1,21 @@
 <template>
-  <h3 class="mt-5 mb-3">evento #{{ this.id }}</h3>
+  <h3 class="mt-5 mb-3">event #{{ this.id }}</h3>
   <hr />
-  <div v-if="evento" class="d-flex flex-wrap justify-content-between">
+  <div v-if="event" class="d-flex flex-wrap justify-content-between">
     <div class="w-75 pe-4">
       <div class="mb-3">
-        <label for="inputName" class="form-label">Nome</label>
+        <label for="inputName" class="form-label text-light">Nome</label>
         <input
           type="text"
           class="form-control"
           id="inputNome"
-          placeholder="evento nome"
+          placeholder="event nome"
           required
-          v-model="evento.nome"
+          v-model="event.name"
           disabled
         />
       </div>
+      <!--
       <div class="mb-3">
         <label for="inputOrganizador" class="form-label">Organizador</label>
         <input
@@ -23,43 +24,56 @@
           id="inputOrganizador"
           placeholder="Organizador"
           required
-          :value="this.userName(evento.organizador)"
+          :value="this.userName(event.organizador)"
+          disabled
+        />
+      </div>-->
+       <div class="mb-3 px-1">
+        <label for="inputEstado" class="form-label text-light">Data de Inicio</label>
+        <input
+          type="text"
+          class="form-control"
+          id="inputStartDate"
+          placeholder="startDate"
+          required
+          v-model="event.startDate"
           disabled
         />
       </div>
       <div class="mb-3 px-1">
-        <label for="inputEstado" class="form-label">Estado</label>
+        <label for="inputEstado" class="form-label text-light">Estado</label>
         <input
-          type="estado"
+          type="text"
           class="form-control"
           id="inputEstado"
           placeholder="estado"
           required
-          v-model="evento.estado"
+          v-model="event.status"
           disabled
         />
       </div>
+      
       <div class="mb-3 px-1">
-        <label for="inputRestricoes" class="form-label">Restrições</label>
+        <label for="inputRestricoes" class="form-label text-light">Restrições</label>
         <input
-          type="estado"
+          type="text"
           class="form-control"
           id="inputRestricoes"
           placeholder="restricoes"
           required
-          v-model="evento.restricoes"
+          v-model="event.restrictions"
           disabled
         />
       </div>
       <div class="mb-3 px-1">
-        <label for="inputEstado" class="form-label">Acessibilidade</label>
+        <label for="inputEstado" class="form-label text-light">Acessibilidade</label>
         <input
-          type="estado"
+          type="text"
           class="form-control"
           id="inputEstado"
-          placeholder="estado"
+          placeholder="Acessibilidade"
           required
-          v-model="evento.acessibilidade"
+          v-model="event.accessibility"
           disabled
         />
       </div>
@@ -68,7 +82,7 @@
   <ConfirmDialog></ConfirmDialog>
 
   <DataTable
-    :value="lixeirasNoEvento"
+    :value="garbageSpotsNoEvent"
     :paginator="true"
     stripedRows
     :rows="5"
@@ -76,26 +90,26 @@
     :globalFilterFields="['nome', 'estado', 'criador']"
     class="p-datatable-sm"
   >
-    <template #empty> No lixeiras found. </template>
-    <template #loading> Loading lixeiras data. Please wait. </template>
+    <template #empty> No garbageSpots found. </template>
+    <template #loading> Loading garbageSpots data. Please wait. </template>
     <template #header>
       <div class="flex justify-content-between">
         <div>
-          <h1 class="">Lixeiras</h1>
+          <h1 class="">GarbageSpots</h1>
         </div>
       </div>
     </template>
-    <Column field="nome" header="Nome" :sortable="true"></Column>
+    <Column field="name" header="Nome" :sortable="true"></Column>
     <Column field="criador" header="Criador" :sortable="true">
       <template #body="{ data }">
-        {{ userName(data.criador) }}
+        {{ userName(data.creator) }}
       </template>
     </Column>
-    <Column field="estado" header="Estado" :sortable="true"></Column>
+    <Column field="status" header="Estado" :sortable="true"></Column>
     <Column header="Aprovada">
       <template #body="{ data }">
         <div class="d-flex justify-content-between">
-          <i v-if="data.aprovado" class="bi bi-xs bi-check2"></i>
+          <i v-if="data.approved" class="bi bi-xs bi-check2"></i>
           <i v-else class="bi bi-xs bi-file"></i>
         </div>
       </template>
@@ -113,7 +127,7 @@ import ConfirmDialog from "primevue/confirmdialog";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 export default {
-  name: "Evento",
+  name: "Event",
   components: { ConfirmDialog, DataTable, Column },
   props: {
     id: {
@@ -129,44 +143,19 @@ export default {
     };
   },
   methods: {
-    check(evento) {
-      this.$confirm.require({
-        message: "Are you sure you want to proceed?",
-        header: "Confirmation",
-        icon: "pi pi-exclamation-triangle",
-        accept: () => {
-          //callback to execute when user confirms the action
-          this.$nextTick(() => {
-            this.$store.dispatch("aprovarEvento", evento).then(() => {
-              this.$toast.success("evento " + evento.nome);
-            });
-          });
-        },
-
-        reject: () => {
-          evento.aprovado = !evento.aprovado;
-        },
-      });
-    },
-    position(lat, long) {
-      return {
-        lat: parseFloat(lat),
-        lng: parseFloat(long),
-      };
-    },
     cancel() {
-      this.$router.push({ name: "Eventos" });
+      this.$router.push({ name: "Events" });
     },
-    loadLixeiras() {
+    loadGarbageSpots() {
       this.isLoading = true;
       this.$axios
-        .get("eventos/" + this.id + "/lixeiras")
+        .get("events/" + this.id + "/garbageSpots")
         .then((response) => {
           this.isLoading = false;
           response.data.data.forEach((lixEv) => {
-            console.log(lixEv.lixeiraID + "id");
-            //this.lixeirasNoEvento.push(this.lixeira(lixEv.lixeiraID));
-            console.log(this.lixeira(lixEv.lixeiraID) + "lixeira");
+            console.log(lixEv.garbageSpotID + "id");
+            //this.garbageSpotsNoEvent.push(this.garbageSpot(lixEv.garbageSpotID));
+            console.log(this.garbageSpot(lixEv.garbageSpotID) + "garbageSpot");
           });
         })
         .catch((error) => {
@@ -180,34 +169,34 @@ export default {
       });
       return r ? r.username : "Not found";
     },
-    lixeira(id) {
-      var r = this.$store.getters.lixeiras.find((lix) => {
+    garbageSpot(id) {
+      var r = this.$store.getters.garbageSpots.find((lix) => {
         return lix.id === id;
       });
       return r;
     },
   },
   computed: {
-    evento() {
-      return this.$store.getters.eventos.find((event) => {
+    event() {
+      return this.$store.getters.events.find((event) => {
         return event.id === this.id;
       });
     },
-    lixeirasNoEvento() {
+    garbageSpotsNoEvent() {
       let lixEve = []
-      if(!this.evento){
+      if(!this.event){
         return lixEve
       }
-      this.evento.lixeiras.forEach((lixEv) => {
-        console.log(lixEv.lixeiraID + "id");
-        lixEve.push(this.lixeira(lixEv.lixeiraID));
-        console.log(this.lixeira(lixEv.lixeiraID) + "lixeira");
+      this.event.garbageSpots.forEach((lixEv) => {
+        console.log(lixEv.garbageSpotID + "id");
+        lixEve.push(this.garbageSpot(lixEv.garbageSpotID));
+        console.log(this.garbageSpot(lixEv.garbageSpotID) + "garbageSpot");
       });
       return lixEve;
     },
   },
   mounted() {
-    this.loadLixeiras();
+    this.loadGarbageSpots();
   },
 };
 </script>

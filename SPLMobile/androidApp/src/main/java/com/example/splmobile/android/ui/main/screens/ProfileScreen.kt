@@ -4,9 +4,8 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -17,10 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -31,11 +29,12 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
+import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.myInfo.UserSerializable
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.userInfo.UserInfoViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -51,19 +50,19 @@ fun ProfileScreen(
     sharedViewModel: SharedViewModel,
     log: Logger
 ) {
+    val log = log.withTag("ProfileScreen")
 
-    //android view model states
-    val searchWidgetState by mainViewModel.searchWidgetState
-    val searchTextState by mainViewModel.searchTextState
-    val coroutineScope = rememberCoroutineScope()
+
     val scaffoldState = rememberScaffoldState()
 
     var userInfoState = userInfoViewModel.myInfoUserUIState.collectAsState().value
     var usersEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
     var usersActivitiesState = userInfoViewModel.myActivitiesUIState.collectAsState().value
+
     LaunchedEffect(Unit) {
+        log.d{"get my info get my events and get my activities launched"}
         userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
-        userInfoViewModel.getMEvents(authViewModel.tokenState.value)
+        userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
         userInfoViewModel.getMyActivities(authViewModel.tokenState.value)
     }
     
@@ -80,7 +79,8 @@ fun ProfileScreen(
             
             Column(modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = innerPadding.calculateBottomPadding()),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally){
                 Column(modifier = Modifier
@@ -88,20 +88,22 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally) {
                     when(userInfoState){
+
                         is UserInfoViewModel.MyInfoUserUIState.Success ->
                         {
+                            log.d{"User info State -> Success"}
                             ProfileSection(
                                 userInfoState.data,
                                 userInfoViewModel,
                                 authViewModel,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .align(Alignment.CenterHorizontally))
-
-                            
-
-
+                                    .align(Alignment.CenterHorizontally),
+                                log
+                            )
                         }
+                        is UserInfoViewModel.MyInfoUserUIState.Loading -> CircularProgressIndicator()
+                        is UserInfoViewModel.MyInfoUserUIState.Error -> Text(text = "Error message - " + userInfoState.error)
                     }
                 }
                 Text(text = "Your last Activities", fontStyle = MaterialTheme.typography.h6.fontStyle)
@@ -113,7 +115,6 @@ fun ProfileScreen(
                     when(usersActivitiesState){
                         is UserInfoViewModel.MyActivitiesUIState.SuccessLast5 ->
                         {
-
                             usersActivitiesState.activities.forEach {
                                 TextButton(onClick = {}){
                                     Text(text = "Activity ${it.id} que começou em ${it.startDate}. ")
@@ -123,6 +124,7 @@ fun ProfileScreen(
 
 
                         }
+                        is UserInfoViewModel.MyActivitiesUIState.Loading -> CircularProgressIndicator()
                         is UserInfoViewModel.MyActivitiesUIState.Error -> {
                             TextButton(onClick = {}){
                                 Text(text = "No Activities Available!. ")
@@ -133,37 +135,75 @@ fun ProfileScreen(
 
 
                 }
-                Text(text = "Your last Events", fontStyle = MaterialTheme.typography.h6.fontStyle)
-                Column(modifier = Modifier
-                    .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally){
-                    when(usersEventsState){
-                        is UserInfoViewModel.MyEventsUIState.SuccessLast5 ->
-                        {
-                            usersEventsState.events.forEach {
-                                TextButton(onClick = {}){
-                                    Text(text = "Evento ${it.id} com estado de ${it.status}. ")
-                                }
 
-                            }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
 
-                        }
-                        is UserInfoViewModel.MyEventsUIState.Error -> {
-                            TextButton(onClick = {}){
-                                Text(text = "No Events Available!. ")
-                            }
-                        }
-                    }
+                ) {
 
-
+                    Text(text = "Your last Events", fontStyle = MaterialTheme.typography.h6.fontStyle)
+                    Spacer(Modifier.width(86.dp))
+                    ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems).toString()),
+                        style = MaterialTheme.typography.body1,
+                        onClick = {
+                            navController.navigate(Screen.MyEventList.route)
+                        })
 
                 }
+                MyEventsSection(usersEventsState, navController,log)
             }
         },
     )
 }
 
+@Composable
+private fun MyEventsSection(
+    usersEventsState: UserInfoViewModel.MyEventsUIState,
+    navController: NavHostController,
+    log: Logger
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        when (usersEventsState) {
+            is UserInfoViewModel.MyEventsUIState.Success -> {
+                log.d{"Get my events state -> Success"}
+                var sizeOfList = 0
+                if (usersEventsState.events.size > 5) {
+                    sizeOfList = 5
+                } else {
+                    sizeOfList = usersEventsState.events.size
+                }
+                usersEventsState.events.subList(0, sizeOfList).forEach { it ->
+                    TextButton(onClick = {
+                        navController.navigate(Screen.EventInfo.route + "/${it.event.id}")
+                    }) {
+                        Text(text = "Evento ${it.event.id} com estado de ${it.status}. ")
+                    }
+
+                }
+
+            }
+            is UserInfoViewModel.MyEventsUIState.Loading -> {
+                log.d{"Get my events state -> Loading"}
+                CircularProgressIndicator()
+            }
+            is UserInfoViewModel.MyEventsUIState.Error -> {
+                log.d{"Get my events state -> Error"}
+                TextButton(onClick = {}) {
+                    Text(text = "No Events Available!. ")
+                }
+            }
+        }
+
+
+    }
+}
 
 
 @Composable
@@ -172,6 +212,7 @@ fun ProfileSection(
     userInfoViewModel: UserInfoViewModel,
     authViewModel: AuthViewModel,
     modifier: Modifier = Modifier,
+    log: Logger,
 ) {
     var editableState = remember { mutableStateOf(false) }
     var editableFieldsAlteredState = remember { mutableStateOf(false) }
@@ -183,6 +224,25 @@ fun ProfileSection(
     var utilizadorUsername = remember { mutableStateOf(TextFieldValue(utilizador.username)) }
 
     var updateUserState = userInfoViewModel.myInfoUserUpdateUIState.collectAsState().value
+
+    if(editableFieldsAlteredState.value){
+        log.d{"User can make update request"}
+        btnEditarState.value = true
+    }else{
+        log.d{"User cant make update request"}
+        btnEditarState.value = false
+    }
+
+    if((utilizadorName.value.text != utilizador.name && utilizadorName.value.text.isNotEmpty())||
+        (utilizadorEmail.value.text != utilizador.email && utilizadorEmail.value.text.isNotEmpty())||
+        (utilizadorUsername.value.text != utilizador.username && utilizadorUsername.value.text.isNotEmpty())){
+        log.d{" User Info fields were changed"}
+        editableFieldsAlteredState.value = true
+    }else{
+        log.d{" User Info fields were not changed"}
+        editableFieldsAlteredState.value = false
+    }
+
     Column(modifier = modifier.fillMaxHeight()) {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -197,41 +257,61 @@ fun ProfileSection(
 
             )
             Spacer(Modifier.height(20.dp))
-            StatSection()
+            StatSection(userInfoViewModel)
             Spacer(Modifier.height(20.dp))
             when (editableState.value) {
                 true-> {
-                      EditableProfileDescription(utilizadorName, utilizadorEmail, utilizadorUsername,editableFieldsAlteredState)
+                    log.d{"In editable mode"}
+                    EditableProfileDescription(utilizadorName, utilizadorEmail, utilizadorUsername)
                 }
                 false -> {
+                    log.d{"In view only mode"}
                     ProfileDescription(
                         utilizador.name, utilizador.email, utilizador.username
                     )
                 }
             }
+            //edit state when(viewmodel state ui)
+            when(updateUserState){
+                is UserInfoViewModel.MyInfoUserUpdateUIState.Success -> {
+                    log.d{"User update info state -> Success"}
+                    Text(
+                        text = textResource(R.string.txtUserUpdatedSuccess).toString(),
+                        color = MaterialTheme.colors.primary,
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                    )
 
-            if(editableFieldsAlteredState.value){
-                btnEditarState.value = true
-            }else{
-                btnEditarState.value = false
+
+                }
+                is UserInfoViewModel.MyInfoUserUpdateUIState.Loading -> {
+                    log.d{"User update info state -> Loading"}
+                    CircularProgressIndicator()
+                }
+
+                is UserInfoViewModel.MyInfoUserUpdateUIState.Error ->{
+                    log.d{"User update info state -> Error"}
+                    Text(
+                        text = "Error message - " + updateUserState.error,
+                        color = MaterialTheme.colors.error,
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                    )
+                }
             }
 
-            if((utilizadorName.value.text != utilizador.name && utilizadorName.value.text.isNotEmpty())||
-                (utilizadorEmail.value.text != utilizador.email && utilizadorEmail.value.text.isNotEmpty())||
-                (utilizadorUsername.value.text != utilizador.username && utilizadorUsername.value.text.isNotEmpty())){
-                editableFieldsAlteredState.value = true
-            }else{
-                editableFieldsAlteredState.value = false
-            }
             Button(
                 onClick = {
                     if(editableState.value){
+                        log.d{"Values that were not updated reseted"}
                         utilizadorName.value = TextFieldValue(text = utilizador.name)
                         utilizadorEmail.value = TextFieldValue(text = utilizador.email)
                         utilizadorUsername.value =  TextFieldValue(text = utilizador.username)
 
                     }
-                    editableState.value = !editableState.value },
+                    //close and open editable state
+                    editableState.value = !editableState.value
+                          },
 
                 modifier = Modifier.align(Alignment.End)) {
                 if(editableState.value){
@@ -245,6 +325,7 @@ fun ProfileSection(
                 Button(
                     onClick = {
                         if(editableFieldsAlteredState.value){
+                            log.d{"Update my info request sent"}
                             userInfoViewModel.putMyInfo(
                                 UserSerializable(
                                     0,
@@ -253,6 +334,11 @@ fun ProfileSection(
                                     utilizadorUsername.value.text),
                                 authViewModel.tokenState.value)
                         }
+                        //utilizador.email = utilizadorEmail.value.text
+                        //utilizador.username = utilizadorUsername.value.text
+                        //utilizador.name = utilizadorName.value.text
+                        //change from editable to view only after request sent
+                        editableState.value = false
                               },
                     enabled = btnEditarState.value,
                     modifier = Modifier.align(Alignment.CenterHorizontally)) {
@@ -260,18 +346,9 @@ fun ProfileSection(
                     }
 
             }
-            //edit state when(viewmodel state ui)
-            when(updateUserState){
-                is UserInfoViewModel.MyInfoUserUpdateUIState.Success -> {
-                    Text(
-                        text = textResource(R.string.txtUserUpdatedSuccess).toString(),
-                        color = MaterialTheme.colors.primary,
-                        style = MaterialTheme.typography.caption,
-                        modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                    )
-                    //editableState.value = false
-                }
-            }
+
+
+
 
         }
 
@@ -303,17 +380,17 @@ fun RoundImage(
 }
 
 @Composable
-fun StatSection(modifier: Modifier = Modifier) {
+fun StatSection(myInfoViewModel: UserInfoViewModel) {
     Row(
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
         //todo stats
-        ProfileStat(numberText = "601", text = "Atividades")
+        ProfileStat(numberText = myInfoViewModel.myActivitiesCountUIState.collectAsState().value.toString(), text = "Atividades")
         Spacer(modifier = Modifier.width(40.dp))
-        ProfileStat(numberText = "72", text = "Distancia percorrida")
+        ProfileStat(numberText =  myInfoViewModel.myDistanceTravelled.collectAsState().value.toString()+"Km", text = "Distancia percorrida")
         Spacer(modifier = Modifier.width(40.dp))
-        ProfileStat(numberText = "100K", text = "Eventos")
+        ProfileStat(numberText =  myInfoViewModel.myEventsCountUIState.collectAsState().value.toString(), text = "Eventos")
 
     }
 }
@@ -349,10 +426,9 @@ fun EditableProfileDescription(
     utilizadorName: MutableState<TextFieldValue>,
     utilizadorEmail: MutableState<TextFieldValue>,
     utilizadorUsername: MutableState<TextFieldValue>,
-    editableFieldsAlteredState: MutableState<Boolean>,
+
 ) {
-    val letterSpacing = 0.5.sp
-    val lineHeight = 20.sp
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -420,76 +496,8 @@ fun ProfileDescription(
     }
 }
 
-@Composable
-fun ButtonSection(
-    modifier: Modifier = Modifier
-) {
-    val minWidth = 95.dp
-    val height = 30.dp
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = modifier
-    ) {
-        ActionButton(
-            text = "Following",
-            icon = Icons.Default.KeyboardArrowDown,
-            modifier = Modifier
-                .defaultMinSize(minWidth = minWidth)
-                .height(height)
-        )
-        ActionButton(
-            text = "Message",
-            modifier = Modifier
-                .defaultMinSize(minWidth = minWidth)
-                .height(height)
-        )
-        ActionButton(
-            text = "Email",
-            modifier = Modifier
-                .defaultMinSize(minWidth = minWidth)
-                .height(height)
-        )
-        ActionButton(
-            icon = Icons.Default.KeyboardArrowDown,
-            modifier = Modifier
-                .size(height)
-        )
-    }
-}
 
-@Composable
-fun ActionButton(
-    modifier: Modifier = Modifier,
-    text: String? = null,
-    icon: ImageVector? = null
-) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .border(
-                width = 1.dp,
-                color = Color.LightGray,
-                shape = RoundedCornerShape(5.dp)
-            )
-            .padding(6.dp)
-    ) {
-        if(text != null) {
-            Text(
-                text = text,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp
-            )
-        }
-        if(icon != null) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Color.Black
-            )
-        }
-    }
-}
+
 
 @ExperimentalFoundationApi
 @Composable
@@ -501,12 +509,3 @@ fun ActivitySection(
 
 }
 
-@ExperimentalFoundationApi
-@Composable
-fun NextEventsSection(
-    posts: List<Painter>,
-    modifier: Modifier = Modifier
-) {
-
-
-}
