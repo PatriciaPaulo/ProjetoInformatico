@@ -96,7 +96,7 @@ class ActivityMain : ComponentActivity() , KoinComponent {
                     mapViewModel = mapViewModel,
                     log = log,
                     userViewModel = userViewModel,
-                    friendViewModel = friendViewModel,
+                    friendViewModel = friendViewModel
                 )
             }
             prepLocationUpdates()

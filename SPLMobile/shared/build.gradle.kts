@@ -72,6 +72,10 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
                 api("co.touchlab:kermit:1.0.3")
 
+                //Websockets
+                implementation("io.ktor:ktor-client-websockets:$ktorVersion")
+                //CIO
+                implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
 
             }

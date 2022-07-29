@@ -42,7 +42,6 @@ fun SetupNavGraph(
     garbageSpotViewModel: GarbageSpotViewModel,
     userInfoViewModel: UserInfoViewModel,
     eventViewModel: EventViewModel,
-    sharedViewModel: SharedViewModel,
     activityViewModel: ActivityViewModel,
     mapViewModel: MapViewModel,
     userViewModel: UserViewModel,
@@ -185,7 +184,7 @@ fun SetupNavGraph(
 
         }
         composable(Screen.UserProfile.route+"/{userID}") {backStackEntry ->
-            UserProfile(navController =navController,
+            UserProfileScreen(navController =navController,
                 mainViewModel = mainViewModel,
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,

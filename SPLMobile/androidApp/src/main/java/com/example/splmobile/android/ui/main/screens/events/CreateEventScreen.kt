@@ -48,9 +48,15 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import io.ktor.server.util.*
+import io.ktor.util.*
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import java.util.*
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, InternalAPI::class, InternalAPI::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun CreateEventScreen(
@@ -172,6 +178,7 @@ fun CreateEventScreen(
                     PlacePickerComponent(locationEvent,log)
                     Spacer(modifier = Modifier.height(32.dp))
                     DatePickerComponent(startDateEvent,log)
+
                     if(startDateEvent.value.isEmpty()){
                         Text(
                             text = stringResource(R.string.txtNecessaryField),
@@ -215,6 +222,7 @@ fun CreateEventScreen(
                                 ExposedDropdownMenuDefaults.TrailingIcon(
                                     expanded = accessibilityExpanded
                                 )
+
                             },
                             colors = ExposedDropdownMenuDefaults.textFieldColors()
                         )
@@ -435,41 +443,47 @@ fun CreateEventScreen(
                     is EventViewModel.EventCreateUIState.Loading -> CircularProgressIndicator()
                 }
 
-                Button(onClick = {
-                    //garbageTypeListEvent
-                    if(nameEvent.value.text.isNotEmpty() &&
-                        observationsEvent.value.text.isNotEmpty() &&
-                        descriptionEvent.value.text.isNotEmpty() &&
-                        durationEvent.value.text.isNotEmpty() &&
-                        startDateEvent.value.isNotEmpty() &&
-                        (!locationEvent.value.longitude.equals(0.0)) &&
-                        (!locationEvent.value.latitude.equals(0.0)) &&
-                        listGarbageTypeInEvent.value .isNotEmpty()
-                    ){
-                        log.d{"create event fields verified"}
+                Button(
+                    onClick = {
+                        //garbageTypeListEvent
+                        if (nameEvent.value.text.isNotEmpty() &&
+                            observationsEvent.value.text.isNotEmpty() &&
+                            descriptionEvent.value.text.isNotEmpty() &&
+                            durationEvent.value.text.isNotEmpty() &&
+                            startDateEvent.value.isNotEmpty() &&
+                            (!locationEvent.value.longitude.equals(0.0)) &&
+                            (!locationEvent.value.latitude.equals(0.0)) &&
+                            listGarbageTypeInEvent.value.isNotEmpty()
+                        ) {
+                            log.d { "create event fields verified" }
+                            var date: Date = SimpleDateFormat("dd/MM/yyyyHH:mm").parse(startDateEvent.value)
 
-                        eventViewModel.createEvent(EventSerializable(
-                            0,
-                            nameEvent.value.text,
-                            locationEvent.value.latitude.toString(),
-                            locationEvent.value.longitude.toString(),
-                            statusEvent.value.text,
-                            durationEvent.value.text,
-                            startDateEvent.value,
-                            descriptionEvent.value.text,
-                            accessibilitySelectedOptionText,
-                            restrictionsSelectedOptionText,
-                            quantitySelectedOptionText,
-                            observationsEvent.value.text
-                            ),
-                            listGarbageTypeInEvent.value,
-                         authViewModel.tokenState.value)
-                    }else{
-                        log.d{"create event fields failed"}
+                            startDateEvent.value = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(date.toZonedDateTime())
+                            eventViewModel.createEvent(
+                                EventSerializable(
+                                    0,
+                                    nameEvent.value.text,
+                                    locationEvent.value.latitude.toString(),
+                                    locationEvent.value.longitude.toString(),
+                                    statusEvent.value.text,
+                                    durationEvent.value.text,
+                                    startDateEvent.value,
+                                    descriptionEvent.value.text,
+                                    accessibilitySelectedOptionText,
+                                    restrictionsSelectedOptionText,
+                                    quantitySelectedOptionText,
+                                    observationsEvent.value.text
+                                ),
+                                listGarbageTypeInEvent.value,
+                                authViewModel.tokenState.value
+                            )
+                        } else {
+                            log.d { "create event fields failed" }
 
 
-                    }
-                },  ) {
+                        }
+                    },
+                ) {
                   Text(text= "Criar")
                 }
 
@@ -529,9 +543,11 @@ fun PlacePickerComponent(
             Text(locationEvent.value.latitude.toString())
             Text(locationEvent.value.longitude.toString())
         }
-        Button(onClick = {
-            dialogState.show()
-        },  ) {
+        Button(
+            onClick = {
+                dialogState.show()
+            },
+        ) {
             Icon(Icons.Default.LocationOn, contentDescription = "location   picker")
         }
     }
@@ -547,6 +563,7 @@ fun PlacePickerComponent(
 }
 
 
+@OptIn(InternalAPI::class)
 @Composable
 fun DatePickerComponent(
     dateEvent: MutableState<String>,
@@ -586,7 +603,7 @@ fun DatePickerComponent(
         mContext,
         {_, mHour : Int, mMinute: Int ->
             mTime.value = "$mHour:$mMinute"
-        }, mHour, mMinute, false
+        }, mHour, mMinute, true
     )
     Row(modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -597,15 +614,20 @@ fun DatePickerComponent(
         // click displays/shows the DatePickerDialog
         Text(text= "Date")
         Text(dateEvent.value)
-        Button(onClick = {
-            mTimePickerDialog.show()
-            mDatePickerDialog.show()
+        Button(
+            onClick = {
+                mTimePickerDialog.show()
+                mDatePickerDialog.show()
 
-        },  ) {
+            },
+        ) {
             Icon(Icons.Default.List, contentDescription = "DATEPICKER")
         }
     }
-    dateEvent.value ="${mDate.value} ${mTime.value}"
+    dateEvent.value ="${mDate.value}${mTime.value}"
+
+
+
 
 
 }
