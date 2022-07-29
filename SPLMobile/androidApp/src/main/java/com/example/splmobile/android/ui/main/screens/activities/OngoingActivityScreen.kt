@@ -51,11 +51,29 @@ fun OngoingActivity (
     mapViewModel: MapViewModel
 ) {
 
-    ongoingActivityDataUI()
+    Column(){
+        // Show Map Box
+        Box(
+            modifier = Modifier
+                .weight(1f)
+        ){
+
+        }
+
+        // Information panel
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                //.background(shape = )
+        ){
+            ongoingActivityDataUI()
+        }
+    }
+
 
     // Current Location
     val location by mapViewModel.getLocationLiveData().observeAsState()
-    var lastLocation : LatLng? = null
+    var lastLocation: LatLng? by remember { mutableStateOf(null) }
 
     // Default Location, Center of Portugal
     val defaultLocation = LatLng(39.5, -8.0)
@@ -74,10 +92,13 @@ fun OngoingActivity (
             val lng = location!!.longitude.toDouble()
             var parseLocationLiveData = LatLng(lat, lng)
 
+            println(" LAST LOCATION BEFOR IF: $lastLocation")
             if(lastLocation != null) {
                 distanceTravelled += calculateDistance(parseLocationLiveData, lastLocation)
             }
             lastLocation = parseLocationLiveData
+            println(" LAST LOCATION AFTER IF: $lastLocation")
+
 
             pointerLocation = parseLocationLiveData
             println("Pointer Location : $parseLocationLiveData" )
@@ -123,14 +144,14 @@ fun OngoingActivity (
 
 }
 
-fun calculateDistance(currentLocation: LatLng, lastLocation: LatLng) : Double {
+fun calculateDistance(currentLocation: LatLng, lastLocation: LatLng?) : Double {
     val EARTH_RADIUS = 6371 // in km
 
     // Convert to Radians
     val curLat = currentLocation.latitude / 180 * PI
     val curLng = currentLocation.longitude / 180 * PI
-    val lastLat = lastLocation.latitude / 180 * PI
-    val lastLng = lastLocation.longitude / 180 * PI
+    val lastLat = lastLocation!!.latitude / 180 * PI
+    val lastLng = lastLocation!!.longitude / 180 * PI
 
     // Haversine formula
     val dlng = lastLng - curLng
