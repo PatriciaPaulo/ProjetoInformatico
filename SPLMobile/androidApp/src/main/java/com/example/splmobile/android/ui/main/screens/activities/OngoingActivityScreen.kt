@@ -4,6 +4,7 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,23 +63,29 @@ fun OngoingActivity (
     val cameraLatLng : CameraPosition
 
     var distanceTravelled by remember { mutableStateOf(0.0) }
-
-    if (location == null) {
-        cameraLatLng = CameraPosition.fromLatLngZoom(defaultLocation, 16f)
-    } else {
-        val lat = location!!.latitude.toDouble()
-        val lng = location!!.longitude.toDouble()
-        var parseLocationLiveData = LatLng(lat, lng)
-
-        if(lastLocation != null) {
-            distanceTravelled += calculateDistance(parseLocationLiveData, lastLocation)
+    when (location) {
+        null ->{
+            print("activity on goin - when in null")
+            cameraLatLng = CameraPosition.fromLatLngZoom(defaultLocation, 16f)
         }
-        lastLocation = parseLocationLiveData
+        else -> { // Note the block
+            print("activity on goin - when in else")
+            val lat = location!!.latitude.toDouble()
+            val lng = location!!.longitude.toDouble()
+            var parseLocationLiveData = LatLng(lat, lng)
 
-        pointerLocation = parseLocationLiveData
-        println("Pointer Location : $parseLocationLiveData" )
-        cameraLatLng = CameraPosition.fromLatLngZoom(parseLocationLiveData, 16f)
+            if(lastLocation != null) {
+                distanceTravelled += calculateDistance(parseLocationLiveData, lastLocation)
+            }
+            lastLocation = parseLocationLiveData
+
+            pointerLocation = parseLocationLiveData
+            println("Pointer Location : $parseLocationLiveData" )
+            cameraLatLng = CameraPosition.fromLatLngZoom(parseLocationLiveData, 16f)
+        }
     }
+
+
 
     var cameraPosition = rememberCameraPositionState {
         position = cameraLatLng
@@ -131,6 +138,8 @@ fun calculateDistance(currentLocation: LatLng, lastLocation: LatLng) : Double {
 
     val a = sin(dlat/2).pow(2) + cos(curLat) * cos(lastLat) * sin(dlng / 2).pow(2)
     val c = 2 * asin(sqrt(a))
+    Log.d("ongoing activityu", (c * EARTH_RADIUS).toString())
+
 
     return (c * EARTH_RADIUS)
 }
