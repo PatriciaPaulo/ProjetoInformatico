@@ -4,6 +4,7 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,7 +14,9 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -36,6 +39,10 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.*
+import kotlin.math.*
+
+// TODO (if time) -> allow to go to previous screens, save variables states, keep time going, show green bar saying in progress and block creating another activity
+// TODO (else) -> disallow going back to other screens
 
 @Composable
 fun OngoingActivity (
@@ -44,27 +51,37 @@ fun OngoingActivity (
 ) {
 
     ongoingActivityDataUI()
-    /*
+
     // Current Location
     val location by mapViewModel.getLocationLiveData().observeAsState()
+    var lastLocation : LatLng? = null
 
     // Default Location, Center of Portugal
-    var defaultLocation = LatLng(39.5, -8.0)
-    var pointerLocation = defaultLocation
+    val defaultLocation = LatLng(39.5, -8.0)
+    var pointerLocation by remember { mutableStateOf(defaultLocation) }
+    val cameraLatLng : CameraPosition
+
+    var distanceTravelled by remember { mutableStateOf(0.0) }
+
+    if (location == null) {
+        cameraLatLng = CameraPosition.fromLatLngZoom(defaultLocation, 16f)
+    } else {
+        val lat = location!!.latitude.toDouble()
+        val lng = location!!.longitude.toDouble()
+        var parseLocationLiveData = LatLng(lat, lng)
+
+        if(lastLocation != null) {
+            distanceTravelled += calculateDistance(parseLocationLiveData, lastLocation)
+        }
+        lastLocation = parseLocationLiveData
+
+        pointerLocation = parseLocationLiveData
+        println("Pointer Location : $parseLocationLiveData" )
+        cameraLatLng = CameraPosition.fromLatLngZoom(parseLocationLiveData, 16f)
+    }
 
     var cameraPosition = rememberCameraPositionState {
-        if(location == null) {
-            position = CameraPosition.fromLatLngZoom(defaultLocation, 16f)
-        } else {
-            val lat = location!!.latitude.toDouble()
-            val lng = location!!.longitude.toDouble()
-            println("$lat $lng")
-            var parseLocationLiveData = LatLng(lat, lng)
-
-            pointerLocation = parseLocationLiveData
-            println("Pointer Location : $parseLocationLiveData" )
-            position = CameraPosition.fromLatLngZoom(parseLocationLiveData, 16f)
-        }
+        position = cameraLatLng
     }
 
     var stepCounter by remember { mutableStateOf(0f) }
@@ -75,9 +92,9 @@ fun OngoingActivity (
             Text("Current Location:")
             GPS(location)
         }
-        Row {
-            Text("Steps Counter: $stepCounter")
-        }
+
+        Text("Steps Counter: $stepCounter")
+        Text("KM: $distanceTravelled")
 
         // TODO Button add garbage to activity
 
@@ -97,7 +114,25 @@ fun OngoingActivity (
         }
     }
 
-     */
+}
+
+fun calculateDistance(currentLocation: LatLng, lastLocation: LatLng) : Double {
+    val EARTH_RADIUS = 6371 // in km
+
+    // Convert to Radians
+    val curLat = currentLocation.latitude / 180 * PI
+    val curLng = currentLocation.longitude / 180 * PI
+    val lastLat = lastLocation.latitude / 180 * PI
+    val lastLng = lastLocation.longitude / 180 * PI
+
+    // Haversine formula
+    val dlng = lastLng - curLng
+    val dlat = lastLat - curLat
+
+    val a = sin(dlat/2).pow(2) + cos(curLat) * cos(lastLat) * sin(dlng / 2).pow(2)
+    val c = 2 * asin(sqrt(a))
+
+    return (c * EARTH_RADIUS)
 }
 
 @Composable
@@ -210,12 +245,52 @@ private fun ongoingActivityDataUI() {
         }
 
 
-        // TODO Cronómetro
+        // Chronometer
         runStopWatch()
-        // TODO Resumo Lixo
-        // TODO Steps (maybe tirar)
-        // TODO Distância so far
-        // TODO Add/Edit pictures
+
+
+        Row() {
+            // TODO Resumo Lixo
+            Box(
+                modifier = Modifier
+                    .weight(1F)
+            ) {
+                Button(
+                    modifier = Modifier
+                        .size(dimensionResource(R.dimen.btn_large))
+                        .align(Alignment.Center),
+                    onClick = { }
+                ) { }
+            }
+            // TODO Steps (maybe tirar)
+
+            // TODO Distância so far
+            Box(
+                modifier = Modifier
+                    .weight(1F)
+            ) {
+                Button(
+                    modifier = Modifier
+                        .size(dimensionResource(R.dimen.btn_large))
+                        .align(Alignment.Center),
+                    onClick = { }
+                ) { }
+            }
+
+            // TODO Add/Edit pictures
+            Box(
+                modifier = Modifier
+                    .weight(1F)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(0.75f)
+                        .align(Alignment.Center)
+                        .background(color = Color.Blue),
+                ) { }
+            }
+        }
+
         // TODO Adicionar Activity Type
         // TODO Concluir BTN
         // TODO Cancelar BTN

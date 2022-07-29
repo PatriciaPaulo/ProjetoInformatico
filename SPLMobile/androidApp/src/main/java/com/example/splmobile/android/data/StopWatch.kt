@@ -30,8 +30,6 @@ class StopWatch {
             lastTimestamp = System.currentTimeMillis()
 
             formattedTime = formatTime(timeMillis)
-            println("TIMER$formattedTime")
-
         }
     }
 
