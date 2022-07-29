@@ -46,6 +46,7 @@ fun SetupNavGraph(
     mapViewModel: MapViewModel,
     userViewModel: UserViewModel,
     friendViewModel: FriendViewModel,
+    messageViewModel: MessageViewModel,
     sharedViewModel: SharedViewModel
 ){
     NavHost(
@@ -106,7 +107,8 @@ fun SetupNavGraph(
                 log = log)
         }
         composable(BottomNavItem.Chat.route) {
-            ChatScreen(navController = navController)
+            ChatScreen(navController = navController,
+            messageViewModel = messageViewModel)
         }
         composable(BottomNavItem.Profile.route) {
             ProfileScreen(navController =navController,

@@ -11,21 +11,20 @@ import kotlinx.coroutines.launch
 
 
 class MessageViewModel (
-    private val messageWebsocket: MessageWebsocket,
     log: Logger
 ) : ViewModel() {
     private val log = log.withTag("MessageViewModel")
+    private val websocket : MessageWebsocket = MessageWebsocket(log)
 
-
-    fun openConnection(token: String) {
+    fun openConnection() {
         log.v("getting all users in event ")
-        messageWebsocket.connect()
+        websocket.connect()
 
 
     }
     fun closeConnection() {
         log.v("getting all users in event ")
-        messageWebsocket.close()
+        websocket.close()
 
     }
 

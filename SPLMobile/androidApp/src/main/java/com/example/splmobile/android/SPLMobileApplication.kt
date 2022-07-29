@@ -28,6 +28,7 @@ class SPLMobileApplication : Application() {
                 viewModel { UserInfoViewModel(get(), get { parametersOf("UserInfoViewModel") }) }
                 viewModel { EventViewModel(get(), get { parametersOf("EventViewModel") }) }
                 viewModel { FriendViewModel(get(), get { parametersOf("FriendViewModel") }) }
+                viewModel { MessageViewModel(get { parametersOf("MessageViewModel") }) }
                 viewModel { UserViewModel(get(), get(),get { parametersOf("UserInEventViewModel") }) }
                 viewModel { AuthViewModel(get(), get { parametersOf("AuthViewModel") }) }
                 viewModel { ActivityViewModel(get(), get { parametersOf("ActivityViewModel") }) }

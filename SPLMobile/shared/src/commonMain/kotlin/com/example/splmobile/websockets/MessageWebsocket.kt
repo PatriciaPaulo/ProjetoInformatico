@@ -1,7 +1,10 @@
 package com.example.splmobile.websockets
 
 import co.touchlab.kermit.Logger
+import com.example.splmobile.dtos.RequestMessageResponse
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
+import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
 import io.ktor.client.*
 import io.ktor.client.engine.*
@@ -14,12 +17,28 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlin.collections.get
 
-class MessageWebsocket(private val log: Logger, engine: CIO){
-    private val client = HttpClient(engine) {
+
+class MessageWebsocket(private val log: Logger){
+    private val client = HttpClient(CIO) {
+        expectSuccess = true
+        engine {
+            // this: CIOEngineConfig
+            maxConnectionsCount = 1000
+            endpoint {
+                // this: EndpointConfig
+                maxConnectionsPerRoute = 100
+                pipelineMaxSize = 20
+                keepAliveTime = 5000
+                connectTimeout = 5000
+                connectAttempts = 5
+            }
+        }
         install(WebSockets)
         install(Logging) {
             logger = object : io.ktor.client.plugins.logging.Logger {
@@ -34,11 +53,16 @@ class MessageWebsocket(private val log: Logger, engine: CIO){
     }
 
 
-     fun connect() {
+    suspend fun connect() {
         log.d { "connect websocket" }
         try {
-            runBlocking {
-                client.webSocket("ws://10.0.2.2:5001") {}
+
+            client.webSocket("ws://10.0.2.2:5001") {
+                while(true) {
+                    val othersMessage = incoming.receive() as? Frame.Text ?: continue
+                    println(othersMessage.readText())
+
+                }
             }
 
         } catch (ex: Exception) {
@@ -47,10 +71,10 @@ class MessageWebsocket(private val log: Logger, engine: CIO){
 
     }
 
-     fun close() {
-        log.d { "Fetching garbageSpots from network" }
+    fun close() {
+        log.d { "CLOSE websocket" }
         try {
-           client.close()
+            client.close()
 
         } catch (ex: Exception) {
             log.d { "$ex" }
@@ -59,5 +83,4 @@ class MessageWebsocket(private val log: Logger, engine: CIO){
     }
 
 }
-
 

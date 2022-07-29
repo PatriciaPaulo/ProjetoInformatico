@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.main.BottomNavigationBar
+import com.example.splmobile.models.MessageViewModel
 import com.example.splmobile.websockets.MessageWebsocket
 import com.google.accompanist.pager.ExperimentalPagerApi
 
@@ -33,7 +34,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 @ExperimentalPagerApi
 @ExperimentalAnimationApi
 @Composable
-fun ChatScreen(navController :NavController) {
+fun ChatScreen(navController :NavController,messageViewModel:MessageViewModel) {
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) },
         content = {
@@ -55,7 +56,7 @@ fun ChatScreen(navController :NavController) {
                 Button(
                     onClick = {
                        // MessageWebsocket().main()
-
+                        messageViewModel.openConnection()
 
                     },
 
