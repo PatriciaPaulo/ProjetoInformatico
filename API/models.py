@@ -287,7 +287,7 @@ class Message(Base):
             'status': self.status,
             'message': self.message,
             'type': self.type,
-            'sentDate': self.sentDate
+            'sentDate': self.sentDate.isoformat()
         }
 # endregion
 

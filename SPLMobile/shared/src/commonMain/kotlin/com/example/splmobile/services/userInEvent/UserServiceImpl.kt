@@ -5,7 +5,7 @@ import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestDataResponse
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.events.*
-import com.example.splmobile.dtos.users.UserSerializable
+import com.example.splmobile.dtos.users.UserDTO
 import com.example.splmobile.dtos.users.UserStatsResponse
 import com.example.splmobile.dtos.users.UsersStatsResponse
 import io.ktor.client.*
@@ -163,7 +163,7 @@ class UserServiceImpl (
                 url("api/usersStats/"+userID)
             }.body() as UserStatsResponse
         }catch (ex :Exception){
-            return UserStatsResponse(UserSerializable(0,"","","","",""),"$ex")
+            return UserStatsResponse(UserDTO(0,"","","","",""),"$ex")
         }
     }
 

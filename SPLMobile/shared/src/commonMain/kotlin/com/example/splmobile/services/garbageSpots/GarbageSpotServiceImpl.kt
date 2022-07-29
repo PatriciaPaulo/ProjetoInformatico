@@ -3,10 +3,8 @@ package com.example.splmobile.services.garbageSpots
 import GarbageSpotResponse
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.events.EventResponse
-import com.example.splmobile.dtos.events.EventSerializable
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
 
 import io.ktor.client.HttpClient
@@ -77,7 +75,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
     }
 
     override suspend fun postGarbageSpot(
-        garbageSpot: GarbageSpotSerializable,
+        garbageSpot: GarbageSpotDTO,
         token: String
     ): RequestMessageResponse {
         log.d { "post new Garbage Spot" }
@@ -89,7 +87,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                     }
                 }
                 contentType(ContentType.Application.Json)
-                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.name, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,garbageSpot.status,garbageSpot.approved,
+                setBody(GarbageSpotDTO(garbageSpot.id, garbageSpot.name, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,garbageSpot.status,garbageSpot.approved,
                     emptyList()))
                 url("api/garbageSpots")
             }.body() as RequestMessageResponse
@@ -101,7 +99,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
 
     }
     override suspend fun patchGarbageSpotStatus(
-        garbageSpot: GarbageSpotSerializable,
+        garbageSpot: GarbageSpotDTO,
         status: String,
         token: String,
     ): RequestMessageResponse {
@@ -112,7 +110,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
-                setBody(GarbageSpotSerializable(garbageSpot.id, garbageSpot.name, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,status,garbageSpot.approved,
+                setBody(GarbageSpotDTO(garbageSpot.id, garbageSpot.name, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,status,garbageSpot.approved,
                     emptyList()))
                 url("api/garbageSpots/"+garbageSpot.id+"/updateGarbageSpotStatus")
             }.body() as RequestMessageResponse
@@ -144,7 +142,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                 url("api/garbageSpots/"+gsId)
             }.body() as GarbageSpotResponse
         }catch (ex :Exception){
-            return GarbageSpotResponse(GarbageSpotSerializable(0,"",0,"","","",false, emptyList()),"$ex")
+            return GarbageSpotResponse(GarbageSpotDTO(0,"",0,"","","",false, emptyList()),"$ex")
         }
 
     }

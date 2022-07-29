@@ -108,7 +108,7 @@ fun SetupNavGraph(
         }
         composable(BottomNavItem.Chat.route) {
             ChatScreen(navController = navController,
-            messageViewModel = messageViewModel)
+            messageViewModel = messageViewModel,authViewModel = authViewModel)
         }
         composable(BottomNavItem.Profile.route) {
             ProfileScreen(navController =navController,

@@ -16,14 +16,17 @@ class MessageViewModel (
     private val log = log.withTag("MessageViewModel")
     private val websocket : MessageWebsocket = MessageWebsocket(log)
 
-    fun openConnection() {
-        log.v("getting all users in event ")
-        websocket.connect()
+    fun openConnection(token:String) {
+        log.v("connecting websocket ")
+        websocket.connect(token)
 
 
     }
+
+
+
     fun closeConnection() {
-        log.v("getting all users in event ")
+        log.v("closing websocket ")
         websocket.close()
 
     }

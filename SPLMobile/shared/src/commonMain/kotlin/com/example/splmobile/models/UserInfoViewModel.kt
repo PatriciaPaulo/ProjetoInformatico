@@ -3,7 +3,7 @@ package com.example.splmobile.models
 import UserInfoService
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.activities.ActivitySerializable
-import com.example.splmobile.dtos.events.UserInEventSerializable
+import com.example.splmobile.dtos.events.UserInEventDTO
 import com.example.splmobile.dtos.myInfo.EmailCheckResponse
 import com.example.splmobile.dtos.myInfo.EmailRequest
 import com.example.splmobile.dtos.myInfo.UserSerializable
@@ -62,7 +62,7 @@ class UserInfoViewModel (
     private val _myEventsUIState = MutableStateFlow<MyEventsUIState>(MyEventsUIState.Empty)
     val myEventsUIState = _myEventsUIState.asStateFlow()
     sealed class MyEventsUIState {
-        data class Success(val events: List<UserInEventSerializable>) : MyEventsUIState()
+        data class Success(val events: List<UserInEventDTO>) : MyEventsUIState()
         data class Error(val error: String) : MyEventsUIState()
         object Loading : MyEventsUIState()
         object Empty : MyEventsUIState()

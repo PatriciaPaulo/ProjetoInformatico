@@ -1,9 +1,8 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.events.EventSerializable
+import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.events.EventRequest
-import com.example.splmobile.dtos.events.UserInEventSerializable
 import com.example.splmobile.services.events.EventService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +18,7 @@ class EventViewModel (
     private val _eventsUIState = MutableStateFlow<EventsUIState>(EventsUIState.Empty)
     val eventsUIState = _eventsUIState.asStateFlow()
     sealed class EventsUIState {
-        data class Success(val events: List<EventSerializable>) : EventsUIState()
+        data class Success(val events: List<EventDTO>) : EventsUIState()
         data class Error(val error: String) : EventsUIState()
         object Loading : EventsUIState()
         object Empty : EventsUIState()
@@ -29,7 +28,7 @@ class EventViewModel (
     private val _eventByIdUIState = MutableStateFlow<EventByIdUIState>(EventByIdUIState.Empty)
     val eventByIdUIState = _eventByIdUIState.asStateFlow()
     sealed class EventByIdUIState {
-        data class Success(val event: EventSerializable) : EventByIdUIState()
+        data class Success(val event: EventDTO) : EventByIdUIState()
         data class Error(val error: String) : EventByIdUIState()
         object Loading : EventByIdUIState()
         object Empty : EventByIdUIState()
@@ -99,7 +98,7 @@ class EventViewModel (
             }
         }
     }
-    fun createEvent(event: EventSerializable, garbageType : List<Long>, token: String) {
+    fun createEvent(event: EventDTO, garbageType : List<Long>, token: String) {
         log.v("creating event $event")
         _eventCreateUIState.value = EventCreateUIState.Loading
         viewModelScope.launch {
@@ -132,7 +131,7 @@ class EventViewModel (
         }
     }
 
-    fun updateEvent(eventId: Long, event: EventSerializable, token: String) {
+    fun updateEvent(eventId: Long, event: EventDTO, token: String) {
         log.v("update event $eventId status")
         _eventUpdateUIState.value = EventUpdateUIState.Loading
         viewModelScope.launch {

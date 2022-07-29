@@ -1,8 +1,8 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
-import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
+import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
 
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
 import kotlinx.coroutines.flow.*
@@ -19,8 +19,8 @@ class GarbageSpotViewModel (
     private val _garbageSpotsUIState = MutableStateFlow<GarbageSpotsUIState>(GarbageSpotsUIState.Empty)
     val garbageSpotsUIState = _garbageSpotsUIState.asStateFlow()
     sealed class GarbageSpotsUIState {
-        data class Success(val garbageSpots: List<GarbageSpotSerializable>) : GarbageSpotsUIState()
-        data class GarbageSpotByIdSuccess(val garbageSpot: GarbageSpotSerializable) : GarbageSpotsUIState()
+        data class Success(val garbageSpots: List<GarbageSpotDTO>) : GarbageSpotsUIState()
+        data class GarbageSpotByIdSuccess(val garbageSpot: GarbageSpotDTO) : GarbageSpotsUIState()
         data class Error(val error: String) : GarbageSpotsUIState()
         object Loading : GarbageSpotsUIState()
         object Empty : GarbageSpotsUIState()
@@ -55,7 +55,7 @@ class GarbageSpotViewModel (
     private val _garbageTypeUIState = MutableStateFlow<GarbageTypesUIState>(GarbageTypesUIState.Empty)
     val garbageTypesUIState = _garbageTypeUIState.asStateFlow()
     sealed class GarbageTypesUIState {
-        data class Success(val garbageTypes: List<GarbageTypeSerializable>) : GarbageTypesUIState()
+        data class Success(val garbageTypes: List<GarbageTypeDTO>) : GarbageTypesUIState()
         data class Error(val error: String) : GarbageTypesUIState()
         object Loading : GarbageTypesUIState()
         object Empty : GarbageTypesUIState()
@@ -97,7 +97,7 @@ class GarbageSpotViewModel (
             }
         }
     }
-     fun createGarbageSpot(garbageSpot: GarbageSpotSerializable, token: String) {
+     fun createGarbageSpot(garbageSpot: GarbageSpotDTO, token: String) {
          log.v("creating garbage spot $garbageSpot")
          _garbageSpotCreateUIState.value = GarbageSpotCreateUIState.Loading
          viewModelScope.launch {
@@ -114,7 +114,7 @@ class GarbageSpotViewModel (
 
     }
 
-    fun updateGarbageSpotEstado(garbageSpot: GarbageSpotSerializable, estado: String, token: String){
+    fun updateGarbageSpotEstado(garbageSpot: GarbageSpotDTO, estado: String, token: String){
         log.v("updating status garbage spot $garbageSpot")
         _garbageSpotUpdateUIState.value = GarbageSpotUpdateUIState.Loading
         viewModelScope.launch {

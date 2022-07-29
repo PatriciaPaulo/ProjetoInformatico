@@ -71,7 +71,7 @@ class EventServiceImpl (
                 url("api/events/"+eventId)
             }.body() as EventResponse
         }catch (ex :Exception){
-            return EventResponse(EventSerializable(0,"","","","","","","","","","",""),"$ex")
+            return EventResponse(EventDTO(0,"","","","","","","","","","",""),"$ex")
         }
     }
 
@@ -99,7 +99,7 @@ class EventServiceImpl (
 
     override suspend fun putEvent(
         eventId: Long,
-        event: EventSerializable,
+        event: EventDTO,
         token: String
     ): RequestMessageResponse {
         log.d { "put event" }

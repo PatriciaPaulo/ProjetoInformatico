@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GarbageTypesResponse(
-    val data: List<GarbageTypeSerializable>,
+    val data: List<GarbageTypeDTO>,
     val message: String,
 )

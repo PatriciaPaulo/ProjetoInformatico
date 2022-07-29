@@ -9,6 +9,8 @@ from utils import token_required, admin_required, guest, name_validation, userna
     password_validation, password_confirmation
 import jwt
 from datetime import datetime
+from websockets_server import users_connected
+from websockets_server import send_notification
 
 messages_routes_blueprint = Blueprint('messages_routes', __name__, )
 api = Api(messages_routes_blueprint)
@@ -35,6 +37,8 @@ def send_message(current_user):
                       sentDate=datetime.utcnow())
     db.session.add(message)
 
+    db.session.flush()
+
     if message.type == "Individual":
         messageInd = IndividualMessage(receiverID=data["userID"], messageID=message.id)
         db.session.add(messageInd)
@@ -45,7 +49,9 @@ def send_message(current_user):
 
     db.session.commit()
 
+    send_notification(user.id,message)
     return make_response(jsonify({'message': '200 OK - Message sent'}), 200)
+
 
 
 # Get Garbage Spots created by Logged User
