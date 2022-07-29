@@ -158,7 +158,7 @@ class Event(Base):
     longitude = Column(Integer, nullable=False)
     status = Column(String(50))
     duration = Column(String(50))
-    startDate = Column( DateTime)
+    startDate = Column(DateTime)
     description = Column(String(50))
     accessibility = Column(String(50))
     restrictions = Column(String(50))
@@ -233,6 +233,7 @@ class UserInEvent(Base):
     eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
     status = Column(String(128), nullable=False)
     creator = Column(Boolean, nullable=False)
+    #todo date = Column(DateTime, nullable=False)
 
 
     def serialize(self):
@@ -246,21 +247,7 @@ class UserInEvent(Base):
 # endregion
 
 
-# region MessageInEvent
-class MessageInEvent(Base):
-    __tablename__ = "message_in_event"
-    id = Column(Integer, primary_key=True)
-    messageID = Column(Integer, ForeignKey('message.id'), nullable=False)
-    eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
 
-    def serialize(self):
-        return {
-            'id': self.id,
-            'messageID': self.messageID,
-            'eventID': self.eventID
-
-        }
-# endregion
 
 
 # region Friendship
@@ -270,7 +257,7 @@ class Friendship(Base):
     requestorID = Column(Integer, ForeignKey('user.id'), nullable=False)
     addresseeID = Column(Integer, ForeignKey('user.id'), nullable=False)
     status = Column(String(128), nullable=False)
-    date = Column(String(50), nullable=False)
+    completeDate = Column(DateTime)
 
     def serialize(self):
         return {
@@ -278,7 +265,7 @@ class Friendship(Base):
             'requestorID': self.requestorID,
             'addresseeID': self.addresseeID,
             'status': self.status,
-            'date': self.date
+            'completeDate': self.completeDate
         }
 # endregion
 
@@ -287,16 +274,20 @@ class Friendship(Base):
 class Message(Base):
     __tablename__ = "message"
     id = Column(Integer, primary_key=True)
-    userID = Column(Integer, ForeignKey('user.id'), nullable=False)
+    senderID = Column(Integer, ForeignKey('user.id'), nullable=False)
     message = Column(String(50), nullable=False)
+    status = Column(String(50), nullable=False)
     type = Column(String(50), nullable=False)
+    sentDate = Column(DateTime, nullable=False)
 
     def serialize(self):
         return {
             'id': self.id,
-            'userID': self.userID,
+            'senderID': self.senderID,
+            'status': self.status,
             'message': self.message,
-            'type': self.type
+            'type': self.type,
+            'sentDate': self.sentDate
         }
 # endregion
 
@@ -305,13 +296,31 @@ class Message(Base):
 class IndividualMessage(Base):
     __tablename__ = "individual_message"
     id = Column(Integer, primary_key=True)
-    userID = Column(Integer, ForeignKey('user.id'), nullable=False)
+    receiverID = Column(Integer, ForeignKey('user.id'), nullable=False)
     messageID = Column(Integer, ForeignKey('message.id'), nullable=False)
+    deliveryDate = Column(DateTime)
 
     def serialize(self):
         return {
             'id': self.id,
-            'userID': self.userID,
+            'receiverID': self.receiverID,
+            'status': self.status,
+            'messageID': self.messageID
+        }
+
+# region IndividualMessage
+class EventMessage(Base):
+    __tablename__ = "event_message"
+    id = Column(Integer, primary_key=True)
+    eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
+    messageID = Column(Integer, ForeignKey('message.id'), nullable=False)
+    deliveryDate = Column(DateTime)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'eventID': self.eventID,
+            'status': self.status,
             'messageID': self.messageID
         }
 # endregion

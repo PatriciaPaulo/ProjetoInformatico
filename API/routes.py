@@ -8,8 +8,6 @@ import jwt
 import datetime
 
 
-routes_blueprint = Blueprint('s', __name__, )
-api = Api(routes_blueprint)
 #todo
 #api = Flask(routes_blueprint)
 

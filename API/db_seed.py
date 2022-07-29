@@ -1,7 +1,7 @@
 # IMPORTS FOR DB ACCESS/MANIPULATION
 import datetime
 from models import User,GarbageSpot,Activity,Event,Message,Garbage,GarbageInActivity
-from models import Equipment, EquipmentInEvent,IndividualMessage,MessageInEvent
+from models import Equipment, EquipmentInEvent,IndividualMessage,EventMessage
 from models import UserInEvent,GarbageSpotInEvent
 from werkzeug.security import generate_password_hash
 from sqlalchemy import create_engine, desc
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         session.add(
             User(username=uname, password=generate_password_hash("123"), name=full_name, email=email, admin=True,
                  blocked=False))
-        session.commit()
+
     print("---ADMINS seed done!")
     # session.close()
     
@@ -92,7 +92,7 @@ if __name__ == '__main__':
         #garbageSpot.foto = str(garbageSpot.id) + creator.username + str(today.strftime("%d%m%Y")) + '.png'
         #todo create a foto ???
 
-        session.commit()
+
     print("---GarbageSpot seed done!")
 
     # SEED Garbage
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         name = ["Mascara", "Garrafa", "Saco","Plastico","Cartao","Vidro","Outro"]
         garbage = Garbage(name=name[i])
         session.add(garbage)
-        session.commit()
+
 
 
 
@@ -134,7 +134,7 @@ if __name__ == '__main__':
         observations = ""
         for b in range(2):
             description = str(description)+ " " + str(r.get_random_word())
-            observations = str(observations)+ " " + str(r.get_random_word())
+            observations = f"{observations} {r.get_random_word()}"
 
 
         event = Event(name=name, description=description, observations=observations, latitude=latitude,
@@ -174,7 +174,7 @@ if __name__ == '__main__':
                              startDate=startDate, endDate=random.choice(endDate), activityType=random.choice(activityType))
         session.add(activity)
 
-        session.commit()
+
     print("---Activity seed done!")
 
 
@@ -191,7 +191,7 @@ if __name__ == '__main__':
         garbageInActivity = GarbageInActivity(activityID=activityID.id, garbageID=garbageID.id, amount=amount, unitType=random.choice(unitType))
         session.add(garbageInActivity)
 
-        session.commit()
+
     print("---GarbageInActivity seed done!")
 
     # SEED EQUIPAMENTO
@@ -200,7 +200,7 @@ if __name__ == '__main__':
         name = ["Saco de Garbage", "Luvas", "Pá","Tesoura","Faca","Contentor"]
         eq = Equipment(name=name[i])
         session.add(eq)
-        session.commit()
+
 
     print("---Equipment seed done!")
 
@@ -219,7 +219,7 @@ if __name__ == '__main__':
 
         eq = EquipmentInEvent(equipmentID=equipment.id, eventID=event.id, observations=observations, isProvided=isProvided)
         session.add(eq)
-        session.commit()
+
 
     print("---EquipmentInEvent seed done!")
 
@@ -232,7 +232,7 @@ if __name__ == '__main__':
 
         garbageSpotInEvent = GarbageSpotInEvent(garbageSpotID=garbageSpot.id, eventID=event.id)
         session.add(garbageSpotInEvent)
-        session.commit()
+
     print("---GarbageSpotInEvent seed done!")
 
     # SEED UTILIZADORNOEVENTO
@@ -245,7 +245,7 @@ if __name__ == '__main__':
 
         userInEvent = UserInEvent(userID=1, eventID=event.id, status="Organizer",creator=True)
         session.add(userInEvent)
-        session.commit()
+
 
     for i in range(6):
 
@@ -255,7 +255,50 @@ if __name__ == '__main__':
 
         userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status2),creator=False)
         session.add(userInEvent)
-        session.commit()
+
 
     print("---UserInEvent seed done!")
+
+    # SEED MESSAGES
+    session.query(IndividualMessage).delete()
+    session.query(EventMessage).delete()
+    session.query(Message).delete()
+
+
+    for i in range(3):
+
+        message = Message(senderID=1, message="random message 1", status="Sent", type="Individual",
+                          sentDate=datetime.datetime.utcnow())
+        session.add(message)
+        session.flush()
+        messageInd = IndividualMessage(receiverID=2, messageID=message.id)
+
+        session.add(messageInd)
+
+
+    for i in range(3):
+        message = Message(senderID=2, message="random message 2", status="Sent", type="Individual",
+                          sentDate=datetime.datetime.utcnow())
+        session.add(message)
+        session.flush()
+        messageInd = IndividualMessage(receiverID=1, messageID=message.id)
+
+        session.add(messageInd)
+
+
+
+    for i in range(3):
+        message = Message(senderID=1, message="random message ev", status="Sent", type="Event",
+                          sentDate=datetime.datetime.utcnow())
+
+        session.add(message)
+        session.flush()
+        messageEve = EventMessage(eventID=2, messageID=message.id)
+
+        session.add(messageEve)
+
+    session.commit()
+    print("---Message seed done!")
+
+
     

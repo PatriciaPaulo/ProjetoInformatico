@@ -19,3 +19,4 @@ zipp==3.8.0
 names==0.3.0
 random-word==1.0.7
 pyyaml==6.0
+websockets==10.3

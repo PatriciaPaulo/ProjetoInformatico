@@ -22,7 +22,7 @@ def create_event(current_user):
             return make_response(jsonify({'message': '409 NOT OK - Event already exists! Try to sign up as organizer instead!'}),
                                  409)
 
-    start_date_time_obj = datetime.strptime(data['event']['startDate'], '%d/%m/%Y %H:%M')
+    start_date_time_obj = datetime.strptime(data['event']['startDate'], '%Y-%m-%dT%H:%M:%SZ')
 
 
 
