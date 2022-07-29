@@ -30,6 +30,8 @@
     <string name="recoverPassword">Recuperar palavra-passe</string>
     <string name="orLineBreak"> ou </string>
 
+    <!-- ACTIVITIES -->
+    <string name="activityTitle">Nome da Atividade</string>
 
     <!-- MapScreen -->
     <string name="lblCreateGarbageSpot">Cria um local de lixo!</string>
