@@ -18,12 +18,14 @@ class MessageViewModel (
 
 
     fun openConnection(token: String) {
-
         log.v("getting all users in event ")
-
         messageWebsocket.connect()
 
 
+    }
+    fun closeConnection() {
+        log.v("getting all users in event ")
+        messageWebsocket.close()
 
     }
 
