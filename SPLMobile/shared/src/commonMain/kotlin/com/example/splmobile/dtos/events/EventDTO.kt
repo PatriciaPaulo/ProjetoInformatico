@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class EventSerializable(
+data class EventDTO(
     val id: Long,
     val name: String,
     val latitude: String,

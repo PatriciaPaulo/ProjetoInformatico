@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EventsResponse(
-    val data: List<EventSerializable>,
+    val data: List<EventDTO>,
     val message: String,
 )

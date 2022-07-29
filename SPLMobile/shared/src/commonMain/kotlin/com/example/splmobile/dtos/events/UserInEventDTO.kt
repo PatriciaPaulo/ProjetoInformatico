@@ -4,11 +4,11 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class UserInEventSerializable(
+data class UserInEventDTO(
     val id: Long,
-    val event: EventSerializable,
+    val event: EventDTO,
     val userID: Long,
     val status: String,
     val creator: Boolean,
 
-)
+    )

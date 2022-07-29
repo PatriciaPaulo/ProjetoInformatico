@@ -19,7 +19,7 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
-import com.example.splmobile.dtos.events.EventSerializable
+import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.UserViewModel
@@ -110,7 +110,7 @@ fun EventInfoScreen(
 private fun MainComponent(
     navController: NavController,
     myEventsState: UserInfoViewModel.MyEventsUIState.Success,
-    event: EventSerializable,
+    event: EventDTO,
     userViewModel: UserViewModel,
     eventViewModel: EventViewModel,
     authViewModel: AuthViewModel,

@@ -23,7 +23,7 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.events.UserInEventSerializable
+import com.example.splmobile.dtos.events.UserInEventDTO
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.UserInfoViewModel
 import kotlinx.coroutines.launch
@@ -118,7 +118,7 @@ fun MyEventListScreen(
 }
 
 @Composable
-fun UserInEventsList(navController: NavHostController,user_event :UserInEventSerializable){
+fun UserInEventsList(navController: NavHostController,user_event :UserInEventDTO){
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier

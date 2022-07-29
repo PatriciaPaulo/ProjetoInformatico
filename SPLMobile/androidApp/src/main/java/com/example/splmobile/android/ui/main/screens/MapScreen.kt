@@ -36,7 +36,7 @@ import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.UserInfoViewModel
@@ -80,7 +80,7 @@ fun MapScreen(
     }
     //default variables
     var garbageSpotState = mutableStateOf(
-        GarbageSpotSerializable(0,"new",userInfoViewModel.myIdUIState.value,"0.0","0.0","Muito sujo",false,
+        GarbageSpotDTO(0,"new",userInfoViewModel.myIdUIState.value,"0.0","0.0","Muito sujo",false,
             emptyList())
     )
     var garbageSpotsFilterState = mutableStateOf(textResource(R.string.lblFilterGarbageSpotsAll).toString())
@@ -102,7 +102,7 @@ fun MapScreen(
             garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
             //reset create local lixo
             createGarbageSpotButtonState.value = false
-            garbageSpotState.value = GarbageSpotSerializable(0,"new",0,"0.0","0.0","Muito sujo",false,
+            garbageSpotState.value = GarbageSpotDTO(0,"new",0,"0.0","0.0","Muito sujo",false,
                 emptyList())
             nomeGarbageSpotState.value = TextFieldValue("")
             newGarbageSpotPos.value = LatLng(0.0,0.0)
@@ -183,7 +183,7 @@ fun MapScreen(
 
                             if(!garbageSpotState.value.id.equals(0L)){
                                 log.d {" Garbage Spot selected "}
-                                garbageSpotState.value = GarbageSpotSerializable(0,"new",userInfoViewModel.myIdUIState.value,"","",
+                                garbageSpotState.value = GarbageSpotDTO(0,"new",userInfoViewModel.myIdUIState.value,"","",
                                         "",false, emptyList())
                                 coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
                             }
@@ -316,7 +316,7 @@ fun customDrawerShape() = object : Shape {
 @Composable
 fun MapContent(
     garbageSpotsState: GarbageSpotViewModel.GarbageSpotsUIState,
-    garbageSpotState: MutableState<GarbageSpotSerializable>,
+    garbageSpotState: MutableState<GarbageSpotDTO>,
     newGarbageSpotPos: MutableState<LatLng>,
     garbageSpotsFilterState: MutableState<String>,
     userInfoViewModel: UserInfoViewModel,
@@ -324,7 +324,7 @@ fun MapContent(
     log: Logger
 ) {
     var filteredGarbageSpots by remember {
-        mutableStateOf(emptyList<GarbageSpotSerializable>())
+        mutableStateOf(emptyList<GarbageSpotDTO>())
     }
 
 
@@ -439,8 +439,8 @@ fun MapContent(
 
 @Composable
 private fun markerFilterList(
-    filteredGarbageSpots: List<GarbageSpotSerializable>,
-    garbageSpotState: MutableState<GarbageSpotSerializable>,
+    filteredGarbageSpots: List<GarbageSpotDTO>,
+    garbageSpotState: MutableState<GarbageSpotDTO>,
     log: Logger
 ) {
     log.d {"Marker filtering list"}
@@ -468,7 +468,7 @@ private fun markerFilterList(
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun SheetContent(
-    garbageSpot: MutableState<GarbageSpotSerializable>,
+    garbageSpot: MutableState<GarbageSpotDTO>,
     createGarbageSpotButtonState: MutableState<Boolean>,
     nomeGarbageSpotState: MutableState<TextFieldValue>,
     bottomScaffoldState: BottomSheetScaffoldState,
@@ -686,7 +686,7 @@ fun SheetContent(
 private fun DropDownMenuStatus(
     selectedStatus: MutableState<String>,
     selectedId: MutableState<Long>,
-    garbageSpot: MutableState<GarbageSpotSerializable>,
+    garbageSpot: MutableState<GarbageSpotDTO>,
     updateGarbageSpot: MutableState<Boolean>,
     bottomScaffoldState: BottomSheetScaffoldState
 ) {

@@ -34,8 +34,8 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.events.EventSerializable
-import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
+import com.example.splmobile.dtos.events.EventDTO
+import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.SharedViewModel
@@ -51,9 +51,7 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import io.ktor.server.util.*
 import io.ktor.util.*
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class, InternalAPI::class, InternalAPI::class)
@@ -80,7 +78,7 @@ fun CreateEventScreen(
 
     var garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
     var createEventState = eventViewModel.eventCreateUIState.collectAsState().value
-    var garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeSerializable>())}
+    var garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>())}
 
 
 
@@ -460,7 +458,7 @@ fun CreateEventScreen(
 
                             startDateEvent.value = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(date.toZonedDateTime())
                             eventViewModel.createEvent(
-                                EventSerializable(
+                                EventDTO(
                                     0,
                                     nameEvent.value.text,
                                     locationEvent.value.latitude.toString(),

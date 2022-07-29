@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class GarbageTypeSerializable(
+data class GarbageTypeDTO(
     val id: Long,
     val name: String
 )
