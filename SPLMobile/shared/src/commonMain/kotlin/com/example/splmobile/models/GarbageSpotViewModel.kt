@@ -84,7 +84,7 @@ class GarbageSpotViewModel (
     }
     fun getGarbageSpotById(gsId: String,token: String) {
         _garbageSpotsUIState.value = GarbageSpotsUIState.Loading
-        log.v("getting all events ")
+        log.v("getting garbage spots by id ")
         viewModelScope.launch {
             val response = garbageSpotService.getGarbageSpotById(gsId.toLong(),token)
 

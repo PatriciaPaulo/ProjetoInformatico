@@ -50,6 +50,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
 
 
     }
+    private val emptyGarbageSpot = GarbageSpotDTO(0,"",0,"","","",false, "",emptyList())
 
     init {
         ensureNeverFrozen()
@@ -88,7 +89,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                 }
                 contentType(ContentType.Application.Json)
                 setBody(GarbageSpotDTO(garbageSpot.id, garbageSpot.name, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,garbageSpot.status,garbageSpot.approved,
-                    emptyList()))
+                    "",emptyList()))
                 url("api/garbageSpots")
             }.body() as RequestMessageResponse
         }
@@ -110,7 +111,14 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
-                setBody(GarbageSpotDTO(garbageSpot.id, garbageSpot.name, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,status,garbageSpot.approved,
+                setBody(GarbageSpotDTO(garbageSpot.id,
+                    garbageSpot.name,
+                    garbageSpot.creator,
+                    garbageSpot.latitude,
+                    garbageSpot.longitude,
+                    garbageSpot.status,
+                    garbageSpot.approved,
+                    "",
                     emptyList()))
                 url("api/garbageSpots/"+garbageSpot.id+"/updateGarbageSpotStatus")
             }.body() as RequestMessageResponse
@@ -142,7 +150,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                 url("api/garbageSpots/"+gsId)
             }.body() as GarbageSpotResponse
         }catch (ex :Exception){
-            return GarbageSpotResponse(GarbageSpotDTO(0,"",0,"","","",false, emptyList()),"$ex")
+            return GarbageSpotResponse(emptyGarbageSpot,"$ex")
         }
 
     }
