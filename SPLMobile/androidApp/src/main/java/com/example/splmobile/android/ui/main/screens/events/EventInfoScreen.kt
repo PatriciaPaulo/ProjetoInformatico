@@ -3,7 +3,13 @@ package com.example.splmobile.android.ui.main.screens.events
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -13,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
@@ -20,10 +27,7 @@ import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.dtos.events.EventDTO
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.UserViewModel
-import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.models.*
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -32,6 +36,7 @@ import com.example.splmobile.models.UserInfoViewModel
 fun EventInfoScreen(
     navController: NavController,
     eventViewModel: EventViewModel,
+    garbageSpotViewModel: GarbageSpotViewModel,
     userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
     userInfoViewModel: UserInfoViewModel,
@@ -44,9 +49,11 @@ fun EventInfoScreen(
         //get all events to get info
         eventViewModel.getEventsByID(eventoId!!)
         userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
+        garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
 
     }
     var eventState = eventViewModel.eventByIdUIState.collectAsState().value
+    var garbageSpotsState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
     var myEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
     var participateState = userViewModel.eventParticipateUIState.collectAsState().value
     var eventStatusState = eventViewModel.eventUpdateUIState.collectAsState().value
@@ -80,6 +87,7 @@ fun EventInfoScreen(
                         MainComponent(
                             navController,
                             myEventsState,
+                            garbageSpotsState,
                             eventState.event,
                             userViewModel,
                             eventViewModel,
@@ -110,6 +118,7 @@ fun EventInfoScreen(
 private fun MainComponent(
     navController: NavController,
     myEventsState: UserInfoViewModel.MyEventsUIState.Success,
+    garbageSpotsState: GarbageSpotViewModel.GarbageSpotsUIState,
     event: EventDTO,
     userViewModel: UserViewModel,
     eventViewModel: EventViewModel,
@@ -200,6 +209,7 @@ private fun MainComponent(
                         }
                     }
                 }
+
                 //button for organizers only to update event status
                 Button(
                     onClick = {
@@ -279,6 +289,62 @@ private fun MainComponent(
                         }
                     }
                 }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+
+                ) {
+                    when(garbageSpotsState) {
+                        is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
+                            if(event.garbageSpots.size  == 0 ){
+                                Text(text = textResource(id = R.string.txtNoGarbageSpotsInEvent).toString())
+                            }else{
+                                Text(text = "Garbage Spots in event")
+                                LazyHorizontalGrid(
+                                    modifier = Modifier
+                                        .height(100.dp),
+                                    rows = GridCells.Fixed(1),
+
+                                    ) {
+
+                                    event.garbageSpots
+                                        .forEachIndexed { index, card ->
+                                            var gs =
+                                                garbageSpotsState.garbageSpots.find { it.id == card.id }
+                                            item(span = { GridItemSpan(1) }) {
+                                                Card(
+                                                    Modifier.clickable {
+
+                                                        log.d { "Gs clicked -> $card" }
+                                                        log.d { "Navigated to new screen" }
+                                                        navController.navigate(Screen.GarbageSpotInfo.route + "/${card.id}")
+                                                    },
+                                                ) {
+                                                    Column() {
+                                                        Text(text = gs!!.name)
+                                                        Text(text = gs!!.createdDate)
+                                                        Text(text = gs!!.status)
+                                                    }
+
+
+                                                }
+                                            }
+                                        }
+                                    }
+
+                            }
+
+                        }
+                        is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {Text(text = garbageSpotsState.error)}
+                        is GarbageSpotViewModel.GarbageSpotsUIState.Loading -> {
+                            CircularProgressIndicator()}
+                    }
+                }
+
                 //button for participator only to update user_event status
                 Button(
                     onClick = {

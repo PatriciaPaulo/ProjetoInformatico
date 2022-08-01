@@ -56,18 +56,7 @@ class EventViewModel (
         object Empty : EventUpdateUIState()
     }
 
-    /*state participate in event
-    private val _eventParticipateUIState = MutableStateFlow<EventParticipateUIState>(EventParticipateUIState.Empty)
-    val eventParticipateUIState = _eventParticipateUIState.asStateFlow()
-    sealed class EventParticipateUIState {
-        object SuccessParticipate: EventParticipateUIState()
-        object SuccessUpdate: EventParticipateUIState()
-        data class Error(val error: String) : EventParticipateUIState()
-        object Loading : EventParticipateUIState()
-        object Empty : EventParticipateUIState()
 
-
-    */
 
     fun getEvents() {
         _eventsUIState.value = EventsUIState.Loading
@@ -98,13 +87,12 @@ class EventViewModel (
             }
         }
     }
-    fun createEvent(event: EventDTO, garbageType : List<Long>, token: String) {
+    fun createEvent(event: EventDTO, garbageSpots :List<Long>,garbageType : List<Long>, token: String) {
         log.v("creating event $event")
         _eventCreateUIState.value = EventCreateUIState.Loading
         viewModelScope.launch {
-            val response_event = eventService.postEvent(EventRequest(event,garbageType),token)
-            //val response_garbage_in_event = eventService.postGarbageTypeInEvent(GarbageInEventRequest(garbageType,event.id),token)
-            if(response_event.message.substring(0,3)  == "200" ){
+            val response_event = eventService.postEvent(EventRequest(event,garbageSpots,garbageType),token)
+             if(response_event.message.substring(0,3)  == "200" ){
                 log.v("Creating event successful")
                 _eventCreateUIState.value = EventCreateUIState.Success
                 getEvents()

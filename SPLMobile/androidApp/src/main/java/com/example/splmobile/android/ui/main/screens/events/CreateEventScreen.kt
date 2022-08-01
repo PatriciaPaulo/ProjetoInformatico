@@ -56,6 +56,7 @@ import io.ktor.util.*
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.*
 
 @OptIn(ExperimentalMaterialApi::class, InternalAPI::class, InternalAPI::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -85,6 +86,7 @@ fun CreateEventScreen(
     val garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>())}
     val garbageSpotListEvent = remember { mutableStateOf(emptyList<GarbageSpotDTO>())}
     val listGarbageTypeInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
+    val listGarbageSpotsInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
 
 
 
@@ -127,11 +129,7 @@ fun CreateEventScreen(
                     garbageTypeListEvent.value = garbageTypesState.garbageTypes
                 }
             }
-            when(garbageSpotsState){
-                is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
-                    garbageSpotListEvent.value = garbageSpotsState.garbageSpots
-                }
-            }
+
 
             val accessibilityListEvent = listOf(textResource(R.string.EventAccessibilityElement1).toString(), textResource(R.string.EventAccessibilityElement2).toString(), textResource(R.string.EventAccessibilityElement3).toString())
             val quantityListEvent = listOf(textResource(R.string.EventQuantityElement1).toString(), textResource(R.string.EventQuantityElement2).toString(), textResource(R.string.EventQuantityElement3).toString())
@@ -208,14 +206,29 @@ fun CreateEventScreen(
                     garbageTypeSelection(garbageTypeListEvent, listGarbageTypeInEvent)
 
 
-
-
                     Spacer(modifier = Modifier.height(32.dp))
                     EventDescriptionInput(descriptionEvent)
                     Spacer(modifier = Modifier.height(32.dp))
                     EventObservationsInput(observationsEvent)
                     Spacer(modifier = Modifier.height(32.dp))
-                    //garbageSpotsSelection(garbageTypeListEvent, listGarbageTypeInEvent)
+
+                    when(garbageSpotsState){
+                        is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
+                            if( (!locationEvent.value.longitude.equals(0.0)) &&
+                                (!locationEvent.value.latitude.equals(0.0))){
+
+                                garbageSpotListEvent.value = garbageSpotsState.garbageSpots.filter {
+                                    calculateDistance(locationEvent.value,LatLng(it.latitude.toDouble(),it.longitude.toDouble()))<50.00
+                                }
+
+                            }
+                            else{
+                                Text(text="Picka a location first")
+                            }
+
+                        }
+                    }
+                    garbageSpotsSelection(garbageSpotListEvent, listGarbageSpotsInEvent)
 
                 }
                 //garbage spot available
@@ -276,10 +289,14 @@ fun CreateEventScreen(
                                     quantitySelectedOptionText.value,
                                     observationsEvent.value.text,
                                     ""
-                                ),
+                                    , emptyList(), emptyList()),
+                                listGarbageSpotsInEvent.value,
                                 listGarbageTypeInEvent.value,
                                 authViewModel.tokenState.value
                             )
+
+
+
                         } else {
                             log.d { "create event fields failed" }
 
@@ -299,6 +316,26 @@ fun CreateEventScreen(
 
 }
 
+fun calculateDistance(eventLocation: LatLng, garbageLocation: LatLng?) : Double {
+    val EARTH_RADIUS = 6371 // in km
+
+    // Convert to Radians
+    val curLat = eventLocation.latitude / 180 * PI
+    val curLng = eventLocation.longitude / 180 * PI
+    val lastLat = garbageLocation!!.latitude / 180 * PI
+    val lastLng = garbageLocation!!.longitude / 180 * PI
+
+    // Haversine formula
+    val dlng = lastLng - curLng
+    val dlat = lastLat - curLat
+
+    val a = sin(dlat/2).pow(2) + cos(curLat) * cos(lastLat) * sin(dlng / 2).pow(2)
+    val c = 2 * asin(sqrt(a))
+    Log.d("event create", (c * EARTH_RADIUS).toString())
+
+
+    return (c * EARTH_RADIUS)
+}
 @Composable
 private fun EventNameInput(nameEvent: MutableState<TextFieldValue>) {
     TextField(
@@ -587,6 +624,80 @@ private fun garbageTypeSelection(
                 Log.d("selection types", "garbage ${garbageTypeListEvent.value}")
 
                 if ((listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value[index].id))) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected",
+                        tint = Color.Green,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun garbageSpotsSelection(
+    garbageSpotListEvent: MutableState<List<GarbageSpotDTO>>,
+    listGarbageSpotsInEvent: MutableState<SnapshotStateList<Long>>
+) {
+    Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
+    //todo redo , select only updating after state change and not when clicked
+
+    LazyColumn(
+        modifier = Modifier
+            .height(200.dp)
+            .width(200.dp)
+            .selectableGroup(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        items(garbageSpotListEvent.value.size) { index ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected = listGarbageSpotsInEvent.value.contains(
+                            garbageSpotListEvent.value.get(index).id
+                        ),
+                        onClick = {
+                            Log.d("selection types", "garbage clicked")
+                            if (listGarbageSpotsInEvent.value.contains(
+                                    garbageSpotListEvent.value.get(index).id
+                                )
+                            ) {
+                                Log.d("selection types", "removing garbage type")
+                                listGarbageSpotsInEvent.value.remove(
+                                    garbageSpotListEvent.value.get(index).id
+                                )
+
+                            } else {
+                                Log.d("selection types", "adding garbage type")
+                                listGarbageSpotsInEvent.value.add(
+                                    garbageSpotListEvent.value.get(index).id
+                                )
+                                Log.d("selection types", "list ${listGarbageSpotsInEvent.value}")
+                            }
+                        }
+                    )
+                    .background(
+                        if ((listGarbageSpotsInEvent.value.contains(
+                                garbageSpotListEvent.value.get(index).id
+                            ))
+                        ) Color.Gray
+                        else Color.Transparent
+                    )
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = garbageSpotListEvent.value[index].name)
+                Log.d("selection types", "list ${listGarbageSpotsInEvent.value}")
+                Log.d("selection types", "garbage ${garbageSpotListEvent.value}")
+
+                if ((listGarbageSpotsInEvent.value.contains(garbageSpotListEvent.value[index].id))) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = "Selected",

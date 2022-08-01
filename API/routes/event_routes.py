@@ -42,15 +42,21 @@ def create_event(current_user):
 
     db.session.add(new_event)
 
-    for garbageID in data['garbageList']:
-        garbageExists = db.session.query(Garbage).filter_by(id=garbageID).first()
+    for garbageTypeID in data['garbageTypeList']:
+        garbageExists = db.session.query(Garbage).filter_by(id=garbageTypeID).first()
         if garbageExists:
-            new_garbageInEvent = GarbageInEvent(eventID=new_event.id, garbageID=garbageID)
+            new_garbageInEvent = GarbageInEvent(eventID=new_event.id, garbageID=garbageTypeID)
             db.session.add(new_garbageInEvent)
-            db.session.commit()
 
     organizador = UserInEvent(userID=current_user.id, eventID=new_event.id, status="Organizer", creator=True)
     db.session.add(organizador)
+
+    if len(data['garbageSpotList']) > 0:
+        for garbageSpotID in data['garbageSpotList']:
+            garbageSpotExists = db.session.query(GarbageSpot).filter_by(id=garbageSpotID).first()
+            if garbageSpotExists:
+                new_garbageSpotInEvent = GarbageSpotInEvent(eventID=new_event.id, garbageSpotID=garbageSpotID)
+                db.session.add(new_garbageSpotInEvent)
 
     db.session.commit()
 
@@ -82,8 +88,12 @@ def get_events():
         for garbageSpot in db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
             garbageSpotSer = GarbageSpotInEvent.serialize(garbageSpot)
             event_data['garbageSpots'].append(garbageSpotSer)
-        output.append(event_data)
         event_data['garbageType'] = []
+        for garbageType in db.session.query(GarbageInEvent).filter_by(eventID=event.id):
+            garbageTypeSer = GarbageInEvent.serialize(garbageType)
+            event_data['garbageType'].append(garbageTypeSer)
+
+        output.append(event_data)
 
     # if len(output) == 0:
     #    return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Event Found'}), 404)
@@ -99,7 +109,21 @@ def get_event_id(event_id):
         return make_response(
             jsonify({'message': '404 NOT OK - Event doesnt exist!'}), 404)
 
-    return make_response(jsonify({'data': Event.serialize(event), 'message': '200 OK - Event Retrieved'}), 200)
+    event_data = {'id': event.id, 'name': event.name, 'latitude': event.latitude, 'longitude': event.longitude,
+                  'status': event.status, 'duration': event.duration, 'startDate': event.startDate,
+                  'description': event.description, 'accessibility': event.accessibility,
+                  'restrictions': event.restrictions, 'quantity': event.quantity, 'observations': event.observations,
+                  'createdDate': event.createdDate, 'garbageSpots': [], 'garbageType': []}
+
+    for garbageSpot in db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
+        garbageSpotSer = GarbageSpotInEvent.serialize(garbageSpot)
+        event_data['garbageSpots'].append(garbageSpotSer)
+
+    for garbageType in db.session.query(GarbageInEvent).filter_by(eventID=event.id):
+        garbageTypeSer = GarbageInEvent.serialize(garbageType)
+        event_data['garbageType'].append(garbageTypeSer)
+
+    return make_response(jsonify({'data': event_data, 'message': '200 OK - Event Retrieved'}), 200)
 
 
 # Update Event by Event Organizer (User)
@@ -156,22 +180,20 @@ def update_status_event(current_user, event_id):
 
 
 # Region Event Operations Regarding Garbage Spots
-
+"""
 # Add Garbage Spot to Event by User
 @event_routes_blueprint.route('/events/<event_id>/addGarbageSpot', methods=['POST'])
 @token_required
-def add_garbageSpot_to_event(current_user, event_id):
+def add_garbageSpots_to_event(current_user, event_id):
     event = db.session.query(Event).filter_by(id=event_id).first()
     if not event:
         return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
 
     data = request.get_json()
-    garbageSpot = db.session.query(GarbageSpot).filter_by(id=data["garbageSpotID"]).first()
-
-    if not garbageSpot:
-        return make_response(jsonify({'message': '404 NOT OK - No Garbage Spot Found'}), 404)
-
-    signUp = GarbageSpotInEvent(garbageSpotID=data['garbageSpotID'], eventID=event_id)
+    for garbageSpot in data:
+        garbageSpot = db.session.query(GarbageSpot).filter_by(id=data["garbageSpotID"]).first()
+    if garbageSpot:
+        signUp = GarbageSpotInEvent(garbageSpotID=data['garbageSpotID'], eventID=event_id)
 
     db.session.add(signUp)
     db.session.commit()
@@ -193,6 +215,8 @@ def get_garbageSpots_no_event(current_user, event_id):
         result.append(garbageSpot_data)
 
     return make_response(jsonify({'data': result, 'message': '200 OK - All Garbage Spots Retrieved From Event'}), 200)
+
+"""
 
 
 # Get Events for Garbage Spot
@@ -223,10 +247,23 @@ def get_my_events(current_user):
         event_data = {}
         event_data['id'] = user_event.id
         event_data['userID'] = user_event.userID
-        event_data['event'] = {}
+
         for event in db.session.query(Event).filter_by(id=user_event.eventID):
-            eventSer = Event.serialize(event)
-            event_data['event'] = eventSer
+            event_data['event'] = {'id': event.id, 'name': event.name, 'latitude': event.latitude,
+                                   'longitude': event.longitude,
+                                   'status': event.status, 'duration': event.duration, 'startDate': event.startDate,
+                                   'description': event.description, 'accessibility': event.accessibility,
+                                   'restrictions': event.restrictions, 'quantity': event.quantity,
+                                   'observations': event.observations,
+                                   'createdDate': event.createdDate, 'garbageSpots': [], 'garbageType': []}
+
+            for garbageSpot in db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
+                garbageSpotSer = GarbageSpotInEvent.serialize(garbageSpot)
+                event_data['event']['garbageSpots'].append(garbageSpotSer)
+
+            for garbageType in db.session.query(GarbageInEvent).filter_by(eventID=event.id):
+                garbageTypeSer = GarbageInEvent.serialize(garbageType)
+                event_data['event']['garbageType'].append(garbageTypeSer)
 
         event_data['status'] = user_event.status
         event_data['creator'] = user_event.creator

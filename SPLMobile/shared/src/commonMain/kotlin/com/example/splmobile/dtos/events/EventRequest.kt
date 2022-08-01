@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class EventRequest(
     val event: EventDTO,
-    val garbageList: List<Long>,
+    val garbageTypeList: List<Long>,
+    val garbageSpotList: List<Long>,
 )

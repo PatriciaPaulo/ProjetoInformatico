@@ -5,7 +5,7 @@ from flask import Blueprint
 from models import User, Activity, Event, db, Friendship,UserInEvent, GarbageSpot
 from utils import token_required, admin_required, guest, name_validation, username_validation, email_validation,  password_validation, password_confirmation
 import jwt
-from datetime import date
+from datetime import datetime
 
 friends_routes_blueprint = Blueprint('friends_routes', __name__, )
 api = Api(friends_routes_blueprint)
@@ -36,16 +36,18 @@ def friend_request(current_user):
     if not friendNewRequest:
         #check if friendship already exists where other user is the requests
         friendImAddressee = db.session.query(Friendship).filter_by(addresseeID=current_user.id, requestorID=data,status="Pendente").first()
+        today = datetime.utcnow()
         #if yes complete request
         if friendImAddressee:
             friendImAddressee.status = "Completo"
+            friendImAddressee.completeDate = today
             db.session.commit()
             return make_response(jsonify({'message': '200 OK - Friend request accepted'}), 202)
 
         # if not create new one
         else:
-            today = date.today()
-            new_friendship = Friendship(requestorID=current_user.id, addresseeID=data, date=today, status="Pendente")
+
+            new_friendship = Friendship(requestorID=current_user.id, addresseeID=data, completeDate=None, status="Pendente")
             db.session.add(new_friendship)
             db.session.commit()
             return make_response(jsonify({'message': '200 OK - Friend request sent'}), 200)

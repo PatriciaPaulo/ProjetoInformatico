@@ -45,7 +45,7 @@ class EventServiceImpl (
 
 
     }
-    private val emptyEvent = EventDTO(0,"","","","","","","","","","","","")
+    private val emptyEvent = EventDTO(0,"","","","","","","","","","","","", emptyList(), emptyList())
 
     init {
         ensureNeverFrozen()

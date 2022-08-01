@@ -75,6 +75,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
 
     }
 
+
     override suspend fun postGarbageSpot(
         garbageSpot: GarbageSpotDTO,
         token: String
@@ -153,6 +154,13 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
             return GarbageSpotResponse(emptyGarbageSpot,"$ex")
         }
 
+    }
+
+    override suspend fun postGarbageSpotsInEvent(
+        eventID: Long,
+        token: String
+    ): RequestMessageResponse {
+        TODO("Not yet implemented")
     }
 
     private fun HttpRequestBuilder.url(path: String) {

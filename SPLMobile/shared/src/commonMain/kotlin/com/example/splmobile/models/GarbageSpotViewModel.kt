@@ -82,11 +82,12 @@ class GarbageSpotViewModel (
         }
 
     }
-    fun getGarbageSpotById(gsId: String,token: String) {
+
+    fun getGarbageSpotById(gsId: Long,token: String) {
         _garbageSpotsUIState.value = GarbageSpotsUIState.Loading
         log.v("getting garbage spots by id ")
         viewModelScope.launch {
-            val response = garbageSpotService.getGarbageSpotById(gsId.toLong(),token)
+            val response = garbageSpotService.getGarbageSpotById(gsId,token)
 
             if(response.message.substring(0,3)  == "200"){
                 log.v("getting all  ${response.data}")
