@@ -3,6 +3,7 @@ package com.example.splmobile.android.ui.main.screens.events
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +37,7 @@ import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.events.EventDTO
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
@@ -74,12 +77,14 @@ fun CreateEventScreen(
     val scaffoldState = rememberScaffoldState()
     LaunchedEffect(Unit) {
         garbageSpotViewModel.getGarbageTypes(authViewModel.tokenState.value)
+        garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
     }
-
-    var garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
-    var createEventState = eventViewModel.eventCreateUIState.collectAsState().value
-    var garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>())}
-
+    val garbageSpotsState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
+    val garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
+    val createEventState = eventViewModel.eventCreateUIState.collectAsState().value
+    val garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>())}
+    val garbageSpotListEvent = remember { mutableStateOf(emptyList<GarbageSpotDTO>())}
+    val listGarbageTypeInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
 
 
 
@@ -122,18 +127,23 @@ fun CreateEventScreen(
                     garbageTypeListEvent.value = garbageTypesState.garbageTypes
                 }
             }
+            when(garbageSpotsState){
+                is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
+                    garbageSpotListEvent.value = garbageSpotsState.garbageSpots
+                }
+            }
 
             val accessibilityListEvent = listOf(textResource(R.string.EventAccessibilityElement1).toString(), textResource(R.string.EventAccessibilityElement2).toString(), textResource(R.string.EventAccessibilityElement3).toString())
             val quantityListEvent = listOf(textResource(R.string.EventQuantityElement1).toString(), textResource(R.string.EventQuantityElement2).toString(), textResource(R.string.EventQuantityElement3).toString())
             val restrictionsListEvent = listOf(textResource(R.string.EventRestrictionsElement1).toString(), textResource(R.string.EventRestrictionsElement2).toString())
 
-            var accessibilityExpanded by remember { mutableStateOf(false) }
-            var accessibilitySelectedOptionText by remember { mutableStateOf(accessibilityListEvent[0]) }
-            var quantityExpanded by remember { mutableStateOf(false) }
-            var quantitySelectedOptionText by remember { mutableStateOf(quantityListEvent[0]) }
-            var restrictionsExpanded by remember { mutableStateOf(false) }
-            var restrictionsSelectedOptionText by remember { mutableStateOf(restrictionsListEvent[0]) }
-            var listGarbageTypeInEvent = remember { mutableStateOf(mutableListOf<Long>())}
+            val accessibilityExpanded = remember { mutableStateOf(false) }
+            val accessibilitySelectedOptionText = remember { mutableStateOf(accessibilityListEvent[0]) }
+            val quantityExpanded = remember { mutableStateOf(false) }
+            val quantitySelectedOptionText = remember { mutableStateOf(quantityListEvent[0]) }
+            val restrictionsExpanded = remember { mutableStateOf(false) }
+            val restrictionsSelectedOptionText = remember { mutableStateOf(restrictionsListEvent[0]) }
+
             val statusEvent = remember {
                 mutableStateOf(TextFieldValue("Criado"))
             }
@@ -154,272 +164,67 @@ fun CreateEventScreen(
                     Image(painter = image,contentDescription = "")
 
                     Spacer(modifier = Modifier.height(32.dp))
-                    TextField(
-                        value = nameEvent.value ,
-                        onValueChange = {nameEvent.value = it},
-                        label = {
-                            Text(text = textResource(id = R.string.lblNameCreateEvent).toString())  },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    )
-                    if(nameEvent.value.text.isEmpty()){
-                        Text(
-                            text = stringResource(R.string.txtNecessaryField),
-                            color = MaterialTheme.colors.error,
-                            style = MaterialTheme.typography.caption,
-                            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                        )
-                    }
+                    EventNameInput(nameEvent)
 
 
                     Spacer(modifier = Modifier.height(32.dp))
                     Text("PONTO DE ENCONTRO")
                     PlacePickerComponent(locationEvent,log)
                     Spacer(modifier = Modifier.height(32.dp))
-                    DatePickerComponent(startDateEvent,log)
-
-                    if(startDateEvent.value.isEmpty()){
-                        Text(
-                            text = stringResource(R.string.txtNecessaryField),
-                            color = MaterialTheme.colors.error,
-                            style = MaterialTheme.typography.caption,
-                            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                        )
-                    }
+                    DatePickInput(startDateEvent, log)
                     Spacer(modifier = Modifier.height(32.dp))
-                    TextField(
-                        value = durationEvent.value ,
-                        onValueChange = {durationEvent.value = it},
-                        label = {
-                            Text(text = textResource(id = R.string.lblDurationCreateEvent).toString())  },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    )
-                    if(durationEvent.value.text.isEmpty()){
-                        Text(
-                            text = stringResource(R.string.txtNecessaryField),
-                            color = MaterialTheme.colors.error,
-                            style = MaterialTheme.typography.caption,
-                            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                        )
-                    }
+                    EventDurationInput(durationEvent)
 
                     Spacer(modifier = Modifier.height(32.dp))
 
                     //accessibility
-                    ExposedDropdownMenuBox(
-                        expanded = accessibilityExpanded,
-                        onExpandedChange = {
-                            accessibilityExpanded = !accessibilityExpanded
-                        }
-                    ) {
-                        TextField(
-                            readOnly = true,
-                            value = accessibilitySelectedOptionText,
-                            onValueChange = { },
-                            label = { Text(textResource(R.string.lblAccessibilityCreateEvent).toString()) },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = accessibilityExpanded
-                                )
-
-                            },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = accessibilityExpanded,
-                            onDismissRequest = {
-                                accessibilityExpanded = false
-                            }
-                        ) {
-                            accessibilityListEvent.forEach { selectionOption ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        accessibilitySelectedOptionText = selectionOption
-                                        accessibilityExpanded = false
-                                    }
-                                ) {
-                                    Text(text = selectionOption)
-                                }
-                            }
-                        }
-                    }
+                    EventAccessibilitySelection(
+                        accessibilityExpanded,
+                        accessibilitySelectedOptionText,
+                        accessibilityListEvent
+                    )
 
                     Spacer(modifier = Modifier.height(32.dp))
                     //quantity
-                    ExposedDropdownMenuBox(
-                        expanded = quantityExpanded,
-                        onExpandedChange = {
-                            quantityExpanded = !quantityExpanded
-                        }
-                    ) {
-                        TextField(
-                            readOnly = true,
-                            value = quantitySelectedOptionText,
-                            onValueChange = { },
-                            label = { Text(textResource(R.string.lblQuantityCreateEvent).toString()) },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = quantityExpanded
-                                )
-                            },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = quantityExpanded,
-                            onDismissRequest = {
-                                quantityExpanded = false
-                            }
-                        ) {
-                            quantityListEvent.forEach { selectionOption ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        quantitySelectedOptionText = selectionOption
-                                        quantityExpanded = false
-                                    }
-                                ) {
-                                    Text(text = selectionOption)
-                                }
-                            }
-                        }
-                    }
+                    EventQuantityExpectedSelection(
+                        quantityExpanded,
+                        quantitySelectedOptionText,
+                        quantityListEvent
+                    )
 
                     Spacer(modifier = Modifier.height(32.dp))
 
 
                     //restrictions
-                    ExposedDropdownMenuBox(
-                        expanded = restrictionsExpanded,
-                        onExpandedChange = {
-                            restrictionsExpanded = !restrictionsExpanded
-                        }
-                    ) {
-                        TextField(
-                            readOnly = true,
-                            value = restrictionsSelectedOptionText,
-                            onValueChange = { },
-                            label = { Text(textResource(R.string.lblRestrictionsCreateEvent).toString()) },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = restrictionsExpanded
-                                )
-                            },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = restrictionsExpanded,
-                            onDismissRequest = {
-                                restrictionsExpanded = false
-                            }
-                        ) {
-                            restrictionsListEvent.forEach { selectionOption ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        restrictionsSelectedOptionText = selectionOption
-                                        restrictionsExpanded = false
-                                    }
-                                ) {
-                                    Text(text = selectionOption)
-                                }
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
-                    //todo redo , select only updating after state change and not when clicked
-                    LazyColumn(
-                        modifier = Modifier
-                            .height(200.dp)
-                            .width(200.dp)
-                            .selectableGroup(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        items(garbageTypeListEvent.value.size) { index ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .selectable(
-                                        selected = listGarbageTypeInEvent.value.contains(
-                                            garbageTypeListEvent.value.get(index).id
-                                        ),
-                                        onClick = {
-                                            if (listGarbageTypeInEvent.value.contains(
-                                                    garbageTypeListEvent.value.get(index).id
-                                                )
-                                            ) {
-                                                listGarbageTypeInEvent.value.remove(
-                                                    garbageTypeListEvent.value.get(index).id
-                                                )
-                                            } else {
-                                                listGarbageTypeInEvent.value.add(
-                                                    garbageTypeListEvent.value.get(index).id
-                                                )
-                                            }
-                                        }
-                                    )
-                                    .background(
-                                        if ((listGarbageTypeInEvent.value.contains(
-                                                garbageTypeListEvent.value.get(index).id
-                                            ))
-                                        ) Color.Gray
-                                        else Color.Transparent
-                                    )
-                                    .padding(8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(text = garbageTypeListEvent.value[index].name)
-                                if((listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value.get(index).id))){
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = "Selected",
-                                        tint = Color.Green,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-
-                            }
-
-
-                        }
-                    }
-
-
-
-                    Spacer(modifier = Modifier.height(32.dp))
-                    TextField(
-                        value = descriptionEvent.value ,
-                        onValueChange = {descriptionEvent.value = it},
-                        label = {
-                            Text(text = textResource(id = R.string.lblDescriptionCreateEvent).toString())  },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    EventRestrictionsSelection(
+                        restrictionsExpanded,
+                        restrictionsSelectedOptionText,
+                        restrictionsListEvent
                     )
-                    if(descriptionEvent.value.text.isEmpty()){
-                        Text(
-                            text = stringResource(R.string.txtNecessaryField),
-                            color = MaterialTheme.colors.error,
-                            style = MaterialTheme.typography.caption,
-                            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                        )
-                    }
+
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    TextField(
-                        value = observationsEvent.value ,
-                        onValueChange = {observationsEvent.value = it},
-                        label = {
-                            Text(text = textResource(id = R.string.lblObservationsCreateEvent).toString())  },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    )
-                    if(observationsEvent.value.text.isEmpty()){
-                        Text(
-                            text = stringResource(R.string.txtNecessaryField),
-                            color = MaterialTheme.colors.error,
-                            style = MaterialTheme.typography.caption,
-                            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                        )
+
+                    garbageTypeSelection(garbageTypeListEvent, listGarbageTypeInEvent)
+
+
+
+
+                    Spacer(modifier = Modifier.height(32.dp))
+                    EventDescriptionInput(descriptionEvent)
+                    Spacer(modifier = Modifier.height(32.dp))
+                    EventObservationsInput(observationsEvent)
+                    Spacer(modifier = Modifier.height(32.dp))
+                    //garbageSpotsSelection(garbageTypeListEvent, listGarbageTypeInEvent)
+
+                }
+                //garbage spot available
+                when(garbageSpotsState){
+                    is GarbageSpotViewModel.GarbageSpotsUIState.Success->{
+
                     }
                 }
+
 
 
                 when(createEventState){
@@ -445,7 +250,6 @@ fun CreateEventScreen(
                     onClick = {
                         //garbageTypeListEvent
                         if (nameEvent.value.text.isNotEmpty() &&
-                            observationsEvent.value.text.isNotEmpty() &&
                             descriptionEvent.value.text.isNotEmpty() &&
                             durationEvent.value.text.isNotEmpty() &&
                             startDateEvent.value.isNotEmpty() &&
@@ -467,10 +271,11 @@ fun CreateEventScreen(
                                     durationEvent.value.text,
                                     startDateEvent.value,
                                     descriptionEvent.value.text,
-                                    accessibilitySelectedOptionText,
-                                    restrictionsSelectedOptionText,
-                                    quantitySelectedOptionText,
-                                    observationsEvent.value.text
+                                    accessibilitySelectedOptionText.value,
+                                    restrictionsSelectedOptionText.value,
+                                    quantitySelectedOptionText.value,
+                                    observationsEvent.value.text,
+                                    ""
                                 ),
                                 listGarbageTypeInEvent.value,
                                 authViewModel.tokenState.value
@@ -493,6 +298,310 @@ fun CreateEventScreen(
 
 
 }
+
+@Composable
+private fun EventNameInput(nameEvent: MutableState<TextFieldValue>) {
+    TextField(
+        value = nameEvent.value,
+        onValueChange = { nameEvent.value = it },
+        label = {
+            Text(text = textResource(id = R.string.lblNameCreateEvent).toString())
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+    )
+    if (nameEvent.value.text.isEmpty()) {
+        Text(
+            text = stringResource(R.string.txtNecessaryField),
+            color = MaterialTheme.colors.error,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+        )
+    }
+}
+
+@Composable
+private fun DatePickInput(
+    startDateEvent: MutableState<String>,
+    log: Logger
+) {
+    DatePickerComponent(startDateEvent, log)
+
+    if (startDateEvent.value.isEmpty()) {
+        Text(
+            text = stringResource(R.string.txtNecessaryField),
+            color = MaterialTheme.colors.error,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+        )
+    }
+}
+
+@Composable
+private fun EventDurationInput(durationEvent: MutableState<TextFieldValue>) {
+    TextField(
+        value = durationEvent.value,
+        onValueChange = { durationEvent.value = it },
+        label = {
+            Text(text = textResource(id = R.string.lblDurationCreateEvent).toString())
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+    )
+    if (durationEvent.value.text.isEmpty()) {
+        Text(
+            text = stringResource(R.string.txtNecessaryField),
+            color = MaterialTheme.colors.error,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun EventAccessibilitySelection(
+    accessibilityExpanded: MutableState<Boolean>,
+    accessibilitySelectedOptionText: MutableState<String>,
+    accessibilityListEvent: List<String>
+) {
+
+    ExposedDropdownMenuBox(
+        expanded = accessibilityExpanded.value,
+        onExpandedChange = {
+            accessibilityExpanded.value = !accessibilityExpanded.value
+        }
+    ) {
+        TextField(
+            readOnly = true,
+            value = accessibilitySelectedOptionText.value,
+            onValueChange = { },
+            label = { Text(textResource(R.string.lblAccessibilityCreateEvent).toString()) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = accessibilityExpanded.value
+                )
+
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            expanded = accessibilityExpanded.value,
+            onDismissRequest = {
+                accessibilityExpanded.value = false
+            }
+        ) {
+            accessibilityListEvent.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        accessibilitySelectedOptionText.value = selectionOption
+                        accessibilityExpanded.value = false
+                    }
+                ) {
+                    Text(text = selectionOption)
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun EventQuantityExpectedSelection(
+    quantityExpanded: MutableState<Boolean>,
+    quantitySelectedOptionText: MutableState<String>,
+    quantityListEvent: List<String>
+) {
+
+    ExposedDropdownMenuBox(
+        expanded = quantityExpanded.value,
+        onExpandedChange = {
+            quantityExpanded.value = !quantityExpanded.value
+        }
+    ) {
+        TextField(
+            readOnly = true,
+            value = quantitySelectedOptionText.value,
+            onValueChange = { },
+            label = { Text(textResource(R.string.lblQuantityCreateEvent).toString()) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = quantityExpanded.value
+                )
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            expanded = quantityExpanded.value,
+            onDismissRequest = {
+                quantityExpanded.value = false
+            }
+        ) {
+            quantityListEvent.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        quantitySelectedOptionText.value = selectionOption
+                        quantityExpanded.value = false
+                    }
+                ) {
+                    Text(text = selectionOption)
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun EventRestrictionsSelection(
+    restrictionsExpanded: MutableState<Boolean>,
+    restrictionsSelectedOptionText: MutableState<String>,
+    restrictionsListEvent: List<String>
+) {
+
+    ExposedDropdownMenuBox(
+        expanded = restrictionsExpanded.value,
+        onExpandedChange = {
+            restrictionsExpanded.value = !restrictionsExpanded.value
+        }
+    ) {
+        TextField(
+            readOnly = true,
+            value = restrictionsSelectedOptionText.value,
+            onValueChange = { },
+            label = { Text(textResource(R.string.lblRestrictionsCreateEvent).toString()) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = restrictionsExpanded.value
+                )
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            expanded = restrictionsExpanded.value,
+            onDismissRequest = {
+                restrictionsExpanded.value = false
+            }
+        ) {
+            restrictionsListEvent.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        restrictionsSelectedOptionText.value = selectionOption
+                        restrictionsExpanded.value = false
+                    }
+                ) {
+                    Text(text = selectionOption)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EventObservationsInput(observationsEvent: MutableState<TextFieldValue>) {
+    TextField(
+        value = observationsEvent.value,
+        onValueChange = { observationsEvent.value = it },
+        label = {
+            Text(text = textResource(id = R.string.lblObservationsCreateEvent).toString())
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+    )
+}
+
+@Composable
+private fun EventDescriptionInput(descriptionEvent: MutableState<TextFieldValue>) {
+    TextField(
+        value = descriptionEvent.value,
+        onValueChange = { descriptionEvent.value = it },
+        label = {
+            Text(text = textResource(id = R.string.lblDescriptionCreateEvent).toString())
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+    )
+    if (descriptionEvent.value.text.isEmpty()) {
+        Text(
+            text = stringResource(R.string.txtNecessaryField),
+            color = MaterialTheme.colors.error,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+        )
+    }
+}
+
+@Composable
+private fun garbageTypeSelection(
+    garbageTypeListEvent: MutableState<List<GarbageTypeDTO>>,
+    listGarbageTypeInEvent: MutableState<SnapshotStateList<Long>>
+) {
+    Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
+    //todo redo , select only updating after state change and not when clicked
+
+    LazyColumn(
+        modifier = Modifier
+            .height(200.dp)
+            .width(200.dp)
+            .selectableGroup(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        items(garbageTypeListEvent.value.size) { index ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected = listGarbageTypeInEvent.value.contains(
+                            garbageTypeListEvent.value.get(index).id
+                        ),
+                        onClick = {
+                            Log.d("selection types", "garbage clicked")
+                            if (listGarbageTypeInEvent.value.contains(
+                                    garbageTypeListEvent.value.get(index).id
+                                )
+                            ) {
+                                Log.d("selection types", "removing garbage type")
+                                listGarbageTypeInEvent.value.remove(
+                                    garbageTypeListEvent.value.get(index).id
+                                )
+
+                            } else {
+                                Log.d("selection types", "adding garbage type")
+                                listGarbageTypeInEvent.value.add(
+                                    garbageTypeListEvent.value.get(index).id
+                                )
+                                Log.d("selection types", "list ${listGarbageTypeInEvent.value}")
+                            }
+                        }
+                    )
+                    .background(
+                        if ((listGarbageTypeInEvent.value.contains(
+                                garbageTypeListEvent.value.get(index).id
+                            ))
+                        ) Color.Gray
+                        else Color.Transparent
+                    )
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = garbageTypeListEvent.value[index].name)
+                Log.d("selection types", "list ${listGarbageTypeInEvent.value}")
+                Log.d("selection types", "garbage ${garbageTypeListEvent.value}")
+
+                if ((listGarbageTypeInEvent.value.contains(garbageTypeListEvent.value[index].id))) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected",
+                        tint = Color.Green,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+            }
+
+        }
+    }
+}
+
+
 
 @Composable
 fun PlacePickerComponent(

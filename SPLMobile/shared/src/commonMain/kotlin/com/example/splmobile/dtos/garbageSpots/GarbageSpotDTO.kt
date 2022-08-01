@@ -12,6 +12,7 @@ data class GarbageSpotDTO(
     var longitude: String,
     var status: String,
     val approved: Boolean,
+    val createdDate: String,
     val events: List<GarbageSpotInEventDTO>
 
 )

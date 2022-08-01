@@ -16,5 +16,6 @@ data class EventDTO(
     val accessibility: String,
     val restrictions: String,
     val quantity: String,
-    val observations: String?
+    val observations: String?,
+    val createdDate: String,
 )
