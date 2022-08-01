@@ -164,6 +164,7 @@ class Event(Base):
     restrictions = Column(String(50))
     quantity = Column(String(50))
     observations = Column(String(50))
+    createdDate = Column(DateTime, nullable=False)
 
     def serialize(self):
         return {
@@ -178,7 +179,8 @@ class Event(Base):
             'accessibility': self.accessibility,
             'restrictions': self.restrictions,
             'quantity': self.quantity,
-            'observations': self.observations
+            'observations': self.observations,
+            'createdDate': self.createdDate,
         }
 # endregion
 
@@ -193,6 +195,7 @@ class GarbageSpot(Base):
     creator = Column(Integer, ForeignKey('user.id'), nullable=False)
     status = Column(String(50), nullable=False)
     approved = Column(Boolean, nullable=False)
+    createdDate = Column(DateTime, nullable=False)
 
     def serialize(self):
         return {
@@ -203,6 +206,7 @@ class GarbageSpot(Base):
             'creator': self.creator,
             'status': self.status,
             'approved': self.approved,
+            'createdDate': self.createdDate,
         }
 
 # endregion

@@ -81,7 +81,7 @@ if __name__ == '__main__':
         longitude = round(random.uniform(-8.199258, -7.886036), 5)
         creator = session.query(User).filter_by(admin=False).order_by(func.random()).first()
         status = ["Muito sujo", "Pouco sujo", "Limpo"]
-        garbageSpot = GarbageSpot(name=name, latitude=latitude, longitude=longitude, creator=creator.id, status=random.choice(status), approved=True)
+        garbageSpot = GarbageSpot(name=name, latitude=latitude, longitude=longitude, creator=creator.id, status=random.choice(status), approved=True,createdDate=datetime.datetime.utcnow())
 
         session.add(garbageSpot)
         session.flush()
@@ -141,7 +141,7 @@ if __name__ == '__main__':
                        longitude=longitude,
                        status=random.choice(status), accessibility=random.choice(accessibility),
                        quantity=random.choice(quantity), restrictions=random.choice(restrictions),
-                       duration=duration, startDate=datetime.datetime.utcnow())
+                       duration=duration, startDate=datetime.datetime.utcnow(),createdDate=datetime.datetime.utcnow())
 
         session.add(event)
 

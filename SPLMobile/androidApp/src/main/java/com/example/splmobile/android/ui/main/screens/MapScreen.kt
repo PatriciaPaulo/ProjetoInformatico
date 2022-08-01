@@ -78,11 +78,10 @@ fun MapScreen(
     var cameraPosition = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(portugal, 7f)
     }
+    var emptyGarbageSpot = GarbageSpotDTO(0,"new",userInfoViewModel.myIdUIState.value,"0.0","0.0","Muito sujo",false,
+        "",emptyList())
     //default variables
-    var garbageSpotState = mutableStateOf(
-        GarbageSpotDTO(0,"new",userInfoViewModel.myIdUIState.value,"0.0","0.0","Muito sujo",false,
-            emptyList())
-    )
+    var garbageSpotState = mutableStateOf(emptyGarbageSpot)
     var garbageSpotsFilterState = mutableStateOf(textResource(R.string.lblFilterGarbageSpotsAll).toString())
     var createGarbageSpotButtonState = mutableStateOf(false)
 
@@ -92,7 +91,9 @@ fun MapScreen(
 
     LaunchedEffect(Unit) {
         log.d {"Get garbage spots launched"}
+
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+
     }
     var garbageSpotsState = garbageSpotViewModel.garbageSpotCreateUIState.collectAsState().value
     when(garbageSpotsState){
@@ -102,8 +103,7 @@ fun MapScreen(
             garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
             //reset create local lixo
             createGarbageSpotButtonState.value = false
-            garbageSpotState.value = GarbageSpotDTO(0,"new",0,"0.0","0.0","Muito sujo",false,
-                emptyList())
+            garbageSpotState.value = emptyGarbageSpot
             nomeGarbageSpotState.value = TextFieldValue("")
             newGarbageSpotPos.value = LatLng(0.0,0.0)
 
@@ -183,8 +183,7 @@ fun MapScreen(
 
                             if(!garbageSpotState.value.id.equals(0L)){
                                 log.d {" Garbage Spot selected "}
-                                garbageSpotState.value = GarbageSpotDTO(0,"new",userInfoViewModel.myIdUIState.value,"","",
-                                        "",false, emptyList())
+                                garbageSpotState.value = emptyGarbageSpot
                                 coroutineScope.launch { bottomScaffoldState.bottomSheetState.expand() }
                             }
                             else{
@@ -232,7 +231,12 @@ fun MapScreen(
                         log.d {"In MapContent "}
                         MapContent(
                             garbageSpotViewModel.garbageSpotsUIState.collectAsState().value,
-                            garbageSpotState,newGarbageSpotPos,garbageSpotsFilterState, userInfoViewModel,authViewModel, log)
+                            garbageSpotState,
+                            newGarbageSpotPos,
+                            garbageSpotsFilterState,
+                            userInfoViewModel,
+                            authViewModel,
+                            log)
 
                 }
             }

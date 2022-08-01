@@ -5,7 +5,7 @@ from flask import Blueprint
 from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent
 from utils import token_required,admin_required,guest
 import jwt
-import datetime
+from datetime import datetime
 
 garbagespot_routes_blueprint = Blueprint('garbagespot_routes', __name__, )
 api = Api(garbagespot_routes_blueprint)
@@ -14,26 +14,28 @@ api = Api(garbagespot_routes_blueprint)
 @garbagespot_routes_blueprint.route('/garbageSpots', methods=['POST'])
 @guest
 def create_garbageSpot(current_user):
-    data = request.get_json()
-    # Checks if garbageSpot with same coordinates exists
-    garbageSpot = db.session.query(GarbageSpot).filter_by(latitude=data['latitude']).first()
-    if garbageSpot:
-          if garbageSpot.longitude == float(data['longitude']) :
-              return make_response(jsonify({'message': '409 NOT OK - GarbageSpot already exists! Update it instead!'}), 409)
+    try:
+        data = request.get_json()
+        # Checks if garbageSpot with same coordinates exists
+        garbageSpot = db.session.query(GarbageSpot).filter_by(latitude=data['latitude']).first()
+        if garbageSpot:
+              if garbageSpot.longitude == float(data['longitude']) :
+                  return make_response(jsonify({'message': '409 NOT OK - GarbageSpot already exists! Update it instead!'}), 409)
 
 
-    new_garbageSpot = GarbageSpot(name=data['name'], latitude=data['latitude'],
-                                  longitude=data['longitude'], creator=current_user.id,
-                                  status=data['status'], approved=data['approved'])
+        new_garbageSpot = GarbageSpot(name=data['name'], latitude=data['latitude'],
+                                      longitude=data['longitude'], creator=current_user.id,
+                                      status=data['status'], approved=data['approved'],createdDate=datetime.utcnow())
 
 
-    db.session.add(new_garbageSpot)
-    db.session.commit()
+        db.session.add(new_garbageSpot)
+        db.session.commit()
 
 
-    return make_response(jsonify({'data': GarbageSpot.serialize(new_garbageSpot), 'message': '200 OK - Garbage Spot Created'}), 200)
+        return make_response(jsonify({'data': GarbageSpot.serialize(new_garbageSpot), 'message': '200 OK - Garbage Spot Created'}), 200)
 
-
+    except:
+        return make_response(jsonify({'message': '400 NOT OK - Unknown error!'}), 400)
 
 # Get All Garbage Spots
 @garbagespot_routes_blueprint.route('/garbageSpots', methods=['GET'])
@@ -53,6 +55,7 @@ def get_all_garbageSpots(current_user):
             garbageSpot_data['creator'] = garbageSpot.creator
             garbageSpot_data['status'] = garbageSpot.status
             garbageSpot_data['approved'] = garbageSpot.approved
+            garbageSpot_data['createdDate'] = garbageSpot.createdDate
             garbageSpot_data['events'] = []
             for ev in db.session.query(GarbageSpotInEvent).filter_by(garbageSpotID=garbageSpot.id):
                 evSer = GarbageSpotInEvent.serialize(ev)

@@ -28,6 +28,18 @@ async def handler(websocket):
     # save connected user
     users_connected[current_user.id] = websocket
 
+    #check if theres messages not received
+    messages = session.query(IndividualMessage).filter_by(receiverID=current_user.id).all()
+
+    for message in messages:
+        if message.status == "Sent":
+            send_notification(current_user.id,message)
+    messages = session.query(EventMessage).filter_by(receiverID=current_user.id).all()
+
+    for message in messages:
+        if message.status == "Sent":
+            send_notification(current_user.id, message)
+
     print(f"{current_user.username} connected")
     while True:
         messageID = await websocket.recv()
@@ -37,7 +49,7 @@ async def handler(websocket):
         message = session.query(Message).filter_by(id=messageID).first()
 
         if message:
-            message.status = "Recebida"
+            message.status = "Received"
             messageInd = session.query(IndividualMessage).filter_by(messageID=messageID).first()
             if messageInd:
                 messageInd.deliveryDate = datetime.datetime.now()
