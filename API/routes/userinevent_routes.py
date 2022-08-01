@@ -23,17 +23,31 @@ def get_user_in_event(current_user,event_id):
 
     output = []
 
-    for event in users_events:
-        print(event)
-        event_data = {}
-        event_data['id'] = event.id
-        event_data['userID'] = event.userID
-        event_data['event'] = {}
-        for ev in db.session.query(Event).filter_by(id=event.eventID):
-            event_data['event'] = Event.serialize(ev)
+    for user_event in users_events:
 
-        event_data['status'] = event.status
-        event_data['creator'] = event.creator
+        event_data = {'id': user_event.id,
+                      'userID': user_event.userID,
+                      'status': user_event.status,
+                      'creator': user_event.creator}
+
+        for event in db.session.query(Event).filter_by(id=user_event.eventID):
+            event_data['event'] = {'id': event.id, 'name': event.name, 'latitude': event.latitude,
+                                   'longitude': event.longitude,
+                                   'status': event.status, 'duration': event.duration, 'startDate': event.startDate,
+                                   'description': event.description, 'accessibility': event.accessibility,
+                                   'restrictions': event.restrictions, 'quantity': event.quantity,
+                                   'observations': event.observations,
+                                   'createdDate': event.createdDate, 'garbageSpots': [], 'garbageType': []}
+
+            for garbageSpot in db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
+                garbageSpotSer = GarbageSpotInEvent.serialize(garbageSpot)
+                event_data['event']['garbageSpots'].append(garbageSpotSer)
+
+            for garbageType in db.session.query(GarbageInEvent).filter_by(eventID=event.id):
+                garbageTypeSer = GarbageInEvent.serialize(garbageType)
+                event_data['event']['garbageType'].append(garbageTypeSer)
+
+
         output.append(event_data)
     if len(output) == 0:
         return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Event Found'}), 404)

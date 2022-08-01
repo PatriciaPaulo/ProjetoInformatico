@@ -135,7 +135,11 @@ fun UserInEventsList(navController: NavHostController,user_event :UserInEventDTO
     ){
         Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
         Column() {
-            Text(text = user_event.status, style = MaterialTheme.typography.h6)
+            if(user_event.creator){
+                Text(text = "Criador", style = MaterialTheme.typography.h6)
+            }else{
+                Text(text = user_event.status, style = MaterialTheme.typography.h6)
+            }
             Text(text = user_event.event.name, style = MaterialTheme.typography.h6)
             Text(text = user_event.event.status, style = MaterialTheme.typography.body1)
             Text(text = user_event.event.startDate, style = MaterialTheme.typography.body2)
