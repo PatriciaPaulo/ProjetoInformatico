@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent
+from models import User, Activity, Event, db, GarbageSpot, GarbageSpotInEvent, ActivityType
 from utils import token_required,admin_required,guest
 import jwt
 import datetime
@@ -50,7 +50,6 @@ def get_activities(current_user):
         activity_data['activityType'] = ati.activityType
         output.append(activity_data)
 
-
     if len(output) == 0:
         return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Activities Found'}), 404)
 
@@ -74,3 +73,24 @@ def update_activity(current_user, activity_id):
     db.session.commit()
 
     return make_response(jsonify({ 'message': '200 OK - Activity From Logged In User Updated'}), 200)
+
+
+# Get All Activity Types
+@activity_routes_blueprint.route('/activityTypes', methods=['GET'])
+def get_activity_types():
+    activitiesT = db.session.query(ActivityType).all()
+    output = []
+
+    for activityType in activitiesT:
+        type_data = {
+            'id': activityType.id,
+            'name': activityType.name,
+            'icon': activityType.icon
+        }
+
+        output.append(type_data)
+
+    if len(output) == 0:
+        return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Activity Type Found'}), 404)
+
+    return make_response(jsonify({'data': output, 'message': '200 OK - All Activity Types Retrieved'}), 200)

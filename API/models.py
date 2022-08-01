@@ -18,6 +18,7 @@ class User(Base):
     password = Column(String(50), nullable=False)
     name = Column(String(128))
     email = Column(String(128), nullable=False)
+    icon = Column(String(50), nullable=False)
     admin = Column(Boolean, nullable=False, default=False)
     blocked = Column(Boolean, nullable=False, default=False)
     confirmed = Column(Boolean, nullable=False, default=False)
@@ -29,6 +30,7 @@ class User(Base):
             'username': self.username,
             'name': self.name,
             'email': self.email,
+            'icon': self.icon,
             'admin': self.admin,
             'blocked': self.blocked,
             'confirmed': self.confirmed
@@ -58,6 +60,36 @@ class Activity(Base):
             'endDate': self.endDate,
             'activityType': self.activityType
         }
+
+
+class ActivityType(Base):
+    __tablename__ = "activity_type"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique=True, nullable=False)
+    icon = Column(String(50), unique=True, nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'icon': self.icon
+        }
+# endregion
+
+
+# region PictureInActivity
+class PictureInActivity(Base):
+    __tablename__ = "pictureInActivity"
+    id = Column(Integer, primary_key=True)
+    activityID = Column(Integer, ForeignKey('activity.id'), nullable=False)
+    path = Column(String(50), unique=True, nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'activityID': self.activityID,
+            'path': self.path
+        }
 # endregion
 
 
@@ -79,6 +111,8 @@ class GarbageInActivity(Base):
             'unitType': self.unitType
         }
 # endregion
+
+
 # region GarbageInEvent
 class GarbageInEvent(Base):
     __tablename__ = "garbage_in_event"
@@ -109,7 +143,6 @@ class Garbage(Base):
         return {
             'id': self.id,
             'name': self.name
-
         }
 # endregion
 
@@ -208,6 +241,22 @@ class GarbageSpot(Base):
 # endregion
 
 
+# region PictureInGarbageSpot
+class PictureInGarbageSpot(Base):
+    __tablename__ = "picture_in_garbage_spot"
+    id = Column(Integer, primary_key=True)
+    garbageSpotID = Column(Integer, ForeignKey('garbage_spot.id'), nullable=False)
+    path = Column(String(50), unique=True, nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'garbageSpotID': self.garbageSpotID,
+            'path': self.path
+        }
+# endregion
+
+
 # region GarbageSpotInEvent
 class GarbageSpotInEvent(Base):
     __tablename__ = "garbagespot_in_event"
@@ -245,9 +294,6 @@ class UserInEvent(Base):
             'creator': self.creator
         }
 # endregion
-
-
-
 
 
 # region Friendship
@@ -308,7 +354,7 @@ class IndividualMessage(Base):
             'messageID': self.messageID
         }
 
-# region IndividualMessage
+# region EventMessage
 class EventMessage(Base):
     __tablename__ = "event_message"
     id = Column(Integer, primary_key=True)
