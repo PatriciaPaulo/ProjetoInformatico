@@ -82,9 +82,11 @@ def get_all_messages(current_user, friend_id):
     for message in messages:
 
         print(message)
-        message_data = {"id": message.Message.id, "status": message.Message.status,
+        message_data = {"id": message.Message.id,
+                        "status": message.Message.status,
                         "receiverID": message.IndividualMessage.receiverID,
-                        "deliveryDate": message.IndividualMessage.deliveryDate, "senderID": message.Message.senderID,
+                        "deliveryDate": message.IndividualMessage.deliveryDate,
+                        "senderID": message.Message.senderID,
                         "sentDate": message.Message.sentDate}
 
         output.append(message_data)

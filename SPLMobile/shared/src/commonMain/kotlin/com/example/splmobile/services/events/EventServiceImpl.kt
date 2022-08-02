@@ -100,7 +100,7 @@ class EventServiceImpl (
 
     override suspend fun putEvent(
         eventId: Long,
-        event: EventDTO,
+        event: EventRequest,
         token: String
     ): RequestMessageResponse {
         log.d { "put event" }

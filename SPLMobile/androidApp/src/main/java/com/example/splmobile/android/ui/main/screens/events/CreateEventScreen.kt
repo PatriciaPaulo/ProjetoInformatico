@@ -83,8 +83,8 @@ fun CreateEventScreen(
     val garbageSpotsState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
     val garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
     val createEventState = eventViewModel.eventCreateUIState.collectAsState().value
-    val garbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>())}
-    val garbageSpotListEvent = remember { mutableStateOf(emptyList<GarbageSpotDTO>())}
+    val allGarbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>())}
+    val allGarbageSpotListEvent = remember { mutableStateOf(emptyList<GarbageSpotDTO>())}
     val listGarbageTypeInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
     val listGarbageSpotsInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
 
@@ -126,7 +126,7 @@ fun CreateEventScreen(
 
             when(garbageTypesState){
                 is GarbageSpotViewModel.GarbageTypesUIState.Success -> {
-                    garbageTypeListEvent.value = garbageTypesState.garbageTypes
+                    allGarbageTypeListEvent.value = garbageTypesState.garbageTypes
                 }
             }
 
@@ -203,7 +203,7 @@ fun CreateEventScreen(
                     Spacer(modifier = Modifier.height(32.dp))
 
 
-                    garbageTypeSelection(garbageTypeListEvent, listGarbageTypeInEvent)
+                    garbageTypeSelection(allGarbageTypeListEvent, listGarbageTypeInEvent)
 
 
                     Spacer(modifier = Modifier.height(32.dp))
@@ -217,27 +217,24 @@ fun CreateEventScreen(
                             if( (!locationEvent.value.longitude.equals(0.0)) &&
                                 (!locationEvent.value.latitude.equals(0.0))){
 
-                                garbageSpotListEvent.value = garbageSpotsState.garbageSpots.filter {
+                                allGarbageSpotListEvent.value = garbageSpotsState.garbageSpots.filter {
                                     calculateDistance(locationEvent.value,LatLng(it.latitude.toDouble(),it.longitude.toDouble()))<50.00
                                 }
 
+                                garbageSpotsSelection(allGarbageSpotListEvent, listGarbageSpotsInEvent)
                             }
+
                             else{
                                 Text(text="Picka a location first")
                             }
 
+
+
                         }
                     }
-                    garbageSpotsSelection(garbageSpotListEvent, listGarbageSpotsInEvent)
+
 
                 }
-                //garbage spot available
-                when(garbageSpotsState){
-                    is GarbageSpotViewModel.GarbageSpotsUIState.Success->{
-
-                    }
-                }
-
 
 
                 when(createEventState){
@@ -331,7 +328,7 @@ fun calculateDistance(eventLocation: LatLng, garbageLocation: LatLng?) : Double 
 
     val a = sin(dlat/2).pow(2) + cos(curLat) * cos(lastLat) * sin(dlng / 2).pow(2)
     val c = 2 * asin(sqrt(a))
-    Log.d("event create", (c * EARTH_RADIUS).toString())
+   // Log.d("event create", (c * EARTH_RADIUS).toString())
 
 
     return (c * EARTH_RADIUS)
@@ -640,7 +637,7 @@ private fun garbageTypeSelection(
 
 @Composable
 private fun garbageSpotsSelection(
-    garbageSpotListEvent: MutableState<List<GarbageSpotDTO>>,
+    allGarbageSpotListEvent: MutableState<List<GarbageSpotDTO>>,
     listGarbageSpotsInEvent: MutableState<SnapshotStateList<Long>>
 ) {
     Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
@@ -654,29 +651,29 @@ private fun garbageSpotsSelection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        items(garbageSpotListEvent.value.size) { index ->
+        items(allGarbageSpotListEvent.value.size) { index ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .selectable(
                         selected = listGarbageSpotsInEvent.value.contains(
-                            garbageSpotListEvent.value.get(index).id
+                            allGarbageSpotListEvent.value.get(index).id
                         ),
                         onClick = {
                             Log.d("selection types", "garbage clicked")
                             if (listGarbageSpotsInEvent.value.contains(
-                                    garbageSpotListEvent.value.get(index).id
+                                    allGarbageSpotListEvent.value.get(index).id
                                 )
                             ) {
                                 Log.d("selection types", "removing garbage type")
                                 listGarbageSpotsInEvent.value.remove(
-                                    garbageSpotListEvent.value.get(index).id
+                                    allGarbageSpotListEvent.value.get(index).id
                                 )
 
                             } else {
                                 Log.d("selection types", "adding garbage type")
                                 listGarbageSpotsInEvent.value.add(
-                                    garbageSpotListEvent.value.get(index).id
+                                    allGarbageSpotListEvent.value.get(index).id
                                 )
                                 Log.d("selection types", "list ${listGarbageSpotsInEvent.value}")
                             }
@@ -684,7 +681,7 @@ private fun garbageSpotsSelection(
                     )
                     .background(
                         if ((listGarbageSpotsInEvent.value.contains(
-                                garbageSpotListEvent.value.get(index).id
+                                allGarbageSpotListEvent.value.get(index).id
                             ))
                         ) Color.Gray
                         else Color.Transparent
@@ -693,11 +690,9 @@ private fun garbageSpotsSelection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = garbageSpotListEvent.value[index].name)
-                Log.d("selection types", "list ${listGarbageSpotsInEvent.value}")
-                Log.d("selection types", "garbage ${garbageSpotListEvent.value}")
+                Text(text = allGarbageSpotListEvent.value[index].name)
 
-                if ((listGarbageSpotsInEvent.value.contains(garbageSpotListEvent.value[index].id))) {
+                if ((listGarbageSpotsInEvent.value.contains(allGarbageSpotListEvent.value[index].id))) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = "Selected",
@@ -807,7 +802,7 @@ fun DatePickerComponent(
     mCalendar.time = Date()
     // Declaring a string value to
     val mTime = remember { mutableStateOf("") }
-    val mDate = remember { mutableStateOf("") }
+    val mDate = remember { mutableStateOf(dateEvent.value) }
     // Declaring DatePickerDialog and setting
     // initial values as current values (present year, month and day)
     val mDatePickerDialog = DatePickerDialog(

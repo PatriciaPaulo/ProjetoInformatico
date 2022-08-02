@@ -73,11 +73,11 @@ class EventViewModel (
         }
 
     }
-    fun getEventsByID(eventoId: String) {
+    fun getEventsByID(eventoId: Long) {
         _eventByIdUIState.value = EventByIdUIState.Loading
         log.v("getting all events ")
         viewModelScope.launch {
-            val response = eventService.getEventsById(eventoId.toLong())
+            val response = eventService.getEventsById(eventoId)
 
             if(response.message.substring(0,3)  == "200"){
                 log.v("getting all  ${response.data}")
@@ -91,7 +91,7 @@ class EventViewModel (
         log.v("creating event $event")
         _eventCreateUIState.value = EventCreateUIState.Loading
         viewModelScope.launch {
-            val response_event = eventService.postEvent(EventRequest(event,garbageSpots,garbageType),token)
+            val response_event = eventService.postEvent(EventRequest(event,garbageType,garbageSpots),token)
              if(response_event.message.substring(0,3)  == "200" ){
                 log.v("Creating event successful")
                 _eventCreateUIState.value = EventCreateUIState.Success
@@ -119,15 +119,15 @@ class EventViewModel (
         }
     }
 
-    fun updateEvent(eventId: Long, event: EventDTO, token: String) {
+    fun updateEvent(eventId: Long, event: EventDTO, garbageSpots :List<Long>,garbageType : List<Long>, token: String) {
         log.v("update event $eventId status")
         _eventUpdateUIState.value = EventUpdateUIState.Loading
         viewModelScope.launch {
-            val response = eventService.putEvent(eventId,event,token)
+            val response = eventService.putEvent(eventId,EventRequest(event,garbageType,garbageSpots),token)
             if(response.message.substring(0,3)  == "200"){
                 log.v("Creating event successful")
                 _eventUpdateUIState.value = EventUpdateUIState.UpdateSuccess
-                getEvents()
+                getEventsByID(eventId)
             }else{
                 log.v("Creating event error")
                 _eventUpdateUIState.value = EventUpdateUIState.Error(response.message)
