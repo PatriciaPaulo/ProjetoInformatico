@@ -47,7 +47,7 @@ fun EventInfoScreen(
 
     LaunchedEffect(Unit) {
         //get all events to get info
-        eventViewModel.getEventsByID(eventoId!!)
+        eventViewModel.getEventsByID(eventoId!!.toLong())
         userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
 
@@ -153,7 +153,63 @@ private fun MainComponent(
 
         Text(text = textResource(id = R.string.lblEventInfoDescription).toString(),style = MaterialTheme.typography.h6)
         Text(text = event.description, style= MaterialTheme.typography.body1)
+        Text(text = "Garbage Spots in event")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
 
+        ) {
+            when(garbageSpotsState) {
+                is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
+                    if(event.garbageSpots.size  == 0 ){
+                        Text(text = textResource(id = R.string.txtNoGarbageSpotsInEvent).toString())
+                    }else{
+                        LazyHorizontalGrid(
+                            modifier = Modifier
+                                .height(100.dp),
+                            rows = GridCells.Fixed(1),
+
+                            ) {
+
+                            event.garbageSpots
+                                .forEachIndexed { index, card ->
+                                    var gs =
+                                        garbageSpotsState.garbageSpots.find { it.id == card.garbageSpotID }
+                                    if (gs != null){
+                                        item(span = { GridItemSpan(1) }) {
+                                            Card(
+                                                Modifier.clickable {
+
+                                                    log.d { "Gs clicked -> $card" }
+                                                    log.d { "Navigated to new screen" }
+                                                    navController.navigate(Screen.GarbageSpotInfo.route + "/${card.garbageSpotID}")
+                                                },
+                                            ) {
+                                                Column() {
+                                                    Text(text = gs.name)
+                                                    Text(text = gs.createdDate)
+                                                    Text(text = gs.status)
+                                                }
+
+
+                                            }
+                                        }
+                                    }
+
+                                }
+                        }
+
+                    }
+
+                }
+                is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {Text(text = garbageSpotsState.error)}
+                is GarbageSpotViewModel.GarbageSpotsUIState.Loading -> {
+                    CircularProgressIndicator()}
+            }
+        }
 
         //check if it state is to sign up or to change status of already existent sign up
         var user_event = myEventsState.events.find { ev -> ev.event.equals(event) }
@@ -209,34 +265,45 @@ private fun MainComponent(
                         }
                     }
                 }
-
-                //button for organizers only to update event status
-                Button(
-                    onClick = {
-                        eventViewModel.updateEventStatus(event.id,selectedOptionText,authViewModel.tokenState.value)
-
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-
-                    ) {
-                    Text(text = textResource(R.string.btnUpdateParticipateOnEvent).toString())
-                }
-                //button for organizers to add new organizers
-                if(event.status.equals(textResource(R.string.EventOrganizerStatusElement1).toString())){
+                if(event.status!=selectedOptionText){
                     Button(
                         onClick = {
-                            navController.navigate(Screen.UsersInEventList.route+"/${event.id}")
+                            eventViewModel.updateEventStatus(event.id,selectedOptionText,authViewModel.tokenState.value)
 
                         },
-                        modifier = Modifier
-                            .fillMaxWidth(),
 
                         ) {
-                        Text(text = textResource(R.string.btnCheckParticipantsOnEvent).toString())
+                        Text(text = textResource(R.string.btnUpdateParticipateOnEvent).toString())
                     }
                 }
+                Row(horizontalArrangement = Arrangement.SpaceBetween){
 
+
+                    //button for organizers to add new organizers
+                    if(event.status.equals(textResource(R.string.EventOrganizerStatusElement1).toString())){
+                        Button(
+                            onClick = {
+                                navController.navigate(Screen.UsersInEventList.route+"/${event.id}")
+
+                            },
+
+                            ) {
+                            Text(text = textResource(R.string.btnCheckParticipantsOnEvent).toString())
+                        }
+                    }
+
+                    //buton for ORGANIZERS to update event
+                    Button(
+                        onClick = {
+                            navController.navigate(Screen.EventEdit.route+ "/${event.id}")
+
+                        },
+
+                        ) {
+                        Text(text = textResource(R.string.btnUpdateEvent).toString())
+                    }
+                }
+                //button for organizers only to update event status
 
             }
             else{
@@ -290,60 +357,7 @@ private fun MainComponent(
                     }
                 }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
 
-                ) {
-                    when(garbageSpotsState) {
-                        is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
-                            if(event.garbageSpots.size  == 0 ){
-                                Text(text = textResource(id = R.string.txtNoGarbageSpotsInEvent).toString())
-                            }else{
-                                Text(text = "Garbage Spots in event")
-                                LazyHorizontalGrid(
-                                    modifier = Modifier
-                                        .height(100.dp),
-                                    rows = GridCells.Fixed(1),
-
-                                    ) {
-
-                                    event.garbageSpots
-                                        .forEachIndexed { index, card ->
-                                            var gs =
-                                                garbageSpotsState.garbageSpots.find { it.id == card.id }
-                                            item(span = { GridItemSpan(1) }) {
-                                                Card(
-                                                    Modifier.clickable {
-
-                                                        log.d { "Gs clicked -> $card" }
-                                                        log.d { "Navigated to new screen" }
-                                                        navController.navigate(Screen.GarbageSpotInfo.route + "/${card.id}")
-                                                    },
-                                                ) {
-                                                    Column() {
-                                                        Text(text = gs!!.name)
-                                                        Text(text = gs!!.createdDate)
-                                                        Text(text = gs!!.status)
-                                                    }
-
-
-                                                }
-                                            }
-                                        }
-                                    }
-
-                            }
-
-                        }
-                        is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {Text(text = garbageSpotsState.error)}
-                        is GarbageSpotViewModel.GarbageSpotsUIState.Loading -> {
-                            CircularProgressIndicator()}
-                    }
-                }
 
                 //button for participator only to update user_event status
                 Button(

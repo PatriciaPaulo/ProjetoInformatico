@@ -41,6 +41,7 @@ def create_event(current_user):
                       )
 
     db.session.add(new_event)
+    db.session.flush()
 
     for garbageTypeID in data['garbageTypeList']:
         garbageExists = db.session.query(Garbage).filter_by(id=garbageTypeID).first()
@@ -130,24 +131,54 @@ def get_event_id(event_id):
 @event_routes_blueprint.route('/events/<event_id>', methods=['PUT'])
 @token_required
 def update_event(current_user, event_id):
-    userInEvent = db.session.query(UserInEvent).filter_by(userID=current_user.id).all()
-    event = db.session.query(UserInEvent).filter_by(id=event_id).first()
+
+    event = db.session.query(Event).filter_by(id=event_id).first()
 
     if not event:
         return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
 
-    if not userInEvent.includes(event):
+    userInEvent = db.session.query(UserInEvent).filter_by(userID=current_user.id, eventID=event_id).first()
+    if userInEvent and userInEvent.status!="Organizer":
         return make_response(jsonify({'message': '403 NOT OK - You Can\'t Update This Event'}), 403)
 
     event_data = request.get_json()
-    event.duration = event_data['duration']
-    event.startDate = event_data['startDate']
-    event.description = event_data['description']
-    event.accessibility = event_data['accessibility']
-    event.restrictions = event_data['restrictions']
-    event.garbageType = event_data['garbageType']
-    event.quantity = event_data['quantity']
-    event.observations = event_data['observations']
+    event.duration = event_data['event']['duration']
+
+    start_date_time_obj = datetime.strptime(event_data['event']['startDate'], '%Y-%m-%dT%H:%M:%SZ')
+    print(start_date_time_obj)
+    print(datetime.utcnow())
+    if start_date_time_obj < datetime.utcnow():
+        return make_response(jsonify({'message': '404 NOT OK - Event date invalid!'}), 404)
+
+    event.startDate = start_date_time_obj
+    event.description = event_data['event']['description']
+    event.accessibility = event_data['event']['accessibility']
+    event.restrictions = event_data['event']['restrictions']
+    event.quantity = event_data['event']['quantity']
+    event.observations = event_data['event']['observations']
+
+    db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id).delete()
+    db.session.query(GarbageInEvent).filter_by(eventID=event.id).delete()
+    db.session.commit()
+
+
+    print(event_data['garbageTypeList'])
+    print(event_data['garbageSpotList'])
+
+
+    for garbageTypeID in event_data['garbageTypeList']:
+        garbageExists = db.session.query(Garbage).filter_by(id=garbageTypeID).first()
+        if garbageExists:
+            new_garbageInEvent = GarbageInEvent(eventID=event.id, garbageID=garbageTypeID)
+            db.session.add(new_garbageInEvent)
+
+    if len(event_data['garbageSpotList']) > 0:
+        for garbageSpotID in event_data['garbageSpotList']:
+            garbageSpotExists = db.session.query(GarbageSpot).filter_by(id=garbageSpotID).first()
+            if garbageSpotExists:
+                new_garbageSpotInEvent = GarbageSpotInEvent(eventID=event.id, garbageSpotID=garbageSpotID)
+                db.session.add(new_garbageSpotInEvent)
+
 
     db.session.commit()
 
@@ -270,7 +301,8 @@ def get_my_events(current_user):
 
         output.append(event_data)
 
-    if len(output) == 0:
-        return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Events Found'}), 404)
 
     return make_response(jsonify({'data': output, 'message': '200 OK - All Events Retrieved'}), 200)
+
+
+

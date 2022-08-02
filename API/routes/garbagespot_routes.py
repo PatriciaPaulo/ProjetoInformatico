@@ -79,6 +79,7 @@ def get_garbageSpot(current_user,garbageSpot_id):
     if not garbageSpot:
         return make_response(
             jsonify({'message': '404 NOT OK - Garbage Spot doesnt exist!'}), 404)
+
     if not garbageSpot.approved and garbageSpot.creator is not current_user.id:
         return make_response(
             jsonify({'message': '403 NOT OK - Garbage Spot is no approved or belong to you!'}), 403)

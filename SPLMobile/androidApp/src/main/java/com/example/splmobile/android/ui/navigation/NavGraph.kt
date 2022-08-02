@@ -140,6 +140,17 @@ fun SetupNavGraph(
                 log = log)
 
         }
+        composable(Screen.EventEdit.route+"/{eventId}") { backStackEntry ->
+            EventEditScreen(navController = navController,
+                eventViewModel = eventViewModel,
+                garbageSpotViewModel = garbageSpotViewModel,
+                userViewModel = userViewModel,
+                authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
+                backStackEntry.arguments?.getString("eventId"),
+                log = log)
+
+        }
         composable(Screen.GarbageSpotInfo.route+"/{garbageSpotId}") { backStackEntry ->
             GarbageSpotInfoScreen(navController = navController,
                 garbageSpotViewModel = garbageSpotViewModel,

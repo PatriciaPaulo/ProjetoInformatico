@@ -147,6 +147,11 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
     ): GarbageSpotResponse {
         try{
             return client.get {
+                if(token.isNotEmpty()){
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $token")
+                    }
+                }
                 contentType(ContentType.Application.Json)
                 url("api/garbageSpots/"+gsId)
             }.body() as GarbageSpotResponse

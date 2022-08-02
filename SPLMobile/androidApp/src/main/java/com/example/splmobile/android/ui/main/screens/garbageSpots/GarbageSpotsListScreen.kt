@@ -94,7 +94,7 @@ fun GarbageSpotsListScreen(
                     LazyColumn(modifier = Modifier
                         .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
 
-                        items(garbageSpotsListState.garbageSpots.size){ index ->
+                        items(garbageSpotsListState.garbageSpots.filter { it.approved || it.creator == userInfoViewModel.myIdUIState.value } .size){ index ->
                             GarbageSpotsList(gs = garbageSpotsListState.garbageSpots.get(index), navController = navController)
                         }
 

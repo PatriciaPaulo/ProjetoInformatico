@@ -29,14 +29,19 @@ async def handler(websocket):
     users_connected[current_user.id] = websocket
 
     #check if theres messages not received
-    messages = session.query(IndividualMessage).filter_by(receiverID=current_user.id).all()
+    individualMessages = session.query(IndividualMessage).filter_by(receiverID=current_user.id).all()
 
-    for message in messages:
+
+    for individualMessage in individualMessages:
+        message = session.query(Message).filter_by(id=individualMessage.messageID).first()
         if message.status == "Sent":
-            send_notification(current_user.id,message)
+            send_notification(current_user.id, message)
+
+
     messages = session.query(EventMessage).filter_by(receiverID=current_user.id).all()
 
-    for message in messages:
+    for eveMessage in messages:
+        message = session.query(Message).filter_by(id=eveMessage.messageID).first()
         if message.status == "Sent":
             send_notification(current_user.id, message)
 
