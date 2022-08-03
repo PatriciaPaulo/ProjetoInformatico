@@ -17,6 +17,8 @@ import com.example.splmobile.services.events.EventServiceImpl
 import com.example.splmobile.services.friends.FriendService
 import com.example.splmobile.services.friends.FriendServiceImpl
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
+import com.example.splmobile.services.messages.MessageService
+import com.example.splmobile.services.messages.MessageServiceImpl
 import com.example.splmobile.services.userInEvent.UserService
 import com.example.splmobile.services.userInEvent.UserServiceImpl
 import com.example.splmobile.websockets.MessageWebsocket
@@ -100,6 +102,12 @@ private val coreModule = module {
     single<FriendService> {
         FriendServiceImpl(
             getWith("FriendServiceImpl"),
+            get()
+        )
+    }
+    single<MessageService> {
+        MessageServiceImpl(
+            getWith("MessageServiceImpl"),
             get()
         )
     }

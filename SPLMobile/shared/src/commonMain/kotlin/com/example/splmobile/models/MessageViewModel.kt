@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 
 class MessageViewModel (
     private val messageService: MessageService,
-    private val authViewModel: AuthViewModel,
     log: Logger
 ) : ViewModel() {
     private val log = log.withTag("MessageViewModel")
@@ -24,9 +23,20 @@ class MessageViewModel (
 
     fun openConnection(token:String) {
         log.v("connecting websocket ")
+        _notiReceivedUIState.value = NotificationUIState.Loading
         websocket.connect(token)
     }
-
+    //state Notificatio Received
+    private val _notiReceivedUIState = MutableStateFlow<NotificationUIState>(
+        NotificationUIState.Empty
+    )
+    val notiReceivedUIState = _notiReceivedUIState.asStateFlow()
+    sealed class NotificationUIState {
+        data class Success(val userID: Long) : NotificationUIState()
+        data class Error(val error: String) : NotificationUIState()
+        object Loading : NotificationUIState()
+        object Empty : NotificationUIState()
+    }
     //state create garbage spot
     private val _messageCreateUIState = MutableStateFlow<MessageCreateUIState>(
         MessageCreateUIState.Empty
@@ -63,8 +73,9 @@ class MessageViewModel (
 
 
     sealed class MessagesUIState {
-        data class Success(val messagess: List<MessageDTO>) : MessageViewModel.MessagesUIState()
-        data class Error(val error: String) : MessageViewModel.MessagesUIState()
+        data class Success(val messages: List<MessageDTO>) : MessagesUIState()
+        data class SuccessLast(val message: MessageDTO) : MessagesUIState()
+        data class Error(val error: String) : MessagesUIState()
         object Loading : MessageViewModel.MessagesUIState()
         object Empty : MessageViewModel.MessagesUIState()
     }
@@ -83,7 +94,26 @@ class MessageViewModel (
 
     }
 
+    fun getLastMessage(userID:Long,token: String) {
+        _messagessUIState.value = MessagesUIState.Loading
+        log.v("getting all message with $userID ")
+        viewModelScope.launch {
+            val response = messageService.getLastMessage(userID,token)
 
+            if(response.message.substring(0,3)  == "200"){
+                _messagessUIState.value = MessagesUIState.SuccessLast(response.data)
+            }else{
+                _messagessUIState.value = MessagesUIState.Error(response.message)
+            }
+        }
+
+    }
+
+
+    fun errorConnection(error:String) {
+        log.v(" websocket error")
+        _notiReceivedUIState.value = NotificationUIState.Error(error)
+    }
     fun closeConnection() {
         log.v("closing websocket ")
         websocket.close()
@@ -91,7 +121,8 @@ class MessageViewModel (
     }
 
     fun messageNotification(userID: Long) {
-        getMessages(userID,authViewModel.tokenState.value)
+        //getMessages(userID,authViewModel.tokenState.value)
+        _notiReceivedUIState.value = NotificationUIState.Success(userID)
     }
 
 }

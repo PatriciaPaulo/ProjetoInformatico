@@ -1,6 +1,7 @@
 package com.example.splmobile.android.ui.onboarding.screens
 
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -21,10 +22,12 @@ import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.UserInfoViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 
 //Build AuthenticationScreen with buttons to Login, Register and Login as Guest
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun AuthenticationScreen(
     navController: NavHostController,
@@ -32,7 +35,7 @@ fun AuthenticationScreen(
     userInfoViewModel: UserInfoViewModel
 ) {
     val context = LocalContext.current
-
+    val coroutineScope = rememberCoroutineScope()
     val loginUIState by authViewModel.loginUIState.collectAsState()
     LaunchedEffect(Unit) {
         authViewModel.loginUIState.collect { loginUIState ->
@@ -57,7 +60,9 @@ fun AuthenticationScreen(
     // if user already authenticated try to login
     if(authResult.first){
         // Attempt Login
-        authViewModel.login(authResult.second, authResult.third)
+        LaunchedEffect(Unit) {
+            authViewModel.login(authResult.second, authResult.third)
+        }
     }
 
     // if login failed build Authentication Screen

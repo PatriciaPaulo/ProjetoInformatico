@@ -1,5 +1,5 @@
 from flask import jsonify, make_response, request, current_app, Flask
-from sqlalchemy import or_, and_, desc
+from sqlalchemy import or_, and_, desc, asc
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
@@ -54,19 +54,25 @@ def send_message(current_user):
 
 
 
-# Get Garbage Spots created by Logged User
+
+
+# Get All message with user
 @messages_routes_blueprint.route('/friends/<friend_id>/messages', methods=['GET'])
 @token_required
 def get_all_messages(current_user, friend_id):
     # check if user in friendship with logged in user exists
+
+
     user = db.session.query(User).filter_by(id=friend_id).first()
     if not user:
         return make_response(jsonify({'message': '404 NOT OK - User doesnt exist!'}), 404)
-
+    if user is current_user:
+        return make_response(jsonify({'message': '400 NOT OK - No messages with yourself!'}), 400)
     if user.admin:
         return make_response(jsonify({'message': '400 NOT OK - User is an Admin!'}), 400)
     if user.blocked:
         return make_response(jsonify({'message': '400 NOT OK - User is blocked!'}), 400)
+
 
     messages = db.session \
         .query(IndividualMessage, Message) \
@@ -75,19 +81,19 @@ def get_all_messages(current_user, friend_id):
                 (and_(Message.senderID == current_user.id,
                       IndividualMessage.receiverID == user.id),
                  (and_(Message.senderID == user.id,
-                       IndividualMessage.receiverID == current_user.id)))).order_by(desc(Message.sentDate))
+                       IndividualMessage.receiverID == current_user.id)))).order_by(asc(Message.sentDate))
 
     output = []
 
     for message in messages:
 
-        print(message)
+        #print(message)
         message_data = {"id": message.Message.id,
+                        "message": message.Message.message,
                         "status": message.Message.status,
                         "receiverID": message.IndividualMessage.receiverID,
                         "deliveryDate": message.IndividualMessage.deliveryDate,
-                        "senderID": message.Message.senderID,
-                        "sentDate": message.Message.sentDate}
+                        "senderID": message.Message.senderID}
 
         output.append(message_data)
 
@@ -95,3 +101,41 @@ def get_all_messages(current_user, friend_id):
         return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Messages Found'}), 404)
 
     return make_response(jsonify({'data': output, 'message': '200 OK - All Messages Retrieved'}), 200)
+
+# Get last message with user
+@messages_routes_blueprint.route('/friends/<friend_id>/lastMessage', methods=['GET'])
+@token_required
+def get_last_message(current_user, friend_id):
+    # check if user in friendship with logged in user exists
+
+    user = db.session.query(User).filter_by(id=friend_id).first()
+    if not user:
+        return make_response(jsonify({'message': '404 NOT OK - User doesnt exist!'}), 404)
+    if user is current_user:
+        return make_response(jsonify({'message': '400 NOT OK - No messages with yourself!'}), 400)
+    if user.admin:
+        return make_response(jsonify({'message': '400 NOT OK - User is an Admin!'}), 400)
+    if user.blocked:
+        return make_response(jsonify({'message': '400 NOT OK - User is blocked!'}), 400)
+
+    message = db.session \
+        .query(IndividualMessage, Message) \
+        .join(IndividualMessage, Message.id == IndividualMessage.messageID) \
+        .filter(or_
+                (and_(Message.senderID == current_user.id,
+                      IndividualMessage.receiverID == user.id),
+                 (and_(Message.senderID == user.id,
+                       IndividualMessage.receiverID == current_user.id)))).order_by(asc(Message.sentDate)).first()
+
+    message_data = {"id": message.Message.id,
+                    "message": message.Message.message,
+                    "status": message.Message.status,
+                    "receiverID": message.IndividualMessage.receiverID,
+                    "deliveryDate": message.IndividualMessage.deliveryDate,
+                    "senderID": message.Message.senderID}
+
+    if not message:
+        return make_response(jsonify({'data': None, 'message': '404 NOT OK - No Messages Found'}), 404)
+
+    return make_response(jsonify({'data': message_data, 'message': '200 OK - All Messages Retrieved'}), 200)
+

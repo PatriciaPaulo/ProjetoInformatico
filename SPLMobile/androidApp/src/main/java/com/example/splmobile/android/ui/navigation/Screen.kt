@@ -21,6 +21,7 @@ sealed class Screen (val route: String) {
     object MyEventList : Screen(route = "my_event_list")
     object UserProfile : Screen(route = "user_profile")
     object FriendsList : Screen(route = "friends_list")
+    object ChatUser : Screen(route = "chat_user")
 
     object OngoingActivity : Screen(route = "ongoing_activity")
 

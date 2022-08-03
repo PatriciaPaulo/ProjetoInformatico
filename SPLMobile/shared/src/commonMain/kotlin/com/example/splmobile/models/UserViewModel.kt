@@ -142,6 +142,7 @@ class UserViewModel (
             if(response.message.substring(0,3)  == "200"){
                 log.v("Creating event successful")
                 _eventParticipateUIState.value = EventParticipateUIState.SuccessUpdate(response.data.toLong())
+                //todo change to being called in UI if time
                 eventViewModel.getEvents()
             }else{
                 log.v("Creating event error")

@@ -108,7 +108,9 @@ fun SetupNavGraph(
         }
         composable(BottomNavItem.Chat.route) {
             ChatScreen(navController = navController,
-            messageViewModel = messageViewModel,authViewModel = authViewModel)
+            messageViewModel = messageViewModel,
+                friendViewModel = friendViewModel,
+                authViewModel = authViewModel)
         }
         composable(BottomNavItem.Profile.route) {
             ProfileScreen(navController =navController,
@@ -213,6 +215,13 @@ fun SetupNavGraph(
                 authViewModel = authViewModel,
                 friendViewModel = friendViewModel,
                 log = log)
+        }
+        composable(Screen.ChatUser.route+"/{userID}") { backStackEntry->
+            ChatUserScreen(navController = navController,
+                backStackEntry.arguments?.getString("userID"),
+                messageViewModel = messageViewModel,
+                userInfoViewModel = userInfoViewModel,
+                authViewModel = authViewModel)
         }
     }
 }

@@ -9,6 +9,6 @@ data class MessageDTO (
     val message:String,
     val senderID:Long,
     val receiverID: Long,
-    val deliveryDate:String,
+    val deliveryDate:String?,
     val status:String,
 )

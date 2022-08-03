@@ -2,6 +2,7 @@ package com.example.splmobile.websockets
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.RequestMessageResponse
+import com.example.splmobile.models.MessageViewModel
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.logging.*
@@ -14,7 +15,10 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
 
-class MessageWebsocket(private val log: Logger){
+class MessageWebsocket(
+    private val log: Logger,
+    private val messageViewModel: MessageViewModel
+    ){
     private val client = HttpClient(CIO) {
         expectSuccess = true
         engine {
@@ -58,10 +62,13 @@ class MessageWebsocket(private val log: Logger){
                             //TODO PARS
                             val jsonObject = Json.parseToJsonElement(othersMessage.readText())
                             println("js 1- "+ jsonObject)
-                            val jsonObject2 = Json.parseToJsonElement(jsonObject.jsonObject["id"].toString())
-                            println("js 2- "+ jsonObject2)
+                            val id = Json.parseToJsonElement(jsonObject.jsonObject["id"].toString())
+                            println("js 2- "+ id)
                             //val aaa = Json.parseToJsonElement(jsonObject2.jsonObject["id\\"].toString())
-                            send(jsonObject2.toString())
+                            send(id.toString())
+
+                            val userID = Json.parseToJsonElement(jsonObject.jsonObject["senderID"].toString())
+                            messageViewModel.messageNotification(userID.toString().toLong())
 
                         }
                     }catch (ex: Exception) {
