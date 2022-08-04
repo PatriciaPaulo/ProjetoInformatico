@@ -1,6 +1,6 @@
 # IMPORTS FOR DB ACCESS/MANIPULATION
 import datetime
-from models import User,GarbageSpot,Activity,Event,Message,Garbage,GarbageInActivity
+from models import User, GarbageSpot, Activity, Event, Message, Garbage, GarbageInActivity, GarbageType, ActivityType
 from models import Equipment, EquipmentInEvent,IndividualMessage,EventMessage
 from models import UserInEvent,GarbageSpotInEvent
 from werkzeug.security import generate_password_hash
@@ -101,11 +101,28 @@ if __name__ == '__main__':
         name = ["Mascara", "Garrafa", "Saco","Plastico","Cartao","Vidro","Outro"]
         garbage = Garbage(name=name[i])
         session.add(garbage)
-
-
-
-
     print("---Garbage seed done!")
+
+
+    # SEED GarbageType
+    session.query(GarbageType).delete()
+    for i in range(3):
+        name = ["Industrial", "Doméstico", "Outro"]
+        garbageType = GarbageType(name=name[i])
+        session.add(garbageType)
+
+    print("---Garbage Type seed done!")
+
+    # SEED ActivityType
+    session.query(ActivityType).delete()
+    for i in range(3):
+        name = ["Walk", "Run", "Bike"]
+        actiType = ActivityType(name=name[i])
+        session.add(actiType)
+
+    print("---Activity Type seed done!")
+
+
     # SEED EVENTO
     session.query(Event).delete()
     for i in range(10):
@@ -168,7 +185,7 @@ if __name__ == '__main__':
         endDate = [None,my_date]
 
 
-        activityType = ["corrida","caminhada","bicicleta"]
+        activityType = session.query(ActivityType).order_by(func.random()).first()
 
         activity = Activity(userID=userID.id, eventID=eventID.id, distanceTravelled=distanceTravelled, steps=steps,
                              startDate=startDate, endDate=random.choice(endDate), activityType=random.choice(activityType))

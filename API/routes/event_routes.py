@@ -106,7 +106,7 @@ def update_event(current_user, event_id):
     if not event:
         return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
 
-    if not userInEvent.includes(event) :
+    if not userInEvent.includes(event):
         return make_response(jsonify({'message': '403 NOT OK - You Can\'t Update This Event'}), 403)
 
 

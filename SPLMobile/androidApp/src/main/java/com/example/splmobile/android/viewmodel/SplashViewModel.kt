@@ -29,7 +29,7 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             repository.readOnBoardingState().collect { completed ->
                 if (completed) {
-                    _startDestination.value = BottomNavItem.Home.route
+                    _startDestination.value = Screen.Authentication.route
                 } else {
                     _startDestination.value = Screen.Onboarding.route
                 }

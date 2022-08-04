@@ -5,15 +5,15 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.res.stringResource
 import com.example.splmobile.android.R
 
-//Add actual values to Onboarding Pages
+//Add details to Onboarding Template
 sealed class OnboardingPage (
     @DrawableRes
     val image: Int,
     @StringRes
     val title: Int,
     @StringRes
-    val description: Int
-    ) {
+    val description: Int,
+) {
     object ParticipateScreen : OnboardingPage(
         image = R.drawable.ic_onboarding_participate,
         title = R.string.participateTitle,

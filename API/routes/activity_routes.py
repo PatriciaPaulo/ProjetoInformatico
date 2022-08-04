@@ -17,15 +17,13 @@ api = Api(activity_routes_blueprint)
 def start_activity(current_user):
     data = request.get_json()
 
-    print(data["eventID"])
-
     new_activity = Activity(eventID=data['eventID'] if data['eventID'] is not None else None,
                             userID=current_user.id,
                             distanceTravelled=0,
                             steps=0,
                             startDate=datetime.datetime.utcnow(),
                             endDate=None,
-                            activityType="")
+                            activityTypeID=0)
     db.session.add(new_activity)
     db.session.commit()
 

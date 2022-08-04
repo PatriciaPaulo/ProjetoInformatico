@@ -32,6 +32,8 @@
 
     <!-- ACTIVITIES -->
     <string name="activityTitle">Nome da Atividade</string>
+    <string name="activityType">Tipo de Atividade</string>
+    <string name="km">KM</string>
 
     <!-- MapScreen -->
     <string name="lblCreateGarbageSpot">Cria um local de lixo!</string>

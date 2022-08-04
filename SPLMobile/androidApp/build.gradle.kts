@@ -103,6 +103,9 @@ dependencies {
     kapt ("androidx.hilt:hilt-compiler:1.0.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
+    // Images from URL
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // ViewModel utilities for Compose

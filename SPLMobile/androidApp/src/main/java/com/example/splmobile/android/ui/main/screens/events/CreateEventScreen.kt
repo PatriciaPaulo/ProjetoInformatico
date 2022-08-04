@@ -125,9 +125,9 @@ fun CreateEventScreen(
                 }
             }
 
-            val accessibilityListEvent = listOf(textResource(R.string.EventAccessibilityElement1).toString(), textResource(R.string.EventAccessibilityElement2).toString(), textResource(R.string.EventAccessibilityElement3).toString())
-            val quantityListEvent = listOf(textResource(R.string.EventQuantityElement1).toString(), textResource(R.string.EventQuantityElement2).toString(), textResource(R.string.EventQuantityElement3).toString())
-            val restrictionsListEvent = listOf(textResource(R.string.EventRestrictionsElement1).toString(), textResource(R.string.EventRestrictionsElement2).toString())
+            val accessibilityListEvent = listOf(textResource(R.string.EventAccessibilityElement1), textResource(R.string.EventAccessibilityElement2), textResource(R.string.EventAccessibilityElement3))
+            val quantityListEvent = listOf(textResource(R.string.EventQuantityElement1), textResource(R.string.EventQuantityElement2), textResource(R.string.EventQuantityElement3))
+            val restrictionsListEvent = listOf(textResource(R.string.EventRestrictionsElement1), textResource(R.string.EventRestrictionsElement2))
 
             var accessibilityExpanded by remember { mutableStateOf(false) }
             var accessibilitySelectedOptionText by remember { mutableStateOf(accessibilityListEvent[0]) }
@@ -192,7 +192,7 @@ fun CreateEventScreen(
                         value = durationEvent.value ,
                         onValueChange = {durationEvent.value = it},
                         label = {
-                            Text(text = textResource(id = R.string.lblDurationCreateEvent).toString())  },
+                            Text(text = textResource(id = R.string.lblDurationCreateEvent))  },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     )
                     if(durationEvent.value.text.isEmpty()){

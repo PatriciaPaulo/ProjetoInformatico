@@ -18,7 +18,7 @@ class User(Base):
     password = Column(String(50), nullable=False)
     name = Column(String(128))
     email = Column(String(128), nullable=False)
-    icon = Column(String(50), nullable=False)
+    icon = Column(String(50), nullable=True)
     admin = Column(Boolean, nullable=False, default=False)
     blocked = Column(Boolean, nullable=False, default=False)
     confirmed = Column(Boolean, nullable=False, default=False)
@@ -45,7 +45,7 @@ class Activity(Base):
     userID = Column(Integer, ForeignKey('user.id'), nullable=False)
     distanceTravelled = Column(String(50))
     steps = Column(String(50))
-    activityType = Column(String(50))
+    activityTypeID = Column(Integer, ForeignKey('activity_type.id'), nullable=False)
     startDate = Column(DateTime)
     endDate = Column(DateTime)
 
@@ -58,7 +58,7 @@ class Activity(Base):
             'steps': self.steps,
             'startDate': self.startDate,
             'endDate': self.endDate,
-            'activityType': self.activityType
+            'activityTypeID': self.activityTypeID
         }
 
 
@@ -66,7 +66,7 @@ class ActivityType(Base):
     __tablename__ = "activity_type"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
-    icon = Column(String(50), unique=True, nullable=False)
+    icon = Column(String(50), unique=True, nullable=True)
 
     def serialize(self):
         return {
@@ -136,6 +136,20 @@ class GarbageInEvent(Base):
 # region Garbage
 class Garbage(Base):
     __tablename__ = "garbage"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique=True, nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
+# endregion
+
+
+# region Garbage
+class GarbageType(Base):
+    __tablename__ = "garbage_type"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
 

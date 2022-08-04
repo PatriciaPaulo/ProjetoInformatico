@@ -3,7 +3,7 @@ package com.example.splmobile.dtos.activities
 import kotlinx.serialization.Serializable
 
 @Serializable
-class ActivitySerializable (
+data class ActivitySerializable (
     val id: Long,
     var eventID: Long?,
     var distanceTravelled: String?,
@@ -14,10 +14,16 @@ class ActivitySerializable (
     )
 
 @Serializable
-class CreateActivitySerializable (
+data class CreateActivitySerializable (
     var eventID: Long?,
 )
 
+@Serializable
+data class ActivityTypeSerializable (
+    val id: Long,
+    val name: String,
+    val icon: String?,
+)
 
 
 

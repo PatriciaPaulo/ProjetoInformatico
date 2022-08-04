@@ -59,9 +59,8 @@ class AuthServiceImpl(
                 setBody(LoginRequest(loginRequest.email, loginRequest.password))
             }.body()
         }
-        catch (e: Exception){
-            println("Error: ${e.message}")
-            return LoginResponse("error","${e.message}")
+        catch (e : ClientRequestException){
+            return LoginResponse("", e.message)
         }
 
     }

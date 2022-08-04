@@ -151,7 +151,7 @@ fun btnOnboardFinish (
                onClick = onClick,
            ) {
                Text(
-                   text = textResource(R.string.btnOnboardingFinish).toString()
+                   text = textResource(R.string.btnOnboardingFinish)
                )
            }
        }

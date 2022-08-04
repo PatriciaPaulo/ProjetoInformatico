@@ -83,7 +83,8 @@ fun SetupNavGraph(
         composable(route = Screen.OngoingActivity.route) {
             OngoingActivity(
                 navController = navController,
-                mapViewModel = mapViewModel
+                mapViewModel = mapViewModel,
+                activityViewModel = activityViewModel
             )
         }
         composable(BottomNavItem.Map.route) {
