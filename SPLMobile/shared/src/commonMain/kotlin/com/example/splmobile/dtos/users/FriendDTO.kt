@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class FriendSerializable(
+data class FriendDTO(
     val id : Long,
-    val user: UserSerializable,
+    val user: UserDTO,
     val status: String,
     val date: String,
 )

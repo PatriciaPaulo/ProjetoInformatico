@@ -39,7 +39,7 @@ fun GarbageSpotInfoScreen(
     LaunchedEffect(Unit) {
 
         //garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
-        garbageSpotViewModel.getGarbageSpotById(garbageSpotId!!,authViewModel.tokenState.value)
+        garbageSpotViewModel.getGarbageSpotById(garbageSpotId!!.toLong(),authViewModel.tokenState.value)
 
 
     }

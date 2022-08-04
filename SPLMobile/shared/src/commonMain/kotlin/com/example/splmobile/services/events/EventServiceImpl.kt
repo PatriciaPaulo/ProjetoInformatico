@@ -45,6 +45,7 @@ class EventServiceImpl (
 
 
     }
+    private val emptyEvent = EventDTO(0,"","","","","","","","","","","","", emptyList(), emptyList())
 
     init {
         ensureNeverFrozen()
@@ -71,7 +72,7 @@ class EventServiceImpl (
                 url("api/events/"+eventId)
             }.body() as EventResponse
         }catch (ex :Exception){
-            return EventResponse(EventSerializable(0,"","","","","","","","","","",""),"$ex")
+            return EventResponse(emptyEvent,"$ex")
         }
     }
 
@@ -91,7 +92,7 @@ class EventServiceImpl (
             }.body() as RequestMessageResponse
         }
         catch (ex :Exception){
-            return RequestMessageResponse("$ex")
+            return RequestMessageResponse("${ex.message}")
         }
 
 
@@ -99,7 +100,7 @@ class EventServiceImpl (
 
     override suspend fun putEvent(
         eventId: Long,
-        event: EventSerializable,
+        event: EventRequest,
         token: String
     ): RequestMessageResponse {
         log.d { "put event" }

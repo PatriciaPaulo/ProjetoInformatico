@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class UserSerializable(
+data class UserDTO(
     val id: Long,
     val username: String,
     val name: String,

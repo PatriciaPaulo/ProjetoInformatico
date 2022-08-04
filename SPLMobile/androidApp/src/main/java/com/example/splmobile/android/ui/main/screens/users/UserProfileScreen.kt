@@ -26,7 +26,7 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.users.UserSerializable
+import com.example.splmobile.dtos.users.UserDTO
 import com.example.splmobile.models.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 
@@ -143,7 +143,7 @@ fun UserProfileScreen(
 
 @Composable
 fun ProfileSection(
-    utilizador: UserSerializable,
+    utilizador: UserDTO,
     userViewModel: UserViewModel,
     modifier: Modifier = Modifier,
     log: Logger,
@@ -199,7 +199,7 @@ fun RoundImage(
 }
 
 @Composable
-fun StatSection(user: UserSerializable) {
+fun StatSection(user: UserDTO) {
     Row(
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceAround,

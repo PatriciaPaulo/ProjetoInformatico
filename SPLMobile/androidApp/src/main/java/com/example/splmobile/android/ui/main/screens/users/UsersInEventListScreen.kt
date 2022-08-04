@@ -23,8 +23,8 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.events.UserInEventSerializable
-import com.example.splmobile.dtos.users.UserSerializable
+import com.example.splmobile.dtos.events.UserInEventDTO
+import com.example.splmobile.dtos.users.UserDTO
 import com.example.splmobile.models.*
 import kotlinx.coroutines.launch
 
@@ -58,8 +58,8 @@ fun UsersInEventListScreen(
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
 
-    var listSearch = remember{ mutableStateOf(emptyList<UserSerializable>())}
-    var usersInEventListSearch = remember{ mutableStateOf(emptyList<UserInEventSerializable>())}
+    var listSearch = remember{ mutableStateOf(emptyList<UserDTO>())}
+    var usersInEventListSearch = remember{ mutableStateOf(emptyList<UserInEventDTO>())}
 
     var screenState = remember{ mutableStateOf(false)}
     val listState = rememberLazyListState()
@@ -199,7 +199,7 @@ fun UserComponent(){
 
 }
 @Composable
-fun UsersList(navController: NavHostController, gs :UserInEventSerializable){
+fun UsersList(navController: NavHostController, gs :UserInEventDTO){
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -226,8 +226,8 @@ fun UsersList(navController: NavHostController, gs :UserInEventSerializable){
 @Composable
 fun AllUsersList(
     navController: NavHostController,
-    user: UserSerializable,
-    usersInEventListSearch: List<UserInEventSerializable>,
+    user: UserDTO,
+    usersInEventListSearch: List<UserInEventDTO>,
     userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
     log: Logger,

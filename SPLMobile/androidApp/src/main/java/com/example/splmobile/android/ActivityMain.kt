@@ -64,8 +64,10 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     private val activityViewModel: ActivityViewModel by viewModel()
     private val userViewModel: UserViewModel by viewModel()
     private val friendViewModel: FriendViewModel by viewModel()
+    private val messageViewModel: MessageViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
     private val mapViewModel : MapViewModel by viewModels<MapViewModel>()
+
     //notifcations system
     private val channel1ID = "package com.example.splmobile.android.channel1"
     private var notificationManager: NotificationManager? = null
@@ -99,7 +101,8 @@ class ActivityMain : ComponentActivity() , KoinComponent {
                     mapViewModel = mapViewModel,
                     log = log,
                     userViewModel = userViewModel,
-                    friendViewModel = friendViewModel
+                    friendViewModel = friendViewModel,
+                    messageViewModel = messageViewModel,
                 )
             }
             prepLocationUpdates()

@@ -21,7 +21,7 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.users.FriendSerializable
+import com.example.splmobile.dtos.users.FriendDTO
 import com.example.splmobile.models.*
 import kotlinx.coroutines.launch
 
@@ -46,7 +46,7 @@ fun FriendsListScreen(
         userViewModel.getAllUsers(authViewModel.tokenState.value)
 
     }
-    var friendsListBySearch = remember { mutableStateOf(emptyList<FriendSerializable>())}
+    var friendsListBySearch = remember { mutableStateOf(emptyList<FriendDTO>())}
     var usersListState = userViewModel.usersUIState.collectAsState().value
     var friendsListState = friendViewModel.friendsUIState.collectAsState().value
 
@@ -145,7 +145,7 @@ fun FriendsListScreen(
 @Composable
 fun FriendssList(
     navController: NavHostController,
-    gs: FriendSerializable,
+    gs: FriendDTO,
     friendViewModel: FriendViewModel,
     authViewModel: AuthViewModel
 ){

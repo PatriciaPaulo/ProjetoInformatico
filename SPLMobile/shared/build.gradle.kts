@@ -77,8 +77,12 @@ kotlin {
                 //CIO
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
+                implementation ("com.squareup.okhttp3:okhttp:3.12.6")
+                implementation ("com.squareup.okhttp3:mockwebserver:3.12.1")
+
 
             }
+
         }
         val commonTest by getting {
             dependencies {
@@ -147,4 +151,5 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.databinding:compiler:3.2.0-alpha11")
 }
+
 

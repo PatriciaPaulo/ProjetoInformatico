@@ -33,6 +33,7 @@ import com.example.splmobile.isEmailValid
 import com.example.splmobile.isTextFieldEmpty
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.UserInfoViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -114,7 +115,7 @@ fun LoginComposableUI(
     }
 
     val context = LocalContext.current
-
+    val coroutineScope = rememberCoroutineScope()
     val loginUIState by authViewModel.loginUIState.collectAsState()
     LaunchedEffect(Unit) {
         authViewModel.loginUIState.collect { loginUIState ->
@@ -122,15 +123,18 @@ fun LoginComposableUI(
             when (loginUIState) {
                 is AuthViewModel.LoginUIState.Loading -> showRequestState = true
                 is AuthViewModel.LoginUIState.Success -> {
-                    context.dataStore.edit { settings ->
-                        settings[stringPreferencesKey(EMAIL_KEY)] = email
-                        settings[stringPreferencesKey(PASSWORD_KEY)] = password
+
+                        context.dataStore.edit { settings ->
+                            settings[stringPreferencesKey(EMAIL_KEY)] = email
+                            settings[stringPreferencesKey(PASSWORD_KEY)] = password
+
+
+                        userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
+
+                        showRequestState = false
+                        navController.navigate(BottomNavItem.Home.route)
                     }
 
-                    userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
-
-                    showRequestState = false
-                    navController.navigate(BottomNavItem.Home.route)
                 }
                 is AuthViewModel.LoginUIState.Error -> {
                     showErrorState = loginUIState.message

@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserStatsResponse(
-    val data: UserSerializable,
+    val data: UserDTO,
     val message: String,
 )

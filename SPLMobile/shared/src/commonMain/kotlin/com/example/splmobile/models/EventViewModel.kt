@@ -1,9 +1,8 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.events.EventSerializable
+import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.events.EventRequest
-import com.example.splmobile.dtos.events.UserInEventSerializable
 import com.example.splmobile.services.events.EventService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +18,7 @@ class EventViewModel (
     private val _eventsUIState = MutableStateFlow<EventsUIState>(EventsUIState.Empty)
     val eventsUIState = _eventsUIState.asStateFlow()
     sealed class EventsUIState {
-        data class Success(val events: List<EventSerializable>) : EventsUIState()
+        data class Success(val events: List<EventDTO>) : EventsUIState()
         data class Error(val error: String) : EventsUIState()
         object Loading : EventsUIState()
         object Empty : EventsUIState()
@@ -29,7 +28,7 @@ class EventViewModel (
     private val _eventByIdUIState = MutableStateFlow<EventByIdUIState>(EventByIdUIState.Empty)
     val eventByIdUIState = _eventByIdUIState.asStateFlow()
     sealed class EventByIdUIState {
-        data class Success(val event: EventSerializable) : EventByIdUIState()
+        data class Success(val event: EventDTO) : EventByIdUIState()
         data class Error(val error: String) : EventByIdUIState()
         object Loading : EventByIdUIState()
         object Empty : EventByIdUIState()
@@ -57,18 +56,7 @@ class EventViewModel (
         object Empty : EventUpdateUIState()
     }
 
-    /*state participate in event
-    private val _eventParticipateUIState = MutableStateFlow<EventParticipateUIState>(EventParticipateUIState.Empty)
-    val eventParticipateUIState = _eventParticipateUIState.asStateFlow()
-    sealed class EventParticipateUIState {
-        object SuccessParticipate: EventParticipateUIState()
-        object SuccessUpdate: EventParticipateUIState()
-        data class Error(val error: String) : EventParticipateUIState()
-        object Loading : EventParticipateUIState()
-        object Empty : EventParticipateUIState()
 
-
-    */
 
     fun getEvents() {
         _eventsUIState.value = EventsUIState.Loading
@@ -85,11 +73,11 @@ class EventViewModel (
         }
 
     }
-    fun getEventsByID(eventoId: String) {
+    fun getEventsByID(eventoId: Long) {
         _eventByIdUIState.value = EventByIdUIState.Loading
         log.v("getting all events ")
         viewModelScope.launch {
-            val response = eventService.getEventsById(eventoId.toLong())
+            val response = eventService.getEventsById(eventoId)
 
             if(response.message.substring(0,3)  == "200"){
                 log.v("getting all  ${response.data}")
@@ -99,13 +87,12 @@ class EventViewModel (
             }
         }
     }
-    fun createEvent(event: EventSerializable, garbageType : List<Long>, token: String) {
+    fun createEvent(event: EventDTO, garbageSpots :List<Long>,garbageType : List<Long>, token: String) {
         log.v("creating event $event")
         _eventCreateUIState.value = EventCreateUIState.Loading
         viewModelScope.launch {
-            val response_event = eventService.postEvent(EventRequest(event,garbageType),token)
-            //val response_garbage_in_event = eventService.postGarbageTypeInEvent(GarbageInEventRequest(garbageType,event.id),token)
-            if(response_event.message.substring(0,3)  == "200" ){
+            val response_event = eventService.postEvent(EventRequest(event,garbageType,garbageSpots),token)
+             if(response_event.message.substring(0,3)  == "200" ){
                 log.v("Creating event successful")
                 _eventCreateUIState.value = EventCreateUIState.Success
                 getEvents()
@@ -132,15 +119,15 @@ class EventViewModel (
         }
     }
 
-    fun updateEvent(eventId: Long, event: EventSerializable, token: String) {
+    fun updateEvent(eventId: Long, event: EventDTO, garbageSpots :List<Long>,garbageType : List<Long>, token: String) {
         log.v("update event $eventId status")
         _eventUpdateUIState.value = EventUpdateUIState.Loading
         viewModelScope.launch {
-            val response = eventService.putEvent(eventId,event,token)
+            val response = eventService.putEvent(eventId,EventRequest(event,garbageType,garbageSpots),token)
             if(response.message.substring(0,3)  == "200"){
                 log.v("Creating event successful")
                 _eventUpdateUIState.value = EventUpdateUIState.UpdateSuccess
-                getEvents()
+                getEventsByID(eventId)
             }else{
                 log.v("Creating event error")
                 _eventUpdateUIState.value = EventUpdateUIState.Error(response.message)

@@ -1,8 +1,8 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.events.UserInEventSerializable
-import com.example.splmobile.dtos.users.UserSerializable
+import com.example.splmobile.dtos.events.UserInEventDTO
+import com.example.splmobile.dtos.users.UserDTO
 import com.example.splmobile.services.userInEvent.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +35,7 @@ class UserViewModel (
     private val _usersInEventUIState = MutableStateFlow<UsersInEventUIState>(UsersInEventUIState.Empty)
     val usersInEventUIState = _usersInEventUIState.asStateFlow()
     sealed class UsersInEventUIState {
-        data class Success(val user_events: List<UserInEventSerializable>) : UsersInEventUIState()
+        data class Success(val user_events: List<UserInEventDTO>) : UsersInEventUIState()
         data class Error(val error: String) : UsersInEventUIState()
         object Loading : UsersInEventUIState()
         object Empty : UsersInEventUIState()
@@ -45,8 +45,8 @@ class UserViewModel (
     private val _usersUIState = MutableStateFlow<UsersUIState>(UsersUIState.Empty)
     val usersUIState = _usersUIState.asStateFlow()
     sealed class UsersUIState {
-        data class SuccessUsers(val users: List<UserSerializable>) : UsersUIState()
-        data class SuccessUser(val user: UserSerializable) : UsersUIState()
+        data class SuccessUsers(val users: List<UserDTO>) : UsersUIState()
+        data class SuccessUser(val user: UserDTO) : UsersUIState()
         data class Error(val error: String) : UsersUIState()
         object Loading : UsersUIState()
         object Empty : UsersUIState()
@@ -142,6 +142,7 @@ class UserViewModel (
             if(response.message.substring(0,3)  == "200"){
                 log.v("Creating event successful")
                 _eventParticipateUIState.value = EventParticipateUIState.SuccessUpdate(response.data.toLong())
+                //todo change to being called in UI if time
                 eventViewModel.getEvents()
             }else{
                 log.v("Creating event error")

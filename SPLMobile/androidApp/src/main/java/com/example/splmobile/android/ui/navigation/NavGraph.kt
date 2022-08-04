@@ -46,6 +46,7 @@ fun SetupNavGraph(
     mapViewModel: MapViewModel,
     userViewModel: UserViewModel,
     friendViewModel: FriendViewModel,
+    messageViewModel: MessageViewModel,
     sharedViewModel: SharedViewModel
 ){
     NavHost(
@@ -107,7 +108,10 @@ fun SetupNavGraph(
                 log = log)
         }
         composable(BottomNavItem.Chat.route) {
-            ChatScreen(navController = navController)
+            ChatScreen(navController = navController,
+            messageViewModel = messageViewModel,
+                friendViewModel = friendViewModel,
+                authViewModel = authViewModel)
         }
         composable(BottomNavItem.Profile.route) {
             ProfileScreen(navController =navController,
@@ -131,6 +135,18 @@ fun SetupNavGraph(
         composable(Screen.EventInfo.route+"/{eventId}") { backStackEntry ->
             EventInfoScreen(navController = navController,
                 eventViewModel = eventViewModel,
+                garbageSpotViewModel = garbageSpotViewModel,
+                userViewModel = userViewModel,
+                authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
+                backStackEntry.arguments?.getString("eventId"),
+                log = log)
+
+        }
+        composable(Screen.EventEdit.route+"/{eventId}") { backStackEntry ->
+            EventEditScreen(navController = navController,
+                eventViewModel = eventViewModel,
+                garbageSpotViewModel = garbageSpotViewModel,
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
@@ -200,6 +216,13 @@ fun SetupNavGraph(
                 authViewModel = authViewModel,
                 friendViewModel = friendViewModel,
                 log = log)
+        }
+        composable(Screen.ChatUser.route+"/{userID}") { backStackEntry->
+            ChatUserScreen(navController = navController,
+                backStackEntry.arguments?.getString("userID"),
+                messageViewModel = messageViewModel,
+                userInfoViewModel = userInfoViewModel,
+                authViewModel = authViewModel)
         }
     }
 }

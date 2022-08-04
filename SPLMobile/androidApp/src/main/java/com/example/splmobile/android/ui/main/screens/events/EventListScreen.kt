@@ -22,7 +22,7 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.events.EventSerializable
+import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.UserInfoViewModel
@@ -122,7 +122,7 @@ fun EventListScreen(
 }
 
 @Composable
-fun EventsList(navController: NavHostController,event :EventSerializable){
+fun EventsList(navController: NavHostController,event :EventDTO){
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier

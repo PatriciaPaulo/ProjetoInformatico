@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FriendsResponse(
-    val data: List<FriendSerializable>,
+    val data: List<FriendDTO>,
     val message: String,
 )

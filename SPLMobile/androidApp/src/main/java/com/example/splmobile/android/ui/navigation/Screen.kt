@@ -14,12 +14,14 @@ sealed class Screen (val route: String) {
     object GarbageSpotInfo : Screen(route = "garbage_spot_info")
     object CreateEvent : Screen(route = "create_event")
     object EventInfo : Screen(route = "event_info")
+    object EventEdit : Screen(route = "event_edit")
     object EventList : Screen(route = "event_list")
     object UsersInEventList : Screen(route = "users_in_event_list")
     object GarbageSpotList : Screen(route = "garbage_spot_list")
     object MyEventList : Screen(route = "my_event_list")
     object UserProfile : Screen(route = "user_profile")
     object FriendsList : Screen(route = "friends_list")
+    object ChatUser : Screen(route = "chat_user")
 
     object OngoingActivity : Screen(route = "ongoing_activity")
 

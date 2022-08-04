@@ -36,11 +36,11 @@ def guest(f):
 def token_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        print("token required")
+
         token = None
         if 'authorization' in request.headers:
             token = request.headers['authorization']
-
+        print("token required" + token)
         if not token:
             return make_response(jsonify({'message': 'a valid token is missing'}), 400)
 

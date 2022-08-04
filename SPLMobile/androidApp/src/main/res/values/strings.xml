@@ -116,6 +116,9 @@
     <string name="btnAddFriend">Adicionar Amigo</string>
     <string name="lblMyFriends">Os meus amigos</string>
     <string name="txtFriendsError">Erro a encontrar amigos!</string>
+    <string name="txtNoGarbageSpotsInEvent">Evento não tem locais de lixo associados</string>
+    <string name="lblEditEvent">Alterar Evento</string>
+    <string name="btnUpdateEvent">Atualizar Evento</string>
 
 
 </resources>

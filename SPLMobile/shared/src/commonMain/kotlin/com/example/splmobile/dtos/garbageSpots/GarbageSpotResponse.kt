@@ -1,8 +1,8 @@
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class GarbageSpotResponse(
-    val data: GarbageSpotSerializable,
+    val data: GarbageSpotDTO,
     val message: String,
 )

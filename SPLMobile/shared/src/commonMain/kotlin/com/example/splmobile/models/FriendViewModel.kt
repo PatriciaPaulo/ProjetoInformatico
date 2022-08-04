@@ -1,7 +1,7 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.users.FriendSerializable
+import com.example.splmobile.dtos.users.FriendDTO
 import com.example.splmobile.services.friends.FriendService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +31,7 @@ class FriendViewModel  (
     val friendsUIState = _friendsUIState.asStateFlow()
     sealed class FriendsUIState {
         object SuccessByUserID: FriendsUIState()
-        data class SuccessAll(val friends: List<FriendSerializable>) : FriendsUIState()
+        data class SuccessAll(val friends: List<FriendDTO>) : FriendsUIState()
         data class Error(val error: String) : FriendsUIState()
         object Loading : FriendsUIState()
         object Empty : FriendsUIState()

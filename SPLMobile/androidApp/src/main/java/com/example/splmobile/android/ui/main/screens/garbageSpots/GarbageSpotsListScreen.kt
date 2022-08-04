@@ -24,7 +24,7 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotSerializable
+import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.GarbageSpotViewModel
 import com.example.splmobile.models.UserInfoViewModel
@@ -94,7 +94,7 @@ fun GarbageSpotsListScreen(
                     LazyColumn(modifier = Modifier
                         .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
 
-                        items(garbageSpotsListState.garbageSpots.size){ index ->
+                        items(garbageSpotsListState.garbageSpots.filter { it.approved || it.creator == userInfoViewModel.myIdUIState.value } .size){ index ->
                             GarbageSpotsList(gs = garbageSpotsListState.garbageSpots.get(index), navController = navController)
                         }
 
@@ -122,7 +122,7 @@ fun GarbageSpotsListScreen(
 }
 
 @Composable
-fun GarbageSpotsList(navController: NavHostController, gs :GarbageSpotSerializable){
+fun GarbageSpotsList(navController: NavHostController, gs :GarbageSpotDTO){
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier

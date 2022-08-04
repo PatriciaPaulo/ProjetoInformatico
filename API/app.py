@@ -1,4 +1,5 @@
-from flask import Flask
+import jwt
+from flask import Flask, request, current_app
 
 from routes.garbagetype_routes import garbagetype_routes_blueprint
 from routes.garbagespot_routes import garbagespot_routes_blueprint
@@ -11,49 +12,21 @@ from routes.friends_routes import friends_routes_blueprint
 from routes.messages_routes import messages_routes_blueprint
 
 
-from models import db, Base
+from models import db, Base, User
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
+from websockets_server import start_websockets
 
-import asyncio
-import websockets
-from threading import Thread
-
-connected = list()
-
-
-async def handler(websocket):
-    print(f"{websocket} connected")
-    while True:
-        message = await websocket.recv()
-        print(message)
-
-
-async def main():
-
-    async with websockets.serve(handler, "", 5001):
-        await asyncio.Future()  # run forever
-
-
-def start_websockets():
-    print('start_websockets')
-    asyncio.run(main())
-
-
-
-websockets_thread = Thread(target=start_websockets, daemon=True)
-websockets_thread.start()
+SECRET_KEY = '6e129cb9707e18357de8b945656c430f'
+engine = create_engine('sqlite:///spl.db')
 
 
 
 if __name__ == '__main__':
-
     app = Flask(__name__)
-
-
-    app.config['SECRET_KEY'] = '6e129cb9707e18357de8b945656c430f'
+    app.config['SECRET_KEY'] = SECRET_KEY
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///spl.db'
     # region Register App Routes
     app.register_blueprint(admin_routes_blueprint, url_prefix='/api')
@@ -70,9 +43,8 @@ if __name__ == '__main__':
     #mail = Mail(app)
     db.init_app(app)
 
-
+    start_websockets()
     with app.app_context():
-        engine = create_engine('sqlite:///spl.db')
         #Base.metadata.drop_all(engine)
         #Base.metadata.create_all(engine)
 

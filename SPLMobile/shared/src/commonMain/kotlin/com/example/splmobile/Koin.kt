@@ -17,8 +17,12 @@ import com.example.splmobile.services.events.EventServiceImpl
 import com.example.splmobile.services.friends.FriendService
 import com.example.splmobile.services.friends.FriendServiceImpl
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
+import com.example.splmobile.services.messages.MessageService
+import com.example.splmobile.services.messages.MessageServiceImpl
 import com.example.splmobile.services.userInEvent.UserService
 import com.example.splmobile.services.userInEvent.UserServiceImpl
+import com.example.splmobile.websockets.MessageWebsocket
+
 import kotlinx.datetime.Clock
 import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
@@ -53,7 +57,6 @@ fun initKoin(appModule: Module): KoinApplication {
 }
 
 private val coreModule = module {
-
     single<GarbageSpotService> {
         GarbageSpotServiceImpl(
             getWith("GarbageSpotServiceImpl"),
@@ -102,6 +105,13 @@ private val coreModule = module {
             get()
         )
     }
+    single<MessageService> {
+        MessageServiceImpl(
+            getWith("MessageServiceImpl"),
+            get()
+        )
+    }
+
     single<Clock> {
         Clock.System
     }
