@@ -63,7 +63,8 @@ fun ProfileScreen(
         log.d{"get my info get my events and get my activities launched"}
         userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
         userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
-        userInfoViewModel.getMyActivities(authViewModel.tokenState.value)
+        //TODO
+        //userInfoViewModel.getMyActivities(authViewModel.tokenState.value)
     }
     
     Scaffold(

@@ -335,7 +335,7 @@ fun CreateEventScreen(
 }
 
 @Composable
-fun EquipmentSelection(
+private fun EquipmentSelection(
     allEquipmentListEvent: MutableState<List<EquipmentDTO>>,
     listEquipmentInEvent: MutableState<SnapshotStateList<EquipmentInEventDTO>>
 ) {
@@ -401,12 +401,12 @@ fun EquipmentSelection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = allEquipmentListEvent.value[index].name)
-                Log.d("equipment", "before check${listChecked.value.get(index)}")
+
                 Checkbox(
                     checked = listChecked.value.get(index),
                     onCheckedChange = { listChecked.value[index] = it }
                 )
-                Log.d("equipment", "after check ${listChecked.value.get(index)}")
+
 
                 if ( listEquipmentInEvent.value.contains(
                         listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
@@ -751,8 +751,8 @@ private fun garbageSpotsSelection(
     allGarbageSpotListEvent: MutableState<List<GarbageSpotDTO>>,
     listGarbageSpotsInEvent: MutableState<SnapshotStateList<Long>>
 ) {
-    Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
-    //todo redo , select only updating after state change and not when clicked
+    Text(text = textResource(R.string.lblGarbageSpots).toString())
+
 
     LazyColumn(
         modifier = Modifier

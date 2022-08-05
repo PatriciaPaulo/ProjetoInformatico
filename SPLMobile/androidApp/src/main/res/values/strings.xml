@@ -128,6 +128,7 @@
     <string name="btnUpdateEvent">Atualizar Evento</string>
     <string name="lblEquipment">Equipamento</string>
     <string name="lblEquipmentIsProvided">Fornecido</string>
+    <string name="lblGarbageSpots">Locais de Lixo na zona</string>
 
 
 </resources>

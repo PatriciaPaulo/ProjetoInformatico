@@ -78,8 +78,7 @@ fun EventEditScreen(
 
     val allGarbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>())}
     val allGarbageSpotListEvent = remember { mutableStateOf(emptyList<GarbageSpotDTO>())}
-    val allEventsListEvent = remember { mutableStateOf(emptyList<EquipmentDTO>())}
-
+    val allEquipmentListEvent = remember { mutableStateOf(emptyList<EquipmentDTO>())}
 
 
 
@@ -123,11 +122,13 @@ fun EventEditScreen(
                 val listGarbageSpotsInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
                 val listEquipamentsInEvent = remember { mutableStateOf(SnapshotStateList<EquipmentInEventDTO>())}
 
+
+
                 Log.d("edit","${ eventState.event.garbageTypes.map { it.garbageID}}")
                 Log.d("edit","${eventState.event.garbageSpots.map { it.garbageSpotID}}")
                 listGarbageTypeInEvent.value = eventState.event.garbageTypes.map { it.garbageID}.toMutableStateList()
                 listGarbageSpotsInEvent.value = eventState.event.garbageSpots.map { it.garbageSpotID}.toMutableStateList()
-
+                listEquipamentsInEvent.value = eventState.event.equipments.toMutableStateList()
                 var eventDuration = remember { mutableStateOf(TextFieldValue(eventState.event.duration)) }
 
 
@@ -231,6 +232,12 @@ fun EventEditScreen(
                                 garbageTypeSelection(allGarbageTypeListEvent, listGarbageTypeInEvent)
                             }
                         }
+                        when(equipmentsState){
+                            is EventViewModel.EquipmentUIState.Success -> {
+                                allEquipmentListEvent.value = equipmentsState.equipments
+                                EquipmentSelection(allEquipmentListEvent, listEquipamentsInEvent)
+                            }
+                        }
 
 
 
@@ -325,7 +332,96 @@ fun EventEditScreen(
     }
 
 }
+@Composable
+private fun EquipmentSelection(
+    allEquipmentListEvent: MutableState<List<EquipmentDTO>>,
+    listEquipmentInEvent: MutableState<SnapshotStateList<EquipmentInEventDTO>>
+) {
 
+    Row(){
+        Text(text = textResource(R.string.lblEquipment))
+        Text(text = textResource(R.string.lblEquipmentIsProvided))
+    }
+
+    val listChecked = remember { mutableStateOf(SnapshotStateList<Boolean>())}
+    LazyColumn(
+        modifier = Modifier
+            .height(200.dp)
+            .width(200.dp)
+            .selectableGroup(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        items(allEquipmentListEvent.value.size) { index ->
+            if(listChecked.value.size < allEquipmentListEvent.value.size){
+                listChecked.value.add(index,false)
+            }
+
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected =  listEquipmentInEvent.value.contains(
+                            listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                        ),
+                        onClick = {
+                            Log.d("equipement", "equipment clicked")
+
+
+                            var element =  listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                            Log.d("equipement", "$element")
+
+                            if ( element !=null) {
+                                Log.d("equipment", "removing garbage type")
+
+                                //remove item
+                                listEquipmentInEvent.value.remove(element)
+
+
+                            } else {
+                                Log.d("equipment", "adding equipment type")
+                                listEquipmentInEvent.value.add(EquipmentInEventDTO(0, 0,allEquipmentListEvent.value[index].id,listChecked.value[index],"observations"))
+                                Log.d("equipment", "list ${listEquipmentInEvent.value}")
+                            }
+                        }
+
+
+                    )
+                    .background(
+                        if (  listEquipmentInEvent.value.contains(
+                                listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                            )  ) Color.Gray
+                        else Color.Transparent
+                    )
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = allEquipmentListEvent.value[index].name)
+
+                Checkbox(
+                    checked = listChecked.value.get(index),
+                    onCheckedChange = { listChecked.value[index] = it }
+                )
+
+
+                if ( listEquipmentInEvent.value.contains(
+                        listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                    )) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected",
+                        tint = Color.Green,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+            }
+
+        }
+    }
+}
 
 @Composable
 private fun garbageTypeSelection(
