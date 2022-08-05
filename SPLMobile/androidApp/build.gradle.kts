@@ -14,6 +14,7 @@ android {
         targetSdk = 32
         versionCode = 1
         versionName = "1.0"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         getByName("release") {
@@ -105,6 +106,11 @@ dependencies {
 
     // Images from URL
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+
+    //Camera
+    implementation("androidx.camera:camera-camera2:1.1.0-alpha08")
+    implementation("androidx.camera:camera-view:1.0.0-alpha28")
+    implementation("androidx.camera:camera-lifecycle:1.0.1")
 
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")

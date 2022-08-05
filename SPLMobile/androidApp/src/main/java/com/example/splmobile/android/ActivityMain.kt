@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,14 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.rememberNavController
-
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.ui.navigation.SetupNavGraph
 import com.example.splmobile.android.ui.theme.SPLTheme
@@ -37,7 +35,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
-import java.nio.file.Path
 import javax.inject.Inject
 
 
@@ -105,13 +102,50 @@ class ActivityMain : ComponentActivity() , KoinComponent {
                     messageViewModel = messageViewModel,
                 )
             }
+
+            // The request code used in ActivityCompat.requestPermissions()
+// and returned in the Activity's onRequestPermissionsResult()
+            // The request code used in ActivityCompat.requestPermissions()
+// and returned in the Activity's onRequestPermissionsResult()
+            val PERMISSION_ALL = 1
+            val PERMISSIONS = arrayOf(
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.WRITE_CONTACTS,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_SMS,
+                Manifest.permission.CAMERA
+            )
+
+
             prepLocationUpdates()
             prepStepCounter()
+            prepCamAccess()
+            readExternalStorage()
         }
 
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         createNotificationChannel(channel1ID,"devo","descriptio")
     }
+
+    // TODO Request Permissions together
+    private fun prepCamAccess() {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            println("camAccess")
+        } else {
+            println("camAccess")
+            requestSinglePermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    private fun readExternalStorage() {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            println("readExternalStorage")
+        } else {
+            println("readExternalStorage")
+            requestSinglePermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
 
     private fun prepStepCounter() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {

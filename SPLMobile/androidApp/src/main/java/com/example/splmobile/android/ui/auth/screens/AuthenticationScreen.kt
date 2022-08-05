@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -141,7 +142,7 @@ fun btnGoToLogin(
             .fillMaxWidth()
             .height(dimensionResource(R.dimen.btn_small))
     ) {
-        Text( textResource(R.string.lblLogin).toString() )
+        Text( stringResource(R.string.lblLogin) )
     }
 }
 
@@ -157,7 +158,7 @@ fun btnGoToRegister(
             .fillMaxWidth()
             .height(dimensionResource(R.dimen.btn_small))
     ) {
-        Text( textResource(R.string.lblRegister).toString() )
+        Text( stringResource(R.string.lblRegister) )
     }
 }
 
@@ -173,7 +174,7 @@ fun btnGoToVisitGuest(
             .fillMaxWidth()
             .height(dimensionResource(R.dimen.btn_small))
     ) {
-        Text( textResource(R.string.lblLoginGuest).toString() )
+        Text( stringResource(R.string.lblLoginGuest) )
     }
 }
 

@@ -33,7 +33,6 @@ import com.example.splmobile.android.data.StopWatch
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.dtos.activities.ActivityTypeSerializable
-import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
 import com.example.splmobile.models.ActivityViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -41,7 +40,6 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.*
 import kotlin.math.*
 
 // TODO (if time) -> allow to go to previous screens, save variables states, keep time going, show green bar saying in progress and block creating another activity
