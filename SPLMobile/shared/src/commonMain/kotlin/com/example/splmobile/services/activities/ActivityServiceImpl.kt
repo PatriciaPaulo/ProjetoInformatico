@@ -3,6 +3,7 @@ package com.example.splmobile.services.activities
 
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
+import com.example.splmobile.dtos.activities.ActivitiesTypeResponse
 import com.example.splmobile.dtos.activities.ActivitySerializable
 import com.example.splmobile.dtos.activities.CreateActivitySerializable
 import io.ktor.client.*
@@ -71,6 +72,18 @@ class ActivityServiceImpl (
             }.body() as RequestMessageResponse
         } catch (e : Exception) {
             return RequestMessageResponse("$e")
+        }
+    }
+
+    override suspend fun getActivityTypes(): ActivitiesTypeResponse {
+        log.d { "Get All Activity Types" }
+        try {
+            return client.get {
+                contentType(ContentType.Application.Json)
+                url("api/activityTypes")
+            }.body() as ActivitiesTypeResponse
+        } catch (e : Exception) {
+            return ActivitiesTypeResponse(emptyList(), "$e")
         }
     }
 

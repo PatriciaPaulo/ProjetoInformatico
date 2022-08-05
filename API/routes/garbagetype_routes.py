@@ -32,8 +32,6 @@ def create_garbage(current_user):
 
 
 
-
-
 # Get All Garbage Types
 @garbagetype_routes_blueprint.route('/garbageTypes', methods=['GET'])
 def get_all_garbageTypes():

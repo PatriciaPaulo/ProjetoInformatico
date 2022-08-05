@@ -6,6 +6,7 @@
     <dimen name="btn_large">64dp</dimen>
 
     <!-- TEXT -->
+    <dimen name="description">10sp</dimen>
     <dimen name="txt_small">14sp</dimen>
     <dimen name="txt_medium">16sp</dimen>
     <dimen name="txt_large">18sp</dimen>
@@ -15,12 +16,16 @@
 
     <!-- MARGINS AND PADDINGS -->
     <dimen name="default_margin">24dp</dimen>
+    <dimen name="textbox_margin">4dp</dimen>
 
     <dimen name="small_spacer">8dp</dimen>
     <dimen name="medium_spacer">16dp</dimen>
     <dimen name="big_spacer">32dp</dimen>
 
     <dimen name="hr">1dp</dimen>
+
+    <!-- SHAPES -->
+    <dimen name="cornerRadius">12dp</dimen>
 
     <!-- LOGO AND BRANDING -->
     <!-- TODO Adjust sizes when we have permanent logo -->

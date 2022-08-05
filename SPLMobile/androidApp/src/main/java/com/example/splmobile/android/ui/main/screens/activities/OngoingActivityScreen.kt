@@ -2,21 +2,21 @@ package com.example.splmobile.android.ui.main.screens.activities
 
 import android.content.Context
 import android.hardware.Sensor
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -24,18 +24,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.getSystemService
 import androidx.navigation.NavController
 import com.example.splmobile.android.R
 import com.example.splmobile.android.data.StepSensorData
 import com.example.splmobile.android.data.StopWatch
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.viewmodel.MapViewModel
-import com.example.splmobile.dtos.myInfo.LocationDetails
-import com.example.splmobile.isTextFieldEmpty
+import com.example.splmobile.dtos.activities.ActivityTypeSerializable
+import com.example.splmobile.dtos.garbageTypes.GarbageTypeSerializable
+import com.example.splmobile.models.ActivityViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -48,29 +50,9 @@ import kotlin.math.*
 @Composable
 fun OngoingActivity (
     navController: NavController,
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    activityViewModel: ActivityViewModel
 ) {
-
-    Column(){
-        // Show Map Box
-        Box(
-            modifier = Modifier
-                .weight(1f)
-        ){
-
-        }
-
-        // Information panel
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                //.background(shape = )
-        ){
-            ongoingActivityDataUI()
-        }
-    }
-
-
     // Current Location
     val location by mapViewModel.getLocationLiveData().observeAsState()
     var lastLocation: LatLng? by remember { mutableStateOf(null) }
@@ -82,31 +64,27 @@ fun OngoingActivity (
 
     var distanceTravelled by remember { mutableStateOf(0.0) }
     when (location) {
+        // If location is null camera position will be default location
         null ->{
-            print("activity on goin - when in null")
             cameraLatLng = CameraPosition.fromLatLngZoom(defaultLocation, 16f)
         }
-        else -> { // Note the block
-            print("activity on goin - when in else")
+
+        // If location not null, camera position will be current location
+        else -> {
             val lat = location!!.latitude.toDouble()
             val lng = location!!.longitude.toDouble()
             var parseLocationLiveData = LatLng(lat, lng)
 
-            println(" LAST LOCATION BEFOR IF: $lastLocation")
+            // calculate distance travelled since last location
             if(lastLocation != null) {
                 distanceTravelled += calculateDistance(parseLocationLiveData, lastLocation)
             }
             lastLocation = parseLocationLiveData
-            println(" LAST LOCATION AFTER IF: $lastLocation")
-
 
             pointerLocation = parseLocationLiveData
-            println("Pointer Location : $parseLocationLiveData" )
             cameraLatLng = CameraPosition.fromLatLngZoom(parseLocationLiveData, 16f)
         }
     }
-
-
 
     var cameraPosition = rememberCameraPositionState {
         position = cameraLatLng
@@ -115,33 +93,26 @@ fun OngoingActivity (
     var stepCounter by remember { mutableStateOf(0f) }
     step(stepCounter)
 
-    Column {
-        Row {
-            Text("Current Location:")
-            GPS(location)
+    val shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp)
+    Column(){
+        // Show Map Box
+        Box(
+            modifier = Modifier
+                .weight(1f)
+        ){
+            mapActivityUI(cameraPosition, pointerLocation)
         }
 
-        Text("Steps Counter: $stepCounter")
-        Text("KM: $distanceTravelled")
-
-        // TODO Button add garbage to activity
-
-
-        // TODO If not permission, show custom image saying oopsie and on click to call permission requester
-        GoogleMap(
+        // Information panel
+        Box(
             modifier = Modifier
-                .fillMaxSize(),
-            cameraPositionState = cameraPosition
-        ) {
-            // Show Marker in Current Location
-            // TODO Change icon appearance
-            // TODO Marker is broken (places default location always)
-            Marker(
-                position = pointerLocation,
-            )
+                .weight(1f)
+                .clip(shape)
+        ){
+            val shortDistance = round(distanceTravelled * 10.0) / 10.0
+            ongoingActivityDataUI(shortDistance, activityViewModel)
         }
     }
-
 }
 
 fun calculateDistance(currentLocation: LatLng, lastLocation: LatLng?) : Double {
@@ -159,18 +130,8 @@ fun calculateDistance(currentLocation: LatLng, lastLocation: LatLng?) : Double {
 
     val a = sin(dlat/2).pow(2) + cos(curLat) * cos(lastLat) * sin(dlng / 2).pow(2)
     val c = 2 * asin(sqrt(a))
-    Log.d("ongoing activityu", (c * EARTH_RADIUS).toString())
-
 
     return (c * EARTH_RADIUS)
-}
-
-@Composable
-private fun GPS(currentLocation : LocationDetails?) {
-    currentLocation?.let {
-        Text(text = currentLocation.latitude)
-        Text(text = currentLocation.longitude)
-    }
 }
 
 @Composable
@@ -193,18 +154,66 @@ private fun step(stepCounter : Float) {
     }
 }
 
-// TODO 1/2 da screen
 @Composable
-private fun ongoingActivityDataUI() {
+private fun runStopWatch() {
+    val stopWatch = remember { StopWatch() }
+
+    stopWatch.startStopwatch()
+
+    Text(
+        text = stopWatch.formattedTime
+    )
+}
+
+@Composable
+private fun mapActivityUI(cameraPosition : CameraPositionState, pointerLocation : LatLng) {
+    // TODO If not permission, show custom image saying oopsie and on click to call permission requester
+    GoogleMap(
+        modifier = Modifier
+            .fillMaxSize(),
+        cameraPositionState = cameraPosition
+    ) {
+        // Show Marker in Current Location
+        // TODO Change icon appearance
+        Marker(
+            position = pointerLocation,
+        )
+    }
+}
+
+// TODO 1/2 da screen
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun ongoingActivityDataUI(distance : Double, activityViewModel: ActivityViewModel) {
+    LaunchedEffect(Unit) {
+        // Get Activity Types from DB
+        activityViewModel.getActivityTypes()
+    }
+
     val defaultTitle = stringResource(R.string.activityTitle)
     var activityName by remember { mutableStateOf(defaultTitle) }
     var activityNameUpdate by remember { mutableStateOf(defaultTitle) }
     // Status returns true if name is being edited
     var activityNameStatus by remember { mutableStateOf(false) }
 
+    var activityTypeState = activityViewModel.activityTypeUIState.collectAsState().value
+    var activityTypesList = remember { mutableStateOf(emptyList<ActivityTypeSerializable>()) }
+    var actTypeExpanded by remember { mutableStateOf(false) }
 
-    Column() {
-        // Activity Name, Editable Buttons
+    when(activityTypeState) {
+        is ActivityViewModel.ActivityTypeUIState.Success -> {
+            activityTypesList.value = activityTypeState.activityTypes
+        }
+    }
+
+    var actTypeSelected by remember { mutableStateOf("Escolha uma opção")}
+
+
+    Column(
+        modifier = Modifier
+            .padding(dimensionResource(R.dimen.default_margin))
+    ) {
+        // Activity Name, Edit Name Buttons
         Row() {
             if(activityNameStatus){
                 // Editable Activity Name
@@ -276,8 +285,47 @@ private fun ongoingActivityDataUI() {
 
 
         // Chronometer
+        // TODO On app close keep counting
         runStopWatch()
 
+        // Escolher Activity Type
+        Row() {
+            ExposedDropdownMenuBox(
+                expanded = actTypeExpanded,
+                onExpandedChange = { actTypeExpanded = !actTypeExpanded }
+            ) {
+                TextField(
+                    readOnly = true,
+                    value = actTypeSelected,
+                    onValueChange = { },
+                    label = { Text(textResource(R.string.activityType)) },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = actTypeExpanded
+                        )
+
+                    },
+                    colors = ExposedDropdownMenuDefaults.textFieldColors()
+                )
+                ExposedDropdownMenu(
+                    expanded = actTypeExpanded,
+                    onDismissRequest = {
+                        actTypeExpanded = false
+                    }
+                ) {
+                    activityTypesList.value.forEach { selectedOption ->
+                        DropdownMenuItem(
+                            onClick = {
+                                actTypeSelected = selectedOption.name
+                                actTypeExpanded = false
+                            }
+                        ) {
+                            Text(text = selectedOption.name)
+                        }
+                    }
+                }
+            }
+        }
 
         Row() {
             // TODO Resumo Lixo
@@ -292,19 +340,22 @@ private fun ongoingActivityDataUI() {
                     onClick = { }
                 ) { }
             }
-            // TODO Steps (maybe tirar)
 
-            // TODO Distância so far
+            // Travelled Distance
             Box(
                 modifier = Modifier
                     .weight(1F)
             ) {
-                Button(
+                Column (
                     modifier = Modifier
-                        .size(dimensionResource(R.dimen.btn_large))
-                        .align(Alignment.Center),
-                    onClick = { }
-                ) { }
+                        .align(Alignment.Center)
+                ){
+                    Text(
+                        text = distance.toString(),
+                        fontSize = dimensionResource(R.dimen.title).value.sp
+                    )
+                    Text(textResource(R.string.km))
+                }
             }
 
             // TODO Add/Edit pictures
@@ -321,22 +372,12 @@ private fun ongoingActivityDataUI() {
             }
         }
 
-        // TODO Adicionar Activity Type
         // TODO Concluir BTN
         // TODO Cancelar BTN
+        // TODO Backtrace button fazer o mesmo que cancelar action
     }
 }
 
-@Composable
-private fun runStopWatch() {
-    val stopWatch = remember { StopWatch() }
-
-    stopWatch.startStopwatch()
-
-    Text(
-        text = stopWatch.formattedTime
-    )
-}
 // TODO 1/2 da screen ? revise size
 @Composable
 private fun addGarbageToActivityUI() {

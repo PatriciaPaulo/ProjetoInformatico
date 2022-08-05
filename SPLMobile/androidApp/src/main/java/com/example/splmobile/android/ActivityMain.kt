@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
@@ -35,6 +37,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
+import java.nio.file.Path
 import javax.inject.Inject
 
 
@@ -157,6 +160,5 @@ class ActivityMain : ComponentActivity() , KoinComponent {
 // Retrieve string id
 @Composable
 @ReadOnlyComposable
-fun textResource(@StringRes id: Int) : CharSequence =
-    LocalContext.current.resources.getText(id)
-
+fun textResource(@StringRes id: Int) : String =
+    LocalContext.current.resources.getText(id).toString()
