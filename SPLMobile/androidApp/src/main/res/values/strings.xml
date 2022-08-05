@@ -126,6 +126,8 @@
     <string name="txtNoGarbageSpotsInEvent">Evento não tem locais de lixo associados</string>
     <string name="lblEditEvent">Alterar Evento</string>
     <string name="btnUpdateEvent">Atualizar Evento</string>
+    <string name="lblEquipment">Equipamento</string>
+    <string name="lblEquipmentIsProvided">Fornecido</string>
 
 
 </resources>

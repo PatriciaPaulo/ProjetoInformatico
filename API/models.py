@@ -183,7 +183,7 @@ class EquipmentInEvent(Base):
     equipmentID = Column(Integer, ForeignKey('equipment.id'), nullable=False)
     eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
     observations = Column(String(50))
-    isProvided = Column(Boolean)
+    isProvided = Column(Boolean, nullable=False)
 
     def serialize(self):
         return {

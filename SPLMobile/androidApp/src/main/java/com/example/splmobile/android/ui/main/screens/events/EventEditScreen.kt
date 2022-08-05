@@ -30,6 +30,8 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
+import com.example.splmobile.dtos.equipments.EquipmentDTO
+import com.example.splmobile.dtos.equipments.EquipmentInEventDTO
 import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
@@ -61,10 +63,9 @@ fun EventEditScreen(
         //get all events to get info
         eventViewModel.getEventsByID(eventoId!!.toLong())
         userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
-
-
         garbageSpotViewModel.getGarbageTypes(authViewModel.tokenState.value)
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+        eventViewModel.getEquipments(authViewModel.tokenState.value)
 
     }
     var eventState = eventViewModel.eventByIdUIState.collectAsState().value
@@ -73,9 +74,12 @@ fun EventEditScreen(
 
     val garbageSpotsState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
     val garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
+    val equipmentsState = eventViewModel.equipmentUIState.collectAsState().value
 
     val allGarbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>())}
     val allGarbageSpotListEvent = remember { mutableStateOf(emptyList<GarbageSpotDTO>())}
+    val allEventsListEvent = remember { mutableStateOf(emptyList<EquipmentDTO>())}
+
 
 
 
@@ -117,10 +121,11 @@ fun EventEditScreen(
 
                 val listGarbageTypeInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
                 val listGarbageSpotsInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
+                val listEquipamentsInEvent = remember { mutableStateOf(SnapshotStateList<EquipmentInEventDTO>())}
 
-                Log.d("edit","${ eventState.event.garbageType.map { it.garbageID}}")
+                Log.d("edit","${ eventState.event.garbageTypes.map { it.garbageID}}")
                 Log.d("edit","${eventState.event.garbageSpots.map { it.garbageSpotID}}")
-                listGarbageTypeInEvent.value = eventState.event.garbageType.map { it.garbageID}.toMutableStateList()
+                listGarbageTypeInEvent.value = eventState.event.garbageTypes.map { it.garbageID}.toMutableStateList()
                 listGarbageSpotsInEvent.value = eventState.event.garbageSpots.map { it.garbageSpotID}.toMutableStateList()
 
                 var eventDuration = remember { mutableStateOf(TextFieldValue(eventState.event.duration)) }
@@ -284,9 +289,11 @@ fun EventEditScreen(
                                             eventObservations.value?.text,
                                             eventState.event.createdDate,
                                             eventState.event.garbageSpots,
-                                            eventState.event.garbageType),
+                                            eventState.event.garbageTypes,
+                                            eventState.event.equipments),
                                         listGarbageSpotsInEvent.value,
                                         listGarbageTypeInEvent.value,
+                                        listEquipamentsInEvent.value,
                                         authViewModel.tokenState.value
                                     )
 

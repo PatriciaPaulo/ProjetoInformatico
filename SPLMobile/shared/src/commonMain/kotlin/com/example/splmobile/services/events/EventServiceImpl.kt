@@ -3,7 +3,9 @@ package com.example.splmobile.services.events
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
+import com.example.splmobile.dtos.equipments.EquipmentsResponse
 import com.example.splmobile.dtos.events.*
+import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -45,7 +47,7 @@ class EventServiceImpl (
 
 
     }
-    private val emptyEvent = EventDTO(0,"","","","","","","","","","","","", emptyList(), emptyList())
+    private val emptyEvent = EventDTO(0,"","","","","","","","","","","","", emptyList(), emptyList(), emptyList())
 
     init {
         ensureNeverFrozen()
@@ -137,6 +139,17 @@ class EventServiceImpl (
         }
         catch (ex :Exception){
             return RequestMessageResponse("$ex")
+        }
+    }
+
+    override suspend fun getEquipments(token: String): EquipmentsResponse {
+        try{
+            return client.get {
+                contentType(ContentType.Application.Json)
+                url("api/equipments")
+            }.body() as EquipmentsResponse
+        }catch (ex :Exception){
+            return EquipmentsResponse(emptyList(),"$ex")
         }
     }
 

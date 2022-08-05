@@ -53,7 +53,7 @@ dependencies {
     //Map Dependencies
     implementation ("com.google.android.material:material:1.6.0")
     implementation ("com.google.maps.android:maps-compose:1.0.0")
-    implementation ("com.google.android.gms:play-services-maps:18.0.2")
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.gms:play-services-location:20.0.0")
 
     val composeVersion = "1.1.1"

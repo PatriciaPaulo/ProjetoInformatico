@@ -1,8 +1,11 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
+import com.example.splmobile.dtos.equipments.EquipmentDTO
+import com.example.splmobile.dtos.equipments.EquipmentInEventDTO
 import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.events.EventRequest
+import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
 import com.example.splmobile.services.events.EventService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -58,6 +61,7 @@ class EventViewModel (
 
 
 
+
     fun getEvents() {
         _eventsUIState.value = EventsUIState.Loading
         log.v("getting all events ")
@@ -87,11 +91,11 @@ class EventViewModel (
             }
         }
     }
-    fun createEvent(event: EventDTO, garbageSpots :List<Long>,garbageType : List<Long>, token: String) {
+    fun createEvent(event: EventDTO, garbageSpots :List<Long>,garbageType : List<Long>, equipments : List<EquipmentInEventDTO>,token: String) {
         log.v("creating event $event")
         _eventCreateUIState.value = EventCreateUIState.Loading
         viewModelScope.launch {
-            val response_event = eventService.postEvent(EventRequest(event,garbageType,garbageSpots),token)
+            val response_event = eventService.postEvent(EventRequest(event,garbageType,garbageSpots,equipments),token)
              if(response_event.message.substring(0,3)  == "200" ){
                 log.v("Creating event successful")
                 _eventCreateUIState.value = EventCreateUIState.Success
@@ -119,11 +123,11 @@ class EventViewModel (
         }
     }
 
-    fun updateEvent(eventId: Long, event: EventDTO, garbageSpots :List<Long>,garbageType : List<Long>, token: String) {
+    fun updateEvent(eventId: Long, event: EventDTO, garbageSpots :List<Long>,garbageType : List<Long>,equipments : List<EquipmentInEventDTO>, token: String) {
         log.v("update event $eventId status")
         _eventUpdateUIState.value = EventUpdateUIState.Loading
         viewModelScope.launch {
-            val response = eventService.putEvent(eventId,EventRequest(event,garbageType,garbageSpots),token)
+            val response = eventService.putEvent(eventId,EventRequest(event,garbageType,garbageSpots,equipments),token)
             if(response.message.substring(0,3)  == "200"){
                 log.v("Creating event successful")
                 _eventUpdateUIState.value = EventUpdateUIState.UpdateSuccess
@@ -134,4 +138,31 @@ class EventViewModel (
             }
         }
     }
+
+    //state get equiment
+    private val _equipmentUIState = MutableStateFlow<EquipmentUIState>(EquipmentUIState.Empty)
+    val equipmentUIState = _equipmentUIState.asStateFlow()
+    sealed class EquipmentUIState {
+        data class Success(val equipments: List<EquipmentDTO>) : EquipmentUIState()
+        data class Error(val error: String) : EquipmentUIState()
+        object Loading : EquipmentUIState()
+        object Empty : EquipmentUIState()
+    }
+
+    //garbage type section
+    fun getEquipments(token: String) {
+        _equipmentUIState.value = EquipmentUIState.Loading
+        log.v("getting all EQUIMENTS")
+        viewModelScope.launch {
+            val response = eventService.getEquipments(token)
+
+            if(response.message.substring(0,3)  == "200"){
+                _equipmentUIState.value = EquipmentUIState.Success(response.data)
+            }else{
+                _equipmentUIState.value = EquipmentUIState.Error(response.message)
+            }
+        }
+
+    }
+
 }

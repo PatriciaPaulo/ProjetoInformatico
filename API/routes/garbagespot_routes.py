@@ -105,7 +105,6 @@ def update_garbageSpot(current_user, garbageSpot_id):
 
     garbageSpot_data = request.get_json()
     garbageSpot.status = garbageSpot_data['status']
-    event.foto = event_data['foto']
 
     db.session.commit()
     return make_response(jsonify({ 'message': '200 OK - Garbage Spot Updated'}), 200)
