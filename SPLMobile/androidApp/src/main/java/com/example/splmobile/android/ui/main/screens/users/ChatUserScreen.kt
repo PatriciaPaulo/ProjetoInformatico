@@ -66,6 +66,7 @@ fun ChatUserScreen (navController : NavController,
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp
             )
+
             NotificationState(messageViewModel, userID, authViewModel)
 
             SendMessageState(messageViewModel, userID, authViewModel)
@@ -129,12 +130,15 @@ private fun NotificationState(
     when (notificationState) {
         is MessageViewModel.NotificationUIState.Success -> {
             Text("Notification received from ${notificationState}")
-            LaunchedEffect(Unit) {
+
                 messageViewModel.getMessages(
                     userID!!.toLong(),
                     authViewModel.tokenState.value
                 )
-            }
+
+        }
+        is MessageViewModel.NotificationUIState.Error -> {
+            messageViewModel.openConnection(authViewModel.tokenState.value)
         }
     }
 }
