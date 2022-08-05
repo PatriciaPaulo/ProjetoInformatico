@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">.SPLMobileApplication</string>
+
     <!-- ONBOARDING -->
     <string name="participateTitle">Participa</string>
     <string name="participateDescription">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sollicitudin ac augue vel porta. Praesent et velit non urna pulvinar malesuada. Donec lacinia volutpat elementum. </string>
@@ -34,6 +36,11 @@
     <string name="activityTitle">Nome da Atividade</string>
     <string name="activityType">Tipo de Atividade</string>
     <string name="km">KM</string>
+
+    <!-- CAMERA CONTROLS -->
+    <string name="icn_camera_view_switch_camera_content_description">Switch Camera</string>
+    <string name="icn_camera_view_camera_shutter_content_description">Take Pic</string>
+    <string name="icn_camera_view_view_gallery_content_description">View Gallery</string>
 
     <!-- MapScreen -->
     <string name="lblCreateGarbageSpot">Cria um local de lixo!</string>

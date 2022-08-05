@@ -178,19 +178,17 @@ if __name__ == '__main__':
         eventID = session.query(Event).order_by(func.random()).first()
         distanceTravelled = randrange(99999)
         steps = randrange(99999)
-        startDate =  datetime.datetime.utcnow()
+        startDate = datetime.datetime.utcnow()
         td = timedelta(days=randrange(3))
         # your calculated date
         my_date = startDate + td
-        endDate = [None,my_date]
-
+        endDate = [None, my_date]
 
         activityType = session.query(ActivityType).order_by(func.random()).first()
 
         activity = Activity(userID=userID.id, eventID=eventID.id, distanceTravelled=distanceTravelled, steps=steps,
-                             startDate=startDate, endDate=random.choice(endDate), activityType=random.choice(activityType))
+                            startDate=startDate, endDate=random.choice(endDate), activityTypeID=activityType.id)
         session.add(activity)
-
 
     print("---Activity seed done!")
 

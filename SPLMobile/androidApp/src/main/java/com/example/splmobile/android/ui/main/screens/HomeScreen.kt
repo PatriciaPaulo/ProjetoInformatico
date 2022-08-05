@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.splmobile.android.CameraView
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
@@ -55,6 +56,14 @@ fun HomeScreenUI(
     activityViewModel: ActivityViewModel,
     mapViewModel: MapViewModel
 ){
+/*
+    CameraView(onImageCaptured = { uri, fromGallery ->
+        Log.d("IMG", "Image Uri Captured from Camera View")
+        //Todo : use the uri as needed
+    }, onError = { imageCaptureException ->
+        Log.d("ERROR IMG","An error occurred while trying to take a picture")
+    })
+*/
 
     Column(
         modifier = Modifier
@@ -67,7 +76,9 @@ fun HomeScreenUI(
                 modifier = Modifier
                     .height(dimensionResource(R.dimen.btn_large))
                     .fillMaxWidth(),
-                onClick = { startNewActivity(navController, activityViewModel, authViewModel, mapViewModel) }
+                onClick = {
+                    startNewActivity(navController, activityViewModel, authViewModel, mapViewModel)
+                }
             ){
                 Text(
                     text = "Começar Atividade"
@@ -87,8 +98,8 @@ fun startNewActivity(
     authViewModel: AuthViewModel,
     mapViewModel: MapViewModel
 ){
-    // Create Activity in DB
 
+    // Create Activity in DB
     activityViewModel.createActivity(
         CreateActivitySerializable(null),
         authViewModel.tokenState.value,
