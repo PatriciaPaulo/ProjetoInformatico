@@ -138,7 +138,7 @@ private fun NotificationState(
 
         }
         is MessageViewModel.NotificationUIState.Error -> {
-            messageViewModel.openConnection(authViewModel.tokenState.value)
+            messageViewModel.startConnection(authViewModel.tokenState.value)
         }
     }
 }
@@ -195,6 +195,7 @@ private fun bottomSection(
                             "Individual"
                         ), authViewModel.tokenState.value
                     )
+                    messageToSend.value = TextFieldValue("")
 
                 }
             },

@@ -3,7 +3,8 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent,UserInEvent,GarbageInEvent,Garbage
+from models import User, Activity, Event, db, GarbageSpot, GarbageSpotInEvent, UserInEvent, GarbageInEvent, Garbage, \
+    EquipmentInEvent
 from utils import token_required,admin_required,guest
 import jwt
 from datetime import datetime
@@ -37,7 +38,7 @@ def get_user_in_event(current_user,event_id):
                                    'description': event.description, 'accessibility': event.accessibility,
                                    'restrictions': event.restrictions, 'quantity': event.quantity,
                                    'observations': event.observations,
-                                   'createdDate': event.createdDate, 'garbageSpots': [], 'garbageType': []}
+                                   'createdDate': event.createdDate, 'garbageSpots': [], 'garbageTypes': [], 'equipments': []}
 
             for garbageSpot in db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
                 garbageSpotSer = GarbageSpotInEvent.serialize(garbageSpot)
@@ -45,7 +46,11 @@ def get_user_in_event(current_user,event_id):
 
             for garbageType in db.session.query(GarbageInEvent).filter_by(eventID=event.id):
                 garbageTypeSer = GarbageInEvent.serialize(garbageType)
-                event_data['event']['garbageType'].append(garbageTypeSer)
+                event_data['event']['garbageTypes'].append(garbageTypeSer)
+
+            for equipment in db.session.query(EquipmentInEvent).filter_by(eventID=event.id):
+                equipmentSer = EquipmentInEvent.serialize(equipment)
+                event_data['event']['equipments'].append(equipmentSer)
 
 
         output.append(event_data)

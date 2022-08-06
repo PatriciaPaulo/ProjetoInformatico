@@ -5,6 +5,8 @@ import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.models.MessageViewModel
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.network.sockets.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
@@ -18,7 +20,7 @@ import kotlinx.serialization.json.jsonObject
 class MessageWebsocket(
     private val log: Logger,
     private val messageViewModel: MessageViewModel
-    ){
+){
     private val client = HttpClient(CIO) {
         expectSuccess = true
         engine {
@@ -47,47 +49,51 @@ class MessageWebsocket(
     }
 
 
-     fun connect(token:String) {
-        log.d { "connect websocket" }
+    suspend fun websocket(token:String) {
 
-         try {
-            GlobalScope.launch(Dispatchers.Unconfined) {
-                client.webSocket("ws://10.0.2.2:5001", request = {
-                    header("token", "Bearer "+token)
-                }) {
-                    try {
-                        while (true) {
-                            val othersMessage = incoming.receive() as? Frame.Text ?: continue
-                            println( "bit - "+ othersMessage.readText())
-                            //TODO PARS
-                            val jsonObject = Json.parseToJsonElement(othersMessage.readText())
-                            println("js 1- "+ jsonObject)
-                            val id = Json.parseToJsonElement(jsonObject.jsonObject["id"].toString())
-                            println("js 2- "+ id)
-                            //val aaa = Json.parseToJsonElement(jsonObject2.jsonObject["id\\"].toString())
-                            send(id.toString())
+        client.webSocket("ws://10.0.2.2:5001", request = {
+            header("token", "Bearer "+token)
+        }) {
+            try {
+                while (true) {
+                    val othersMessage = incoming.receive() as? Frame.Text ?: continue
+                    println( "bit - "+ othersMessage.readText())
+                    //TODO PARS
+                    val jsonObject = Json.parseToJsonElement(othersMessage.readText())
+                    println("js 1- "+ jsonObject)
+                    val id = Json.parseToJsonElement(jsonObject.jsonObject["id"].toString())
+                    println("js 2- "+ id)
+                    //val aaa = Json.parseToJsonElement(jsonObject2.jsonObject["id\\"].toString())
+                    send(id.toString())
 
-                            val userID = Json.parseToJsonElement(jsonObject.jsonObject["senderID"].toString())
-                            messageViewModel.messageNotification(userID.toString().toLong())
-
-                        }
-                    }catch (ex: Exception) {
-                        client.close()
-                        log.d { "$ex" }
-                    }
-
+                    val userID = Json.parseToJsonElement(jsonObject.jsonObject["senderID"].toString())
+                    messageViewModel.messageNotification(userID.toString().toLong())
 
                 }
+            }catch (ex: Exception) {
+
+                log.d { "$ex" }
             }
 
 
-        } catch (ex: Exception) {
+        }
 
+    }
+    fun connect(token:String) {
+        log.d { "connect websocket" }
+        try {
+            GlobalScope.launch(Dispatchers.Unconfined) {
+                websocket(token)
+            }
+        } catch (ex: Exception) {
+            log.d { "$ex" }
+        }
+        catch (ex: ConnectTimeoutException) {
+            MessageViewModel.NotificationUIState.Offline
             log.d { "$ex" }
         }
 
     }
-
 
     fun close() {
         log.d { "CLOSE websocket" }

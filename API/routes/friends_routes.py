@@ -129,7 +129,7 @@ def get_user_friends(current_user):
 
         friend_data['user'] = user_data
         friend_data['status'] = friend.status
-        friend_data['date'] = friend.date
+        friend_data['date'] = friend.completeDate
 
         result.append(friend_data)
 
@@ -163,7 +163,7 @@ def get_user_friends(current_user):
 
         friend_data['user'] = user_data
         friend_data['status'] = friend.status
-        friend_data['date'] = friend.date
+        friend_data['date'] = friend.completeDate
 
         result.append(friend_data)
     #if friendship completed
