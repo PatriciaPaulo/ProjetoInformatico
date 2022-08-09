@@ -32,14 +32,15 @@ import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.isEmailValid
 import com.example.splmobile.isTextFieldEmpty
 import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.MessageViewModel
 import com.example.splmobile.models.UserInfoViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    userInfoViewModel: UserInfoViewModel
+    userInfoViewModel: UserInfoViewModel,
+    messageViewModel: MessageViewModel
 ) {
 
     /* TODO
@@ -74,7 +75,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.big_spacer)))
 
         // TextFields updating according to state
-        LoginComposableUI(navController, authViewModel, userInfoViewModel)
+        LoginComposableUI(navController, authViewModel, userInfoViewModel,messageViewModel)
 
     }
 
@@ -85,7 +86,8 @@ fun LoginScreen(
 fun LoginComposableUI(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    userInfoViewModel: UserInfoViewModel
+    userInfoViewModel: UserInfoViewModel,
+    messageViewModel: MessageViewModel
 ){
     // Variables for TextFields Validation
     var email by remember { mutableStateOf("") }
@@ -128,7 +130,8 @@ fun LoginComposableUI(
                             settings[stringPreferencesKey(EMAIL_KEY)] = email
                             settings[stringPreferencesKey(PASSWORD_KEY)] = password
 
-
+                        //connect to websocket
+                        messageViewModel.startConnection(authViewModel.tokenState.value)
                         userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
 
                         showRequestState = false
