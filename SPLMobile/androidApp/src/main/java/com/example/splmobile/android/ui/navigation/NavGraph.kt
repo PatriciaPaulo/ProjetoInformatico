@@ -22,9 +22,7 @@ import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.android.ui.main.screens.activities.OngoingActivity
 import com.example.splmobile.android.ui.main.screens.events.*
-import com.example.splmobile.android.ui.main.screens.garbageSpots.*
 import com.example.splmobile.android.ui.main.screens.users.*
-import com.example.splmobile.android.ui.onboarding.screens.*
 import com.example.splmobile.android.viewmodel.*
 import com.example.splmobile.models.*
 
@@ -111,9 +109,11 @@ fun SetupNavGraph(
         }
         composable(BottomNavItem.Chat.route) {
             ChatScreen(navController = navController,
-            messageViewModel = messageViewModel,
+                messageViewModel = messageViewModel,
                 friendViewModel = friendViewModel,
-                authViewModel = authViewModel)
+                authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
+                eventViewModel = eventViewModel)
         }
         composable(BottomNavItem.Profile.route) {
             ProfileScreen(navController =navController,
@@ -219,12 +219,24 @@ fun SetupNavGraph(
                 friendViewModel = friendViewModel,
                 log = log)
         }
-        composable(Screen.ChatUser.route+"/{userID}") { backStackEntry->
+        composable(Screen.ChatUser.route+"/{userID}/{friendshipID}") { backStackEntry->
             ChatUserScreen(navController = navController,
                 backStackEntry.arguments?.getString("userID"),
+                backStackEntry.arguments?.getString("friendshipID"),
                 messageViewModel = messageViewModel,
                 userInfoViewModel = userInfoViewModel,
-                authViewModel = authViewModel)
+                authViewModel = authViewModel,
+                mainViewModel=mainViewModel,
+                userViewModel=userViewModel)
+        }
+        composable(Screen.ChatEvent.route+"/{eventID}") { backStackEntry->
+            ChatEventScreen(navController = navController,
+                backStackEntry.arguments?.getString("eventID"),
+                messageViewModel = messageViewModel,
+                userInfoViewModel = userInfoViewModel,
+                authViewModel = authViewModel,
+                mainViewModel=mainViewModel,
+                userViewModel=userViewModel)
         }
     }
 }

@@ -56,7 +56,6 @@ fun FriendsListScreen(
 
 
 
-    var screenState = remember { mutableStateOf(false) }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -72,28 +71,17 @@ fun FriendsListScreen(
                 onCloseClicked = {
                     mainViewModel.updateSearchTextState(newValue = "")
                     mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
-                    screenState.value = false
 
 
                 },
                 onSearchClicked = {
-                    coroutineScope.launch {
-                        var search = it
-                        if (it.isNotEmpty()) {
-                            friendsListBySearch.value.filter {
-                                it.user.username.contains(search) || it.user.name.contains(search)
-                            }
-                        } else {
-                            userViewModel.getAllUsers(authViewModel.tokenState.value)
-                        }
 
-                    }
 
 
                 },
                 onSearchTriggered = {
                     mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
-                    screenState.value = true
+
                 }
             )
         },
@@ -104,9 +92,18 @@ fun FriendsListScreen(
             when (friendsListState) {
 
                 is FriendViewModel.FriendsUIState.SuccessAll -> {
-                    friendsListBySearch.value = friendsListState.friends
-
+                    if (mainViewModel.searchTextState.value.isNotEmpty()) {
+                        friendsListBySearch.value = friendsListState.friends.filter {
+                            log.d { "mainViewModel.searchTextState.value" }
+                            it.user.username.contains(mainViewModel.searchTextState.value) || it.user.name.contains(
+                                mainViewModel.searchTextState.value
+                            )
+                        }
+                    } else {
+                        friendsListBySearch.value = friendsListState.friends
+                    }
                     log.d { "Get all friends -> Success" }
+
                     LazyColumn(
                         modifier = Modifier
                             .padding(top = 32.dp, bottom = innerPadding.calculateBottomPadding())
@@ -120,8 +117,6 @@ fun FriendsListScreen(
                                 authViewModel = authViewModel
                             )
                         }
-
-
                     }
                 }
                 is FriendViewModel.FriendsUIState.Error -> {

@@ -99,41 +99,54 @@ fun UserProfileScreen(
                     }
                 }
             }
-            //todo state
-            when(friendRequestState){
-                is FriendViewModel.FriendRequestUIState.SuccessRequestAccepted->{
-                    Text(text = "you are friends now!")
-                }
-                is FriendViewModel.FriendRequestUIState.SuccessRequestSent ->{
-                    Text(text = "request sent!")
-                }
-                is FriendViewModel.FriendRequestUIState.Error->{
-                    Text(text = "Error message - " + friendRequestState.error)
-                }
-                is FriendViewModel.FriendRequestUIState.Loading->{
-                    CircularProgressIndicator()
-                }
-            }
+            Column(modifier = Modifier
+                .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start) {
 
-            when(friendsState){
-                is FriendViewModel.FriendsUIState.SuccessByUserID ->{
-                    Text(text = "Friends already")
-                }
-                is FriendViewModel.FriendsUIState.Error->{
-                    Box(contentAlignment = Alignment.Center){
-                        //todo button for friend request
-                        Button(onClick = {
-                            friendViewModel.sendFrendRequest(userID!!.toLong(),authViewModel.tokenState.value)
-                        }, shape = CutCornerShape(10)) {
-                            Text(text = textResource(R.string.btnAddFriend).toString())
-                        }
+                when (friendRequestState) {
+                    is FriendViewModel.FriendRequestUIState.SuccessRequestAccepted -> {
+                        friendViewModel.getFriendByID(
+                            userID!!.toLong(),
+                            authViewModel.tokenState.value
+                        )
+                        Text(text = "you are friends now!")
+                    }
+                    is FriendViewModel.FriendRequestUIState.SuccessRequestSent -> {
+                        Text(text = "request sent!")
+                    }
+                    is FriendViewModel.FriendRequestUIState.Error -> {
+                        Text(text = "Error message - " + friendRequestState.error)
+                    }
+                    is FriendViewModel.FriendRequestUIState.Loading -> {
+                        CircularProgressIndicator()
                     }
                 }
-                is FriendViewModel.FriendsUIState.Loading->{
-                    CircularProgressIndicator()
+
+                when (friendsState) {
+                    is FriendViewModel.FriendsUIState.SuccessByUserID -> {
+
+                        Text(text = "Friends already")
+                    }
+                    is FriendViewModel.FriendsUIState.Error -> {
+                        Box(contentAlignment = Alignment.Center) {
+                            //todo button for friend request
+                            Button(onClick = {
+                                friendViewModel.sendFrendRequest(
+                                    userID!!.toLong(),
+                                    authViewModel.tokenState.value
+                                )
+
+                            }, shape = CutCornerShape(10)) {
+                                Text(text = textResource(R.string.btnAddFriend).toString())
+                            }
+                        }
+                    }
+                    is FriendViewModel.FriendsUIState.Loading -> {
+                        CircularProgressIndicator()
+                    }
                 }
             }
-
 
         },
     )

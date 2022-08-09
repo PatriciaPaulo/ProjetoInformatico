@@ -27,10 +27,8 @@ async def handler(websocket):
     current_user = session.query(User).filter_by(email=data['email']).first()
     # save connected user
     users_connected[current_user.id] = websocket
-
-    #check if theres messages not received
-
     """
+    #check if theres messages not received
     individualMessages = session.query(IndividualMessage).filter_by(receiverID=current_user.id).all()
 
 
@@ -46,6 +44,7 @@ async def handler(websocket):
         message = session.query(Message).filter_by(id=eveMessage.messageID).first()
         if message.status == "Sent":
             send_notification(current_user.id, message)
+
 """
     print(f"{current_user.username} connected")
     while True:

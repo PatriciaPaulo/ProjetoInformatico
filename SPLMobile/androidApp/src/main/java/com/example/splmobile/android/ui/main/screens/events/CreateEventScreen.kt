@@ -266,6 +266,7 @@ fun CreateEventScreen(
                             style = MaterialTheme.typography.caption,
                             modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                         )
+                        navController.popBackStack()
 
                     }
                     is EventViewModel.EventCreateUIState.Error -> {
@@ -340,7 +341,8 @@ private fun EquipmentSelection(
     listEquipmentInEvent: MutableState<SnapshotStateList<EquipmentInEventDTO>>
 ) {
 
-    Row(){
+
+    Row(horizontalArrangement = Arrangement.SpaceAround){
         Text(text = textResource(R.string.lblEquipment))
         Text(text = textResource(R.string.lblEquipmentIsProvided))
     }

@@ -52,19 +52,18 @@ fun UsersInEventListScreen(
         userViewModel.getAllUsers(authViewModel.tokenState.value)
         userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
     }
-    var usersEventListState = userViewModel.usersInEventUIState.collectAsState().value
-    var usersListState = userViewModel.usersUIState.collectAsState().value
-    var loggedInUserID = userInfoViewModel.myIdUIState.collectAsState().value
+    val usersEventListState = userViewModel.usersInEventUIState.collectAsState().value
+    val usersListState = userViewModel.usersUIState.collectAsState().value
+    val loggedInUserID = userInfoViewModel.myIdUIState.collectAsState().value
     //search bar states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
 
-    var listSearch = remember{ mutableStateOf(emptyList<UserDTO>())}
-    var usersInEventListSearch = remember{ mutableStateOf(emptyList<UserInEventDTO>())}
+    val listSearch = remember{ mutableStateOf(emptyList<UserDTO>())}
+    val usersInEventListSearch = remember{ mutableStateOf(emptyList<UserInEventDTO>())}
 
-    var screenState = remember{ mutableStateOf(false)}
-    val listState = rememberLazyListState()
-    var selectedIndex by remember{mutableStateOf(-1L)}
+    val screenState = remember{ mutableStateOf(false)}
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {

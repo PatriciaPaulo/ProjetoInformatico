@@ -218,62 +218,63 @@ private fun MainComponent(
         when(equipmentState){
             is EventViewModel.EquipmentUIState.Success->{
                 Text("Equipamento")
-                Row(){
-                    Text("É fornecido")
-                    Text("É preciso trazer")
-                }
-                Row(horizontalArrangement = Arrangement.SpaceEvenly){
-                    LazyVerticalGrid(
-                        modifier = Modifier
-                            .height(50.dp).width(150.dp),
-                        columns = GridCells.Fixed(1),
-                    ) {
-                        event.equipments
-                            .forEachIndexed { index, card ->
-                                var eq =
-                                    equipmentState.equipments.find { it.id == card.equipmentID }
-                                if (eq != null){
-                                    if(card.isProvided){
-                                        item(span = { GridItemSpan(1) }) {
-                                            Card{
-                                                Column() {
-                                                    Text(text = eq.name)
+                if(equipmentState.equipments.isNotEmpty()){
+                    Row(horizontalArrangement = Arrangement.SpaceEvenly){
+                        Text("É fornecido")
+                        Text("É preciso trazer")
+                    }
+                    Row(horizontalArrangement = Arrangement.SpaceEvenly){
+                        LazyVerticalGrid(
+                            modifier = Modifier
+                                .height(50.dp).width(150.dp),
+                            columns = GridCells.Fixed(1),
+                        ) {
+                            event.equipments
+                                .forEachIndexed { index, card ->
+                                    var eq =
+                                        equipmentState.equipments.find { it.id == card.equipmentID }
+                                    if (eq != null){
+                                        if(card.isProvided){
+                                            item(span = { GridItemSpan(1) }) {
+                                                Card{
+                                                    Column() {
+                                                        Text(text = eq.name)
 
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
 
-                            }
-                    }
-                    LazyVerticalGrid(
-                        modifier = Modifier.width(150.dp)
-                            .height(50.dp),
-                        columns = GridCells.Fixed(1),
-                    ) {
-                        event.equipments
-                            .forEachIndexed { index, card ->
-                                var eq =
-                                    equipmentState.equipments.find { it.id == card.equipmentID }
-                                if (eq != null){
-                                    if(!card.isProvided) {
-                                        item(span = { GridItemSpan(1) }) {
-                                            Card {
-                                                Text(text = eq.name)
+                                }
+                        }
+                        LazyVerticalGrid(
+                            modifier = Modifier.width(150.dp)
+                                .height(50.dp),
+                            columns = GridCells.Fixed(1),
+                        ) {
+                            event.equipments
+                                .forEachIndexed { index, card ->
+                                    var eq =
+                                        equipmentState.equipments.find { it.id == card.equipmentID }
+                                    if (eq != null){
+                                        if(!card.isProvided) {
+                                            item(span = { GridItemSpan(1) }) {
+                                                Card {
+                                                    Text(text = eq.name)
+                                                }
                                             }
+
                                         }
-
                                     }
+
                                 }
-
-                            }
+                        }
                     }
-                }
 
+                }
             }
         }
-
 
         //check if it state is to sign up or to change status of already existent sign up
         var user_event = myEventsState.events.find { ev -> ev.event.equals(event) }

@@ -48,7 +48,7 @@ class FriendViewModel  (
             //val response_garbage_in_event = eventService.postGarbageTypeInEvent(GarbageInEventRequest(garbageType,event.id),token)
             if (response.message.substring(0, 3) == "200") {
                 log.v("Creating event successful")
-                _friendRequestUIState.value = FriendRequestUIState.SuccessRequestAccepted
+                _friendRequestUIState.value = FriendRequestUIState.SuccessRequestSent
 
             } else {
                 if (response.message.substring(0, 3) == "202") {

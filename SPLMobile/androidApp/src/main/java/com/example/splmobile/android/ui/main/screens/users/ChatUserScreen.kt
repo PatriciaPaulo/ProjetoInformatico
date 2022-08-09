@@ -1,5 +1,6 @@
 package com.example.splmobile.android.ui.main.screens.users
 
+import MapAppBar
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.*
@@ -18,145 +19,131 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.splmobile.android.R
+import com.example.splmobile.android.textResource
+import com.example.splmobile.android.ui.main.components.SearchWidgetState
+import com.example.splmobile.android.ui.navigation.Screen
+import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.messages.IndividualMessageRequest
 import com.example.splmobile.dtos.messages.MessageDTO
 import com.example.splmobile.models.*
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 fun ChatUserScreen (navController : NavController,
                     userID:String?,
+                    friendshipID:String?,
                     messageViewModel: MessageViewModel,
                     userInfoViewModel: UserInfoViewModel,
-                    authViewModel: AuthViewModel
+                    authViewModel: AuthViewModel,
+                    mainViewModel:MainViewModel,
+                    userViewModel : UserViewModel
 ) {
 
     LaunchedEffect(Unit){
-        messageViewModel.getMessages(userID!!.toLong(),authViewModel.tokenState.value)
-
+        messageViewModel.getMessages(friendshipID!!.toLong(),authViewModel.tokenState.value)
+        userViewModel.getUserStats(userID!!.toLong(),authViewModel.tokenState.value)
+        EventViewModel.EventCreateUIState.Empty
     }
 
+    //search bar states
+    val searchWidgetState by mainViewModel.searchWidgetState
+    val searchTextState by mainViewModel.searchTextState
 
+    val userInfoState = userViewModel.usersUIState.collectAsState().value
 
     Scaffold(
-    bottomBar = { },
-    content = { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
+        topBar = {
+            when(userInfoState){
+                is UserViewModel.UsersUIState.SuccessUser->{
+                    MapAppBar(
+                        title = userInfoState.user.username ,
+                        searchWidgetState = searchWidgetState,
+                        searchTextState = searchTextState,
+                        onTextChange = {
+                            mainViewModel.updateSearchTextState(newValue = it)
 
-
-            /*
-            Button(
-                onClick = {
-                    messageViewModel.getMessages(userID!!.toLong(),authViewModel.tokenState.value)
-                },
-
-                modifier = Modifier.align(Alignment.End)) {
-                Text(text = "get all messages")
-            }*/
-
-            Text(
-                text = "Chat user Screen",
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp
-            )
-
-            NotificationState(messageViewModel, userID, authViewModel)
-
-            SendMessageState(messageViewModel, userID, authViewModel)
-
-            MessagesState(messageViewModel, userInfoViewModel)
-
-            bottomSection(messageViewModel, userID, authViewModel)
+                        },
+                        onCloseClicked = {
+                            mainViewModel.updateSearchTextState(newValue = "")
+                            mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
 
 
 
+
+                        },
+                        onSearchClicked = {
+
+
+                        },
+                        onSearchTriggered = {
+                            navController.navigate(Screen.UserProfile.route+"/$userID")
+                        }
+                    )
+                }
+                }
+            }
+           ,
+        content = { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+
+                NotificationState(messageViewModel, userID, authViewModel)
+
+                MessagesSection(messageViewModel,userInfoViewModel)
+
+                SendMessageState(messageViewModel, friendshipID, authViewModel)
+
+                BottomSection(messageViewModel, userID, authViewModel)
+
+
+
+            }
         }
-    }
     )
 
 }
 
 @Composable
-private fun SendMessageState(
-    messageViewModel: MessageViewModel,
-    userID: String?,
-    authViewModel: AuthViewModel
-) {
-    val messageSendState = messageViewModel.messageCreateUIState.collectAsState().value
-
-    when (messageSendState) {
-        is MessageViewModel.MessageCreateUIState.Success -> {
-            Log.d("chat with user", "create success")
-            messageViewModel.getMessages(userID!!.toLong(), authViewModel.tokenState.value)
-
-
-        }
-
-    }
-}
-
-@Composable
-private fun MessagesState(
+private fun MessagesSection(
     messageViewModel: MessageViewModel,
     userInfoViewModel: UserInfoViewModel
 ) {
-    val scrollState = rememberScrollState()
-    val lazyListState = rememberLazyListState(scrollState.maxValue)
 
-    val messagesState = messageViewModel.messagesUIState.collectAsState().value
+    var messagesState = messageViewModel.messagesUIState.collectAsState().value
     when (messagesState) {
         is MessageViewModel.MessagesUIState.Success -> {
-
-            MessagesSection(lazyListState,scrollState, messagesState, userInfoViewModel)
+            MessagesState(messagesState, userInfoViewModel)
 
         }
+        is MessageViewModel.MessagesUIState.Error -> Text("error")
+        MessageViewModel.MessagesUIState.Loading -> Text("Loading")
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-private fun NotificationState(
-    messageViewModel: MessageViewModel,
-    userID: String?,
-    authViewModel: AuthViewModel
-) {
-    val notificationState = messageViewModel.notiReceivedUIState.collectAsState().value
-    when (notificationState) {
-        is MessageViewModel.NotificationUIState.Success -> {
-            Text("Notification received from ${notificationState}")
-
-                messageViewModel.getMessages(
-                    userID!!.toLong(),
-                    authViewModel.tokenState.value
-                )
-
-        }
-        is MessageViewModel.NotificationUIState.Error -> {
-            messageViewModel.startConnection(authViewModel.tokenState.value)
-        }
-    }
-}
-
-@Composable
-private fun MessagesSection(
-    lazyListState: LazyListState,
-    scrollState: ScrollState,
+private fun MessagesState(
     messagesState: MessageViewModel.MessagesUIState.Success,
     userInfoViewModel: UserInfoViewModel
 ) {
-    LaunchedEffect(lazyListState) {
+    val coroutine = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
+    val lazyListState = rememberLazyListState(scrollState.maxValue)
+    Log.d("Chat user", "lsist of messages -> ${messagesState.messages.size}")
+    coroutine.launch {
         lazyListState.scrollToItem(scrollState.maxValue)
     }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .height(500.dp), state = lazyListState
+            .height(550.dp),
+        state = lazyListState
     ) {
         items(messagesState.messages.size) { index ->
             MessagesList(
@@ -170,12 +157,57 @@ private fun MessagesSection(
 }
 
 @Composable
-private fun bottomSection(
+private fun SendMessageState(
+    messageViewModel: MessageViewModel,
+    friendshipID: String?,
+    authViewModel: AuthViewModel
+) {
+
+    when (messageViewModel.messageCreateUIState.collectAsState().value) {
+        is MessageViewModel.MessageCreateUIState.Success -> {
+            Log.d("chat with user", "create success")
+            messageViewModel.getMessages(friendshipID!!.toLong(), authViewModel.tokenState.value)
+
+
+        }
+        is MessageViewModel.MessageCreateUIState.Error ->   Log.d("ChatUserScreen", "send message error")
+        MessageViewModel.MessageCreateUIState.Loading -> CircularProgressIndicator()
+    }
+}
+
+
+
+@Composable
+private fun NotificationState(
     messageViewModel: MessageViewModel,
     userID: String?,
     authViewModel: AuthViewModel
 ) {
-    var messageToSend = remember { mutableStateOf(TextFieldValue("")) }
+    when (val notificationState = messageViewModel.notiReceivedUIState.collectAsState().value) {
+        is MessageViewModel.NotificationUIState.Success -> {
+            Text("Notification received from ${notificationState}")
+
+            messageViewModel.getMessages(
+                userID!!.toLong(),
+                authViewModel.tokenState.value
+            )
+
+        }
+        is MessageViewModel.NotificationUIState.Error -> {
+            messageViewModel.startConnection(authViewModel.tokenState.value)
+        }
+        MessageViewModel.NotificationUIState.Offline -> messageViewModel.startConnection(authViewModel.tokenState.value)
+    }
+}
+
+
+@Composable
+private fun BottomSection(
+    messageViewModel: MessageViewModel,
+    userID: String?,
+    authViewModel: AuthViewModel
+) {
+    val messageToSend = remember { mutableStateOf(TextFieldValue("")) }
     Row(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.SpaceEvenly,

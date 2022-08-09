@@ -3,14 +3,10 @@ package com.example.splmobile.services.messages
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
-import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
 import com.example.splmobile.dtos.messages.IndividualMessageRequest
 import com.example.splmobile.dtos.messages.MessageDTO
 import com.example.splmobile.dtos.messages.MessageResponse
 import com.example.splmobile.dtos.messages.MessagesResponse
-import com.example.splmobile.services.garbageSpots.GarbageSpotService
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -69,7 +65,7 @@ class MessageServiceImpl(private val log: Logger, engine: HttpClientEngine) :
     }
 
     override suspend fun getMessages(
-        userID: Long, token: String
+        friendshipID: Long, token: String
     ): MessagesResponse {
         log.d { "Fetching messages from network" }
         try{
@@ -77,7 +73,23 @@ class MessageServiceImpl(private val log: Logger, engine: HttpClientEngine) :
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
-                url("api/friends/"+userID+"/messages")
+                url("api/friends/"+friendshipID+"/messages")
+            }.body() as MessagesResponse
+        }catch (ex :Exception){
+            return MessagesResponse(emptyList(),"$ex")
+        }
+
+    }
+    override suspend fun getEventMessages(
+        eventID: Long, token: String
+    ): MessagesResponse {
+        log.d { "Fetching messages in event from network" }
+        try{
+            return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                url("api/events/"+eventID+"/messages")
             }.body() as MessagesResponse
         }catch (ex :Exception){
             return MessagesResponse(emptyList(),"$ex")
@@ -115,6 +127,22 @@ class MessageServiceImpl(private val log: Logger, engine: HttpClientEngine) :
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 url("api/friends/"+userID+"/lastMessage")
+            }.body() as MessageResponse
+        }catch (ex :Exception){
+            return MessageResponse(MessageDTO(0,"",0,0,null,""),"$ex")
+        }
+    }
+
+    override suspend fun getLastEventMessage(
+        eventID: Long, token: String
+    ): MessageResponse {
+        log.d { "Fetching last message in event chat from network" }
+        try{
+            return client.get {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
+                url("api/events/"+eventID+"/lastMessage")
             }.body() as MessageResponse
         }catch (ex :Exception){
             return MessageResponse(MessageDTO(0,"",0,0,null,""),"$ex")
