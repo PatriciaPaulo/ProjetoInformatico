@@ -1,5 +1,6 @@
 package com.example.splmobile.android.ui.main.screens.users
 
+import DefaultAppBar
 import MapAppBar
 import android.annotation.SuppressLint
 import android.util.Log
@@ -9,6 +10,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,19 +42,16 @@ fun ChatUserScreen (navController : NavController,
                     messageViewModel: MessageViewModel,
                     userInfoViewModel: UserInfoViewModel,
                     authViewModel: AuthViewModel,
-                    mainViewModel:MainViewModel,
                     userViewModel : UserViewModel
 ) {
 
     LaunchedEffect(Unit){
         messageViewModel.getMessages(friendshipID!!.toLong(),authViewModel.tokenState.value)
         userViewModel.getUserStats(userID!!.toLong(),authViewModel.tokenState.value)
-        EventViewModel.EventCreateUIState.Empty
+
     }
 
-    //search bar states
-    val searchWidgetState by mainViewModel.searchWidgetState
-    val searchTextState by mainViewModel.searchTextState
+
 
     val userInfoState = userViewModel.usersUIState.collectAsState().value
 
@@ -58,29 +59,10 @@ fun ChatUserScreen (navController : NavController,
         topBar = {
             when(userInfoState){
                 is UserViewModel.UsersUIState.SuccessUser->{
-                    MapAppBar(
-                        title = userInfoState.user.username ,
-                        searchWidgetState = searchWidgetState,
-                        searchTextState = searchTextState,
-                        onTextChange = {
-                            mainViewModel.updateSearchTextState(newValue = it)
-
-                        },
-                        onCloseClicked = {
-                            mainViewModel.updateSearchTextState(newValue = "")
-                            mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
-
-
-
-
-                        },
-                        onSearchClicked = {
-
-
-                        },
-                        onSearchTriggered = {
-                            navController.navigate(Screen.UserProfile.route+"/$userID")
-                        }
+                    DefaultAppBar(
+                        icon = Icons.Filled.Person,
+                        title = userInfoState.user.username  ,
+                        onSearchClicked = { navController.navigate(Screen.UserProfile.route+"/$userID")}
                     )
                 }
                 }

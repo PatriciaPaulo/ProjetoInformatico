@@ -226,7 +226,6 @@ fun SetupNavGraph(
                 messageViewModel = messageViewModel,
                 userInfoViewModel = userInfoViewModel,
                 authViewModel = authViewModel,
-                mainViewModel=mainViewModel,
                 userViewModel=userViewModel)
         }
         composable(Screen.ChatEvent.route+"/{eventID}") { backStackEntry->
@@ -235,8 +234,8 @@ fun SetupNavGraph(
                 messageViewModel = messageViewModel,
                 userInfoViewModel = userInfoViewModel,
                 authViewModel = authViewModel,
-                mainViewModel=mainViewModel,
-                userViewModel=userViewModel)
+                userViewModel=userViewModel,
+                eventViewModel = eventViewModel)
         }
     }
 }

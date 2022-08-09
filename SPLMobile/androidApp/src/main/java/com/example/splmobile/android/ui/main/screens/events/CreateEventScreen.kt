@@ -82,6 +82,7 @@ fun CreateEventScreen(
         garbageSpotViewModel.getGarbageTypes(authViewModel.tokenState.value)
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
         eventViewModel.getEquipments(authViewModel.tokenState.value)
+        EventViewModel.EventCreateUIState.Empty
     }
     val garbageSpotsState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
     val garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
