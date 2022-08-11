@@ -129,6 +129,7 @@
     <string name="lblEquipment">Equipamento</string>
     <string name="lblEquipmentIsProvided">Fornecido</string>
     <string name="lblGarbageSpots">Locais de Lixo na zona</string>
+    <string name="txtNoMessagesAvailable" />
 
 
 </resources>

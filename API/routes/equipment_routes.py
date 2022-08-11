@@ -24,7 +24,7 @@ def create_equipment(current_user):
     db.session.add(new_equipment)
     db.session.commit()
 
-    return make_response(jsonify({'data': Equipment.serialize(new_garbageType), 'message': '200 OK - Garbage Type Created'}), 200)\
+    return make_response(jsonify({'data': Equipment.serialize(new_equipment), 'message': '200 OK - Garbage Type Created'}), 200)\
 
 
 

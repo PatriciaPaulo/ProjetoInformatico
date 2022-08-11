@@ -12,7 +12,11 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
@@ -61,13 +65,30 @@ class MessageWebsocket(
                     //TODO PARS
                     val jsonObject = Json.parseToJsonElement(othersMessage.readText())
                     println("js 1- "+ jsonObject)
-                    val id = Json.parseToJsonElement(jsonObject.jsonObject["id"].toString())
-                    println("js 2- "+ id)
-                    //val aaa = Json.parseToJsonElement(jsonObject2.jsonObject["id\\"].toString())
+                    val message = Json.parseToJsonElement(jsonObject.jsonObject["message"].toString())
+                    println("message- "+ message)
+
+
+                    val type = Json.parseToJsonElement(message.jsonObject["type"].toString())
+                    println("type- "+ type)
+                    println("type- "+ Json.encodeToString(type).replace("\"",""))
+                    println("type- Event")
+
+
+                    if(Json.encodeToString(type).replace("\"","") == "Event"){
+                        val eventID = Json.parseToJsonElement(jsonObject.jsonObject["eventID"].toString())
+                        messageViewModel.messageNotificationEvent(eventID.toString().toLong())
+                    }
+                    if(Json.encodeToString(type) =="Individual"){
+                        val userID = Json.parseToJsonElement(message.jsonObject["senderID"].toString())
+                        messageViewModel.messageNotification(userID.toString().toLong())
+                    }
+
+                    val id = Json.parseToJsonElement(message.jsonObject["id"].toString())
                     send(id.toString())
 
-                    val userID = Json.parseToJsonElement(jsonObject.jsonObject["senderID"].toString())
-                    messageViewModel.messageNotification(userID.toString().toLong())
+
+
 
                 }
             }catch (ex: Exception) {

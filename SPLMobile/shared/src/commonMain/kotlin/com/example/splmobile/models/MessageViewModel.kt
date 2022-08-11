@@ -1,7 +1,9 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
+import com.example.splmobile.dtos.messages.EventMessageRequest
 import com.example.splmobile.dtos.messages.IndividualMessageRequest
+import com.example.splmobile.dtos.messages.LastMessageRequest
 import com.example.splmobile.dtos.messages.MessageDTO
 import com.example.splmobile.services.messages.MessageService
 import com.example.splmobile.websockets.MessageWebsocket
@@ -29,7 +31,8 @@ class MessageViewModel (
     )
     val notiReceivedUIState = _notiReceivedUIState.asStateFlow()
     sealed class NotificationUIState {
-        data class Success(val userID: Long) : NotificationUIState()
+        data class SuccessIndividual(val userID: Long) : NotificationUIState()
+        data class SuccessEvent(val eventID: Long) : NotificationUIState()
         data class Error(val error: String) : NotificationUIState()
         object Loading : NotificationUIState()
         object Offline : NotificationUIState()
@@ -64,6 +67,22 @@ class MessageViewModel (
         }
 
     }
+    fun sendEventMessage(message : EventMessageRequest, token: String) {
+        log.v("send message to  ${message.eventID}")
+        _messageCreateUIState.value = MessageCreateUIState.Loading
+        viewModelScope.launch {
+            val response = messageService.postEventMessage(message,token)
+            if(response.message.substring(0,3)  == "200"){
+                log.v("sending message successful")
+                _messageCreateUIState.value = MessageCreateUIState.Success
+
+            }else{
+                log.v("sending message error")
+                _messageCreateUIState.value = MessageCreateUIState.Error(response.message)
+            }
+        }
+
+    }
 
     //state get all message with user
     private val _messagesUIState = MutableStateFlow<MessagesUIState>(MessagesUIState.Empty)
@@ -80,7 +99,7 @@ class MessageViewModel (
     private val _lastMessageUIState = MutableStateFlow<LastMessageUIState>(LastMessageUIState.Empty)
     val lastMessageUIState = _lastMessageUIState.asStateFlow()
     sealed class LastMessageUIState {
-        data class Success(val message: MessageDTO) : LastMessageUIState()
+        data class Success(val message: List<MessageDTO>) : LastMessageUIState()
         data class Error(val error: String) : LastMessageUIState()
         object Loading : LastMessageUIState()
         object Empty : LastMessageUIState()
@@ -113,11 +132,11 @@ class MessageViewModel (
 
     }
 
-    fun getLastMessage(userID:Long,token: String) {
+    fun getLastMessage(token: String) {
         _lastMessageUIState.value = LastMessageUIState.Loading
-        log.v("getting all message with $userID ")
+        log.v("getting all message with friends")
         viewModelScope.launch {
-            val response = messageService.getLastMessage(userID,token)
+            val response = messageService.getLastMessage(token)
 
             if(response.message.substring(0,3)  == "200"){
                 _lastMessageUIState.value = LastMessageUIState.Success(response.data)
@@ -140,15 +159,18 @@ class MessageViewModel (
     }
 
     fun messageNotification(userID: Long) {
-        //getMessages(userID,authViewModel.tokenState.value)
-        _notiReceivedUIState.value = NotificationUIState.Success(userID)
+        _notiReceivedUIState.value = NotificationUIState.SuccessIndividual(userID)
     }
 
-    fun getLastEventMessage(eventID: Long, token: String) {
+    fun messageNotificationEvent(eventID: Long) {
+        _notiReceivedUIState.value = NotificationUIState.SuccessEvent(eventID)
+    }
+
+    fun getLastEventMessage(token: String) {
         _lastMessageUIState.value = LastMessageUIState.Loading
-        log.v("getting all message with $eventID ")
+        log.v("getting all message in event")
         viewModelScope.launch {
-            val response = messageService.getLastEventMessage(eventID,token)
+            val response = messageService.getLastEventMessage(token)
 
             if(response.message.substring(0,3)  == "200"){
                 _lastMessageUIState.value = LastMessageUIState.Success(response.data)

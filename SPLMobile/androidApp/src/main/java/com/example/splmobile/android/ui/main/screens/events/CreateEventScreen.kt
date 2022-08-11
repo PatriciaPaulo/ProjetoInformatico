@@ -78,6 +78,7 @@ fun CreateEventScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
+
     LaunchedEffect(Unit) {
         garbageSpotViewModel.getGarbageTypes(authViewModel.tokenState.value)
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
@@ -267,7 +268,7 @@ fun CreateEventScreen(
                             style = MaterialTheme.typography.caption,
                             modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                         )
-                        navController.popBackStack()
+
 
                     }
                     is EventViewModel.EventCreateUIState.Error -> {

@@ -99,7 +99,12 @@ private fun MessagesSection(
     var messagesState = messageViewModel.messagesUIState.collectAsState().value
     when (messagesState) {
         is MessageViewModel.MessagesUIState.Success -> {
-            MessagesState(messagesState, userInfoViewModel)
+            if(messagesState.messages.isEmpty()) {
+                Text(textResource(R.string.txtNoMessagesAvailable))
+            }else{
+                MessagesState(messagesState, userInfoViewModel)
+            }
+
 
         }
         is MessageViewModel.MessagesUIState.Error -> Text("error")
@@ -124,7 +129,7 @@ private fun MessagesState(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .height(550.dp),
+            .height(525.dp),
         state = lazyListState
     ) {
         items(messagesState.messages.size) { index ->
@@ -166,8 +171,8 @@ private fun NotificationState(
     authViewModel: AuthViewModel
 ) {
     when (val notificationState = messageViewModel.notiReceivedUIState.collectAsState().value) {
-        is MessageViewModel.NotificationUIState.Success -> {
-            Text("Notification received from ${notificationState}")
+        is MessageViewModel.NotificationUIState.SuccessIndividual -> {
+            //Text("Notification received from ${notificationState}")
 
             messageViewModel.getMessages(
                 userID!!.toLong(),

@@ -150,8 +150,13 @@ private fun NotificationSection(
     authViewModel: AuthViewModel
 ) {
     when (val notificationState = messageViewModel.notiReceivedUIState.collectAsState().value) {
-        is MessageViewModel.NotificationUIState.Success -> {
+        is MessageViewModel.NotificationUIState.SuccessIndividual -> {
             Text("Notification received from ${notificationState.userID}")
+            messageViewModel.getLastMessage(authViewModel.tokenState.value)
+        }
+        is MessageViewModel.NotificationUIState.SuccessEvent -> {
+            Text("Notification received from ${notificationState.eventID}")
+            messageViewModel.getLastEventMessage(authViewModel.tokenState.value)
         }
         MessageViewModel.NotificationUIState.Offline -> {
             messageViewModel.startConnection(authViewModel.tokenState.value)
@@ -175,17 +180,20 @@ private fun EventsListSection(
 
     when (eventsListState) {
         is UserInfoViewModel.MyEventsUIState.Success -> {
+            messageViewModel.getLastEventMessage(
+                authViewModel.tokenState.value
+            )
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(600.dp),
             ) {
                 items(eventsListState.events.size) { index ->
-                    EventsListState(
+                    EventsListWithLastMessage(
+                        eventsListState.events.get(index).event.id,
                         messageViewModel,
                         eventsListState,
                         index,
-                        authViewModel,
                         navController,
                         userInfoViewModel
                     )
@@ -206,30 +214,10 @@ private fun EventsListSection(
     }
 }
 
-@Composable
-fun EventsListState(
-    messageViewModel: MessageViewModel,
-    eventsListState: UserInfoViewModel.MyEventsUIState.Success,
-    index: Int, authViewModel: AuthViewModel,
-    navController: NavController,
-    userInfoViewModel: UserInfoViewModel) {
 
-    messageViewModel.getLastEventMessage(
-        eventsListState.events.get(index).id,
-        authViewModel.tokenState.value
-    )
-
-    EventsListWithLastMessage(
-        messageViewModel,
-        eventsListState,
-        index,
-        navController,
-        userInfoViewModel
-    )
-}
 
 @Composable
-fun EventsListWithLastMessage(
+fun EventsListWithLastMessage(eventID :Long,
     messageViewModel: MessageViewModel,
     eventsListState: UserInfoViewModel.MyEventsUIState.Success,
     index: Int,
@@ -239,26 +227,24 @@ fun EventsListWithLastMessage(
     val lastMessageState = messageViewModel.lastMessageUIState.collectAsState().value
     when (lastMessageState) {
         is MessageViewModel.LastMessageUIState.Success -> {
-           EventsList(
-                event = eventsListState.events.get(index),
-                lastMessage = lastMessageState.message,
+
+            EventsList(
+                event = eventsListState.events.get(index).event,
+                lastMessage = lastMessageState.message.get(index),
                 navController = navController,
                 userInfoViewModel = userInfoViewModel
             )
+
+
         }
         is MessageViewModel.LastMessageUIState.Error ->{
-            EventsList(
-                event = eventsListState.events.get(index),
-                lastMessage = MessageDTO(0,"No messages yet",0,0,null,"Received"),
-                navController = navController,
-                userInfoViewModel = userInfoViewModel
-            )
+
         }
     }
 }
 
 @Composable
-fun EventsList(event: UserInEventDTO,
+fun EventsList(event: EventDTO,
                navController: NavController,
                lastMessage: MessageDTO,
                userInfoViewModel :UserInfoViewModel) {
@@ -269,12 +255,12 @@ fun EventsList(event: UserInEventDTO,
             .fillMaxWidth()
             .padding(8.dp)
             .clickable(onClick = {
-                navController.navigate(Screen.ChatEvent.route + "/${event.event.id}")
+                navController.navigate(Screen.ChatEvent.route + "/${event.id}")
             })
     ) {
         Column{
             Text(
-                text = event.event.name,
+                text = event.name,
                 style = MaterialTheme.typography.h6,
                 color = MaterialTheme.colors.secondary
             )
@@ -286,13 +272,13 @@ fun EventsList(event: UserInEventDTO,
                     color = MaterialTheme.colors.primary
                 )
             }else{
-                Row(){
-                    Text(
-                        text = lastMessage.message,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.primary
-                    )
-                }
+
+                Text(
+                    text = lastMessage.message,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.primary
+                )
+
 
 
             }
@@ -318,21 +304,25 @@ private fun FriendsListSection(
 
     when (friendsListState) {
         is FriendViewModel.FriendsUIState.SuccessAll -> {
+            if(friendsListState.friends.size>0){
+                messageViewModel.getLastMessage(
+                    authViewModel.tokenState.value
+                )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(600.dp)
+                ) {
+                    items(friendsListState.friends.size) { index ->
+                        FriendsListWithLastMessage(
+                            messageViewModel,
+                            friendsListState,
+                            index,
+                            navController,
+                            userInfoViewModel
+                        )
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(600.dp)
-            ) {
-                items(friendsListState.friends.size) { index ->
-                    FriendsListState(
-                        messageViewModel,
-                        friendsListState,
-                        index,
-                        authViewModel,
-                        navController,
-                        userInfoViewModel
-                    )
+                    }
 
                 }
 
@@ -350,30 +340,7 @@ private fun FriendsListSection(
     }
 }
 
-@Composable
-private fun FriendsListState(
-    messageViewModel: MessageViewModel,
-    friendsListState: FriendViewModel.FriendsUIState.SuccessAll,
-    index: Int,
-    authViewModel: AuthViewModel,
-    navController: NavController,
-    userInfoViewModel: UserInfoViewModel
-) {
 
-
-    messageViewModel.getLastMessage(
-        friendsListState.friends.get(index).id,
-        authViewModel.tokenState.value
-    )
-
-    FriendsListWithLastMessage(
-        messageViewModel,
-        friendsListState,
-        index,
-        navController,
-        userInfoViewModel
-    )
-}
 
 @Composable
 private fun FriendsListWithLastMessage(
@@ -388,7 +355,7 @@ private fun FriendsListWithLastMessage(
         is MessageViewModel.LastMessageUIState.Success -> {
             FriendsList(
                 friend = friendsListState.friends.get(index),
-                lastMessage = lastMessageState.message,
+                lastMessage = lastMessageState.message.get(index),
                 navController = navController,
                 userInfoViewModel = userInfoViewModel
             )
