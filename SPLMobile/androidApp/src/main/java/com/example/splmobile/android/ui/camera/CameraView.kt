@@ -1,4 +1,4 @@
-package com.example.splmobile.android
+package com.example.splmobile.android.ui.camera
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -8,6 +8,7 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -27,12 +28,20 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.example.splmobile.android.R
+import okhttp3.internal.wait
 
 @Composable
-fun CameraView(onImageCaptured : (Uri, Boolean) -> Unit, onError : (ImageCaptureException) -> Unit) {
+fun CameraView(
+    onImageCaptured : (Uri, Boolean) -> Unit,
+    onError : (ImageCaptureException) -> Unit
+) {
     val context = LocalContext.current
     var lensFacing by remember { mutableStateOf( CameraSelector.LENS_FACING_BACK ) }
     val imageCapture : ImageCapture = remember { ImageCapture.Builder().build() }
+
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri : Uri? ->
@@ -66,7 +75,7 @@ fun CameraView(onImageCaptured : (Uri, Boolean) -> Unit, onError : (ImageCapture
 }
 
 @Composable
-fun CameraPreviewView(
+private fun CameraPreviewView(
     imageCapture: ImageCapture,
     lensFacing: Int = CameraSelector.LENS_FACING_BACK,
     cameraUIAction: (CameraUIAction) -> Unit
@@ -81,6 +90,7 @@ fun CameraPreviewView(
         .build()
 
     val previewView = remember { PreviewView(context) }
+
     LaunchedEffect(lensFacing) {
         val cameraProvider = context.getCameraProvider()
         cameraProvider.unbindAll()
@@ -93,23 +103,22 @@ fun CameraPreviewView(
         preview.setSurfaceProvider(previewView.surfaceProvider)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AndroidView({ previewView }, modifier = Modifier.fillMaxSize()) {
-
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize())
+    {
+        AndroidView({ previewView }, modifier = Modifier.fillMaxSize()) { }
         Column(
             modifier = Modifier.align(Alignment.BottomCenter),
             verticalArrangement = Arrangement.Bottom
         ) {
             CameraControls(cameraUIAction)
         }
-
     }
 }
 
 @Composable
-fun CameraControls(cameraUIAction: (CameraUIAction) -> Unit) {
-
+private fun CameraControls(cameraUIAction: (CameraUIAction) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

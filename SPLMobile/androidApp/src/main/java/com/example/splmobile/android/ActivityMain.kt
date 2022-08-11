@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -64,6 +65,7 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     private val messageViewModel: MessageViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
     private val mapViewModel : MapViewModel by viewModels<MapViewModel>()
+    private val cameraViewModel : CameraViewModel by viewModels()
 
     //notifcations system
     private val channel1ID = "package com.example.splmobile.android.channel1"
@@ -100,6 +102,7 @@ class ActivityMain : ComponentActivity() , KoinComponent {
                     userViewModel = userViewModel,
                     friendViewModel = friendViewModel,
                     messageViewModel = messageViewModel,
+                    cameraViewModel = cameraViewModel,
                 )
             }
 
@@ -119,7 +122,7 @@ class ActivityMain : ComponentActivity() , KoinComponent {
 
             prepLocationUpdates()
             prepStepCounter()
-            prepCamAccess()
+            requestCameraPermission()
             readExternalStorage()
         }
 
@@ -127,13 +130,31 @@ class ActivityMain : ComponentActivity() , KoinComponent {
         createNotificationChannel(channel1ID,"devo","descriptio")
     }
 
-    // TODO Request Permissions together
-    private fun prepCamAccess() {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            println("camAccess")
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.i("PERMS", "Permission granted")
         } else {
-            println("camAccess")
-            requestSinglePermissionLauncher.launch(Manifest.permission.CAMERA)
+            Log.i("PERMS", "Permission denied")
+        }
+    }
+
+    private fun requestCameraPermission() {
+        when {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                Log.i("PERMS", "Camera permission previously granted")
+            }
+
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.CAMERA
+            ) -> Log.i("PERMS", "Show camera permissions dialog")
+
+            else -> requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 

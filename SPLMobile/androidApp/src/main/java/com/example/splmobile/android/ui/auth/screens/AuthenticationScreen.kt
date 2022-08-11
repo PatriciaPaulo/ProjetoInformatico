@@ -35,6 +35,7 @@ fun AuthenticationScreen(
     authViewModel: AuthViewModel,
     userInfoViewModel: UserInfoViewModel
 ) {
+    // TODO On AutoLogin Error handle
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val loginUIState by authViewModel.loginUIState.collectAsState()
