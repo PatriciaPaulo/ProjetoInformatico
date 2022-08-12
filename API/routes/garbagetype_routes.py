@@ -1,12 +1,9 @@
-from flask import jsonify, make_response, request, current_app, Flask
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_restful import Api
 from flask import Blueprint
-from models import db, Garbage , GarbageInEvent
-from utils import token_required,admin_required,guest
-import jwt
-import datetime
+from flask import jsonify, make_response, request
+from flask_restful import Api
 
+from models import db, Garbage
+from utils import token_required
 
 garbagetype_routes_blueprint = Blueprint('garbagetype_routes', __name__, )
 api = Api(garbagetype_routes_blueprint)

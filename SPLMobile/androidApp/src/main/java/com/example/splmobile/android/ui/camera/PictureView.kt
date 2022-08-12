@@ -1,6 +1,7 @@
 package com.example.splmobile.android.ui.camera
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,13 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.example.splmobile.android.viewmodel.CameraViewModel
 import kotlin.io.path.Path
 import kotlin.io.path.deleteIfExists
 import com.example.splmobile.android.R
+
+private val TAG = "PIC/VIEW"
 
 @Composable
 fun PictureView(
@@ -31,8 +33,8 @@ fun PictureView(
         PicturePreviewView(uri) { cameraUIAction ->
             when (cameraUIAction) {
                 is CameraUIAction.OnSaveClick -> {
-                    println("URI: $uri")
                     //TODO Save image on server
+                    Log.v(TAG, "Image saved on server")
                 }
 
                 is CameraUIAction.OnDiscardClick -> {
@@ -41,6 +43,7 @@ fun PictureView(
                         // Delete Picture
                         val uriPath = Path(uri.path!!)
                         uriPath.deleteIfExists()
+                        Log.v(TAG, "Photo Deleted")
 
                         // Reopen Camera
                         onImageRejected(false)

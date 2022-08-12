@@ -8,7 +8,6 @@ import androidx.navigation.compose.composable
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.ui.auth.screens.*
 import com.example.splmobile.android.ui.camera.CameraScreen
-import com.example.splmobile.android.ui.camera.PictureView
 import com.example.splmobile.android.ui.main.screens.*
 import com.example.splmobile.android.ui.main.screens.events.CreateEventScreen
 import com.example.splmobile.android.ui.main.screens.events.EventInfoScreen
@@ -24,9 +23,7 @@ import com.example.splmobile.android.ui.onboarding.screens.OnboardingScreen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.android.ui.main.screens.activities.OngoingActivity
 import com.example.splmobile.android.ui.main.screens.events.*
-import com.example.splmobile.android.ui.main.screens.garbageSpots.*
 import com.example.splmobile.android.ui.main.screens.users.*
-import com.example.splmobile.android.ui.onboarding.screens.*
 import com.example.splmobile.android.viewmodel.*
 import com.example.splmobile.models.*
 

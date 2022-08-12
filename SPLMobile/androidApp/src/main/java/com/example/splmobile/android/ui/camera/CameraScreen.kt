@@ -1,28 +1,12 @@
 package com.example.splmobile.android.ui.camera
 
-import android.content.Context
-import android.net.Uri
 import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
-import com.example.splmobile.android.R
-import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.viewmodel.CameraViewModel
-import kotlinx.coroutines.delay
-import okhttp3.internal.wait
-import java.io.File
-import java.util.concurrent.Executors
 
 
 @Composable
