@@ -115,5 +115,10 @@ def send_notification_event(eventID,message,current_userID):
 
             websocket_listen_event_loop.create_task(users_connected[user].send(json.dumps(data_to_send)))
 
-
+def send_notification_request(current_user):
+    if current_user.id not in users_connected:
+        return
+    print("notification")
+    data_to_send = {"friendRequest": current_user.serialize()}
+    websocket_listen_event_loop.create_task(users_connected[current_user.id].send(json.dumps(data_to_send)))
 

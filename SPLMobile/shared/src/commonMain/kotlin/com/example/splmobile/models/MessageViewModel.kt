@@ -5,11 +5,14 @@ import com.example.splmobile.dtos.messages.EventMessageRequest
 import com.example.splmobile.dtos.messages.IndividualMessageRequest
 import com.example.splmobile.dtos.messages.LastMessageRequest
 import com.example.splmobile.dtos.messages.MessageDTO
+import com.example.splmobile.dtos.myInfo.UserSerializable
+import com.example.splmobile.dtos.users.UserDTO
 import com.example.splmobile.services.messages.MessageService
 import com.example.splmobile.websockets.MessageWebsocket
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonElement
 
 
 class MessageViewModel (
@@ -33,6 +36,7 @@ class MessageViewModel (
     sealed class NotificationUIState {
         data class SuccessIndividual(val userID: Long) : NotificationUIState()
         data class SuccessEvent(val eventID: Long) : NotificationUIState()
+        data class SuccessFriendRequestReceived(val user: UserSerializable) : NotificationUIState()
         data class Error(val error: String) : NotificationUIState()
         object Loading : NotificationUIState()
         object Offline : NotificationUIState()
@@ -166,6 +170,7 @@ class MessageViewModel (
         _notiReceivedUIState.value = NotificationUIState.SuccessEvent(eventID)
     }
 
+
     fun getLastEventMessage(token: String) {
         _lastMessageUIState.value = LastMessageUIState.Loading
         log.v("getting all message in event")
@@ -178,6 +183,10 @@ class MessageViewModel (
                 _lastMessageUIState.value = LastMessageUIState.Error(response.message)
             }
         }
+    }
+
+    fun notificationFriendRequest(user: UserSerializable) {
+        _notiReceivedUIState.value = NotificationUIState.SuccessFriendRequestReceived(user)
     }
 
 }

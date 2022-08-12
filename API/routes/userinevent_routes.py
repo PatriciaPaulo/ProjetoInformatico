@@ -8,6 +8,8 @@ from utils import token_required, admin_required, guest
 import jwt
 from datetime import datetime
 
+
+
 users_event_routes_blueprint = Blueprint('users_event_routes', __name__, )
 api = Api(users_event_routes_blueprint)
 

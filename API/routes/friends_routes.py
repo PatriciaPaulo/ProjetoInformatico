@@ -9,6 +9,8 @@ from utils import token_required, admin_required, guest, name_validation, userna
 import jwt
 from datetime import datetime
 
+from websockets_server import send_notification_request
+
 friends_routes_blueprint = Blueprint('friends_routes', __name__, )
 api = Api(friends_routes_blueprint)
 
@@ -47,7 +49,7 @@ def friend_request(current_user):
             friendImAddressee.status = "Complete"
             friendImAddressee.completeDate = today
             db.session.commit()
-            return make_response(jsonify({'message': '200 OK - Friend request accepted'}), 202)
+            return make_response(jsonify({'message': '202 OK - Friend request accepted'}), 202)
 
         # if not create new one
         else:
@@ -56,6 +58,8 @@ def friend_request(current_user):
                                         status="Pending")
             db.session.add(new_friendship)
             db.session.commit()
+
+            send_notification_request(user)
             return make_response(jsonify({'message': '200 OK - Friend request sent'}), 200)
 
     # if exists return error
