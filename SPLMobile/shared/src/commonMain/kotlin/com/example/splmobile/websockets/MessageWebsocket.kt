@@ -63,7 +63,7 @@ class MessageWebsocket(
                     //TODO PARS
                     val jsonObject = Json.parseToJsonElement(othersMessage.readText())
                     println("js 1- "+ jsonObject)
-                    if(jsonObject.jsonObject["message"]){
+                    if(jsonObject.jsonObject["message"]==null){
                         val message = Json.parseToJsonElement(jsonObject.jsonObject["friendRequest"].toString())
                         messageViewModel.notificationFriendRequest(Json.decodeFromJsonElement<UserSerializable>(message))
                     }

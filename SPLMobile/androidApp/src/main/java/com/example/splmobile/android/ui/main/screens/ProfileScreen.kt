@@ -340,7 +340,8 @@ fun ProfileSection(
                                     0,
                                     utilizadorName.value.text,
                                     utilizadorEmail.value.text,
-                                    utilizadorUsername.value.text),
+                                    utilizadorUsername.value.text,
+                                    null),
                                 authViewModel.tokenState.value)
                         }
                         //utilizador.email = utilizadorEmail.value.text

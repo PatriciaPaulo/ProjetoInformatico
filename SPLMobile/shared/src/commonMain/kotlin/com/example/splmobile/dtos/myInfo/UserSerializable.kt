@@ -9,5 +9,6 @@ data class UserSerializable(
     var username: String,
     var email: String,
     var name: String,
+    var icon: String?
 
     )
