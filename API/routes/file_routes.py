@@ -19,7 +19,7 @@ def allowed_file(filename):
 
 
 # Upload Profile File
-@file_routes_blueprint.route('/uploadProfileFile', methods=['POST'])
+@file_routes_blueprint.route('/upload/users', methods=['POST'])
 @token_required
 def upload_profile_file(current_user):
     # Check if post request has file
@@ -49,7 +49,7 @@ def upload_profile_file(current_user):
 
 
 # Upload Activity File
-@file_routes_blueprint.route('/uploadActivityFile', methods=['POST'])
+@file_routes_blueprint.route('/upload/activities/<activity_id>', methods=['POST'])
 @token_required
 def upload_activity_file(activity_id):
     # Check if post request has file
@@ -66,7 +66,7 @@ def upload_activity_file(activity_id):
         upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], "activities")
 
         new_activity_file = PictureInActivity(
-            activityID=id,
+            activityID=activity_id,
             path=filename
         )
 
@@ -78,9 +78,8 @@ def upload_activity_file(activity_id):
 
 
 # Upload Activity File
-@file_routes_blueprint.route('/uploadActivityFile', methods=['POST'])
-@token_required
-def upload_activity_file(activity_id):
+@file_routes_blueprint.route('/upload/garbagespots/<garbagespot_id>', methods=['POST'])
+def upload_garbagespot_file(garbagespot_id):
     # Check if post request has file
     if 'file' not in request.files:
         return make_response("400 BAD REQUEST - No file part", 400)
@@ -94,7 +93,7 @@ def upload_activity_file(activity_id):
 
         upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], "garbagespots")
         new_garbagespot_file = PictureInGarbageSpot(
-            garbageSpotID=id,
+            garbageSpotID=garbagespot_id,
             path=filename
         )
 

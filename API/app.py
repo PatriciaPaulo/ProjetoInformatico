@@ -3,6 +3,7 @@ import os
 from flask import Flask, request, current_app, flash, url_for
 from werkzeug.utils import redirect, secure_filename
 
+from routes.equipment_routes import equipment_routes_blueprint
 from routes.file_routes import file_routes_blueprint
 from routes.garbagetype_routes import garbagetype_routes_blueprint
 from routes.garbagespot_routes import garbagespot_routes_blueprint
