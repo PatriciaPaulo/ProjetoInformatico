@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.ui.auth.screens.*
+import com.example.splmobile.android.ui.camera.CameraScreen
 import com.example.splmobile.android.ui.main.screens.*
 import com.example.splmobile.android.ui.main.screens.events.CreateEventScreen
 import com.example.splmobile.android.ui.main.screens.events.EventInfoScreen
@@ -45,7 +46,8 @@ fun SetupNavGraph(
     userViewModel: UserViewModel,
     friendViewModel: FriendViewModel,
     messageViewModel: MessageViewModel,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
+    cameraViewModel: CameraViewModel,
 ){
     NavHost(
         navController = navController,
@@ -236,6 +238,13 @@ fun SetupNavGraph(
                 authViewModel = authViewModel,
                 userViewModel=userViewModel,
                 eventViewModel = eventViewModel)
+        }
+
+        composable(Screen.Camera.route) {
+            CameraScreen(
+                navController = navController,
+                cameraViewModel = cameraViewModel
+            )
         }
     }
 }

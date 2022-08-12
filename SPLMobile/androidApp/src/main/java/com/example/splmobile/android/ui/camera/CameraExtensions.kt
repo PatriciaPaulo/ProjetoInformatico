@@ -1,4 +1,4 @@
-package com.example.splmobile.android
+package com.example.splmobile.android.ui.camera
 
 import android.content.Context
 import android.media.MediaScannerConnection
@@ -10,10 +10,12 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
+import com.example.splmobile.android.R
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -28,6 +30,7 @@ suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspendCoroutin
 private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
 private const val PHOTO_EXTENSION = ".jpg"
 
+
 fun ImageCapture.takePicture(
     context: Context,
     lensFacing: Int,
@@ -39,9 +42,11 @@ fun ImageCapture.takePicture(
     val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
     val outputFileOptions = getOutputFileOptions(lensFacing, photoFile)
 
+    val cameraExecutor = Executors.newSingleThreadExecutor()
+
     this.takePicture(
         outputFileOptions,
-        Executors.newSingleThreadExecutor(),
+        cameraExecutor,
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                 val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
@@ -63,6 +68,7 @@ fun ImageCapture.takePicture(
                 onError(exception)
             }
         })
+
 }
 
 
@@ -85,6 +91,7 @@ fun getOutputFileOptions(
 }
 
 fun createFile(baseFolder: File, format: String, extension: String) =
+    //TODO Rename file maybe
     File(
         baseFolder, SimpleDateFormat(format, Locale.US)
             .format(System.currentTimeMillis()) + extension
@@ -98,3 +105,4 @@ fun Context.getOutputDirectory(): File {
     return if (mediaDir != null && mediaDir.exists())
         mediaDir else this.filesDir
 }
+

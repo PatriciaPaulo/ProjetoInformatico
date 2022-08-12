@@ -59,6 +59,7 @@ dependencies {
     val composeVersion = "1.1.1"
     val koin_version = "3.2.0"
     val lifecycle_version = "2.4.1"
+
     //Jetpack Compose Dependencies
         // Integration with activities
     implementation ("androidx.activity:activity-compose:1.4.0")
@@ -70,6 +71,10 @@ dependencies {
     implementation ("androidx.compose.ui:ui-tooling:$composeVersion")
         // Integration with ViewModels
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
+        // Extended Icons
+    implementation ("androidx.compose.material:material-icons-extended:$composeVersion")
+
+
     // UI Tests
     androidTestImplementation ("androidx.compose.ui:ui-test-junit4:$composeVersion")
         // KOIN
@@ -138,4 +143,6 @@ dependencies {
 
     //dialogs
     implementation ("io.github.vanpra.compose-material-dialogs:core:0.7.0")
+
+
 }
