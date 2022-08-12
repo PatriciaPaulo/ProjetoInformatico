@@ -45,7 +45,7 @@ def get_activities(current_user):
         activity_data['steps'] = ati.steps
         activity_data['startDate'] = ati.startDate
         activity_data['endDate'] = ati.endDate
-        activity_data['activityType'] = ati.activityType
+        activity_data['activityType'] = ati.activityTypeID
         output.append(activity_data)
 
     if len(output) == 0:

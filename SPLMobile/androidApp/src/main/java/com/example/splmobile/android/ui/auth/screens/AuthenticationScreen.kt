@@ -21,6 +21,7 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.MessageViewModel
 import com.example.splmobile.models.UserInfoViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -33,7 +34,8 @@ import kotlinx.coroutines.runBlocking
 fun AuthenticationScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    userInfoViewModel: UserInfoViewModel
+    userInfoViewModel: UserInfoViewModel,
+    messageViewModel: MessageViewModel
 ) {
     // TODO On AutoLogin Error handle
     val context = LocalContext.current
@@ -46,7 +48,8 @@ fun AuthenticationScreen(
                     Log.v("login screen"," login state")
                     userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
                     navController.navigate(BottomNavItem.Home.route)
-
+                    //connect to websocket
+                    messageViewModel.startConnection(authViewModel.tokenState.value)
                 }
                 is AuthViewModel.LoginUIState.Error -> {
                     context.dataStore.edit {

@@ -183,7 +183,7 @@ class EquipmentInEvent(Base):
     equipmentID = Column(Integer, ForeignKey('equipment.id'), nullable=False)
     eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
     observations = Column(String(50))
-    isProvided = Column(Boolean)
+    isProvided = Column(Boolean, nullable=False)
 
     def serialize(self):
         return {
@@ -300,7 +300,7 @@ class UserInEvent(Base):
     eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
     status = Column(String(128), nullable=False)
     creator = Column(Boolean, nullable=False)
-    #todo date = Column(DateTime, nullable=False)
+    #todo enteringDate = Column(DateTime, nullable=False)
 
 
     def serialize(self):

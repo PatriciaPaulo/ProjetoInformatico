@@ -1,10 +1,8 @@
-from flask import jsonify, make_response, request, current_app, Flask
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import jsonify, make_response, request
 from flask_restful import Api
 from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot, GarbageSpotInEvent, UserInEvent, GarbageInEvent, Garbage
-from utils import token_required, admin_required, guest
-import jwt
+from models import  Event, db, GarbageSpot, GarbageSpotInEvent, UserInEvent, GarbageInEvent, Garbage, Equipment, EquipmentInEvent
+from utils import token_required
 from datetime import datetime
 
 event_routes_blueprint = Blueprint('event_routes', __name__, )
@@ -59,6 +57,14 @@ def create_event(current_user):
                 new_garbageSpotInEvent = GarbageSpotInEvent(eventID=new_event.id, garbageSpotID=garbageSpotID)
                 db.session.add(new_garbageSpotInEvent)
 
+    if len(data['equipmentList']) > 0:
+        for equipment in data['equipmentList']:
+            print(equipment )
+            equipmentExists = db.session.query(Equipment).filter_by(id=equipment['equipmentID']).first()
+            if equipmentExists:
+                new_equipmentInEvent = EquipmentInEvent(eventID=new_event.id, equipmentID=equipment['equipmentID'],observations=equipment['observations'],isProvided=equipment['isProvided'])
+                db.session.add(new_equipmentInEvent)
+
     db.session.commit()
 
     return make_response(jsonify({'data': Event.serialize(new_event), 'message': '200 OK - Event Created'}), 200)
@@ -89,15 +95,19 @@ def get_events():
         for garbageSpot in db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
             garbageSpotSer = GarbageSpotInEvent.serialize(garbageSpot)
             event_data['garbageSpots'].append(garbageSpotSer)
-        event_data['garbageType'] = []
+
+        event_data['garbageTypes'] = []
         for garbageType in db.session.query(GarbageInEvent).filter_by(eventID=event.id):
             garbageTypeSer = GarbageInEvent.serialize(garbageType)
-            event_data['garbageType'].append(garbageTypeSer)
+            event_data['garbageTypes'].append(garbageTypeSer)
 
+        event_data['equipments'] = []
+        for equipment in db.session.query(EquipmentInEvent).filter_by(eventID=event.id):
+            equipmentSer = EquipmentInEvent.serialize(equipment)
+            event_data['equipments'].append(equipmentSer)
         output.append(event_data)
 
-    # if len(output) == 0:
-    #    return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Event Found'}), 404)
+
 
     return make_response(jsonify({'data': output, 'message': '200 OK - All Events Retrieved'}), 200)
 
@@ -114,7 +124,7 @@ def get_event_id(event_id):
                   'status': event.status, 'duration': event.duration, 'startDate': event.startDate,
                   'description': event.description, 'accessibility': event.accessibility,
                   'restrictions': event.restrictions, 'quantity': event.quantity, 'observations': event.observations,
-                  'createdDate': event.createdDate, 'garbageSpots': [], 'garbageType': []}
+                  'createdDate': event.createdDate, 'garbageSpots': [], 'garbageTypes': [] ,'equipments': []}
 
     for garbageSpot in db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
         garbageSpotSer = GarbageSpotInEvent.serialize(garbageSpot)
@@ -122,7 +132,11 @@ def get_event_id(event_id):
 
     for garbageType in db.session.query(GarbageInEvent).filter_by(eventID=event.id):
         garbageTypeSer = GarbageInEvent.serialize(garbageType)
-        event_data['garbageType'].append(garbageTypeSer)
+        event_data['garbageTypes'].append(garbageTypeSer)
+
+    for equipment in db.session.query(EquipmentInEvent).filter_by(eventID=event.id):
+        equipmentSer = EquipmentInEvent.serialize(equipment)
+        event_data['equipments'].append(equipmentSer)
 
     return make_response(jsonify({'data': event_data, 'message': '200 OK - Event Retrieved'}), 200)
 
@@ -286,7 +300,7 @@ def get_my_events(current_user):
                                    'description': event.description, 'accessibility': event.accessibility,
                                    'restrictions': event.restrictions, 'quantity': event.quantity,
                                    'observations': event.observations,
-                                   'createdDate': event.createdDate, 'garbageSpots': [], 'garbageType': []}
+                                   'createdDate': event.createdDate, 'garbageSpots': [], 'garbageTypes': [], 'equipments': []}
 
             for garbageSpot in db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
                 garbageSpotSer = GarbageSpotInEvent.serialize(garbageSpot)
@@ -294,8 +308,11 @@ def get_my_events(current_user):
 
             for garbageType in db.session.query(GarbageInEvent).filter_by(eventID=event.id):
                 garbageTypeSer = GarbageInEvent.serialize(garbageType)
-                event_data['event']['garbageType'].append(garbageTypeSer)
+                event_data['event']['garbageTypes'].append(garbageTypeSer)
 
+            for equipment in db.session.query(EquipmentInEvent).filter_by(eventID=event.id):
+                equipmentSer = EquipmentInEvent.serialize(equipment)
+                event_data['event']['equipments'].append(equipmentSer)
         event_data['status'] = user_event.status
         event_data['creator'] = user_event.creator
 

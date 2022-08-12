@@ -1,13 +1,12 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
+import com.example.splmobile.dtos.messages.EventMessageRequest
 import com.example.splmobile.dtos.messages.IndividualMessageRequest
+import com.example.splmobile.dtos.messages.LastMessageRequest
 import com.example.splmobile.dtos.messages.MessageDTO
 import com.example.splmobile.services.messages.MessageService
 import com.example.splmobile.websockets.MessageWebsocket
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -21,7 +20,7 @@ class MessageViewModel (
     private val websocket : MessageWebsocket = MessageWebsocket(log,this)
 
 
-    fun openConnection(token:String) {
+    fun startConnection(token:String) {
         log.v("connecting websocket ")
         _notiReceivedUIState.value = NotificationUIState.Loading
         websocket.connect(token)
@@ -32,9 +31,11 @@ class MessageViewModel (
     )
     val notiReceivedUIState = _notiReceivedUIState.asStateFlow()
     sealed class NotificationUIState {
-        data class Success(val userID: Long) : NotificationUIState()
+        data class SuccessIndividual(val userID: Long) : NotificationUIState()
+        data class SuccessEvent(val eventID: Long) : NotificationUIState()
         data class Error(val error: String) : NotificationUIState()
         object Loading : NotificationUIState()
+        object Offline : NotificationUIState()
         object Empty : NotificationUIState()
     }
     //state create garbage spot
@@ -66,44 +67,81 @@ class MessageViewModel (
         }
 
     }
-
-    //state get all message with user
-    private val _messagessUIState = MutableStateFlow<MessagesUIState>(MessagesUIState.Empty)
-    val messagesUIState = _messagessUIState.asStateFlow()
-
-
-    sealed class MessagesUIState {
-        data class Success(val messages: List<MessageDTO>) : MessagesUIState()
-        data class SuccessLast(val message: MessageDTO) : MessagesUIState()
-        data class Error(val error: String) : MessagesUIState()
-        object Loading : MessageViewModel.MessagesUIState()
-        object Empty : MessageViewModel.MessagesUIState()
-    }
-    fun getMessages(userID:Long,token: String) {
-        _messagessUIState.value = MessagesUIState.Loading
-        log.v("getting all message with $userID ")
+    fun sendEventMessage(message : EventMessageRequest, token: String) {
+        log.v("send message to  ${message.eventID}")
+        _messageCreateUIState.value = MessageCreateUIState.Loading
         viewModelScope.launch {
-            val response = messageService.getMessages(userID,token)
-
+            val response = messageService.postEventMessage(message,token)
             if(response.message.substring(0,3)  == "200"){
-                _messagessUIState.value = MessagesUIState.Success(response.data)
+                log.v("sending message successful")
+                _messageCreateUIState.value = MessageCreateUIState.Success
+
             }else{
-                _messagessUIState.value = MessagesUIState.Error(response.message)
+                log.v("sending message error")
+                _messageCreateUIState.value = MessageCreateUIState.Error(response.message)
             }
         }
 
     }
 
-    fun getLastMessage(userID:Long,token: String) {
-        _messagessUIState.value = MessagesUIState.Loading
+    //state get all message with user
+    private val _messagesUIState = MutableStateFlow<MessagesUIState>(MessagesUIState.Empty)
+    val messagesUIState = _messagesUIState.asStateFlow()
+
+
+    sealed class MessagesUIState {
+        data class Success(val messages: List<MessageDTO>) : MessagesUIState()
+        data class Error(val error: String) : MessagesUIState()
+        object Loading : MessagesUIState()
+        object Empty : MessagesUIState()
+    }
+    //state get last message with user
+    private val _lastMessageUIState = MutableStateFlow<LastMessageUIState>(LastMessageUIState.Empty)
+    val lastMessageUIState = _lastMessageUIState.asStateFlow()
+    sealed class LastMessageUIState {
+        data class Success(val message: List<MessageDTO>) : LastMessageUIState()
+        data class Error(val error: String) : LastMessageUIState()
+        object Loading : LastMessageUIState()
+        object Empty : LastMessageUIState()
+    }
+    fun getMessages(userID:Long,token: String) {
+        _messagesUIState.value = MessagesUIState.Loading
         log.v("getting all message with $userID ")
         viewModelScope.launch {
-            val response = messageService.getLastMessage(userID,token)
+            val response = messageService.getMessages(userID,token)
 
             if(response.message.substring(0,3)  == "200"){
-                _messagessUIState.value = MessagesUIState.SuccessLast(response.data)
+                _messagesUIState.value = MessagesUIState.Success(response.data)
             }else{
-                _messagessUIState.value = MessagesUIState.Error(response.message)
+                _messagesUIState.value = MessagesUIState.Error(response.message)
+            }
+        }
+
+    }  fun getEventMessages(eventID: Long,token: String) {
+        _messagesUIState.value = MessagesUIState.Loading
+        log.v("getting all message with $eventID ")
+        viewModelScope.launch {
+            val response = messageService.getEventMessages(eventID,token)
+
+            if(response.message.substring(0,3)  == "200"){
+                _messagesUIState.value = MessagesUIState.Success(response.data)
+            }else{
+                _messagesUIState.value = MessagesUIState.Error(response.message)
+            }
+        }
+
+    }
+
+    fun getLastMessage(token: String) {
+        _lastMessageUIState.value = LastMessageUIState.Loading
+        log.v("getting all message with friends")
+        viewModelScope.launch {
+            val response = messageService.getLastMessage(token)
+
+            if(response.message.substring(0,3)  == "200"){
+                _lastMessageUIState.value = LastMessageUIState.Success(response.data)
+            }else{
+                _lastMessageUIState.value = LastMessageUIState.Error(response.message)
             }
         }
 
@@ -121,8 +159,25 @@ class MessageViewModel (
     }
 
     fun messageNotification(userID: Long) {
-        //getMessages(userID,authViewModel.tokenState.value)
-        _notiReceivedUIState.value = NotificationUIState.Success(userID)
+        _notiReceivedUIState.value = NotificationUIState.SuccessIndividual(userID)
+    }
+
+    fun messageNotificationEvent(eventID: Long) {
+        _notiReceivedUIState.value = NotificationUIState.SuccessEvent(eventID)
+    }
+
+    fun getLastEventMessage(token: String) {
+        _lastMessageUIState.value = LastMessageUIState.Loading
+        log.v("getting all message in event")
+        viewModelScope.launch {
+            val response = messageService.getLastEventMessage(token)
+
+            if(response.message.substring(0,3)  == "200"){
+                _lastMessageUIState.value = LastMessageUIState.Success(response.data)
+            }else{
+                _lastMessageUIState.value = LastMessageUIState.Error(response.message)
+            }
+        }
     }
 
 }

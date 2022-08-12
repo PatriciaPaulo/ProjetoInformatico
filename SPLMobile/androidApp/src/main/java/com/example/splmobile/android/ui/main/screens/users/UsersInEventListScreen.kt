@@ -21,6 +21,7 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
+import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.events.UserInEventDTO
@@ -51,19 +52,18 @@ fun UsersInEventListScreen(
         userViewModel.getAllUsers(authViewModel.tokenState.value)
         userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
     }
-    var usersEventListState = userViewModel.usersInEventUIState.collectAsState().value
-    var usersListState = userViewModel.usersUIState.collectAsState().value
-    var userID = userInfoViewModel.myIdUIState.collectAsState().value
+    val usersEventListState = userViewModel.usersInEventUIState.collectAsState().value
+    val usersListState = userViewModel.usersUIState.collectAsState().value
+    val loggedInUserID = userInfoViewModel.myIdUIState.collectAsState().value
     //search bar states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
 
-    var listSearch = remember{ mutableStateOf(emptyList<UserDTO>())}
-    var usersInEventListSearch = remember{ mutableStateOf(emptyList<UserInEventDTO>())}
+    val listSearch = remember{ mutableStateOf(emptyList<UserDTO>())}
+    val usersInEventListSearch = remember{ mutableStateOf(emptyList<UserInEventDTO>())}
 
-    var screenState = remember{ mutableStateOf(false)}
-    val listState = rememberLazyListState()
-    var selectedIndex by remember{mutableStateOf(-1L)}
+    val screenState = remember{ mutableStateOf(false)}
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -133,7 +133,7 @@ fun UsersInEventListScreen(
                                         eventID=eventID,
                                         navController = navController,
                                         usersInEventListSearch = usersInEventListSearch.value,
-                                        userID = userID,
+                                        loggedInUserID = loggedInUserID,
                                         log=log,
                                         authViewModel=authViewModel,
                                         userViewModel = userViewModel)
@@ -165,7 +165,15 @@ fun UsersInEventListScreen(
                                 .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
 
                                 items(usersEventListState.user_events.size){ index ->
-                                    UsersList(gs = usersEventListState.user_events.get(index), navController = navController)
+                                    UsersList(
+                                        clickedUser = usersEventListState.user_events.get(index),
+                                        loggedInUserID = loggedInUserID,
+                                        eventID=eventID!!.toLong(),
+                                        userViewModel=userViewModel,
+                                        navController = navController,
+                                        usersInEventListSearch = usersInEventListSearch.value,
+                                        userInfoViewModel = userInfoViewModel,
+                                        authViewModel=authViewModel)
                                 }
 
 
@@ -195,11 +203,17 @@ fun UsersInEventListScreen(
 
 
 @Composable
-fun UserComponent(){
-
-}
-@Composable
-fun UsersList(navController: NavHostController, gs :UserInEventDTO){
+fun UsersList(
+    navController: NavHostController,
+    clickedUser :UserInEventDTO,
+    eventID:Long,
+    loggedInUserID: Long,
+    userViewModel:UserViewModel,
+    usersInEventListSearch: List<UserInEventDTO>,
+    userInfoViewModel: UserInfoViewModel,
+    authViewModel: AuthViewModel
+){
+    var expanded by remember { mutableStateOf(false) }
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -207,7 +221,7 @@ fun UsersList(navController: NavHostController, gs :UserInEventDTO){
             .padding(8.dp)
             .clickable(
                 onClick = {
-
+                    expanded = true
                 },
 
                 )
@@ -216,11 +230,62 @@ fun UsersList(navController: NavHostController, gs :UserInEventDTO){
     ){
         Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
         Column() {
-            Text(text = gs.id.toString(), style = MaterialTheme.typography.h6)
-            Text(text = gs.status, style = MaterialTheme.typography.body1)
-            Text(text = gs.event.toString(), style = MaterialTheme.typography.body2)
+            Text(text = clickedUser.userID.toString(), style = MaterialTheme.typography.h6)
+            Text(text = clickedUser.status, style = MaterialTheme.typography.body1)
+            Text(text = "Event status -" + clickedUser.event.status, style = MaterialTheme.typography.body2)
 
-        }
+
+    }
+        Box(contentAlignment = Alignment.CenterEnd) {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                // se creator -> atualizo se id != do creator
+                if(usersInEventListSearch
+                        .any{
+                            it.creator && it.userID == loggedInUserID
+                        }){
+                    if(clickedUser.userID!=loggedInUserID){
+                        if(clickedUser.status == "Organizer"){
+                            DropdownMenuItem(onClick = {
+                                //remove
+                                var user_event = usersInEventListSearch.find{
+                                    it.userID == clickedUser.userID
+                                }
+                                if(user_event!=null){
+                                    userViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event!!.id,"Inscrito",authViewModel.tokenState.value)
+
+                                }
+
+                            }) {
+                                Text("Remover organizador")
+                            }
+                            Divider()
+
+                        }
+                    }
+
+
+                }
+
+                if(clickedUser.userID!=loggedInUserID) {
+                    DropdownMenuItem(onClick = {
+                        navController.navigate(Screen.UserProfile.route + "/${clickedUser.userID}")
+                    }) {
+                        Text("Ver perfil")
+                    }
+                }else{
+                    DropdownMenuItem(onClick = {
+                        navController.navigate(BottomNavItem.Profile.route)
+                    }) {
+                        Text("Ver perfil")
+                    }
+                }
+            }
+            }
+
+
     }
 }
 @Composable
@@ -231,7 +296,7 @@ fun AllUsersList(
     userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
     log: Logger,
-    userID: Long,
+    loggedInUserID: Long,
     eventID: String?
 ){
     var expanded by remember { mutableStateOf(false) }
@@ -249,7 +314,7 @@ fun AllUsersList(
 
 
     ){
-        if(userID != user.id) {
+        if(loggedInUserID != user.id) {
             Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
             Column() {
 
@@ -295,7 +360,7 @@ fun AllUsersList(
                 if(usersInEventListSearch
                         .any{
                             log.d{"$it"}
-                            it.creator && it.userID == userID
+                            it.creator && it.userID == loggedInUserID
                         }){
                     //if user is already organizer
                     if(usersInEventListSearch
@@ -333,7 +398,7 @@ fun AllUsersList(
                     if(usersInEventListSearch
                             .any{
                                 log.d{"$it"}
-                                it.status=="Organizer" && it.userID == userID
+                                it.status=="Organizer" && it.userID == loggedInUserID
                             }){
                         //if user is already organizer
                         if(usersInEventListSearch
@@ -349,7 +414,7 @@ fun AllUsersList(
                             }
                             if(user_event == null){
                                 //create signup
-                                userViewModel.participateInEventOrganizer(eventID!!.toLong(),userID,authViewModel.tokenState.value)
+                                userViewModel.participateInEventOrganizer(eventID!!.toLong(),loggedInUserID,authViewModel.tokenState.value)
 
                             }
                             else{
@@ -369,7 +434,7 @@ fun AllUsersList(
                 if(usersInEventListSearch
                         .any{
                             log.d{"$it"}
-                            it.creator && it.userID == userID
+                            it.creator && it.userID == loggedInUserID
                         }){
                     //if user is already organizer
                     if(usersInEventListSearch
@@ -387,7 +452,7 @@ fun AllUsersList(
                     if(usersInEventListSearch
                             .any{
                                 log.d{"$it"}
-                                it.status=="Organizer" && it.userID == userID
+                                it.status=="Organizer" && it.userID == loggedInUserID
                             }){
                         //if user is already organizer
                         if(usersInEventListSearch
@@ -405,7 +470,6 @@ fun AllUsersList(
             }
             Divider()
             DropdownMenuItem(onClick = {
-                //TODO NAVIGATE TO PERFIL
                 navController.navigate(Screen.UserProfile.route+"/${user.id}")
             }) {
                 Text("Ver perfil")

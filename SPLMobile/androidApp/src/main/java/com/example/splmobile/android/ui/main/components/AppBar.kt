@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.components.SearchBar
@@ -14,6 +15,7 @@ import com.example.splmobile.android.ui.main.components.SearchWidgetState
 @Composable
 fun DefaultAppBar(
     title: String,
+    icon: ImageVector,
     onSearchClicked: ()-> Unit){
     TopAppBar(
         title = {
@@ -25,7 +27,7 @@ fun DefaultAppBar(
             IconButton(
                 onClick = { onSearchClicked() }) {
                 Icon(
-                    imageVector = Icons.Filled.Search,
+                    imageVector = icon,
                     contentDescription = "Procurar icon",
                     tint = Color.White
                 )
@@ -48,7 +50,8 @@ fun MapAppBar(
         SearchWidgetState.CLOSED -> {
             DefaultAppBar (
                 title = title,
-                onSearchClicked = onSearchTriggered
+                onSearchClicked = onSearchTriggered,
+                icon=Icons.Filled.Search
             )
         }
         SearchWidgetState.OPENED->{

@@ -59,12 +59,14 @@ fun SetupNavGraph(
         composable(route = Screen.Authentication.route) {
             AuthenticationScreen(navController = navController,
                 authViewModel = authViewModel,
-                userInfoViewModel =userInfoViewModel)
+                userInfoViewModel =userInfoViewModel,
+                messageViewModel = messageViewModel)
         }
         composable(route = Screen.Login.route) {
             LoginScreen(navController = navController,
                 authViewModel = authViewModel,
-                userInfoViewModel =userInfoViewModel)
+                userInfoViewModel = userInfoViewModel,
+                messageViewModel = messageViewModel)
         }
         composable(route = Screen.Register.route) {
             RegisterScreen(navController = navController, authViewModel = authViewModel)
@@ -109,9 +111,11 @@ fun SetupNavGraph(
         }
         composable(BottomNavItem.Chat.route) {
             ChatScreen(navController = navController,
-            messageViewModel = messageViewModel,
+                messageViewModel = messageViewModel,
                 friendViewModel = friendViewModel,
-                authViewModel = authViewModel)
+                authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
+                eventViewModel = eventViewModel)
         }
         composable(BottomNavItem.Profile.route) {
             ProfileScreen(navController =navController,
@@ -217,12 +221,23 @@ fun SetupNavGraph(
                 friendViewModel = friendViewModel,
                 log = log)
         }
-        composable(Screen.ChatUser.route+"/{userID}") { backStackEntry->
+        composable(Screen.ChatUser.route+"/{userID}/{friendshipID}") { backStackEntry->
             ChatUserScreen(navController = navController,
                 backStackEntry.arguments?.getString("userID"),
+                backStackEntry.arguments?.getString("friendshipID"),
                 messageViewModel = messageViewModel,
                 userInfoViewModel = userInfoViewModel,
-                authViewModel = authViewModel)
+                authViewModel = authViewModel,
+                userViewModel=userViewModel)
+        }
+        composable(Screen.ChatEvent.route+"/{eventID}") { backStackEntry->
+            ChatEventScreen(navController = navController,
+                backStackEntry.arguments?.getString("eventID"),
+                messageViewModel = messageViewModel,
+                userInfoViewModel = userInfoViewModel,
+                authViewModel = authViewModel,
+                userViewModel=userViewModel,
+                eventViewModel = eventViewModel)
         }
 
         composable(Screen.Camera.route) {

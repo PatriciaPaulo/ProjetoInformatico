@@ -1,5 +1,6 @@
 package com.example.splmobile.dtos.events
 
+import com.example.splmobile.dtos.equipments.EquipmentInEventDTO
 import com.example.splmobile.dtos.garbageSpotsInEvents.GarbageSpotInEventDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypeInEventDTO
@@ -22,5 +23,6 @@ data class EventDTO(
     val observations: String?,
     val createdDate: String,
     val garbageSpots: List<GarbageSpotInEventDTO>,
-    val garbageType: List<GarbageTypeInEventDTO>
+    val garbageTypes: List<GarbageTypeInEventDTO>,
+    val equipments: List<EquipmentInEventDTO>
 )

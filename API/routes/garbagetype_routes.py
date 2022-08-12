@@ -1,6 +1,10 @@
 from flask import Blueprint
 from flask import jsonify, make_response, request
 from flask_restful import Api
+from flask import jsonify, make_response, request
+from flask_restful import Api
+from models import db, Garbage, GarbageType
+from utils import token_required
 
 from models import db, Garbage
 from utils import token_required
@@ -13,7 +17,7 @@ api = Api(garbagetype_routes_blueprint)
 @token_required
 def create_garbage(current_user):
     data = request.get_json()
-    # Checks if garbageSpot with same coordinates exists
+
     garbageType = db.session.query(Garbage).filter_by(name=data['name']).first()
     if garbageType:
               return make_response(jsonify({'message': '409 NOT OK - GarbageType already exists!'}), 409)

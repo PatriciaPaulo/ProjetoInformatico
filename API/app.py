@@ -23,9 +23,6 @@ from websockets_server import start_websockets
 
 SECRET_KEY = '6e129cb9707e18357de8b945656c430f'
 
-UPLOAD_FOLDER = "C:/Users/Marta/Desktop/FINAL/ProjetoInformatico/API/uploads"
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-
 engine = create_engine('sqlite:///spl.db')
 
 if __name__ == '__main__':
@@ -48,6 +45,7 @@ if __name__ == '__main__':
     app.register_blueprint(friends_routes_blueprint, url_prefix='/api')
     app.register_blueprint(messages_routes_blueprint, url_prefix='/api')
     app.register_blueprint(file_routes_blueprint, url_prefix='/api')
+    app.register_blueprint(equipment_routes_blueprint, url_prefix='/api')
     # endregion
 
     # mail = Mail(app)
@@ -64,8 +62,3 @@ if __name__ == '__main__':
 
         # app.run(host='0.0.0.0', port=5000,debug=True)
         app.run(debug=True, use_reloader=False)
-
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

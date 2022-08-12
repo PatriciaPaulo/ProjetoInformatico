@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -50,6 +51,7 @@ fun EventInfoScreen(
         eventViewModel.getEventsByID(eventoId!!.toLong())
         userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+        eventViewModel.getEquipments(authViewModel.tokenState.value)
 
     }
     var eventState = eventViewModel.eventByIdUIState.collectAsState().value
@@ -57,7 +59,7 @@ fun EventInfoScreen(
     var myEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
     var participateState = userViewModel.eventParticipateUIState.collectAsState().value
     var eventStatusState = eventViewModel.eventUpdateUIState.collectAsState().value
-
+    var equipmentState = eventViewModel.equipmentUIState.collectAsState().value
 
     Scaffold(
         topBar = {
@@ -88,6 +90,7 @@ fun EventInfoScreen(
                             navController,
                             myEventsState,
                             garbageSpotsState,
+                            equipmentState,
                             eventState.event,
                             userViewModel,
                             eventViewModel,
@@ -119,6 +122,7 @@ private fun MainComponent(
     navController: NavController,
     myEventsState: UserInfoViewModel.MyEventsUIState.Success,
     garbageSpotsState: GarbageSpotViewModel.GarbageSpotsUIState,
+    equipmentState: EventViewModel.EquipmentUIState,
     event: EventDTO,
     userViewModel: UserViewModel,
     eventViewModel: EventViewModel,
@@ -209,6 +213,67 @@ private fun MainComponent(
                 is GarbageSpotViewModel.GarbageSpotsUIState.Loading -> {
                     CircularProgressIndicator()}
             }
+
+        }
+        when(equipmentState){
+            is EventViewModel.EquipmentUIState.Success->{
+                Text("Equipamento")
+                if(equipmentState.equipments.isNotEmpty()){
+                    Row(horizontalArrangement = Arrangement.SpaceEvenly){
+                        Text("É fornecido")
+                        Text("É preciso trazer")
+                    }
+                    Row(horizontalArrangement = Arrangement.SpaceEvenly){
+                        LazyVerticalGrid(
+                            modifier = Modifier
+                                .height(50.dp).width(150.dp),
+                            columns = GridCells.Fixed(1),
+                        ) {
+                            event.equipments
+                                .forEachIndexed { index, card ->
+                                    var eq =
+                                        equipmentState.equipments.find { it.id == card.equipmentID }
+                                    if (eq != null){
+                                        if(card.isProvided){
+                                            item(span = { GridItemSpan(1) }) {
+                                                Card{
+                                                    Column() {
+                                                        Text(text = eq.name)
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                        }
+                        LazyVerticalGrid(
+                            modifier = Modifier.width(150.dp)
+                                .height(50.dp),
+                            columns = GridCells.Fixed(1),
+                        ) {
+                            event.equipments
+                                .forEachIndexed { index, card ->
+                                    var eq =
+                                        equipmentState.equipments.find { it.id == card.equipmentID }
+                                    if (eq != null){
+                                        if(!card.isProvided) {
+                                            item(span = { GridItemSpan(1) }) {
+                                                Card {
+                                                    Text(text = eq.name)
+                                                }
+                                            }
+
+                                        }
+                                    }
+
+                                }
+                        }
+                    }
+
+                }
+            }
         }
 
         //check if it state is to sign up or to change status of already existent sign up
@@ -218,10 +283,10 @@ private fun MainComponent(
             if(user_event.status.equals("Organizer")){
                 log.d{"organizer in event"}
                 val statusOrganizerListEvent = listOf(
-                    textResource(R.string.EventOrganizerStatusElement1).toString(),
-                    textResource(R.string.EventOrganizerStatusElement2).toString(),
-                    textResource(R.string.EventOrganizerStatusElement3).toString(),
-                    textResource(R.string.EventOrganizerStatusElement4).toString(),
+                    textResource(R.string.EventOrganizerStatusElement1),
+                    textResource(R.string.EventOrganizerStatusElement2),
+                    textResource(R.string.EventOrganizerStatusElement3),
+                    textResource(R.string.EventOrganizerStatusElement4),
                 )
                 var expanded by remember { mutableStateOf(false) }
                 var selectedOptionText by remember { mutableStateOf(event.status) }

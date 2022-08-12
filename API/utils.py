@@ -40,10 +40,9 @@ def token_required(f):
         token = None
         if 'authorization' in request.headers:
             token = request.headers['authorization']
-        print("token required" + token)
         if not token:
             return make_response(jsonify({'message': 'a valid token is missing'}), 400)
-
+        print(token)
         try:
             data = jwt.decode(token.split(" ")[1], current_app.config['SECRET_KEY'], algorithms=["HS256"])
            # print(data['email'])

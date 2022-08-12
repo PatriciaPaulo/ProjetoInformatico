@@ -36,6 +36,8 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
+import com.example.splmobile.dtos.equipments.EquipmentDTO
+import com.example.splmobile.dtos.equipments.EquipmentInEventDTO
 import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
@@ -76,17 +78,23 @@ fun CreateEventScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
+
     LaunchedEffect(Unit) {
         garbageSpotViewModel.getGarbageTypes(authViewModel.tokenState.value)
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+        eventViewModel.getEquipments(authViewModel.tokenState.value)
+        EventViewModel.EventCreateUIState.Empty
     }
     val garbageSpotsState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
     val garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
+    val equipmentsState = eventViewModel.equipmentUIState.collectAsState().value
     val createEventState = eventViewModel.eventCreateUIState.collectAsState().value
     val allGarbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>())}
     val allGarbageSpotListEvent = remember { mutableStateOf(emptyList<GarbageSpotDTO>())}
+    val allEquipmentListEvent = remember { mutableStateOf(emptyList<EquipmentDTO>())}
     val listGarbageTypeInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
     val listGarbageSpotsInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
+    val listEquipmentInEvent = remember { mutableStateOf(SnapshotStateList<EquipmentInEventDTO>())}
 
 
 
@@ -124,11 +132,7 @@ fun CreateEventScreen(
             // FROM VIEWMODEL
             //garbageTypeListEvent
 
-            when(garbageTypesState){
-                is GarbageSpotViewModel.GarbageTypesUIState.Success -> {
-                    allGarbageTypeListEvent.value = garbageTypesState.garbageTypes
-                }
-            }
+
 
 
             val accessibilityListEvent = listOf(textResource(R.string.EventAccessibilityElement1).toString(), textResource(R.string.EventAccessibilityElement2).toString(), textResource(R.string.EventAccessibilityElement3).toString())
@@ -202,9 +206,27 @@ fun CreateEventScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
 
+                    when(garbageTypesState){
+                        is GarbageSpotViewModel.GarbageTypesUIState.Success -> {
+                            allGarbageTypeListEvent.value = garbageTypesState.garbageTypes
+                            garbageTypeSelection(allGarbageTypeListEvent, listGarbageTypeInEvent)
 
-                    garbageTypeSelection(allGarbageTypeListEvent, listGarbageTypeInEvent)
+                        }
+                        is GarbageSpotViewModel.GarbageTypesUIState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+                    }
 
+                    when(equipmentsState){
+                        is EventViewModel.EquipmentUIState.Success -> {
+                            allEquipmentListEvent.value = equipmentsState.equipments
+                            EquipmentSelection(allEquipmentListEvent, listEquipmentInEvent)
+
+                        }
+                        is EventViewModel.EquipmentUIState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(32.dp))
                     EventDescriptionInput(descriptionEvent)
@@ -247,6 +269,7 @@ fun CreateEventScreen(
                             modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                         )
 
+
                     }
                     is EventViewModel.EventCreateUIState.Error -> {
                         log.d{"event create state -> Error"}
@@ -286,9 +309,10 @@ fun CreateEventScreen(
                                     quantitySelectedOptionText.value,
                                     observationsEvent.value.text,
                                     ""
-                                    , emptyList(), emptyList()),
+                                    , emptyList(), emptyList(), emptyList()),
                                 listGarbageSpotsInEvent.value,
                                 listGarbageTypeInEvent.value,
+                                listEquipmentInEvent.value,
                                 authViewModel.tokenState.value
                             )
 
@@ -311,6 +335,98 @@ fun CreateEventScreen(
         )
 
 
+}
+
+@Composable
+private fun EquipmentSelection(
+    allEquipmentListEvent: MutableState<List<EquipmentDTO>>,
+    listEquipmentInEvent: MutableState<SnapshotStateList<EquipmentInEventDTO>>
+) {
+
+
+    Row(horizontalArrangement = Arrangement.SpaceAround){
+        Text(text = textResource(R.string.lblEquipment))
+        Text(text = textResource(R.string.lblEquipmentIsProvided))
+    }
+
+    val listChecked = remember { mutableStateOf(SnapshotStateList<Boolean>())}
+    LazyColumn(
+        modifier = Modifier
+            .height(200.dp)
+            .width(200.dp)
+            .selectableGroup(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        items(allEquipmentListEvent.value.size) { index ->
+            if(listChecked.value.size < allEquipmentListEvent.value.size){
+                listChecked.value.add(index,false)
+            }
+
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected =  listEquipmentInEvent.value.contains(
+                            listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                        ),
+                        onClick = {
+                            Log.d("equipement", "equipment clicked")
+
+
+                            var element =  listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                            Log.d("equipement", "$element")
+
+                                if ( element !=null) {
+                                    Log.d("equipment", "removing garbage type")
+
+                                    //remove item
+                                    listEquipmentInEvent.value.remove(element)
+
+
+                                } else {
+                                    Log.d("equipment", "adding equipment type")
+                                    listEquipmentInEvent.value.add(EquipmentInEventDTO(0, 0,allEquipmentListEvent.value[index].id,listChecked.value[index],"observations"))
+                                    Log.d("equipment", "list ${listEquipmentInEvent.value}")
+                                }
+                            }
+
+
+                    )
+                    .background(
+                        if (  listEquipmentInEvent.value.contains(
+                                listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                            )  ) Color.Gray
+                        else Color.Transparent
+                    )
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = allEquipmentListEvent.value[index].name)
+
+                Checkbox(
+                    checked = listChecked.value.get(index),
+                    onCheckedChange = { listChecked.value[index] = it }
+                )
+
+
+                if ( listEquipmentInEvent.value.contains(
+                        listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                    )) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected",
+                        tint = Color.Green,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+            }
+
+        }
+    }
 }
 
 fun calculateDistance(eventLocation: LatLng, garbageLocation: LatLng?) : Double {
@@ -567,7 +683,6 @@ private fun garbageTypeSelection(
     listGarbageTypeInEvent: MutableState<SnapshotStateList<Long>>
 ) {
     Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
-    //todo redo , select only updating after state change and not when clicked
 
     LazyColumn(
         modifier = Modifier
@@ -640,8 +755,8 @@ private fun garbageSpotsSelection(
     allGarbageSpotListEvent: MutableState<List<GarbageSpotDTO>>,
     listGarbageSpotsInEvent: MutableState<SnapshotStateList<Long>>
 ) {
-    Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
-    //todo redo , select only updating after state change and not when clicked
+    Text(text = textResource(R.string.lblGarbageSpots).toString())
+
 
     LazyColumn(
         modifier = Modifier
