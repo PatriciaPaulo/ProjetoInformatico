@@ -9,5 +9,5 @@ data class FriendDTO(
     val id : Long,
     val user: UserDTO,
     val status: String,
-    val date: String,
+    val date: String?,
 )

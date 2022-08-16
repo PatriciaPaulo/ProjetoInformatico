@@ -247,7 +247,7 @@ fun CreateEventScreen(
                             }
 
                             else{
-                                Text(text="Picka a location first")
+                                Text(text= textResource(id = R.string.lblPickALocation))
                             }
 
 
@@ -263,7 +263,7 @@ fun CreateEventScreen(
                     is EventViewModel.EventCreateUIState.Success -> {
                         log.d{"event create state -> success"}
                         Text(
-                            text = textResource(R.string.txtEventCreatedSuccess).toString(),
+                            text = textResource(R.string.txtEventCreatedSuccess),
                             color = MaterialTheme.colors.primary,
                             style = MaterialTheme.typography.caption,
                             modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
@@ -274,7 +274,7 @@ fun CreateEventScreen(
                     is EventViewModel.EventCreateUIState.Error -> {
                         log.d{"event create state -> Error"}
                         log.d{"Error -> ${ createEventState.error}"}
-                        Text(text = "Error message - " + createEventState.error)
+                        Text(text = textResource(id = R.string.txtEventCreateError))
                     }
                     is EventViewModel.EventCreateUIState.Loading -> CircularProgressIndicator()
                 }
@@ -325,7 +325,7 @@ fun CreateEventScreen(
                         }
                     },
                 ) {
-                  Text(text= "Criar")
+                  Text(text= textResource(id = R.string.lblCreateEvent))
                 }
 
 
@@ -368,36 +368,46 @@ private fun EquipmentSelection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .selectable(
-                        selected =  listEquipmentInEvent.value.contains(
-                            listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                        selected = listEquipmentInEvent.value.contains(
+                            listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
                         ),
                         onClick = {
                             Log.d("equipement", "equipment clicked")
 
 
-                            var element =  listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                            var element =
+                                listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
                             Log.d("equipement", "$element")
 
-                                if ( element !=null) {
-                                    Log.d("equipment", "removing garbage type")
+                            if (element != null) {
+                                Log.d("equipment", "removing garbage type")
 
-                                    //remove item
-                                    listEquipmentInEvent.value.remove(element)
+                                //remove item
+                                listEquipmentInEvent.value.remove(element)
 
 
-                                } else {
-                                    Log.d("equipment", "adding equipment type")
-                                    listEquipmentInEvent.value.add(EquipmentInEventDTO(0, 0,allEquipmentListEvent.value[index].id,listChecked.value[index],"observations"))
-                                    Log.d("equipment", "list ${listEquipmentInEvent.value}")
-                                }
+                            } else {
+                                Log.d("equipment", "adding equipment type")
+                                listEquipmentInEvent.value.add(
+                                    EquipmentInEventDTO(
+                                        0,
+                                        0,
+                                        allEquipmentListEvent.value[index].id,
+                                        listChecked.value[index],
+                                        "observations"
+                                    )
+                                )
+                                Log.d("equipment", "list ${listEquipmentInEvent.value}")
                             }
+                        }
 
 
                     )
                     .background(
-                        if (  listEquipmentInEvent.value.contains(
-                                listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
-                            )  ) Color.Gray
+                        if (listEquipmentInEvent.value.contains(
+                                listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
+                            )
+                        ) Color.Gray
                         else Color.Transparent
                     )
                     .padding(8.dp),

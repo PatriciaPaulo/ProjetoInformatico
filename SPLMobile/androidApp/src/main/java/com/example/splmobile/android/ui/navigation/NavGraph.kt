@@ -162,7 +162,7 @@ fun SetupNavGraph(
             GarbageSpotInfoScreen(navController = navController,
                 garbageSpotViewModel = garbageSpotViewModel,
                 authViewModel = authViewModel,
-                userInfoViewModel = userInfoViewModel,
+                userViewModel = userViewModel,
                 backStackEntry.arguments?.getString("garbageSpotId"),
                 log = log)
 
@@ -219,6 +219,7 @@ fun SetupNavGraph(
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 friendViewModel = friendViewModel,
+                userInfoViewModel = userInfoViewModel,
                 log = log)
         }
         composable(Screen.ChatUser.route+"/{userID}/{friendshipID}") { backStackEntry->

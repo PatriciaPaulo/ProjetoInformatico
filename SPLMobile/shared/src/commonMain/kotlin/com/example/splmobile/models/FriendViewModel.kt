@@ -18,9 +18,10 @@ class FriendViewModel  (
     private val _friendRequestUIState = MutableStateFlow<FriendRequestUIState>(FriendRequestUIState.Empty)
     val friendRequestUIState = _friendRequestUIState.asStateFlow()
     sealed class FriendRequestUIState {
-        object SuccessRequestAccepted: FriendRequestUIState()
-        object SuccessRequestSent: FriendRequestUIState()
-        object SuccessFriendRemoved: FriendRequestUIState()
+        data class SuccessRequestAccepted(val friend: FriendDTO) : FriendRequestUIState()
+        data class SuccessRequestSent(val friend: FriendDTO) : FriendRequestUIState()
+        data class SuccessFriendRemoved(val friend: FriendDTO) : FriendRequestUIState()
+        data class ErrorRequestAlreadySent(val friend: FriendDTO) : FriendRequestUIState()
         data class Error(val error: String) : FriendRequestUIState()
         object Loading : FriendRequestUIState()
         object Empty : FriendRequestUIState()
@@ -48,16 +49,22 @@ class FriendViewModel  (
             //val response_garbage_in_event = eventService.postGarbageTypeInEvent(GarbageInEventRequest(garbageType,event.id),token)
             if (response.message.substring(0, 3) == "200") {
                 log.v("Creating event successful")
-                _friendRequestUIState.value = FriendRequestUIState.SuccessRequestSent
+                _friendRequestUIState.value = FriendRequestUIState.SuccessRequestSent(response.data)
 
             } else {
                 if (response.message.substring(0, 3) == "202") {
-                    log.v("Creating event successful")
-                    _friendRequestUIState.value = FriendRequestUIState.SuccessRequestAccepted
+                    log.v("sendFrendRequest successful")
+                    _friendRequestUIState.value = FriendRequestUIState.SuccessRequestAccepted(response.data)
 
                 } else {
-                    log.v("Creating event error")
-                    _friendRequestUIState.value = FriendRequestUIState.Error(response.message)
+                    if (response.message.substring(0, 3) == "409") {
+                        log.v("conflict sendingFriendRequest")
+                        _friendRequestUIState.value = FriendRequestUIState.ErrorRequestAlreadySent(response.data)
+
+                    } else {
+                        log.v(" error sendingFriendRequest")
+                        _friendRequestUIState.value = FriendRequestUIState.Error(response.message)
+                    }
                 }
             }
 
@@ -66,19 +73,16 @@ class FriendViewModel  (
 
     fun getAllFriends(token: String) {
         _friendsUIState.value = FriendsUIState.Loading
-        log.v("getting all garbage spot ")
+        log.v("getting all friends spot ")
         viewModelScope.launch {
             val response = friendService.getAllFriends(token)
 
             if (response.message.substring(0, 3) == "200") {
                 _friendsUIState.value = FriendsUIState.SuccessAll(response.data)
             } else {
-                if (response.message.substring(0, 3) == "409") {
-                    _friendsUIState.value = FriendsUIState.SuccessAll(response.data)
-                } else {
-                    _friendsUIState.value = FriendsUIState.Error(response.message)
-                }
+                _friendsUIState.value = FriendsUIState.Error(response.message)
             }
+
         }
     }
     fun getFriendByID(userID:Long,token: String) {
@@ -104,10 +108,10 @@ class FriendViewModel  (
             val response = friendService.removeFriend(friendshipID, token)
                if (response.message.substring(0, 3) == "200") {
                 log.v("removing friend successful")
-                _friendRequestUIState.value = FriendRequestUIState.SuccessFriendRemoved
+                _friendRequestUIState.value = FriendRequestUIState.SuccessFriendRemoved(response.data)
 
             } else {
-                log.v("Creating event error")
+                log.v("Remove friend error")
                 _friendRequestUIState.value = FriendRequestUIState.Error(response.message)
             }
 

@@ -27,12 +27,12 @@ def friend_request(current_user):
     # check if user in friendship with logged in user exists
     user = db.session.query(User).filter_by(id=data).first()
     if not user:
-        return make_response(jsonify({'message': '404 NOT OK - User doesnt exist!'}), 404)
+        return make_response(jsonify({'data':{},'message': '404 NOT OK - User doesnt exist!'}), 404)
 
     if user.admin:
-        return make_response(jsonify({'message': '404 NOT OK - User is an Admin!'}), 404)
+        return make_response(jsonify({'data':{},'message': '404 NOT OK - User is an Admin!'}), 404)
     if user.blocked:
-        return make_response(jsonify({'message': '404 NOT OK - User is blocked!'}), 404)
+        return make_response(jsonify({'data':{},'message': '404 NOT OK - User is blocked!'}), 404)
     print("Friend -")
     print(user.id)
     # checks if friendship already exists where logged in user sent request
@@ -41,15 +41,20 @@ def friend_request(current_user):
     # if doesnt
     if not friendNewRequest:
         # check if friendship already exists where other user is the requests
-        friendImAddressee = db.session.query(Friendship).filter_by(addresseeID=current_user.id, requestorID=data,
-                                                                   status="Pending").first()
+        friendImAddressee = db.session.query(Friendship).filter_by(addresseeID=current_user.id, requestorID=data).first()
+
         today = datetime.utcnow()
         # if yes complete request
         if friendImAddressee:
-            friendImAddressee.status = "Complete"
-            friendImAddressee.completeDate = today
-            db.session.commit()
-            return make_response(jsonify({'message': '202 OK - Friend request accepted'}), 202)
+            if friendImAddressee.status == "Complete":
+                return make_response(jsonify({'data': get_friend_data(current_user, friendImAddressee),
+                                              'message': '409 NOT OK - Friend request already accepted'}), 200)
+            if friendImAddressee.status == "Pending":
+                friendImAddressee.status = "Complete"
+                friendImAddressee.completeDate = today
+                db.session.commit()
+                return make_response(jsonify({'data': get_friend_data(current_user, friendImAddressee),
+                                              'message': '202 OK - Friend request accepted'}), 202)
 
         # if not create new one
         else:
@@ -60,14 +65,51 @@ def friend_request(current_user):
             db.session.commit()
 
             send_notification_request(user)
-            return make_response(jsonify({'message': '200 OK - Friend request sent'}), 200)
+            return make_response(jsonify(
+                {'data': get_friend_data(current_user, new_friendship), 'message': '200 OK - Friend request sent'}),
+                                 200)
 
     # if exists return error
     elif friendNewRequest.status == "Pending":
-        return make_response(jsonify({'message': '409 NOT OK - You are already sent friend request to this user!'}),
-                             409)
+        return make_response(jsonify({'data': get_friend_data(current_user, friendNewRequest),
+                                      'message': '409 NOT OK - You are already sent friend request to this user!'}),
+                             200)
     elif friendNewRequest.status == "Complete":
-        return make_response(jsonify({'message': '409 NOT OK - You are already friends with this user!'}), 409)
+        return make_response(jsonify({'data': get_friend_data(current_user, friendNewRequest),
+                                      'message': '409 NOT OK - You are already friends with this user!'}), 200)
+
+
+def get_friend_data(current_user, friend):
+    friend_data = {'id': friend.id}
+
+    if current_user.id == friend.addresseeID:
+        friendID = friend.requestorID
+    else:
+        friendID = friend.addresseeID
+    user = db.session.query(User).filter_by(id=friendID).first()
+    if not user.admin:
+        if not user.blocked:
+            events_participated = db.session.query(UserInEvent).filter_by(userID=user.id,
+                                                                          status="Confirmado").count()
+            # print(events_participated)
+            from datetime import date
+
+            today = date.today()
+            activities_completed = db.session.query(Activity).filter(Activity.userID == user.id,
+                                                                     Activity.endDate <= today).count()
+
+            garbage_spots_created = db.session.query(GarbageSpot).filter(GarbageSpot.creator == user.id).count()
+
+            user_data = {'id': user.id, 'username': user.username,
+                         'name': user.name, 'events_participated': events_participated,
+                         'activities_completed': activities_completed,
+                         'garbage_spots_created': garbage_spots_created}
+
+    friend_data['user'] = user_data
+    friend_data['status'] = friend.status
+    friend_data['date'] = friend.completeDate
+
+    return friend_data
 
 
 # Get users and stats by user

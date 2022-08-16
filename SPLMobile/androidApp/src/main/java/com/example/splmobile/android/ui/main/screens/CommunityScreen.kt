@@ -86,10 +86,7 @@ fun CommunityScreen(
 
                 },
                 onSearchClicked = {
-                    coroutineScope.launch {
-                        //todo search for
 
-                    }
                 },
                 onSearchTriggered = {
                     mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
@@ -135,6 +132,8 @@ fun CommunityScreen(
                 }
 
                 if(buttonScreenState.value.equals(R.string.btnCommunity)){
+
+                    //events near me section
                     when(eventsListState){
                         is EventViewModel.EventsUIState.Success -> {
                             EventsNearMeSection(navController,eventsListState.events,log)
@@ -143,7 +142,7 @@ fun CommunityScreen(
                             Text(text = "${eventsListState.error}")
                         }
                     }
-                    //events near me section
+
 
 
 
@@ -285,8 +284,8 @@ private fun EventsNearMeSection(
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        Text(text = textResource(R.string.lblEventsNearMe).toString())
-        ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems).toString()),
+        Text(text = textResource(R.string.lblEventsNearMe))
+        ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems)),
             style = MaterialTheme.typography.body1,
             onClick = {
                 log.d{"Navigated to new screen"}
@@ -314,7 +313,6 @@ private fun EventsNearMeSection(
                 item(span = { GridItemSpan(1) }) {
                     Card(
                         Modifier.clickable {
-
                             log.d{"Event clicked -> $card"}
                             log.d{"Navigated to new screen"}
                             navController.navigate(Screen.EventInfo.route + "/${card.id}")

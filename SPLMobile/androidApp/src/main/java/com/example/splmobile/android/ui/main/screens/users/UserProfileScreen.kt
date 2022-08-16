@@ -49,23 +49,18 @@ fun UserProfileScreen(
 
     val scaffoldState = rememberScaffoldState()
 
-    //todo test if button state working
+
     LaunchedEffect(Unit) {
         log.d{"get my info get my events and get my activities launched"}
         userViewModel.getUserStats(userID!!.toLong(),authViewModel.tokenState.value)
         friendViewModel.getFriendByID(userID!!.toLong(),authViewModel.tokenState.value)
     }
-    var userInfoState = userViewModel.usersUIState.collectAsState().value
-    var friendRequestState = friendViewModel.friendRequestUIState.collectAsState().value
-    var friendsState = friendViewModel.friendsUIState.collectAsState().value
+    val userInfoState = userViewModel.usersUIState.collectAsState().value
+    val friendRequestState = friendViewModel.friendRequestUIState.collectAsState().value
+    val friendsState = friendViewModel.friendsUIState.collectAsState().value
 
     Scaffold(
         scaffoldState = scaffoldState,
-        drawerContent = {
-            Text("Settings?", modifier = Modifier.padding(16.dp))
-            Divider()
-            // Drawer items
-        },
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
@@ -95,7 +90,7 @@ fun UserProfileScreen(
                             )
                         }
                         is UserViewModel.UsersUIState.Loading -> CircularProgressIndicator()
-                        is UserViewModel.UsersUIState.Error -> Text(text = "Error message - " + userInfoState.error)
+                        is UserViewModel.UsersUIState.Error -> Text(text = "Error getting user Info ")
                     }
                 }
             }
@@ -121,7 +116,7 @@ fun UserProfileScreen(
                                 )
 
                             }, shape = CutCornerShape(10)) {
-                                Text(text = textResource(R.string.btnAddFriend).toString())
+                                Text(text = textResource(R.string.btnAddFriend))
                             }
                         }
                     }
@@ -148,13 +143,16 @@ private fun FriendRequestSection(
                 userID!!.toLong(),
                 authViewModel.tokenState.value
             )
-            Text(text = "you are friends now!")
+            Text(text = "Amigos!")
         }
         is FriendViewModel.FriendRequestUIState.SuccessRequestSent -> {
-            Text(text = "request sent!")
+            Text(text = "Pedido de amizade enviado!")
+        }
+        is FriendViewModel.FriendRequestUIState.ErrorRequestAlreadySent -> {
+            Text(text = "Já enviou pedido de amizade" )
         }
         is FriendViewModel.FriendRequestUIState.Error -> {
-            Text(text = "Error message - " + friendRequestState.error)
+            Text(text = "Erro" )
         }
         is FriendViewModel.FriendRequestUIState.Loading -> {
             CircularProgressIndicator()
