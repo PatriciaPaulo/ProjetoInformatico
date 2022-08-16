@@ -104,24 +104,7 @@ fun UserProfileScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start) {
 
-                when (friendRequestState) {
-                    is FriendViewModel.FriendRequestUIState.SuccessRequestAccepted -> {
-                        friendViewModel.getFriendByID(
-                            userID!!.toLong(),
-                            authViewModel.tokenState.value
-                        )
-                        Text(text = "you are friends now!")
-                    }
-                    is FriendViewModel.FriendRequestUIState.SuccessRequestSent -> {
-                        Text(text = "request sent!")
-                    }
-                    is FriendViewModel.FriendRequestUIState.Error -> {
-                        Text(text = "Error message - " + friendRequestState.error)
-                    }
-                    is FriendViewModel.FriendRequestUIState.Loading -> {
-                        CircularProgressIndicator()
-                    }
-                }
+                FriendRequestSection(friendRequestState, friendViewModel, userID, authViewModel)
 
                 when (friendsState) {
                     is FriendViewModel.FriendsUIState.SuccessByUserID -> {
@@ -152,6 +135,32 @@ fun UserProfileScreen(
     )
 }
 
+@Composable
+private fun FriendRequestSection(
+    friendRequestState: FriendViewModel.FriendRequestUIState,
+    friendViewModel: FriendViewModel,
+    userID: String?,
+    authViewModel: AuthViewModel
+) {
+    when (friendRequestState) {
+        is FriendViewModel.FriendRequestUIState.SuccessRequestAccepted -> {
+            friendViewModel.getFriendByID(
+                userID!!.toLong(),
+                authViewModel.tokenState.value
+            )
+            Text(text = "you are friends now!")
+        }
+        is FriendViewModel.FriendRequestUIState.SuccessRequestSent -> {
+            Text(text = "request sent!")
+        }
+        is FriendViewModel.FriendRequestUIState.Error -> {
+            Text(text = "Error message - " + friendRequestState.error)
+        }
+        is FriendViewModel.FriendRequestUIState.Loading -> {
+            CircularProgressIndicator()
+        }
+    }
+}
 
 
 @Composable
@@ -217,18 +226,18 @@ fun StatSection(user: UserDTO) {
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
-        //todo stats
-        com.example.splmobile.android.ui.main.screens.ProfileStat(
+
+       ProfileStat(
             numberText = user.activities_completed,
             text = "Atividades"
         )
         Spacer(modifier = Modifier.width(40.dp))
-        com.example.splmobile.android.ui.main.screens.ProfileStat(
+       ProfileStat(
             numberText = user.garbage_spots_created,
             text = "Garbage Spots"
         )
         Spacer(modifier = Modifier.width(40.dp))
-        com.example.splmobile.android.ui.main.screens.ProfileStat(
+       ProfileStat(
             numberText = user.events_participated,
             text = "Eventos"
         )

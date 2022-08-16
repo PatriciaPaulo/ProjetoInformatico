@@ -144,8 +144,7 @@ def update_status_garbageSpot(current_user,garbageSpot_id):
         return make_response(jsonify({'message': '404 NOT OK - No Garbage Spot Found'}), 404)
     garbageSpot_data = request.get_json()
 
-    garbageSpot.status = garbageSpot_data['status']
-    garbageSpot_data['status'] = garbageSpot.status
+    garbageSpot.status = garbageSpot_data
 
     db.session.commit()
     return make_response(jsonify({'message':  '200 OK - Garbage Spot Status Updated'}), 200)

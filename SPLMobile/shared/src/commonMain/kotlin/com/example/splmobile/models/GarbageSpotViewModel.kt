@@ -115,11 +115,11 @@ class GarbageSpotViewModel (
 
     }
 
-    fun updateGarbageSpotEstado(garbageSpot: GarbageSpotDTO, estado: String, token: String){
-        log.v("updating status garbage spot $garbageSpot")
+    fun updateGarbageSpotEstado(garbageSpotID: Long, estado: String, token: String){
+        log.v("updating status garbage spot $garbageSpotID")
         _garbageSpotUpdateUIState.value = GarbageSpotUpdateUIState.Loading
         viewModelScope.launch {
-            val response = garbageSpotService.patchGarbageSpotStatus(garbageSpot,estado,token)
+            val response = garbageSpotService.patchGarbageSpotStatus(garbageSpotID ,estado,token)
 
             if(response.message.substring(0,3)  == "200"){
                 log.v("updating garbage spot successful")

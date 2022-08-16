@@ -19,7 +19,6 @@ class FriendViewModel  (
     val friendRequestUIState = _friendRequestUIState.asStateFlow()
     sealed class FriendRequestUIState {
         object SuccessRequestAccepted: FriendRequestUIState()
-        object SuccessRequestReceived: FriendRequestUIState()
         object SuccessRequestSent: FriendRequestUIState()
         object SuccessFriendRemoved: FriendRequestUIState()
         data class Error(val error: String) : FriendRequestUIState()
@@ -115,10 +114,7 @@ class FriendViewModel  (
         }
     }
 
-    fun notificationFriendRequest() {
-        _friendRequestUIState.value = FriendRequestUIState.SuccessRequestReceived
 
-    }
 
 }
 

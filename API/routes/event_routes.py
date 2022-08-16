@@ -8,6 +8,7 @@ from models import Event, db, GarbageSpot, GarbageSpotInEvent, UserInEvent, Garb
 from utils import token_required
 from datetime import datetime
 
+from websockets_server import send_notification_event_status
 
 event_routes_blueprint = Blueprint('event_routes', __name__, )
 api = Api(event_routes_blueprint)
@@ -220,7 +221,7 @@ def update_status_event(current_user, event_id):
     event.status = event_data
 
     db.session.commit()
-
+    send_notification_event_status(event.serialize(), current_user)
     return make_response(jsonify({'message': '200 OK - Event Updated'}), 200)
 
 

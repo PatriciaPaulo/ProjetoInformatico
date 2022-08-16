@@ -95,7 +95,7 @@ private fun MessagesSection(
     userViewModel: UserViewModel
 ) {
 
-    var messagesState = messageViewModel.messagesUIState.collectAsState().value
+    val messagesState = messageViewModel.messagesUIState.collectAsState().value
     when (messagesState) {
         is MessageViewModel.MessagesUIState.Success -> {
             MessagesState(messagesState, userInfoViewModel, userViewModel )
@@ -168,7 +168,7 @@ private fun NotificationState(
     when (val notificationState = messageViewModel.notiReceivedUIState.collectAsState().value) {
         is MessageViewModel.NotificationUIState.SuccessEvent -> {
             //Text("Notification received from ${notificationState}")
-
+            println( "Received notificaiton ${notificationState.eventID }")
             messageViewModel.getEventMessages(
                 eventID!!.toLong(),
                 authViewModel.tokenState.value

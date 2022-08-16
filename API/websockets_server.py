@@ -28,20 +28,23 @@ async def handler(websocket):
     current_user = session.query(User).filter_by(email=data['email']).first()
 
     # save connected user
+
     users_connected[current_user.id] = websocket
+    print(f'current  user id {current_user.id} !')
     # save events user
     events = session.query(Event).all()
     for event in events:
         if event.status is not "Finalizado":
-           users_event_channel[event.id] = []
-
+            if event.id not in users_event_channel:
+                users_event_channel[event.id] = []
 
     eventsuser = session.query(UserInEvent).filter_by(userID=current_user.id).all()
     for eventuser in eventsuser:
-            if current_user not in users_event_channel[eventuser.eventID]:
-                users_event_channel[eventuser.eventID].append(current_user.id)
+        if current_user.id not in users_event_channel[eventuser.eventID]:
+            users_event_channel[eventuser.eventID].append(current_user.id)
 
-
+    print("users in each in event chat")
+    print(users_event_channel)
     # save user in event
 
     """
@@ -64,6 +67,7 @@ async def handler(websocket):
 
 """
     print(f"{current_user.username} connected")
+    #receives comfirmation that the notification was received by the user
     while True:
         messageID = await websocket.recv()
 
@@ -106,19 +110,32 @@ def send_notification_user(userID, message):
     data_to_send = {"message": message.serialize()}
     websocket_listen_event_loop.create_task(users_connected[userID].send(json.dumps(data_to_send)))
 
-def send_notification_event(eventID,message,current_userID):
+
+def send_notification_event(eventID, message, current_user):
     if eventID not in users_event_channel:
         return
+    print("users in event channel")
+    print(users_event_channel[eventID])
     for user in users_event_channel[eventID]:
-        if not user == current_userID:
+        if not user == current_user.id:
             data_to_send = {"message": message.serialize(), "eventID": eventID}
 
             websocket_listen_event_loop.create_task(users_connected[user].send(json.dumps(data_to_send)))
 
+
 def send_notification_request(current_user):
     if current_user.id not in users_connected:
         return
-    print("notification")
-    data_to_send = {"friendRequest": current_user.serialize()}
+    print("notification friend request")
+    data_to_send = {"message": "friendRequest", "user": current_user.serialize()}
+
     websocket_listen_event_loop.create_task(users_connected[current_user.id].send(json.dumps(data_to_send)))
 
+
+def send_notification_event_status(event, current_user):
+    if event.id not in users_event_channel:
+        return
+    for user in users_event_channel[event.id]:
+        if not user == current_user.id:
+            data_to_send = {"message": "eventStatus", "event": event}
+            websocket_listen_event_loop.create_task(users_connected[user].send(json.dumps(data_to_send)))

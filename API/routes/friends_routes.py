@@ -108,10 +108,10 @@ def get_friendship(current_user, user_id):
 @token_required
 def get_user_friends(current_user):
     result = []
-    print(current_user.id)
 
     friends = db.session.query(Friendship).filter(and_(
-        or_(Friendship.requestorID == current_user.id, Friendship.addresseeID == current_user.id),Friendship.status=="Complete")).all()
+        or_(Friendship.requestorID == current_user.id, Friendship.addresseeID == current_user.id),
+        Friendship.status == "Complete")).all()
 
     for friend in friends:
         friend_data = {'id': friend.id}
@@ -146,5 +146,5 @@ def get_user_friends(current_user):
         result.append(friend_data)
 
     # if friendship completed
-    print(result)
+
     return make_response(jsonify({'data': result, 'message': '200 OK - All Friends Retrieved'}), 200)

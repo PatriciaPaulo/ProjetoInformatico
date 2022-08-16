@@ -96,7 +96,7 @@ def send_message_event(current_user):
 @token_required
 def get_last_message(current_user):
     # check if user in friendship with logged in user exists
-    print("get last message friends")
+    # print("get last message friends")
 
     friends = db.session.query(Friendship).filter(
         and_(or_(Friendship.requestorID==current_user.id, Friendship.addresseeID==current_user.id), Friendship.status=="Complete")).all()
@@ -126,7 +126,7 @@ def get_last_message(current_user):
                     desc(Message.sentDate)).first()
 
                 if not message:
-                    print("no messages")
+                    #print("no messages")
                     empty = {"id": 0,
                              "message": "No messages",
                              "status": "",
@@ -142,7 +142,7 @@ def get_last_message(current_user):
                                     "receiverID": message.IndividualMessage.receiverID,
                                     "deliveryDate": message.IndividualMessage.deliveryDate,
                                     "senderID": message.Message.senderID}
-                    print("has messages")
+                    #print("has messages")
                     result.append(message_data)
 
     return make_response(jsonify({'data': result, 'message': '200 OK - All Last Messages Retrieved'}), 200)
@@ -216,7 +216,7 @@ def get_all_messages(current_user, friend_id):
 @token_required
 def get_last_message_from_event_chat(current_user):
     # check if user in friendship with logged in user exists
-    print("get last message events")
+    #print("get last message events")
 
     eventsuser = db.session.query(UserInEvent).filter_by(userID=current_user.id).all()
     result = []
@@ -233,7 +233,7 @@ def get_last_message_from_event_chat(current_user):
                 .filter(EventMessage.eventID == eventuser.eventID).order_by(desc(Message.sentDate)).first()
 
             if not message:
-                print("no messages")
+                #print("no messages")
                 empty = {"id": 0,
                          "message": "No messages",
                          "status": "",
@@ -249,7 +249,7 @@ def get_last_message_from_event_chat(current_user):
                                 "receiverID": message.EventMessage.eventID,
                                 "deliveryDate": message.EventMessage.deliveryDate,
                                 "senderID": message.Message.senderID}
-                print("has messages")
+                #print("has messages")
                 result.append(message_data)
 
     return make_response(jsonify({'data': result, 'message': '200 OK - All Messages Retrieved'}), 200)

@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.splmobile.android.R
+import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.events.UserInEventDTO
@@ -327,6 +328,9 @@ private fun FriendsListSection(
                 }
 
 
+            }
+            else{
+                Text(text= textResource(id = R.string.txtNoFriends))
             }
 
 

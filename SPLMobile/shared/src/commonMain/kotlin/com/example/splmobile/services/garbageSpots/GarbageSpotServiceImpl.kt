@@ -101,7 +101,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
 
     }
     override suspend fun patchGarbageSpotStatus(
-        garbageSpot: GarbageSpotDTO,
+        garbageSpotID: Long,
         status: String,
         token: String,
     ): RequestMessageResponse {
@@ -112,16 +112,8 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
-                setBody(GarbageSpotDTO(garbageSpot.id,
-                    garbageSpot.name,
-                    garbageSpot.creator,
-                    garbageSpot.latitude,
-                    garbageSpot.longitude,
-                    garbageSpot.status,
-                    garbageSpot.approved,
-                    "",
-                    emptyList()))
-                url("api/garbageSpots/"+garbageSpot.id+"/updateGarbageSpotStatus")
+                setBody(status)
+                url("api/garbageSpots/"+garbageSpotID+"/updateGarbageSpotStatus")
             }.body() as RequestMessageResponse
         }
         catch (ex :Exception){

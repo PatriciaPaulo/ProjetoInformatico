@@ -1,18 +1,16 @@
 package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
+import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.messages.EventMessageRequest
 import com.example.splmobile.dtos.messages.IndividualMessageRequest
-import com.example.splmobile.dtos.messages.LastMessageRequest
 import com.example.splmobile.dtos.messages.MessageDTO
 import com.example.splmobile.dtos.myInfo.UserSerializable
-import com.example.splmobile.dtos.users.UserDTO
 import com.example.splmobile.services.messages.MessageService
 import com.example.splmobile.websockets.MessageWebsocket
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonElement
 
 
 class MessageViewModel (
@@ -37,6 +35,7 @@ class MessageViewModel (
         data class SuccessIndividual(val userID: Long) : NotificationUIState()
         data class SuccessEvent(val eventID: Long) : NotificationUIState()
         data class SuccessFriendRequestReceived(val user: UserSerializable) : NotificationUIState()
+        data class SuccessEventStatus(val event: EventDTO) : NotificationUIState()
         data class Error(val error: String) : NotificationUIState()
         object Loading : NotificationUIState()
         object Offline : NotificationUIState()
@@ -163,10 +162,12 @@ class MessageViewModel (
     }
 
     fun messageNotification(userID: Long) {
+        log.v("message individual notification ")
         _notiReceivedUIState.value = NotificationUIState.SuccessIndividual(userID)
     }
 
     fun messageNotificationEvent(eventID: Long) {
+        log.v("message event notification ")
         _notiReceivedUIState.value = NotificationUIState.SuccessEvent(eventID)
     }
 
@@ -186,7 +187,13 @@ class MessageViewModel (
     }
 
     fun notificationFriendRequest(user: UserSerializable) {
+        log.v("Notification Friend Request Received")
         _notiReceivedUIState.value = NotificationUIState.SuccessFriendRequestReceived(user)
     }
 
+
+    fun notificationEventStatus(event: EventDTO) {
+        log.v("Notification SuccessEventStatus Received")
+        _notiReceivedUIState.value = NotificationUIState.SuccessEventStatus(event)
+    }
 }

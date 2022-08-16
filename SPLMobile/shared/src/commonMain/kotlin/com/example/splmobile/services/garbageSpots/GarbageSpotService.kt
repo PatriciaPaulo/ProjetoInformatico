@@ -10,7 +10,7 @@ import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
 interface GarbageSpotService {
       suspend fun getGarbageSpots(token: String): GarbageSpotsResponse
       suspend fun postGarbageSpot(garbageSpot: GarbageSpotDTO, token: String): RequestMessageResponse
-      suspend fun patchGarbageSpotStatus(garbageSpot: GarbageSpotDTO, status: String, token: String): RequestMessageResponse
+      suspend fun patchGarbageSpotStatus(garbageSpotID: Long, status: String, token: String): RequestMessageResponse
       suspend fun getGarbageTypes(token: String): GarbageTypesResponse
       suspend fun getGarbageSpotById(gsId: Long, token: String): GarbageSpotResponse
       suspend fun postGarbageSpotsInEvent(eventID: Long, token: String): RequestMessageResponse

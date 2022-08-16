@@ -43,8 +43,8 @@ fun GarbageSpotInfoScreen(
 
 
     }
-    var garbageSpotByIdState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
-
+    val garbageSpotByIdState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
+    val statusListEvent = listOf( textResource(R.string.GarbageSpotStatusListElement1),textResource(R.string.GarbageSpotStatusListElement2),textResource(R.string.GarbageSpotStatusListElement3))
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) }
@@ -67,7 +67,6 @@ fun GarbageSpotInfoScreen(
                         textAlign = TextAlign.Center,
                         fontSize = 20.sp
                     )
-                    val statusListEvent = listOf( textResource(R.string.GarbageSpotStatusListElement1).toString(),textResource(R.string.GarbageSpotStatusListElement1).toString(),textResource(R.string.GarbageSpotStatusListElement3).toString())
 
                     var expanded by remember { mutableStateOf(false) }
                     var selectedOptionText by remember { mutableStateOf(statusListEvent[0]) }
@@ -112,21 +111,28 @@ fun GarbageSpotInfoScreen(
                             }
                         }
                     }
-
+                    var statusState = remember { mutableStateOf(false)}
+                    when(selectedOptionText){
+                        else->{
+                            if(selectedOptionText == garbageSpotByIdState.garbageSpot.status){
+                                statusState.value = false
+                            }else{
+                                statusState.value = true
+                            }
+                        }
+                    }
                     Button(
                         onClick = {
-
-                                 },
+                                garbageSpotViewModel.updateGarbageSpotEstado(garbageSpotId!!.toLong(),selectedOptionText,authViewModel.tokenState.value)
+                                  },
+                        enabled = statusState.value,
                         modifier = Modifier
                             .fillMaxWidth(),
 
                         ) {
                         Text(text = textResource(R.string.btnUpdateParticipateOnEvent).toString())
                     }
-
-
-
-
+                    StatusResponseSection(garbageSpotViewModel, garbageSpotId, authViewModel)
 
 
                 }
@@ -137,4 +143,25 @@ fun GarbageSpotInfoScreen(
 
     }
 
+}
+
+@Composable
+private fun StatusResponseSection(
+    garbageSpotViewModel: GarbageSpotViewModel,
+    garbageSpotId: String?,
+    authViewModel: AuthViewModel
+) {
+    var garbageSpotUpdateState =
+        garbageSpotViewModel.garbageSpotUpdateUIState.collectAsState().value
+
+    when (garbageSpotUpdateState) {
+        is GarbageSpotViewModel.GarbageSpotUpdateUIState.Success -> {
+            garbageSpotViewModel.getGarbageSpotById(
+                garbageSpotId!!.toLong(),
+                authViewModel.tokenState.value
+            )
+
+            Text(textResource(id = R.string.txtGarbageSpotStatusUpdateSuccess))
+        }
+    }
 }

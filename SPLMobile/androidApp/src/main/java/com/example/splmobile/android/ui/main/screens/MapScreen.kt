@@ -664,7 +664,7 @@ fun SheetContent(
             ) {
                 Button(
                     onClick = {
-                        garbageSpotViewModel.updateGarbageSpotEstado(garbageSpot.value,selectedStatus.value,authViewModel.tokenState.value)
+                        garbageSpotViewModel.updateGarbageSpotEstado(garbageSpot.value.id,selectedStatus.value,authViewModel.tokenState.value)
 
                         coroutineScope.launch {
                              bottomScaffoldState.bottomSheetState.collapse()

@@ -142,6 +142,7 @@ private fun MainComponent(
             .wrapContentSize(Alignment.Center),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
+
     ){
 
         Row(){
@@ -342,8 +343,6 @@ private fun MainComponent(
                     }
                 }
                 Row(horizontalArrangement = Arrangement.SpaceBetween){
-
-
                     //button for organizers to add new organizers
                     if(event.status.equals(textResource(R.string.EventOrganizerStatusElement1).toString())){
                         Button(
@@ -463,6 +462,7 @@ private fun MainComponent(
             }
 
         }
+
         when(eventStatusState){
             is EventViewModel.EventUpdateUIState.UpdateStatusSuccess -> {
                 Text(
@@ -509,8 +509,6 @@ private fun MainComponent(
                 )
             }
         }
-
-
 
 
     }

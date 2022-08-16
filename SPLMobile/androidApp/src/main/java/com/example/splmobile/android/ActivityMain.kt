@@ -2,9 +2,11 @@ package com.example.splmobile.android
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -18,8 +20,8 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
@@ -64,13 +66,14 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     private val friendViewModel: FriendViewModel by viewModel()
     private val messageViewModel: MessageViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
+    private val pushNotificationsViewModel:PushNotificationsViewModel by viewModels()
     private val mapViewModel : MapViewModel by viewModels<MapViewModel>()
     private val cameraViewModel : CameraViewModel by viewModels()
 
     //notifcations system
-    private val channel1ID = "package com.example.splmobile.android.channel1"
-    private var notificationManager: NotificationManager? = null
-    private var notificationState = 0
+    private val channel1IDfriendRequest = "package com.example.splmobile.android.channel1"
+    private val channel1IDeventStatus= "package com.example.splmobile.android.channel2"
+
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,26 +123,26 @@ class ActivityMain : ComponentActivity() , KoinComponent {
                 Manifest.permission.CAMERA
             )
 
-
             prepLocationUpdates()
             prepStepCounter()
             requestCameraPermission()
             readExternalStorage()
 
-            val builder = NotificationCompat.Builder(this, channel1ID)
-                .setSmallIcon(R.drawable.ic_onboarding_participate)
-                .setContentTitle("New friend request")
-                .setContentText("Hello World!")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true)
-            friendRequestReceived(friendViewModel,builder,this)
+
+
+
+
+            eventStatusChanged(messageViewModel,channel1IDeventStatus,applicationContext)
+            friendRequestReceived(messageViewModel,channel1IDfriendRequest,applicationContext)
         }
 
-        //notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        //createNotificationChannel(channel1ID,"devo","descriptio")
+
+
+
 
 
     }
+
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -212,19 +215,73 @@ class ActivityMain : ComponentActivity() , KoinComponent {
 
 }
 
-
-@OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun friendRequestReceived(
-    friendViewModel: FriendViewModel,
-    builder: NotificationCompat.Builder,
-    activityMain: ActivityMain
+    messageViewModel: MessageViewModel,
+    channel: String,
+    context: Context
 ){
-    when(friendViewModel.friendRequestUIState.collectAsState().value){
-        is FriendViewModel.FriendRequestUIState.SuccessRequestReceived->{
-            with(NotificationManagerCompat.from(activityMain)) {
-                // notificationId is a unique int for each notification that you must define
-                notify(1, builder.build())
+
+    when(val requestState = messageViewModel.notiReceivedUIState.collectAsState().value){
+        is MessageViewModel.NotificationUIState.SuccessFriendRequestReceived->{
+            println("friend request received in activity main")
+
+
+            val builder = NotificationCompat.Builder(context, channel)
+                .setSmallIcon(R.drawable.ic_onboarding_participate)
+                .setContentTitle("Novo pedido de amizade")
+                .setContentText("O utilizador ${requestState.user.username} quer ser seu amigo!")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    channel,
+                    "SPL",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
+                // Register the channel with the system
+                val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.createNotificationChannel(channel)
+
+                notificationManager.notify(requestState.user.id.toInt(),builder.build());
+            }
+
+        }
+    }
+
+}
+
+@Composable
+fun eventStatusChanged(
+    messageViewModel: MessageViewModel,
+    channel: String,
+    context: Context
+){
+
+    when(val requestState = messageViewModel.notiReceivedUIState.collectAsState().value){
+        is MessageViewModel.NotificationUIState.SuccessEventStatus->{
+            println("event status received in activity main")
+           val builder = NotificationCompat.Builder(context, channel)
+                .setSmallIcon(R.drawable.ic_onboarding_participate)
+                .setContentTitle("Estado de um evento alterado")
+                .setContentText("O estado do evento ${requestState.event.name} foi alterado para ${requestState.event.status}")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    channel,
+                    "SPL",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
+                // Register the channel with the system
+                val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.createNotificationChannel(channel)
+                notificationManager.notify(requestState.event.id.toInt(),builder.build());
+
             }
         }
     }
@@ -237,3 +294,4 @@ fun friendRequestReceived(
 @ReadOnlyComposable
 fun textResource(@StringRes id: Int) : String =
     LocalContext.current.resources.getText(id).toString()
+

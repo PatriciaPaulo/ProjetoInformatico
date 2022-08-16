@@ -1,6 +1,7 @@
 package com.example.splmobile.websockets
 
 import co.touchlab.kermit.Logger
+import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.myInfo.UserSerializable
 import com.example.splmobile.dtos.users.UserDTO
 import com.example.splmobile.models.MessageViewModel
@@ -63,29 +64,38 @@ class MessageWebsocket(
                     //TODO PARS
                     val jsonObject = Json.parseToJsonElement(othersMessage.readText())
                     println("js 1- "+ jsonObject)
-                    if(jsonObject.jsonObject["message"]==null){
-                        val message = Json.parseToJsonElement(jsonObject.jsonObject["friendRequest"].toString())
-                        messageViewModel.notificationFriendRequest(Json.decodeFromJsonElement<UserSerializable>(message))
+                    val message = Json.parseToJsonElement(jsonObject.jsonObject["message"].toString())
+
+
+                    if(Json.encodeToString(message).replace("\"","") == "friendRequest"){
+                        println("friendRequest received")
+                        val user = Json.parseToJsonElement(jsonObject.jsonObject["user"].toString())
+                        messageViewModel.notificationFriendRequest(Json.decodeFromJsonElement<UserSerializable>(user))
                     }
                     else{
-                        val message = Json.parseToJsonElement(jsonObject.jsonObject["message"].toString())
-
-                        val type = Json.parseToJsonElement(message.jsonObject["type"].toString())
-                        println("type- "+ type)
-                        println("type- "+ Json.encodeToString(type).replace("\"",""))
-                        println("type- Event")
-
-
-                        if(Json.encodeToString(type).replace("\"","") == "Event"){
-                            val eventID = Json.parseToJsonElement(jsonObject.jsonObject["eventID"].toString())
-                            messageViewModel.messageNotificationEvent(eventID.toString().toLong())
+                        if(Json.encodeToString(message).replace("\"","") == "eventStatus"){
+                            println("event status changed received")
+                            val event = Json.parseToJsonElement(jsonObject.jsonObject["event"].toString())
+                            messageViewModel.notificationEventStatus(Json.decodeFromJsonElement<EventDTO>(event))
                         }
-                        if(Json.encodeToString(type) =="Individual"){
-                            val userID = Json.parseToJsonElement(message.jsonObject["senderID"].toString())
-                            messageViewModel.messageNotification(userID.toString().toLong())
+                        else {
+                            val type = Json.parseToJsonElement(message.jsonObject["type"].toString())
+                            if (Json.encodeToString(type).replace("\"", "") == "Event") {
+                                println("event chat message received")
+                                val eventID =
+                                    Json.parseToJsonElement(jsonObject.jsonObject["eventID"].toString())
+                                messageViewModel.messageNotificationEvent(
+                                    eventID.toString().toLong()
+                                )
+                            }
+                            if (Json.encodeToString(type) == "Individual") {
+                                println("individual chat message received")
+                                val userID =
+                                    Json.parseToJsonElement(message.jsonObject["senderID"].toString())
+                                messageViewModel.messageNotification(userID.toString().toLong())
+                            }
+
                         }
-
-
                         val id = Json.parseToJsonElement(message.jsonObject["id"].toString())
                         send(id.toString())
                     }
