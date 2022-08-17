@@ -13,3 +13,8 @@ data class UserDTO(
     val activities_completed: String,
     val garbage_spots_created: String,
 )
+
+@Serializable
+data class UserID(
+    val id: Long,
+)

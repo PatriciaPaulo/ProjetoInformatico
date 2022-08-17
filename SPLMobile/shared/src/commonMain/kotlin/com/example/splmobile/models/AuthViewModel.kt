@@ -5,6 +5,7 @@ import com.example.splmobile.dtos.auth.LoginRequest
 import com.example.splmobile.dtos.auth.LoginResponse
 import com.example.splmobile.dtos.auth.SignInRequest
 import com.example.splmobile.dtos.auth.SignInResponse
+import com.example.splmobile.isCodeOK
 import com.example.splmobile.services.auth.AuthService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,7 +58,7 @@ class AuthViewModel (
             }
         }.await() as LoginResponse
 
-        if(loginResponse.message.substring(0,3)  == "200"){
+        if(isCodeOK(loginResponse.message)){
             mutableTokenState.value = loginResponse.access_token
             _loginUIState.value = LoginUIState.Success
         }

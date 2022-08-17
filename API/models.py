@@ -79,7 +79,7 @@ class ActivityType(Base):
 
 # region PictureInActivity
 class PictureInActivity(Base):
-    __tablename__ = "pictureInActivity"
+    __tablename__ = "picture_in_activity"
     id = Column(Integer, primary_key=True)
     activityID = Column(Integer, ForeignKey('activity.id'), nullable=False)
     path = Column(String(50), unique=True, nullable=False)

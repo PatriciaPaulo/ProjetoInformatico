@@ -14,5 +14,9 @@ data class GarbageSpotDTO(
     val approved: Boolean,
     val createdDate: String,
     val events: List<GarbageSpotInEventDTO>
+)
 
+@Serializable
+data class GarbageSpotID(
+    val id: Long,
 )

@@ -7,11 +7,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.splmobile.android.viewmodel.CameraViewModel
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.FileViewModel
 
 
 @Composable
 fun CameraScreen(
     navController: NavController,
+    authViewModel: AuthViewModel,
+    fileViewModel: FileViewModel,
     cameraViewModel: CameraViewModel
 ) {
     var isPictureTaken = remember { mutableStateOf(false) }
@@ -35,6 +39,8 @@ fun CameraScreen(
         )
     } else {
         PictureView(
+            authViewModel,
+            fileViewModel,
             cameraViewModel,
             onImageRejected = {
                 isPictureTaken.value = it

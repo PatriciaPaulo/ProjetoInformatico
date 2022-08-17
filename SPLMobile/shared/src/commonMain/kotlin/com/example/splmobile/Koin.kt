@@ -14,6 +14,8 @@ import com.example.splmobile.services.auth.AuthService
 import com.example.splmobile.services.auth.AuthServiceImpl
 import com.example.splmobile.services.events.EventService
 import com.example.splmobile.services.events.EventServiceImpl
+import com.example.splmobile.services.files.FileService
+import com.example.splmobile.services.files.FileServiceImpl
 import com.example.splmobile.services.friends.FriendService
 import com.example.splmobile.services.friends.FriendServiceImpl
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
@@ -108,6 +110,13 @@ private val coreModule = module {
     single<MessageService> {
         MessageServiceImpl(
             getWith("MessageServiceImpl"),
+            get()
+        )
+    }
+
+    single<FileService> {
+        FileServiceImpl(
+            getWith("FileServiceImpl"),
             get()
         )
     }

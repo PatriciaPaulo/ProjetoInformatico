@@ -1,11 +1,13 @@
-from flask import jsonify, make_response, request, current_app, Flask
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_restful import Api
-from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent,UserInEvent
-from utils import token_required, admin_required, guest, name_validation, username_validation, email_validation,  password_validation, password_confirmation
-import jwt
 import datetime
+
+import jwt
+from flask import Blueprint
+from flask import jsonify, make_response, request, current_app
+from flask_restful import Api
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from models import User, Activity, db, GarbageSpot, UserInEvent
+from utils import token_required, admin_required, email_validation, password_validation, password_confirmation
 
 user_routes_blueprint = Blueprint('user_routes', __name__, )
 api = Api(user_routes_blueprint)
@@ -85,7 +87,6 @@ def login_user():
 @user_routes_blueprint.route('/users/me', methods=['GET'])
 @token_required
 def get_me(current_user):
-    print("get me")
     return make_response(jsonify({'data': User.serialize(current_user), 'message': '200 OK - User Retrieved'}), 200)
 
 
@@ -151,20 +152,17 @@ def get_users(current_user):
 @token_required
 def get_user_stat(current_user,user_id):
     # Query for all users
-    print("im here")
     result = []
     user = db.session.query(User).filter_by(id=user_id).first()
 
-
-
     if not user.admin:
         if not user.blocked:
-            events_participated = db.session.query(UserInEvent).filter_by(userID=user.id,status="Confirmado").count()
+            events_participated = db.session.query(UserInEvent).filter_by(userID=user.id, status="Confirmado").count()
             # print(events_participated)
             from datetime import date
 
             today = date.today()
-            activities_completed = db.session.query(Activity).filter(Activity.userID== user.id,Activity.endDate <= today).count()
+            activities_completed = db.session.query(Activity).filter(Activity.userID == user.id,Activity.endDate <= today).count()
 
 
 
@@ -181,6 +179,7 @@ def get_user_stat(current_user,user_id):
 
 
     return make_response(jsonify({'data': user_data, 'message': '200 OK - All Users Retrieved'}), 200)
+
 
 # Get User by ID
 @user_routes_blueprint.route('/users/<user_id>', methods=['GET'])

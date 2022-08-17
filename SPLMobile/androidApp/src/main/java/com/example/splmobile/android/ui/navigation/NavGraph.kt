@@ -48,6 +48,7 @@ fun SetupNavGraph(
     messageViewModel: MessageViewModel,
     sharedViewModel: SharedViewModel,
     cameraViewModel: CameraViewModel,
+    fileViewModel: FileViewModel
 ){
     NavHost(
         navController = navController,
@@ -243,6 +244,8 @@ fun SetupNavGraph(
         composable(Screen.Camera.route) {
             CameraScreen(
                 navController = navController,
+                authViewModel = authViewModel,
+                fileViewModel = fileViewModel,
                 cameraViewModel = cameraViewModel
             )
         }

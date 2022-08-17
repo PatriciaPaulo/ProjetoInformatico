@@ -2,7 +2,7 @@ import os.path
 
 from flask import Blueprint, request, flash, make_response, current_app
 from flask_restful import Api
-from werkzeug.utils import redirect, secure_filename
+from werkzeug.utils import secure_filename
 
 from models import PictureInActivity, db, PictureInGarbageSpot, User
 from utils import token_required
@@ -37,7 +37,7 @@ def upload_profile_file(current_user):
 
         upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], "profiles")
 
-        user = db.session.query(User).filter_by(id=current_user.id)
+        user = db.session.query(User).filter_by(id=current_user.id).first()
         if not user:
             return make_response("500 INTERNAL SERVER ERROR - User not found", 500)
         user.icon = filename
@@ -51,7 +51,7 @@ def upload_profile_file(current_user):
 # Upload Activity File
 @file_routes_blueprint.route('/upload/activities/<activity_id>', methods=['POST'])
 @token_required
-def upload_activity_file(activity_id):
+def upload_activity_file(current_user, activity_id):
     # Check if post request has file
     if 'file' not in request.files:
         return make_response("400 BAD REQUEST - No file part", 400)
@@ -101,5 +101,5 @@ def upload_garbagespot_file(garbagespot_id):
         db.session.commit()
 
         file.save(os.path.join(upload_folder, filename))
-        return make_response("200 OK - Activity file saved", 200)
+        return make_response("200 OK - GarbageSpot file saved", 200)
 

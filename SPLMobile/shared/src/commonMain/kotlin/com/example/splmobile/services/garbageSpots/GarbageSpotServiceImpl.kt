@@ -2,6 +2,7 @@ package com.example.splmobile.services.garbageSpots
 
 import GarbageSpotResponse
 import co.touchlab.stately.ensureNeverFrozen
+import com.example.splmobile.API_PATH
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
@@ -170,7 +171,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom("http://10.0.2.2:5000/")
+            takeFrom(API_PATH)
             encodedPath = path
         }
     }

@@ -18,11 +18,17 @@ import com.example.splmobile.android.viewmodel.CameraViewModel
 import kotlin.io.path.Path
 import kotlin.io.path.deleteIfExists
 import com.example.splmobile.android.R
+import com.example.splmobile.dtos.activities.ActivityID
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.FileViewModel
+import java.io.File
 
 private val TAG = "PIC/VIEW"
 
 @Composable
 fun PictureView(
+    authViewModel: AuthViewModel,
+    fileViewModel: FileViewModel,
     cameraViewModel: CameraViewModel,
     onImageRejected : (Boolean) -> Unit
 ) {
@@ -33,7 +39,10 @@ fun PictureView(
         PicturePreviewView(uri) { cameraUIAction ->
             when (cameraUIAction) {
                 is CameraUIAction.OnSaveClick -> {
-                    //TODO Save image on server
+                    val fileName = "teste.png"
+                    var file = File(fileName)
+
+                    fileViewModel.uploadActivityFile(ActivityID(1), file.writeBytes(ByteArray(0)),  authViewModel.tokenState.value)
                     Log.v(TAG, "Image saved on server")
                 }
 
@@ -44,10 +53,10 @@ fun PictureView(
                         val uriPath = Path(uri.path!!)
                         uriPath.deleteIfExists()
                         Log.v(TAG, "Photo Deleted")
-
-                        // Reopen Camera
-                        onImageRejected(false)
                     }
+
+                    // Reopen Camera
+                    onImageRejected(false)
                 }
 
             }

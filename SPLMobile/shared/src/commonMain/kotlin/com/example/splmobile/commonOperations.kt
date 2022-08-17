@@ -9,3 +9,7 @@ fun isEmailValid(email : String) : Boolean {
 fun isTextFieldEmpty(text : String) : Boolean {
     return text.isEmpty()
 }
+
+fun isCodeOK(message : String) : Boolean {
+    return message.substring(0,3) == "200"
+}

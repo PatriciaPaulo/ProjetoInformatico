@@ -10,8 +10,13 @@ data class ActivitySerializable (
     var steps: String?,
     var activityType: String?,
     val startDate: String?,
-    val endDate: String?
-    )
+    val endDate: String?,
+)
+
+@Serializable
+data class ActivityID (
+    val id: Long,
+)
 
 @Serializable
 data class CreateActivitySerializable (

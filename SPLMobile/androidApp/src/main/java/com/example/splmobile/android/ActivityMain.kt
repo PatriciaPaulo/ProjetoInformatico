@@ -54,6 +54,8 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     @Inject
     lateinit var splashViewModel: SplashViewModel
     private val log: Logger by injectLogger("MainActivity")
+
+    // Common ViewModels
     private val garbageSpotViewModel: GarbageSpotViewModel by viewModel()
     private val sharedViewModel: SharedViewModel by viewModel()
     private val authViewModel: AuthViewModel by viewModel()
@@ -63,6 +65,9 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     private val userViewModel: UserViewModel by viewModel()
     private val friendViewModel: FriendViewModel by viewModel()
     private val messageViewModel: MessageViewModel by viewModel()
+    private val fileViewModel: FileViewModel by viewModel()
+
+    // Android ViewModels
     private val mainViewModel: MainViewModel by viewModels()
     private val mapViewModel : MapViewModel by viewModels<MapViewModel>()
     private val cameraViewModel : CameraViewModel by viewModels()
@@ -103,6 +108,7 @@ class ActivityMain : ComponentActivity() , KoinComponent {
                     friendViewModel = friendViewModel,
                     messageViewModel = messageViewModel,
                     cameraViewModel = cameraViewModel,
+                    fileViewModel = fileViewModel,
                 )
             }
 
