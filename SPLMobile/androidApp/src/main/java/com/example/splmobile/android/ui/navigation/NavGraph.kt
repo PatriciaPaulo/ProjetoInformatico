@@ -106,7 +106,7 @@ fun SetupNavGraph(
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 eventViewModel = eventViewModel,
-                sharedViewModel = sharedViewModel,
+                mapViewModel =mapViewModel,
                 log = log)
         }
         composable(BottomNavItem.Chat.route) {
