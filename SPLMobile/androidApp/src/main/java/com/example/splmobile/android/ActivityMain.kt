@@ -124,8 +124,6 @@ class ActivityMain : ComponentActivity() , KoinComponent {
                 Manifest.permission.READ_SMS,
                 Manifest.permission.CAMERA
             )
-
-
             prepLocationUpdates()
             prepStepCounter()
             requestCameraPermission()
@@ -134,6 +132,8 @@ class ActivityMain : ComponentActivity() , KoinComponent {
 
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         createNotificationChannel(channel1ID,"devo","descriptio")
+
+
     }
 
     private val requestPermissionLauncher = registerForActivityResult(

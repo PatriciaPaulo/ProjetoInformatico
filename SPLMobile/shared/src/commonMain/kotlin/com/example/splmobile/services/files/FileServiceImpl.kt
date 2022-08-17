@@ -20,6 +20,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.*
 import kotlinx.serialization.json.Json
 import co.touchlab.kermit.Logger as KermitLogger
+import com.soywiz.korio.file.std.*
 
 @OptIn(InternalAPI::class)
 class FileServiceImpl (
@@ -60,25 +61,36 @@ class FileServiceImpl (
 
     override suspend fun postActivityUpload(
         activity: ActivityID,
-        file: Unit,
+        path: String,
         token: String
     ): FileResponse {
         log.d { "Post Activity File Upload" }
+        val file = localVfs(path)
+        var filename_op = path.split("/")
+        var filename = filename_op.last()
+
+        println(file)
+
         try {
-            return client.submitFormWithBinaryData(
-                url = "$API_PATH/api/upload/activities/$activity",
-                formData = formData {
-                    append(
-                        key = "file",
-                        value = file,
-                    )
-                }
-            ) {
+            return client.post {
+                println("POST IMAGEM")
                 if(token.isNotEmpty()){
                     headers{
                         append(HttpHeaders.Authorization, "Bearer $token")
                     }
                 }
+                contentType(ContentType.MultiPart.FormData)
+                setBody(MultiPartFormDataContent(
+                    formData {
+                        append("file", "file", Headers.build {
+                            append(HttpHeaders.ContentType, "image/vfs")
+                            append(HttpHeaders.ContentDisposition, "filename=\"$filename\"")
+                        })
+                    }
+                ))
+
+
+                url("/api/upload/activities/${activity.id}")
             }.body() as FileResponse
         } catch (e : Exception) {
             return FileResponse("$e")
@@ -100,5 +112,12 @@ class FileServiceImpl (
     ): FileResponse {
         log.d { "Post Profile File Upload" }
         TODO("Not yet implemented")
+    }
+
+    private fun HttpRequestBuilder.url(path: String) {
+        url {
+            takeFrom(API_PATH)
+            encodedPath = path
+        }
     }
 }

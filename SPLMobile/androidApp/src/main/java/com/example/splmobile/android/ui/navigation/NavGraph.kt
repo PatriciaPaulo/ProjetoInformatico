@@ -241,6 +241,7 @@ fun SetupNavGraph(
                 eventViewModel = eventViewModel)
         }
 
+
         composable(Screen.Camera.route) {
             CameraScreen(
                 navController = navController,
@@ -249,5 +250,7 @@ fun SetupNavGraph(
                 cameraViewModel = cameraViewModel
             )
         }
+
+
     }
 }

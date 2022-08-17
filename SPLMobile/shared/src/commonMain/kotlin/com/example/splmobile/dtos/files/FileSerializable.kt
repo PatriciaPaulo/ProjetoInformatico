@@ -1,5 +1,6 @@
 package com.example.splmobile.dtos.files
 
+import com.soywiz.korio.file.VfsFile
 import kotlinx.serialization.Serializable
 
 @Serializable

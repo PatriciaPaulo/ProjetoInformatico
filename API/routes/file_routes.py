@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 from models import PictureInActivity, db, PictureInGarbageSpot, User
 from utils import token_required
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'vfs'}
 
 file_routes_blueprint = Blueprint('file_routes', __name__, )
 api = Api(file_routes_blueprint)

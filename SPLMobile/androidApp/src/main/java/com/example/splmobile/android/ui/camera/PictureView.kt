@@ -39,10 +39,7 @@ fun PictureView(
         PicturePreviewView(uri) { cameraUIAction ->
             when (cameraUIAction) {
                 is CameraUIAction.OnSaveClick -> {
-                    val fileName = "teste.png"
-                    var file = File(fileName)
-
-                    fileViewModel.uploadActivityFile(ActivityID(1), file.writeBytes(ByteArray(0)),  authViewModel.tokenState.value)
+                    fileViewModel.uploadActivityFile(ActivityID(1), uri.toString(), authViewModel.tokenState.value)
                     Log.v(TAG, "Image saved on server")
                 }
 

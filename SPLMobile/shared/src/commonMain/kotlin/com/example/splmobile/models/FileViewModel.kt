@@ -10,7 +10,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class FileViewModel(
+class FileViewModel (
     private val fileService : FileService,
     log: Logger
 ) : ViewModel() {
@@ -32,7 +32,7 @@ class FileViewModel(
     // Upload Activity File
     fun uploadActivityFile(
         activityID: ActivityID,
-        file : Unit,
+        path : String,
         token : String
     ) = viewModelScope.launch {
         _fileUploadUIState.value = FileActivityUploadUIState.Loading
@@ -42,13 +42,14 @@ class FileViewModel(
             try {
                 fileService.postActivityUpload(
                     activityID,
-                    file,
+                    path,
                     token
                 )
             } catch (e : Exception) {
                 log.e(e) { "Error" }
             }
         }.await() as FileResponse
+        println(FileResponse.serializer())
 
         if(isCodeOK(fileUploadResponse.message)) {
             _fileUploadUIState.value = FileActivityUploadUIState.Success
@@ -56,4 +57,5 @@ class FileViewModel(
             _fileUploadUIState.value = FileActivityUploadUIState.Error(fileUploadResponse.message)
         }
     }
+
 }
