@@ -5,8 +5,8 @@
       DASHBOOAARD
        <router-link
                   class="nav-link w-100 me-3"
-                  :class="{active: $route.name === 'Register'}"
-                  :to="{ name: 'Register'}"
+                  :class="{active: $route.name === 'Admin'}"
+                  :to="{ name: 'Admin'}"
               >
                 <i class="bi bi-list-check"></i>
                 Criar Admin

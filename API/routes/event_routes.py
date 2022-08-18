@@ -210,10 +210,10 @@ def update_status_event(current_user, event_id):
         return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
     userInEvent = db.session.query(UserInEvent).filter_by(userID=current_user.id, eventID=event_id).first()
 
-    if not userInEvent:
+    if not userInEvent and not current_user.admin:
         return make_response(jsonify({'message': '404 NOT OK - User in Event Not Found'}), 404)
 
-    if userInEvent.status != "Organizer":
+    if not current_user.admin and userInEvent.status != "Organizer":
         return make_response(jsonify({'message': '403 NOT OK - You Can\'t Update This Event'}), 403)
 
     event_data = request.get_json()
@@ -221,7 +221,8 @@ def update_status_event(current_user, event_id):
     event.status = event_data
 
     db.session.commit()
-    send_notification_event_status(event.serialize(), current_user)
+    if not current_user.admin:
+        send_notification_event_status(event.serialize(), current_user)
     return make_response(jsonify({'message': '200 OK - Event Updated'}), 200)
 
 

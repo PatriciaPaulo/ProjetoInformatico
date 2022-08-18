@@ -52,20 +52,20 @@ export default {
         .dispatch("login", this.credentials)
         .then(() => {
           this.$toast.success(
-            "User " +
+            "Utilizador " +
               this.$store.state.loggedInUser.name +
-              " has entered the application."
+              " entrou na aplicação."
           );
           this.$router.push({ name: "Dashboard" });
         })
         .catch((error) => {
           this.credentials.password = "";
           if (error.response.status == 403) {
-            this.$toast.error("USER IS BLOCKED!");
+            this.$toast.error("Utilizador está bloqueado!");
           } else if (error.response.status == 409) {
-            this.$toast.error("USER IS DELETED!");
+            this.$toast.error("Utilizador foi eliminado!");
           } else {
-            this.$toast.error("User credentials are invalid!");
+            this.$toast.error("Crendenciais erradas!");
           }
         });
     },

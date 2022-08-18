@@ -140,7 +140,7 @@ if __name__ == '__main__':
         # to json, so we can insert array in database (sqlite doesnt support arrays in database)
         # garbageTypeJSON = json.dumps(garbageType)
         # 72 hours ->
-        duration = randrange(4320)
+        duration = randrange(127)
 
         name = str(r.get_random_word()) + " " + str(r.get_random_word())
         description = ""
@@ -247,15 +247,15 @@ if __name__ == '__main__':
         event = session.query(Event).order_by(func.random()).first()
         # status2 = ["Confirmado", "Não Confirmado", "Inscrito"]
 
-        userInEvent = UserInEvent(userID=1, eventID=event.id, status="Organizer", creator=True)
+        userInEvent = UserInEvent(userID=1, eventID=event.id, status="Organizer", creator=True, enteringDate=today)
         session.add(userInEvent)
-
+    today = date.today()
     for i in range(6):
         user = session.query(User).filter_by(admin=False).order_by(func.random()).first()
         event = session.query(Event).order_by(desc(Event.id)).first()
         status2 = ["Confirmado", "Inscrito", "Não Confirmado"]
 
-        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status2), creator=False)
+        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status2), creator=False, enteringDate=today)
         session.add(userInEvent)
 
     print("---UserInEvent seed done!")

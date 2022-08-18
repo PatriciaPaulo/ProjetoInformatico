@@ -176,3 +176,17 @@ def get_my_garbageSpot(current_user):
         return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Garbage Spot Found'}), 404)
 
     return make_response(jsonify({'data': output, 'message': '200 OK - All Garbage Spot Retrieved'}), 200)
+
+
+@garbagespot_routes_blueprint.route('/garbageSpots/<garbageSpot_id>', methods=['DELETE'])
+@admin_required
+def delete_garbage_spot(current_user, garbageSpot_id):
+    # Checks if user exists
+    garbageSpot = db.session.query(GarbageSpot).filter_by(id=garbageSpot_id).first()
+    if not garbageSpot:
+        return make_response(jsonify({'message': '404 NOT OK - No Garbage Spot Found'}), 404)
+
+    db.session.delete(garbageSpot)
+    db.session.commit()
+    return make_response(jsonify({'message': '200 OK - Garbage Spot Deleted'}), 200)
+

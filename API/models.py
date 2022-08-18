@@ -298,7 +298,7 @@ class UserInEvent(Base):
     eventID = Column(Integer, ForeignKey('event.id'), nullable=False)
     status = Column(String(128), nullable=False)
     creator = Column(Boolean, nullable=False)
-    #todo enteringDate = Column(DateTime, nullable=False)
+    enteringDate = Column(DateTime, nullable=False)
 
 
     def serialize(self):
@@ -307,7 +307,8 @@ class UserInEvent(Base):
             'userID': self.userID,
             'eventID': self.eventID,
             'status': self.status,
-            'creator': self.creator
+            'creator': self.creator,
+            'enteringDate': self.enteringDate
         }
 # endregion
 

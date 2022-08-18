@@ -1,14 +1,9 @@
-from flask import jsonify, make_response, request, current_app, Flask
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import jsonify, make_response, request
 from flask_restful import Api
 from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot, GarbageSpotInEvent, UserInEvent, GarbageInEvent, Garbage, \
-    EquipmentInEvent
-from utils import token_required, admin_required, guest
-import jwt
-from datetime import datetime
-
-
+from models import Event, db, GarbageSpotInEvent, UserInEvent, GarbageInEvent, EquipmentInEvent
+from utils import token_required
+from datetime import date
 
 users_event_routes_blueprint = Blueprint('users_event_routes', __name__, )
 api = Api(users_event_routes_blueprint)
@@ -18,8 +13,6 @@ api = Api(users_event_routes_blueprint)
 @users_event_routes_blueprint.route('/events/<event_id>/usersinevent', methods=['GET'])
 @token_required
 def get_user_in_event(current_user, event_id):
-    # todo order by date
-
     users_events = db.session.query(UserInEvent).filter_by(eventID=event_id).all()
 
     output = []
@@ -29,7 +22,9 @@ def get_user_in_event(current_user, event_id):
         event_data = {'id': user_event.id,
                       'userID': user_event.userID,
                       'status': user_event.status,
-                      'creator': user_event.creator}
+                      'creator': user_event.creator,
+                      'enteringDate': user_event.enteringDate,
+                      }
 
         for event in db.session.query(Event).filter_by(id=user_event.eventID):
             event_data['event'] = {'id': event.id, 'name': event.name, 'latitude': event.latitude,
@@ -75,7 +70,8 @@ def add_user_to_event(current_user, event_id):
             jsonify({'data': {}, 'message': '409 NOT OK - Already signed up to Event! Update your status instead!'}),
             409)
 
-    signUp = UserInEvent(userID=current_user.id, eventID=event_id, status="Inscrito", creator=False)
+    today = date.today()
+    signUp = UserInEvent(userID=current_user.id, eventID=event_id, status="Inscrito", creator=False, enteringDate=today)
 
     db.session.add(signUp)
     db.session.commit()
@@ -102,7 +98,8 @@ def add_organizer_to_event(current_user, event_id):
             jsonify({'data': {}, 'message': '409 NOT OK - Already signed up to Event! Update your status instead!'}),
             409)
 
-    signUp = UserInEvent(userID=data, eventID=event_id, status="Organizer", creator=False)
+    today = date.today()
+    signUp = UserInEvent(userID=data, eventID=event_id, status="Organizer", creator=False, enteringDate=today)
 
     db.session.add(signUp)
     db.session.commit()

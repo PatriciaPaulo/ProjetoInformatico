@@ -136,7 +136,7 @@
                 :to="{ name: 'Users' }"
               >
                 <i class="bi bi-list-check"></i>
-                Users
+                Utilizadores
               </router-link>
             </li>
             <li
@@ -154,7 +154,7 @@
                 :to="{ name: 'GarbageSpots' }"
               >
                 <i class="bi bi-list-check"></i>
-                GarbageSpots
+                Locais de Lixo
               </router-link>
             </li>
              <li
@@ -172,7 +172,7 @@
                 :to="{ name: 'Events' }"
               >
                 <i class="bi bi-list-check"></i>
-                Events
+                Eventos
               </router-link>
             </li>
           </ul>

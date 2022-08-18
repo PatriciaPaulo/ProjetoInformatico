@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-5 mb-3">garbageSpot #{{ arrayGarbageSpot[0].id }}</h3>
+  <h3 class="mt-5 mb-3">Local de Lixo #{{ arrayGarbageSpot[0].id }}</h3>
   <hr />
   <div class="d-flex flex-wrap justify-content-between">
     <div class="w-75 pe-4">
@@ -12,6 +12,18 @@
           placeholder="GarbageSpot nome"
           required
           v-model="arrayGarbageSpot[0].name"
+          disabled
+        />
+      </div>
+        <div class="mb-3">
+        <label for="inputName" class="form-label text-light">Criador</label>
+        <input
+          type="text"
+          class="form-control"
+          id="inputNome"
+          placeholder="Criador"
+          required
+          :value ="userName(arrayGarbageSpot[0].creator)"
           disabled
         />
       </div>
@@ -40,21 +52,10 @@
           Aprovar
         </button>
       </div>
-
-      <div class="mb-3">
-        <label for="inputType" class="form-label text-light">Estado</label>
-        <select
-          v-model="arrayGarbageSpot[0].status"
-          name="inputType"
-          @change="mudarEstado(arrayGarbageSpot[0])"
-        >
-          <option v-for="(value, key) in estados" :value="value" :key="key">
-            {{ value }}
-          </option>
-        </select>
-      </div>
+    
     </div>
   </div>
+
   <div class="mb-3 d-flex justify-content-end">
     <button type="button" class="btn btn-light px-5" @click="cancel">
       Voltar
@@ -152,6 +153,12 @@ export default {
     },
     cancel() {
       this.$router.push({ name: "GarbageSpots" });
+    },
+    userName(id) {
+      var r = this.$store.getters.users.filter((user) => {
+        return user.id === id;
+      });
+      return r[0] ? r[0].username : "Not found";
     },
   },
   created() {

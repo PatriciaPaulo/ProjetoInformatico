@@ -3,7 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Dashboard from "../components/Dashboard.vue"
 import Home from "../components/Home.vue"
 import Login from "../components/auth/Login.vue"
-import Register from "../components/auth/Register.vue"
+import Admin from "../components/users/Admin.vue"
 import ChangePassword from "../components/auth/ChangePassword.vue"
 import User from "../components/users/User.vue"
 import Users from "../components/users/Users.vue"
@@ -24,9 +24,9 @@ const routes = [
     component: Dashboard
   },
   {
-    path: '/register',
-    name: 'Register',
-    component: Register
+    path: '/admin',
+    name: 'Admin',
+    component: Admin
   },
   {
     path: '/login',
@@ -114,46 +114,6 @@ router.beforeEach((to, from, next) => {
 
   next()
 })
-/*
-router.beforeEach((to, from, next) => {
 
-  if (store.state.loggedInUser && (to.name === 'WelcomeToVCard') ) {
-    next({ name: 'Dashboard' })
-    return
-  }
-  if ((to.name === 'Login') || (to.name === 'WelcomeToVCard') || (to.name === 'Register')) {
-    next()
-    return
-  }
-
-  if (!store.getters.loggedInUser) {
-    next({ name: 'Login' })
-    return
-  }
-
-  if (to.name === 'Reports') {
-    if (store.state.loggedInUser.type !== 'A') {
-      next(false)
-      return
-    }
-  }
-  if (to.name === 'User') {
-    if ((store.state.loggedInUser.user_type === 'A') || (store.state.loggedInUser.id == to.params.id)) {
-
-      next()
-      return
-    }
-    next(false)
-    return
-  }
-  next()
-})
-
-
-
-
-
-
-*/
 
 export default router
