@@ -1,35 +1,34 @@
 <template>
- 
-  <div v-if="$store.state.loggedInUser" >
-    <div class="d-flex flex-wrap justify-content-between">
-      DASHBOOAARD
-       <router-link
-                  class="nav-link w-100 me-3"
-                  :class="{active: $route.name === 'Admin'}"
-                  :to="{ name: 'Admin'}"
-              >
-                <i class="bi bi-list-check"></i>
-                Criar Admin
-              </router-link>
-    </div>
-  </div>
-   <!--
-  <div v-else>
-    NO ACCESS
-    ??
+    <br />
+  <div class="text-center" v-if="$store.state.loggedInUser">
+      <h1>Gestão e Monitorização da Aplicação Móvel</h1>
+      <br />
+      <h1>Social Plogging Lovers</h1>
+       <br />
+        <br />
+         <br />
+      <router-link
+        class="nav-link w-100 me-3"
+        :class="{ active: $route.name === 'Admin' }"
+        :to="{ name: 'Admin' }"
+      >
+        <button type="button" class="btn btn-dark">Criar Administrador</button>
+
+      </router-link>
     
-  </div>-->
+  </div>
+
+  <div v-else></div>
 </template>
 
 <script>
-
 export default {
-  name: 'Dashboard',
+  name: "Dashboard",
 
   mounted() {
-    document.title = "Dashboard"
-  }
-}
+    document.title = "Dashboard";
+  },
+};
 </script>
 
 <style scoped lang="scss">

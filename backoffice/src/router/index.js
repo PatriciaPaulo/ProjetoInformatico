@@ -4,7 +4,6 @@ import Dashboard from "../components/Dashboard.vue"
 import Home from "../components/Home.vue"
 import Login from "../components/auth/Login.vue"
 import Admin from "../components/users/Admin.vue"
-import ChangePassword from "../components/auth/ChangePassword.vue"
 import User from "../components/users/User.vue"
 import Users from "../components/users/Users.vue"
 import GarbageSpots from "../components/garbageSpots/GarbageSpots.vue"
@@ -32,11 +31,6 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login
-  },
-  {
-    path: '/password',
-    name: 'ChangePassword',
-    component: ChangePassword
   },
   {
     path: '/users/',

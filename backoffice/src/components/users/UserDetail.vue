@@ -64,18 +64,21 @@ export default {
   },
   methods: {
     save() {
-      if (this.editingUser != this.user) {
-        this.$axios
-          .put("users/me", this.editingUser)
-          .then(() => {
-            this.$toast.success(
-              "Utilizador " + this.user.username + " foi atualizado."
-            );
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
+      this.$axios
+        .put("users/me", this.editingUser)
+        .then(() => {
+          this.$toast.success(
+            "Utilizador " + this.user.username + " foi atualizado."
+          );
+           this.$store.dispatch("restoreToken").then((token) => {
+            if (token) {
+              this.$store.dispatch("refresh");
+            }
+  
+        })})
+        .catch((error) => {
+          console.log(error);
+        });
     },
     cancel() {
       this.$axios

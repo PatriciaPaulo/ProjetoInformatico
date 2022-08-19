@@ -10,7 +10,7 @@
       shadow
     "
   >
-    <div class="container-fluid">
+    <div class="container-fluid ">
       <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#"
         ><img
           src="./assets/logo.png"
@@ -19,7 +19,7 @@
           height="24"
           class="d-inline-block align-text-top"
         />
-        App name</a
+        Social Plogging Lovers</a
       >
       <button
         id="buttonSidebarExpandId"
@@ -39,7 +39,7 @@
           <li v-if="!$store.state.loggedInUser" class="nav-item">
             <router-link class="nav-link" href="#" to="/login"
               ><i class="bi bi-box-arrow-in-right"></i>
-              Login
+              Entrar
             </router-link>
           </li>
           <li v-if="$store.state.loggedInUser" class="nav-item dropdown">
@@ -70,11 +70,6 @@
                   href="#"
                   :to="{ name: 'User', params: { id: $userId } }"
                   ><i class="bi bi-person-square"></i>Profile</router-link
-                >
-              </li>
-              <li>
-                <router-link class="dropdown-item" href="#" to="/password"
-                  ><i class="bi bi-key-fill"></i>Change password</router-link
                 >
               </li>
               <li>
@@ -303,7 +298,7 @@ body, html {
 }
 body {
   color: #B0B3B8;
-  background-color:	#b0b3b8;
+  background-color:	white;
 }
 
 

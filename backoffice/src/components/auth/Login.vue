@@ -1,10 +1,10 @@
 <template>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="login">
-    <h3 class="mt-5 mb-3 text-light text-center">Login</h3>
+    <h3 class="mt-5 mb-3 text-center">Login</h3>
     <hr />
     <div class="mb-3 mx-auto">
       <div class="mb-3 w-25 mx-auto">
-        <label for="inputUsername" class="form-label text-light">Email</label>
+        <label for="inputUsername" class="form-label">Email</label>
         <input
           type="text"
           class="form-control"
@@ -16,7 +16,7 @@
     </div>
     <div class="mb-3 mx-auto">
       <div class="mb-3 w-25 mx-auto">
-        <label for="inputPassword" class="form-label text-light">Password</label>
+        <label for="inputPassword" class="form-label">Password</label>
         <input
           type="password"
           class="form-control"
@@ -28,7 +28,7 @@
     </div>
     <div class="mb-3 d-flex justify-content-center">
       <button type="button" class="btn btn-dark px-5" @click="login">
-        Login
+        Entrar
       </button>
     </div>
   </form>
