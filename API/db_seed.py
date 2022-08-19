@@ -252,7 +252,7 @@ if __name__ == '__main__':
     today = date.today()
     for i in range(6):
         user = session.query(User).filter_by(admin=False).order_by(func.random()).first()
-        event = session.query(Event).order_by(desc(Event.id)).first()
+        event = session.query(Event).order_by(func.random()).first()
         status2 = ["Confirmado", "Inscrito", "Não Confirmado"]
 
         userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status2), creator=False, enteringDate=today)

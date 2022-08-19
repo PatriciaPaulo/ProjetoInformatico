@@ -123,6 +123,7 @@ fun SetupNavGraph(
                 userInfoViewModel = userInfoViewModel,
                 authViewModel = authViewModel,
                 sharedViewModel = sharedViewModel,
+                activityViewModel = activityViewModel,
                 log = log)
         }
         composable(Screen.CreateEvent.route) {

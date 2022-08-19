@@ -337,6 +337,7 @@ def get_my_events(current_user):
                 equipmentSer = EquipmentInEvent.serialize(equipment)
                 event_data['event']['equipments'].append(equipmentSer)
         event_data['status'] = user_event.status
+        event_data['enteringDate'] = user_event.enteringDate
         event_data['creator'] = user_event.creator
 
         output.append(event_data)
