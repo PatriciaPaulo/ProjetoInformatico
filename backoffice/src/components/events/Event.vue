@@ -15,19 +15,18 @@
           disabled
         />
       </div>
-      <!--
       <div class="mb-3">
-        <label for="inputOrganizador" class="form-label">Organizador</label>
+        <label for="inputOrganizador" class="form-label text-light">Organizador</label>
         <input
           type="text"
           class="form-control"
           id="inputOrganizador"
           placeholder="Organizador"
           required
-          :value="this.userName(event.organizador)"
+          :value="organizer"
           disabled
         />
-      </div>-->
+      </div>
        <div class="mb-3 px-1">
         <label for="inputEstado" class="form-label text-light">Data de Inicio</label>
         <input
@@ -86,7 +85,7 @@
     :paginator="true"
     stripedRows
     :rows="5"
-    :loading="isLoading"
+    :loading="garbageSpotsIsLoading"
     :globalFilterFields="['nome', 'estado', 'criador']"
     class="p-datatable-sm"
   >
@@ -102,7 +101,7 @@
     <Column field="name" header="Nome" :sortable="true"></Column>
     <Column field="criador" header="Criador" :sortable="true">
       <template #body="{ data }">
-        {{ userName(data.creator) }}
+        {{ userNameGarbageSpot(data.creator) }}
       </template>
     </Column>
     <Column field="status" header="Estado" :sortable="true"></Column>
@@ -139,19 +138,36 @@ export default {
     return {
       estados: ["Criado", "Começado", "Cancelado", "Finalizado"],
       errors: null,
-      isLoading: false,
+      garbageSpotsIsLoading: false,
+      organizerNameIsLoading: false,
+      organizer: "",
     };
   },
   methods: {
     cancel() {
       this.$router.push({ name: "Events" });
     },
+     async userName(eventID) {
+      
+      this.$store
+        .dispatch("loadCreator",eventID)
+        .then((response) => {
+          console.log(response + "event")
+          this.organizer= response.username
+          
+        })
+        .catch((error) => {
+          console.log(error);
+         
+        });
+    
+    },
     loadGarbageSpots() {
-      this.isLoading = true;
+      this.garbageSpotsIsLoading = true;
       this.$axios
         .get("events/" + this.id + "/garbageSpots")
         .then((response) => {
-          this.isLoading = false;
+          this.garbageSpotsIsLoading = false;
           response.data.data.forEach((lixEv) => {
             console.log(lixEv.garbageSpotID + "id");
             //this.garbageSpotsNoEvent.push(this.garbageSpot(lixEv.garbageSpotID));
@@ -159,11 +175,11 @@ export default {
           });
         })
         .catch((error) => {
-          this.isLoading = false;
+          this.garbageSpotsIsLoading = false;
           console.log(error);
         });
     },
-    userName(id) {
+    userNameGarbageSpot(id) {
       var r = this.$store.getters.users.find((user) => {
         return user.id === id;
       });
@@ -197,6 +213,7 @@ export default {
   },
   mounted() {
     this.loadGarbageSpots();
+    this.userName(this.id)
   },
 };
 </script>

@@ -4,7 +4,7 @@ from flask import Blueprint
 from sqlalchemy import desc
 
 from models import Event, db, GarbageSpot, GarbageSpotInEvent, UserInEvent, GarbageInEvent, Garbage, Equipment, \
-    EquipmentInEvent
+    EquipmentInEvent, User
 from utils import token_required
 from datetime import datetime
 
@@ -145,6 +145,26 @@ def get_event_id(event_id):
 
     return make_response(jsonify({'data': event_data, 'message': '200 OK - Event Retrieved'}), 200)
 
+
+# Get Events Creator
+@event_routes_blueprint.route('/events/<event_id>/creator', methods=['GET'])
+@token_required
+def get_events_creator(current_user,event_id):
+    event = db.session.query(Event).filter_by(id=event_id).first()
+    if not event:
+        return make_response(
+            jsonify({'message': '404 NOT OK - Event doesnt exist!'}), 404)
+
+    userInEvent = db.session.query(UserInEvent).filter_by(creator=True).first()
+    if not userInEvent:
+        return make_response(jsonify({'message': '404 NOT OK - Creator Not Found'}), 403)
+
+    user = db.session.query(User).filter_by(id=userInEvent.userID).first()
+    if not user:
+        return make_response(
+            jsonify({'message': '404 NOT OK - User doesnt exist!'}), 404)
+
+    return make_response(jsonify({'data': user.serialize(), 'message': '200 OK - Event Creator Retrieved'}), 200)
 
 # Update Event by Event Organizer (User)
 @event_routes_blueprint.route('/events/<event_id>', methods=['PUT'])

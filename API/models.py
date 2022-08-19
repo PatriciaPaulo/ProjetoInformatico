@@ -31,6 +31,7 @@ class User(Base):
             'name': self.name,
             'email': self.email,
             'icon': self.icon,
+            'admin': self.admin
 
         }
 

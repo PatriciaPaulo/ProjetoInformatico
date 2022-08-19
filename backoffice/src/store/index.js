@@ -54,8 +54,11 @@ export default createStore({
         state.garbageSpots[idx] = updateGarbageSpot
       }
     },
-    removeGarbageSpot(state, garbageSpots) {
-      state.garbageSpots.pop(garbageSpots)
+    removeGarbageSpot(state, garbageSpot) {
+      let idx = state.garbageSpots.findIndex((t) => t.id === garbageSpot.id)
+      if (idx >= 0) {
+        state.garbageSpots.splice(idx, 1);
+      }
     },
     //Events
     setEvents(state, events) {
@@ -170,6 +173,10 @@ export default createStore({
         context.commit('resetEvents', null)
         throw error
       }
+    },
+    async loadCreator(context,eventID) { 
+      let response = await axios.get('events/'+eventID+'/creator')
+      return response.data.data   
     },
     async cancelarEvento(context, event) {
       event.status = "Cancelado"

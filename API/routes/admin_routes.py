@@ -2,11 +2,10 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot, GarbageSpotInEvent
-from utils import token_required, admin_required, guest
+from models import User, db
+from utils import admin_required
 import jwt
 import datetime
-
 
 admin_routes_blueprint = Blueprint('admin_routes', __name__, )
 api = Api(admin_routes_blueprint)
@@ -28,15 +27,24 @@ def create_admin(current_user):
     # Checks if name valid
     # Checks if email valid
     # Checks if password valid
+    if len(data['username']) < 3:
+        return make_response(jsonify({'message': '400 NOT OK - Username too short!'}), 400)
+    if len(data['name']) < 3:
+        return make_response(jsonify({'message': '400 NOT OK - Name too short!'}), 400)
+    if len(data['password']) < 3:
+        return make_response(jsonify({'message': '400 NOT OK - Password too short!'}), 400)
+    if len(data['email']) < 3:
+        return make_response(jsonify({'message': '400 NOT OK - Password too short!'}), 400)
 
     # Checks if password and password confirmation match
     if data['password'] != data['passwordConfirmation']:
-        return make_response('Passwords don\'t match', 400)
+        return make_response(jsonify({'message': '400 NOT OK - Passwords don\'t match!'}), 400)
 
     # Hashes password
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
-    new_admin = User(username=data['username'], name=data['name'], email=data['email'], password=hashed_password, admin=True, blocked=False)
+    new_admin = User(username=data['username'], name=data['name'], email=data['email'], password=hashed_password,
+                     admin=True, blocked=False)
     db.session.add(new_admin)
     db.session.commit()
     return make_response('Admin created successfully', 200)
@@ -78,7 +86,7 @@ def login_admin():
 # Block/Unblock Users
 @admin_routes_blueprint.route('/users/<user_id>/block', methods=['PATCH'])
 @admin_required
-def bloquear_user(current_user,user_id):
+def block_user(current_user, user_id):
     # Checks if user to be blocked exists
     user = db.session.query(User).filter_by(id=user_id).first()
     if not user:
@@ -110,4 +118,3 @@ def delete_user(current_user, user_id):
     user.deleted_at = datetime.datetime.utcnow()
     db.session.commit()
     return make_response('User deleted successfully', 200)
-

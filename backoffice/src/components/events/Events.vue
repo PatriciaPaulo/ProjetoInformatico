@@ -8,7 +8,7 @@
       :paginator="true"
       stripedRows
       :rows="10"
-      :loading="isLoading"
+      :loading="eventsIsLoading"
       :globalFilterFields="['nome', 'estado', 'organizador']"
       :filters="filters"
       class="p-datatable-sm"
@@ -36,15 +36,15 @@
         </div>
       </template>
       <Column field="name" header="Nome" :sortable="true"></Column>
-      <Column field="organizador" header="Organizador" :sortable="true">
-        <template #body="{ data }">
-          {{ userName(data) }}
-        </template>
-      </Column>
       <Column field="status" header="Estado" :sortable="true"></Column>
       <Column
         field="startDate"
         header="Data de Inicio"
+        :sortable="true"
+      ></Column>
+       <Column
+        field="createdDate"
+        header="Data de Criação"
         :sortable="true"
       ></Column>
       <Column header="Editar">
@@ -83,6 +83,8 @@ import Column from "primevue/column";
 import { FilterMatchMode } from "primevue/api";
 import ConfirmDialog from "primevue/confirmdialog";
 import InputText from "primevue/inputtext";
+
+
 export default {
   name: "Events",
   components: {
@@ -94,7 +96,7 @@ export default {
   data() {
     return {
       events: [],
-      isLoading: false,
+      eventsIsLoading: false,
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
       },
@@ -132,24 +134,19 @@ export default {
         })
     },
     loadEvents() {
-      this.isLoading = true;
+      this.eventsIsLoading = true;
       this.$store
         .dispatch("loadEvents")
         .then((response) => {
           this.events = response;
-          this.isLoading = false;
+          this.eventsIsLoading = false;
         })
         .catch((error) => {
           console.log(error);
-          this.isLoading = false;
+          this.eventsIsLoading = false;
         });
     },
-    userName(id) {
-      var r = this.$store.getters.users.filter((user) => {
-        return user.id === id;
-      });
-      return r[0] ? r[0].username : "Not found";
-    },
+   
   },
   mounted() {
     this.loadEvents(), (document.title = "Events");
