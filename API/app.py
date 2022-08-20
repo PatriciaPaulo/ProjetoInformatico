@@ -14,7 +14,7 @@ from routes.userinevent_routes import users_event_routes_blueprint
 from routes.friends_routes import friends_routes_blueprint
 from routes.messages_routes import messages_routes_blueprint
 
-from models import db
+from models import db, Base
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -53,8 +53,8 @@ if __name__ == '__main__':
 
     start_websockets()
     with app.app_context():
-        # Base.metadata.drop_all(engine)
-        # Base.metadata.create_all(engine)
+        Base.metadata.drop_all(engine)
+        Base.metadata.create_all(engine)
 
         session = Session(engine)
 

@@ -137,5 +137,5 @@ def send_notification_event_status(event, current_user):
         return
     for user in users_event_channel[event.id]:
         if not user == current_user.id:
-            data_to_send = {"message": "eventStatus", "event": event}
+            data_to_send = {"message": "eventStatus", "event": event.serialize()}
             websocket_listen_event_loop.create_task(users_connected[user].send(json.dumps(data_to_send)))

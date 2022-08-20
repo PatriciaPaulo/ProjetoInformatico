@@ -52,7 +52,7 @@ def create_event(current_user):
             new_garbageInEvent = GarbageInEvent(eventID=new_event.id, garbageID=garbageTypeID)
             db.session.add(new_garbageInEvent)
 
-    organizador = UserInEvent(userID=current_user.id, eventID=new_event.id, status="Organizer", creator=True)
+    organizador = UserInEvent(userID=current_user.id, eventID=new_event.id, status="Organizer", creator=True, enteringDate=datetime.utcnow())
     db.session.add(organizador)
 
     if len(data['garbageSpotList']) > 0:
@@ -242,7 +242,7 @@ def update_status_event(current_user, event_id):
 
     db.session.commit()
     if not current_user.admin:
-        send_notification_event_status(event.serialize(), current_user)
+        send_notification_event_status(event, current_user)
     return make_response(jsonify({'message': '200 OK - Event Updated'}), 200)
 
 

@@ -129,7 +129,7 @@ fun ProfileScreen(
 
                     Text(text = "Your last Events", fontStyle = MaterialTheme.typography.h6.fontStyle)
                     Spacer(Modifier.width(86.dp))
-                    ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems).toString()),
+                    ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems)),
                         style = MaterialTheme.typography.body1,
                         onClick = {
                             navController.navigate(Screen.MyEventList.route)

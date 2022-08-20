@@ -95,37 +95,16 @@ fun MapScreen(
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
 
     }
-    var garbageSpotsState = garbageSpotViewModel.garbageSpotCreateUIState.collectAsState().value
-    when(garbageSpotsState){
-        is GarbageSpotViewModel.GarbageSpotCreateUIState.Success -> {
-            log.d {"Get garbage spots state -> Success "}
-            //update list
-            garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
-            //reset create local lixo
-            createGarbageSpotButtonState.value = false
-            garbageSpotState.value = emptyGarbageSpot
-            nomeGarbageSpotState.value = TextFieldValue("")
-            newGarbageSpotPos.value = LatLng(0.0,0.0)
-
-            Text(
-                text = stringResource(R.string.lblCreateGarbageSpotSuccess),
-                color = MaterialTheme.colors.primary,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-            )
-
-        }
-        is GarbageSpotViewModel.GarbageSpotCreateUIState.Error -> {
-            log.d {"Get garbage spots state -> Error "}
-            Text(
-                text = garbageSpotsState.error,
-                color = MaterialTheme.colors.primary,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-            )
-
-        }
-    }
+    garbageSpotsStateSection(
+        garbageSpotViewModel,
+        log,
+        authViewModel,
+        createGarbageSpotButtonState,
+        garbageSpotState,
+        emptyGarbageSpot,
+        nomeGarbageSpotState,
+        newGarbageSpotPos
+    )
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -193,7 +172,7 @@ fun MapScreen(
                                     log.d {" Create Garbage Spot request sent "}
                                     garbageSpotViewModel.createGarbageSpot(garbageSpotState.value,authViewModel.tokenState.value)
                                     coroutineScope.launch { bottomScaffoldState.bottomSheetState.collapse() }
-                                    //todo create error/success message
+
 
                                 }
 
@@ -244,6 +223,51 @@ fun MapScreen(
 
     )
 }
+
+@Composable
+private fun garbageSpotsStateSection(
+    garbageSpotViewModel: GarbageSpotViewModel,
+    log: Logger,
+    authViewModel: AuthViewModel,
+    createGarbageSpotButtonState: MutableState<Boolean>,
+    garbageSpotState: MutableState<GarbageSpotDTO>,
+    emptyGarbageSpot: GarbageSpotDTO,
+    nomeGarbageSpotState: MutableState<TextFieldValue>,
+    newGarbageSpotPos: MutableState<LatLng>
+) {
+    var garbageSpotsState = garbageSpotViewModel.garbageSpotCreateUIState.collectAsState().value
+    when (garbageSpotsState) {
+        is GarbageSpotViewModel.GarbageSpotCreateUIState.Success -> {
+            log.d { "Get garbage spots state -> Success " }
+            //update list
+            garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+            //reset create local lixo
+            createGarbageSpotButtonState.value = false
+            garbageSpotState.value = emptyGarbageSpot
+            nomeGarbageSpotState.value = TextFieldValue("")
+            newGarbageSpotPos.value = LatLng(0.0, 0.0)
+
+            Text(
+                text = stringResource(R.string.lblCreateGarbageSpotSuccess),
+                color = MaterialTheme.colors.primary,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+            )
+
+        }
+        is GarbageSpotViewModel.GarbageSpotCreateUIState.Error -> {
+            log.d { "Get garbage spots state -> Error " }
+            Text(
+                text = garbageSpotsState.error,
+                color = MaterialTheme.colors.primary,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+            )
+
+        }
+    }
+}
+
 @Composable
 fun DrawerFilterCompose(
     garbageSpotsFilterState: MutableState<String>

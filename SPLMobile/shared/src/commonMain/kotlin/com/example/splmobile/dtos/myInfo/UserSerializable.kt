@@ -10,6 +10,6 @@ data class UserSerializable(
     var email: String,
     var name: String,
     var icon: String?,
-    var admin :Boolean
+    var admin :Boolean?
 
     )

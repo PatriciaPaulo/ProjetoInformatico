@@ -204,7 +204,7 @@ if __name__ == '__main__':
     # SEED EQUIPAMENTO
     session.query(Equipment).delete()
     for i in range(6):
-        name = ["Saco de Garbage", "Luvas", "Pá", "Tesoura", "Faca", "Contentor"]
+        name = ["Saco de Lixo", "Luvas", "Pá", "Tesoura", "Faca", "Contentor"]
         eq = Equipment(name=name[i])
         session.add(eq)
 
