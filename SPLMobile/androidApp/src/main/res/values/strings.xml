@@ -137,6 +137,7 @@
     <string name="txtEventCreateError">Error ao criar o evento</string>
     <string name="lblCreateEvent">Criar</string>
     <string name="txtNoEvents">Não tens eventos</string>
+    <string name="txtNoEquipmentInEvent">Equipamento não é necessário</string>
 
 
 </resources>
