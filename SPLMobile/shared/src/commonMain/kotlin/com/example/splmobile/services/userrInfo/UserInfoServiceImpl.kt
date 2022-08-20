@@ -59,7 +59,7 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
                 url("api/users/me")
             }.body() as UserResponse
         }catch (ex :Exception){
-            return UserResponse(UserSerializable(0,"","","",null),"$ex")
+            return UserResponse(UserSerializable(0,"","","",null,false),"$ex")
         }
 
     }
@@ -134,7 +134,7 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
             }.body() as UserResponse
         }
         catch (ex :Exception){
-            return UserResponse(UserSerializable(0,"","","",null),"$ex")
+            return UserResponse(UserSerializable(0,"","","",null,false),"$ex")
         }
 
     }

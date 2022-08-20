@@ -10,5 +10,5 @@ data class UserInEventDTO(
     val userID: Long,
     val status: String,
     val creator: Boolean,
-
+    val enteringDate :String
     )

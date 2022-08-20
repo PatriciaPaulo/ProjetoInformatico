@@ -136,6 +136,7 @@
     <string name="lblPickALocation">Escolha um ponto de encontro</string>
     <string name="txtEventCreateError">Error ao criar o evento</string>
     <string name="lblCreateEvent">Criar</string>
+    <string name="txtNoEvents">Não tens eventos</string>
 
 
 </resources>

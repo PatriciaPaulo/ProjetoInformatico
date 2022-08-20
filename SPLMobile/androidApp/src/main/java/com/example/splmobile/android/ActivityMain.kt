@@ -66,7 +66,6 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     private val friendViewModel: FriendViewModel by viewModel()
     private val messageViewModel: MessageViewModel by viewModel()
     private val mainViewModel: MainViewModel by viewModels()
-    private val pushNotificationsViewModel:PushNotificationsViewModel by viewModels()
     private val mapViewModel : MapViewModel by viewModels<MapViewModel>()
     private val cameraViewModel : CameraViewModel by viewModels()
 

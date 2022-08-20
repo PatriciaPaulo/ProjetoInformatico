@@ -32,6 +32,7 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.myInfo.UserSerializable
+import com.example.splmobile.models.ActivityViewModel
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.UserInfoViewModel
@@ -48,6 +49,7 @@ fun ProfileScreen(
     userInfoViewModel: UserInfoViewModel,
     authViewModel: AuthViewModel,
     sharedViewModel: SharedViewModel,
+    activityViewModel : ActivityViewModel,
     log: Logger
 ) {
     val log = log.withTag("ProfileScreen")
@@ -63,8 +65,7 @@ fun ProfileScreen(
         log.d{"get my info get my events and get my activities launched"}
         userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
         userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
-        //TODO
-        //userInfoViewModel.getMyActivities(authViewModel.tokenState.value)
+        userInfoViewModel.getMyActivities(authViewModel.tokenState.value)
     }
     
     Scaffold(
@@ -117,33 +118,7 @@ fun ProfileScreen(
                 }
                 Text(text = "Your last Activities", fontStyle = MaterialTheme.typography.h6.fontStyle)
 
-                Column(modifier = Modifier
-                    .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally){
-                    when(usersActivitiesState){
-                        is UserInfoViewModel.MyActivitiesUIState.SuccessLast5 ->
-                        {
-                            usersActivitiesState.activities.forEach {
-                                TextButton(onClick = {}){
-                                    Text(text = "Activity ${it.id} que começou em ${it.startDate}. ")
-                                }
-
-                            }
-
-
-                        }
-                        is UserInfoViewModel.MyActivitiesUIState.Loading -> CircularProgressIndicator()
-                        is UserInfoViewModel.MyActivitiesUIState.Error -> {
-                            TextButton(onClick = {}){
-                                Text(text = "No Activities Available!. ")
-                            }
-                        }
-                    }
-                    
-
-
-                }
+                MyActivitySection(usersActivitiesState,navController,log)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -165,6 +140,43 @@ fun ProfileScreen(
             }
         },
     )
+}
+
+@ExperimentalFoundationApi
+@Composable
+fun MyActivitySection(
+    usersActivitiesState: UserInfoViewModel.MyActivitiesUIState,
+    navController: NavHostController,
+    log: Logger
+) {
+    Column(modifier = Modifier
+        .fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally){
+        when(usersActivitiesState){
+            is UserInfoViewModel.MyActivitiesUIState.SuccessLast5 ->
+            {
+                usersActivitiesState.activities.forEach {
+                    TextButton(onClick = {}){
+                        Text(text = "Activity ${it.id} que começou em ${it.startDate}. ")
+                    }
+
+                }
+
+
+            }
+            is UserInfoViewModel.MyActivitiesUIState.Loading -> CircularProgressIndicator()
+            is UserInfoViewModel.MyActivitiesUIState.Error -> {
+                TextButton(onClick = {}){
+                    Text(text = "No Activities Available!. ")
+                }
+            }
+        }
+
+
+
+    }
+
 }
 
 @Composable
@@ -341,7 +353,7 @@ fun ProfileSection(
                                     utilizadorName.value.text,
                                     utilizadorEmail.value.text,
                                     utilizadorUsername.value.text,
-                                    null),
+                                    null,false),
                                 authViewModel.tokenState.value)
                         }
                         //utilizador.email = utilizadorEmail.value.text
@@ -508,13 +520,4 @@ fun ProfileDescription(
 
 
 
-@ExperimentalFoundationApi
-@Composable
-fun ActivitySection(
-    posts: List<Painter>,
-    modifier: Modifier = Modifier
-) {
-    
-
-}
 

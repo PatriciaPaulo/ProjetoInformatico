@@ -181,29 +181,31 @@ private fun EventsListSection(
 
     when (eventsListState) {
         is UserInfoViewModel.MyEventsUIState.Success -> {
-            messageViewModel.getLastEventMessage(
-                authViewModel.tokenState.value
-            )
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(600.dp),
-            ) {
-                items(eventsListState.events.size) { index ->
-                    EventsListWithLastMessage(
-                        eventsListState.events.get(index).event.id,
-                        messageViewModel,
-                        eventsListState,
-                        index,
-                        navController,
-                        userInfoViewModel
-                    )
+            if(eventsListState.events.size>0){
+                messageViewModel.getLastEventMessage(
+                    authViewModel.tokenState.value
+                )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(600.dp),
+                ) {
+                    items(eventsListState.events.size) { index ->
+                        EventsListWithLastMessage(
+                            eventsListState.events.get(index).event.id,
+                            messageViewModel,
+                            eventsListState,
+                            index,
+                            navController,
+                            userInfoViewModel
+                        )
 
+                    }
                 }
-
-
             }
-
+            else{
+                Text(text= textResource(id = R.string.txtNoEvents))
+            }
 
         }
         is UserInfoViewModel.MyEventsUIState.Loading -> {
