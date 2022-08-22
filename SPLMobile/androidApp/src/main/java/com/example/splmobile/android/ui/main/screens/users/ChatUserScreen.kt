@@ -13,6 +13,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +29,7 @@ import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
+import com.example.splmobile.dtos.messages.EventMessageRequest
 import com.example.splmobile.dtos.messages.IndividualMessageRequest
 import com.example.splmobile.dtos.messages.MessageDTO
 import com.example.splmobile.models.*
@@ -221,7 +223,11 @@ private fun BottomSection(
 
             modifier = Modifier.align(Alignment.Bottom)
         ) {
-            Text(text = "sendmessage")
+
+            Icon(
+                imageVector = Icons.Default.Send,
+                contentDescription = "Send Message",
+            )
         }
     }
 }
