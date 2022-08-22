@@ -126,6 +126,7 @@ fun EventEditScreen(
 
                 Log.d("edit","${ eventState.event.garbageTypes.map { it.garbageID}}")
                 Log.d("edit","${eventState.event.garbageSpots.map { it.garbageSpotID}}")
+                Log.d("edit","${eventState.event.equipments}")
                 listGarbageTypeInEvent.value = eventState.event.garbageTypes.map { it.garbageID}.toMutableStateList()
                 listGarbageSpotsInEvent.value = eventState.event.garbageSpots.map { it.garbageSpotID}.toMutableStateList()
                 listEquipamentsInEvent.value = eventState.event.equipments.toMutableStateList()
@@ -363,13 +364,13 @@ private fun EquipmentSelection(
                     .fillMaxWidth()
                     .selectable(
                         selected =  listEquipmentInEvent.value.contains(
-                            listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                            listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
                         ),
                         onClick = {
                             Log.d("equipement", "equipment clicked")
 
 
-                            var element =  listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                            var element =  listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id}
                             Log.d("equipement", "$element")
 
                             if ( element !=null) {

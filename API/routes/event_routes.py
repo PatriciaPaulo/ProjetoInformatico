@@ -197,10 +197,12 @@ def update_event(current_user, event_id):
 
     db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id).delete()
     db.session.query(GarbageInEvent).filter_by(eventID=event.id).delete()
+    db.session.query(EquipmentInEvent).filter_by(eventID=event.id).delete()
     db.session.commit()
 
     print(event_data['garbageTypeList'])
     print(event_data['garbageSpotList'])
+    print(event_data['equipmentList'])
 
     for garbageTypeID in event_data['garbageTypeList']:
         garbageExists = db.session.query(Garbage).filter_by(id=garbageTypeID).first()
@@ -208,12 +210,22 @@ def update_event(current_user, event_id):
             new_garbageInEvent = GarbageInEvent(eventID=event.id, garbageID=garbageTypeID)
             db.session.add(new_garbageInEvent)
 
+    for equipment in event_data['equipmentList']:
+        equipmentExists = db.session.query(Equipment).filter_by(id=equipment['equipmentID']).first()
+        if equipmentExists:
+            new_equipmentInEvent = EquipmentInEvent(eventID=event.id, equipmentID=equipment['equipmentID'],
+                                                    observations=equipment['observations'],
+                                                    isProvided=equipment['isProvided'])
+            db.session.add(new_equipmentInEvent)
+
     if len(event_data['garbageSpotList']) > 0:
         for garbageSpotID in event_data['garbageSpotList']:
             garbageSpotExists = db.session.query(GarbageSpot).filter_by(id=garbageSpotID).first()
             if garbageSpotExists:
                 new_garbageSpotInEvent = GarbageSpotInEvent(eventID=event.id, garbageSpotID=garbageSpotID)
                 db.session.add(new_garbageSpotInEvent)
+
+
 
     db.session.commit()
 
