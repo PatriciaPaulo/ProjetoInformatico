@@ -94,7 +94,7 @@ def get_friend_data(current_user, friend):
             # print(events_participated)
             from datetime import date
 
-            today = date.today()
+            today = datetime.utcnow()
             activities_completed = db.session.query(Activity).filter(Activity.userID == user.id,
                                                                      Activity.endDate <= today).count()
 
@@ -170,7 +170,7 @@ def get_user_friends(current_user):
                 # print(events_participated)
                 from datetime import date
 
-                today = date.today()
+                today = datetime.utcnow()
                 activities_completed = db.session.query(Activity).filter(Activity.userID == user.id,
                                                                          Activity.endDate <= today).count()
 

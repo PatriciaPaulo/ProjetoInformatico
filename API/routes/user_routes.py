@@ -126,9 +126,8 @@ def get_users(current_user):
             if not user.blocked:
                 events_participated = db.session.query(UserInEvent).filter_by(userID=user.id,status="Confirmado").count()
                 # print(events_participated)
-                from datetime import date
 
-                today = date.today()
+                today = datetime.utcnow()
                 activities_completed = db.session.query(Activity).filter(Activity.userID== user.id,Activity.endDate <= today).count()
 
                 garbage_spots_created = db.session.query(GarbageSpot).filter(GarbageSpot.creator==user.id).count()
@@ -161,9 +160,9 @@ def get_user_stat(current_user,user_id):
         if not user.blocked:
             events_participated = db.session.query(UserInEvent).filter_by(userID=user.id,status="Confirmado").count()
             # print(events_participated)
-            from datetime import date
 
-            today = date.today()
+
+            today = datetime.utcnow()
             activities_completed = db.session.query(Activity).filter(Activity.userID== user.id,Activity.endDate <= today).count()
 
 

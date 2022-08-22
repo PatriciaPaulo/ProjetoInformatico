@@ -10,7 +10,7 @@ from sqlalchemy.sql.expression import func
 
 # IMPORTS FOR VALUES
 import names
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 from random import randrange
 from random_word import RandomWords
 import random
@@ -81,15 +81,11 @@ if __name__ == '__main__':
         creator = session.query(User).filter_by(admin=False).order_by(func.random()).first()
         status = ["Muito sujo", "Pouco sujo", "Limpo"]
         garbageSpot = GarbageSpot(name=name, latitude=latitude, longitude=longitude, creator=creator.id,
-                                  status=random.choice(status), approved=True, createdDate=datetime.datetime.utcnow())
+                                  status=random.choice(status), approved=True, createdDate=datetime.utcnow())
 
         session.add(garbageSpot)
         session.flush()
 
-        today = date.today()
-        # ddmmYY
-        # garbageSpot.foto = str(garbageSpot.id) + creator.username + str(today.strftime("%d%m%Y")) + '.png'
-        # todo create a foto ???
 
     print("---GarbageSpot seed done!")
 
@@ -153,14 +149,12 @@ if __name__ == '__main__':
                       longitude=longitude,
                       status=random.choice(status), accessibility=random.choice(accessibility),
                       quantity=random.choice(quantity), restrictions=random.choice(restrictions),
-                      duration=duration, startDate=datetime.datetime.utcnow(), createdDate=datetime.datetime.utcnow())
+                      duration=duration, startDate=datetime.utcnow(), createdDate=datetime.utcnow())
 
         session.add(event)
 
-        today = date.today()
-        # ddmmYY
-        # event.foto = str(event.id) + str(organizer.id) + str(today.strftime("%d%m%Y")) + '.png'
-        # todo create a foto ???
+        today = datetime.utcnow()
+
 
         session.commit()
     print("---Event seed done!")
@@ -172,7 +166,7 @@ if __name__ == '__main__':
         eventID = session.query(Event).order_by(func.random()).first()
         distanceTravelled = randrange(99999)
         steps = randrange(99999)
-        startDate = datetime.datetime.utcnow()
+        startDate = datetime.utcnow()
         td = timedelta(days=randrange(3))
         # your calculated date
         my_date = startDate + td
@@ -247,15 +241,16 @@ if __name__ == '__main__':
         event = session.query(Event).order_by(func.random()).first()
         # status2 = ["Confirmado", "Não Confirmado", "Inscrito"]
 
-        userInEvent = UserInEvent(userID=1, eventID=event.id, status="Organizer", creator=True, enteringDate=today)
+        userInEvent = UserInEvent(userID=1, eventID=event.id, status="Organizer", creator=True, enteringDate=datetime.utcnow())
         session.add(userInEvent)
-    today = date.today()
+
     for i in range(6):
+
         user = session.query(User).filter_by(admin=False).order_by(func.random()).first()
         event = session.query(Event).order_by(func.random()).first()
         status2 = ["Confirmado", "Inscrito", "Não Confirmado"]
 
-        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status2), creator=False, enteringDate=today)
+        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status2), creator=False, enteringDate=datetime.utcnow())
         session.add(userInEvent)
 
     print("---UserInEvent seed done!")
@@ -267,7 +262,7 @@ if __name__ == '__main__':
 
     for i in range(3):
         message = Message(senderID=1, message="random message 1", status="Sent", type="Individual",
-                          sentDate=datetime.datetime.utcnow())
+                          sentDate=datetime.utcnow())
         session.add(message)
         session.flush()
         messageInd = IndividualMessage(receiverID=2, messageID=message.id)
@@ -276,7 +271,7 @@ if __name__ == '__main__':
 
     for i in range(3):
         message = Message(senderID=2, message="random message 2", status="Sent", type="Individual",
-                          sentDate=datetime.datetime.utcnow())
+                          sentDate= datetime.utcnow())
         session.add(message)
         session.flush()
         messageInd = IndividualMessage(receiverID=1, messageID=message.id)
@@ -285,7 +280,7 @@ if __name__ == '__main__':
 
     for i in range(3):
         message = Message(senderID=1, message="random message ev", status="Sent", type="Event",
-                          sentDate=datetime.datetime.utcnow())
+                          sentDate=datetime.utcnow())
 
         session.add(message)
         session.flush()

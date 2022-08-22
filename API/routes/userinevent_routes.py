@@ -3,7 +3,7 @@ from flask_restful import Api
 from flask import Blueprint
 from models import Event, db, GarbageSpotInEvent, UserInEvent, GarbageInEvent, EquipmentInEvent
 from utils import token_required
-from datetime import date
+from datetime import datetime
 
 users_event_routes_blueprint = Blueprint('users_event_routes', __name__, )
 api = Api(users_event_routes_blueprint)
@@ -70,7 +70,7 @@ def add_user_to_event(current_user, event_id):
             jsonify({'data': {}, 'message': '409 NOT OK - Already signed up to Event! Update your status instead!'}),
             409)
 
-    today = date.today()
+    today = datetime.utcnow()
     signUp = UserInEvent(userID=current_user.id, eventID=event_id, status="Inscrito", creator=False, enteringDate=today)
 
     db.session.add(signUp)
@@ -98,7 +98,7 @@ def add_organizer_to_event(current_user, event_id):
             jsonify({'data': {}, 'message': '409 NOT OK - Already signed up to Event! Update your status instead!'}),
             409)
 
-    today = date.today()
+    today = datetime.utcnow()
     signUp = UserInEvent(userID=data, eventID=event_id, status="Organizer", creator=False, enteringDate=today)
 
     db.session.add(signUp)

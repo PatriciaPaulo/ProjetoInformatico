@@ -47,22 +47,24 @@ class AuthViewModel (
     fun login(email : String, password : String) = viewModelScope.launch {
         // Set loading state, which will be cleared when the repository re-emits
         _loginUIState.value = LoginUIState.Loading
+        try {
+            var loginResponse : LoginResponse = viewModelScope.async(){
+                log.v { "postLogin" }
 
-        var loginResponse : LoginResponse = viewModelScope.async(){
-            log.v { "postLogin" }
-            try {
-                authService.postLogin(LoginRequest(email,password))
-            } catch (exception: Exception) {
-                handleMainError(exception)
+                    authService.postLogin(LoginRequest(email,password))
+
+            }.await() as LoginResponse
+
+            if(loginResponse.message.substring(0,3)  == "200"){
+                mutableTokenState.value = loginResponse.access_token
+                _loginUIState.value = LoginUIState.Success
             }
-        }.await() as LoginResponse
+            else{
+                _loginUIState.value = LoginUIState.Error(loginResponse.message)
+            }
 
-        if(loginResponse.message.substring(0,3)  == "200"){
-            mutableTokenState.value = loginResponse.access_token
-            _loginUIState.value = LoginUIState.Success
-        }
-        else{
-            _loginUIState.value = LoginUIState.Error(loginResponse.message)
+        } catch (exception: Exception) {
+            _loginUIState.value = LoginUIState.Error(exception.message.toString())
         }
     }
 

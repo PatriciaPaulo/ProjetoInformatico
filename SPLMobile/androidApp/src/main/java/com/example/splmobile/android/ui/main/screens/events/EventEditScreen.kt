@@ -179,7 +179,7 @@ fun EventEditScreen(
                         Spacer(modifier = Modifier.height(32.dp))
                         TextField(
                             value = eventDescription.value,
-                            label = { Text(textResource(R.string.lblDescriptionCreateEvent).toString()) },
+                            label = { Text(textResource(R.string.lblDescriptionCreateEvent)) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                             onValueChange = { newText ->
                                 eventDescription.value = newText
@@ -289,7 +289,7 @@ fun EventEditScreen(
                                             eventState.event.status,
                                             eventDuration.value.text,
                                             eventStartDate.value,
-                                            eventDuration.value.text,
+                                            eventDescription.value.text,
                                             accessibilitySelectedOptionText.value,
                                             restrictionsSelectedOptionText.value,
                                             quantitySelectedOptionText.value,
