@@ -54,7 +54,7 @@ class MessageWebsocket(
 
     suspend fun websocket(token:String) {
 
-        client.webSocket("ws://10.0.2.2:5001", request = {
+        client.webSocket("ws://192.168.1.88:5001", request = {
             header("token", "Bearer "+token)
         }) {
             try {
@@ -80,6 +80,7 @@ class MessageWebsocket(
                         }
                         else {
                             val type = Json.parseToJsonElement(message.jsonObject["type"].toString())
+                            println("type of message - $type")
                             if (Json.encodeToString(type).replace("\"", "") == "Event") {
                                 println("event chat message received")
                                 val eventID =
@@ -88,7 +89,7 @@ class MessageWebsocket(
                                     eventID.toString().toLong()
                                 )
                             }
-                            if (Json.encodeToString(type) == "Individual") {
+                            if (Json.encodeToString(type).replace("\"", "") == "Individual") {
                                 println("individual chat message received")
                                 val userID =
                                     Json.parseToJsonElement(message.jsonObject["senderID"].toString())
@@ -97,6 +98,7 @@ class MessageWebsocket(
 
                         }
                         val id = Json.parseToJsonElement(message.jsonObject["id"].toString())
+                        println("Sending reply ${id.toString()}")
                         send(id.toString())
                     }
 
