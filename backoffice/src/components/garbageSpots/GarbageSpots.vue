@@ -10,7 +10,7 @@
         stripedRows
         :rows="10"
         :loading="isLoading"
-        :globalFilterFields="['nome', 'estado', 'criador', 'aprovado']"
+        :globalFilterFields="['name', 'status', 'id', 'approved']"
         :filters="filters"
         class="p-datatable-sm"
       >
@@ -41,7 +41,7 @@
           </div>
         </template>
         <Column field="name" header="Nome" :sortable="true"></Column>
-        <Column field="criador" header="Criador" :sortable="true">
+        <Column field="criador" header="Criador">
           <template #body="{ data }">
             {{ userName(data.creator) }}
           </template>

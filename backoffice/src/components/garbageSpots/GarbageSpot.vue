@@ -4,7 +4,7 @@
   <div class="d-flex flex-wrap justify-content-between">
     <div class="w-75 pe-4">
       <div class="mb-3">
-        <label for="inputName" class="form-label text-light">Nome</label>
+        <label for="inputName" class="form-label">Nome</label>
         <input
           type="text"
           class="form-control"
@@ -16,7 +16,7 @@
         />
       </div>
         <div class="mb-3">
-        <label for="inputName" class="form-label text-light">Criador</label>
+        <label for="inputName" class="form-label ">Criador</label>
         <input
           type="text"
           class="form-control"
@@ -29,7 +29,7 @@
       </div>
       <ConfirmDialog></ConfirmDialog>
       <div v-if="arrayGarbageSpot[0].approved">
-        <label for="inputAprovado" class="form-label text-light" label="Confirm"
+        <label for="inputAprovado" class="form-label" label="Confirm"
           >Aprovado</label
         >
         <button

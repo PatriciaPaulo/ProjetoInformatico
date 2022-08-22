@@ -4,7 +4,7 @@
   <div v-if="event" class="d-flex flex-wrap justify-content-between">
     <div class="w-75 pe-4">
       <div class="mb-3">
-        <label for="inputName" class="form-label text-light">Nome</label>
+        <label for="inputName" class="form-label">Nome</label>
         <input
           type="text"
           class="form-control"
@@ -16,7 +16,7 @@
         />
       </div>
       <div class="mb-3">
-        <label for="inputOrganizador" class="form-label text-light">Organizador</label>
+        <label for="inputOrganizador" class="form-label">Organizador</label>
         <input
           type="text"
           class="form-control"
@@ -28,7 +28,7 @@
         />
       </div>
        <div class="mb-3 px-1">
-        <label for="inputEstado" class="form-label text-light">Data de Inicio</label>
+        <label for="inputEstado" class="form-label ">Data de Inicio</label>
         <input
           type="text"
           class="form-control"
@@ -40,7 +40,7 @@
         />
       </div>
       <div class="mb-3 px-1">
-        <label for="inputEstado" class="form-label text-light">Estado</label>
+        <label for="inputEstado" class="form-label">Estado</label>
         <input
           type="text"
           class="form-control"
@@ -53,7 +53,7 @@
       </div>
       
       <div class="mb-3 px-1">
-        <label for="inputRestricoes" class="form-label text-light">Restrições</label>
+        <label for="inputRestricoes" class="form-label ">Restrições</label>
         <input
           type="text"
           class="form-control"
@@ -65,7 +65,7 @@
         />
       </div>
       <div class="mb-3 px-1">
-        <label for="inputEstado" class="form-label text-light">Acessibilidade</label>
+        <label for="inputEstado" class="form-label ">Acessibilidade</label>
         <input
           type="text"
           class="form-control"

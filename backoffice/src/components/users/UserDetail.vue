@@ -1,11 +1,11 @@
 <template>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="save">
-    <h3 class="mt-5 mb-3 text-light">As minhas informações</h3>
+    <h3 class="mt-5 mb-3">As minhas informações</h3>
     <hr />
     <div class="d-flex flex-wrap justify-content-between">
       <div class="w-75 pe-4">
-        <div class="mb-3">
-          <label for="inputName" class="form-label text-light">Nome</label>
+        <div class="mb-3 w-25 ">
+          <label for="inputName" class="form-label">Nome</label>
           <input
             type="text"
             class="form-control"
@@ -16,8 +16,8 @@
           />
         </div>
 
-        <div class="mb-3 px-1">
-          <label for="inputEmail" class="form-label text-light">Email</label>
+        <div class="mb-3 w-25 ">
+          <label for="inputEmail" class="form-label">Email</label>
           <input
             type="email"
             class="form-control"
@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-    <div class="mb-3 d-flex justify-content-end">
+    <div class="mb-3 d-flex">
       <button type="button" class="btn btn-primary px-5" @click="save">
         Guardar
       </button>

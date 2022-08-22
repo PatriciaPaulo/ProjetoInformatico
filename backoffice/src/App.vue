@@ -220,12 +220,7 @@
                       ><i class="bi bi-person-square"></i>Profile</a
                     >
                   </li>
-                  <li>
-                    <router-link class="dropdown-item" href="#" to="/password"
-                      ><i class="bi bi-key-fill"></i>Change
-                      password</router-link
-                    >
-                  </li>
+                  
                   <li>
                     <hr class="dropdown-divider" />
                   </li>
