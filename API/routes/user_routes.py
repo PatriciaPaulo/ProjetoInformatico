@@ -5,7 +5,7 @@ from flask import Blueprint
 from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent,UserInEvent
 from utils import token_required, admin_required, guest, name_validation, username_validation, email_validation,  password_validation, password_confirmation
 import jwt
-import datetime
+from datetime import datetime
 
 user_routes_blueprint = Blueprint('user_routes', __name__, )
 api = Api(user_routes_blueprint)

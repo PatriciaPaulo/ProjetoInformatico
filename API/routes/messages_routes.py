@@ -105,13 +105,12 @@ def get_last_message(current_user):
 
     result = []
     for friendData in friends:
-
         if current_user.id == friendData.requestorID:
             friendID = friendData.addresseeID
         else:
             friendID = friendData.requestorID
 
-            user = db.session.query(User).filter_by(id=friendID).first()
+        user = db.session.query(User).filter_by(id=friendID).first()
 
         if user:
             if user is not current_user:
