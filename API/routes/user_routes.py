@@ -5,7 +5,7 @@ from flask import Blueprint
 from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent,UserInEvent
 from utils import token_required, admin_required, guest, name_validation, username_validation, email_validation,  password_validation, password_confirmation
 import jwt
-from datetime import datetime
+from datetime import datetime, timedelta
 
 user_routes_blueprint = Blueprint('user_routes', __name__, )
 api = Api(user_routes_blueprint)
@@ -73,7 +73,7 @@ def login_user():
     # Checks if password is correct
     if check_password_hash(user.password, auth['password']):
         token = jwt.encode(
-            {'email': user.email, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1440)},
+            {'email': user.email, 'exp': datetime.utcnow() + timedelta(minutes=1440)},
             current_app.config['SECRET_KEY'], "HS256")
 
         return make_response(jsonify({'access_token': token, 'message': '200 OK - Login successful'}), 200)
