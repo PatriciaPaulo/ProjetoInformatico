@@ -2,6 +2,7 @@ package com.example.splmobile.services.userInEvent
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
+import com.example.splmobile.API_PATH
 import com.example.splmobile.dtos.RequestDataResponse
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.events.*
@@ -174,7 +175,7 @@ class UserServiceImpl (
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom("http://10.0.2.2:5000/")
+            takeFrom(API_PATH)
             encodedPath = path
         }
     }

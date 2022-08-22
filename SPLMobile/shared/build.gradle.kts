@@ -35,6 +35,8 @@ kotlin {
         val sqlDelightVersion= "1.5.3"
         val lifecycle_version = "2.4.1"
 
+        val korioVersion = "2.2.0"
+
         val commonMain by getting {
             dependencies {
 
@@ -80,6 +82,8 @@ kotlin {
                 implementation ("com.squareup.okhttp3:okhttp:3.12.6")
                 implementation ("com.squareup.okhttp3:mockwebserver:3.12.1")
 
+                // File IO
+                implementation("com.soywiz.korlibs.korio:korio:$korioVersion")
 
             }
 

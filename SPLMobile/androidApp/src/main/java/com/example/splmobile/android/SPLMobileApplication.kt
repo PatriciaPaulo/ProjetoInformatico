@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.example.splmobile.AppInfo
+import com.example.splmobile.models.FileViewModel
 import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.initKoin
 import com.example.splmobile.models.*
@@ -33,6 +34,7 @@ class SPLMobileApplication : Application() {
                 viewModel { FriendViewModel(get(), get { parametersOf("FriendViewModel") }) }
                 viewModel { ActivityViewModel(get(), get { parametersOf("ActivityViewModel") }) }
                 viewModel { MapViewModel(androidApplication()) }
+                viewModel { FileViewModel(get(), get { parametersOf("FileViewModel") } ) }
                 single<SharedPreferences> {
                     get<Context>().getSharedPreferences("KAMPSTARTER_SETTINGS", Context.MODE_PRIVATE)
                 }

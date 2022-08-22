@@ -1,5 +1,6 @@
 import os.path
 
+import flask
 from flask import Blueprint, request, flash, make_response, current_app
 from flask_restful import Api
 from werkzeug.utils import secure_filename
@@ -52,11 +53,15 @@ def upload_profile_file(current_user):
 @file_routes_blueprint.route('/upload/activities/<activity_id>', methods=['POST'])
 @token_required
 def upload_activity_file(current_user, activity_id):
+    if request.data is None:
+        return make_response("400 - No data", 400)
+
     # Check if post request has file
     if 'file' not in request.files:
         return make_response("400 BAD REQUEST - No file part", 400)
 
     file = request.files['file']
+
     if file.filename == '':
         return make_response("400 BAD REQUEST - No selected file", 400)
 

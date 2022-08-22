@@ -2,6 +2,7 @@ package com.example.splmobile.services.friends
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
+import com.example.splmobile.API_PATH
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.events.EventsResponse
 import com.example.splmobile.dtos.users.FriendsResponse
@@ -125,7 +126,7 @@ class FriendServiceImpl (private val log: Logger, engine: HttpClientEngine) : Fr
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom("http://10.0.2.2:5000/")
+            takeFrom(API_PATH)
             encodedPath = path
         }
     }

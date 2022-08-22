@@ -7,6 +7,7 @@ import com.example.splmobile.dtos.files.FileResponse
 import com.example.splmobile.dtos.files.FileSerializable
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotID
 import com.example.splmobile.dtos.users.UserID
+import com.soywiz.korio.file.VfsFile
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -21,8 +22,9 @@ import io.ktor.util.*
 import kotlinx.serialization.json.Json
 import co.touchlab.kermit.Logger as KermitLogger
 import com.soywiz.korio.file.std.*
+import io.ktor.http.content.*
+import io.ktor.utils.io.core.*
 
-@OptIn(InternalAPI::class)
 class FileServiceImpl (
     private val log : KermitLogger,
     engine: HttpClientEngine
@@ -39,7 +41,7 @@ class FileServiceImpl (
         install(Logging) {
             logger = object : Logger {
                 override fun log(message: String) {
-                    log.v { message + "FILES IMPL" }
+                    log.v { message + " FILES IMPL" }
                 }
             }
 
@@ -61,34 +63,45 @@ class FileServiceImpl (
 
     override suspend fun postActivityUpload(
         activity: ActivityID,
-        path: String,
-        token: String
+        token: String,
+        uploadFiles: Map<String, ByteArray>,
     ): FileResponse {
         log.d { "Post Activity File Upload" }
-        val file = localVfs(path)
+        /*
+        val createFile : VfsFile = VfsFileFromData(path)
+        val file = createFile.readBytes()
         var filename_op = path.split("/")
         var filename = filename_op.last()
 
-        println(file)
+        println(createFile.isFile())
+        println(createFile)
+        println(filename)
+
+         */
 
         try {
             return client.post {
-                println("POST IMAGEM")
-                if(token.isNotEmpty()){
-                    headers{
-                        append(HttpHeaders.Authorization, "Bearer $token")
-                    }
-                }
-                contentType(ContentType.MultiPart.FormData)
+                println("MULTIPARTFORMDATA IMAGEM")
+
+                //contentType(ContentType.MultiPart.FormData)
                 setBody(MultiPartFormDataContent(
                     formData {
-                        append("file", "file", Headers.build {
-                            append(HttpHeaders.ContentType, "image/vfs")
-                            append(HttpHeaders.ContentDisposition, "filename=\"$filename\"")
-                        })
-                    }
+                        uploadFiles.entries.forEach {
+                            this.appendInput(
+                                key = "file",
+                                headers = Headers.build {
+                                    append(HttpHeaders.ContentDisposition,
+                                        "filename=${it.key}")
+                                },
+                                size = it.value.size.toLong()
+                            ) { buildPacket { writeFully(it.value) } }
+                        }
+                    },
                 ))
 
+                onUpload { bytesSentTotal, contentLength ->
+                    println("Sent $bytesSentTotal bytes from $contentLength")
+                }
 
                 url("/api/upload/activities/${activity.id}")
             }.body() as FileResponse

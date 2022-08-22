@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.splmobile.android.viewmodel.CameraViewModel
 import kotlin.io.path.Path
@@ -33,13 +34,22 @@ fun PictureView(
     onImageRejected : (Boolean) -> Unit
 ) {
     val uri = cameraViewModel.getUri()
+
     val fromGallery = cameraViewModel.getFromGallery()
 
     if (uri != null) {
+        val path = uri.path
+
+        val file = File(path)
+        val fileBytes = file.readBytes()
+
+        var filename_op = path!!.split("/")
+        var filename = filename_op.last()
+
         PicturePreviewView(uri) { cameraUIAction ->
             when (cameraUIAction) {
                 is CameraUIAction.OnSaveClick -> {
-                    fileViewModel.uploadActivityFile(ActivityID(1), uri.toString(), authViewModel.tokenState.value)
+                    fileViewModel.uploadActivityFile(ActivityID(1), fileBytes, filename, authViewModel.tokenState.value)
                     Log.v(TAG, "Image saved on server")
                 }
 
@@ -56,6 +66,7 @@ fun PictureView(
                     onImageRejected(false)
                 }
 
+                else -> { }
             }
         }
     }
@@ -71,8 +82,8 @@ private fun PicturePreviewView(
             .fillMaxSize())
     {
         Image(
-            painter = rememberImagePainter(
-                data = uri
+            painter = rememberAsyncImagePainter(
+                model = uri
             ),
             "Image" // TODO Change to res
         )

@@ -9,5 +9,5 @@ import com.example.splmobile.dtos.users.UserID
 interface FileService {
     suspend fun postProfileUpload(user: UserID, fileRequest : FileSerializable, token : String) : FileResponse
     suspend fun postGarbageSpotUpload(garbageSpot: GarbageSpotID, fileRequest : FileSerializable) : FileResponse
-    suspend fun postActivityUpload(activity: ActivityID, path : String, token : String) : FileResponse
+    suspend fun postActivityUpload(activity: ActivityID, token: String, uploadFiles: Map<String, ByteArray>) : FileResponse
 }

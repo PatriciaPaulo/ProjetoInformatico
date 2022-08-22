@@ -1,4 +1,5 @@
 import co.touchlab.kermit.Logger
+import com.example.splmobile.API_PATH
 import com.example.splmobile.dtos.activities.ActivitiesResponse
 import com.example.splmobile.dtos.events.EventsResponse
 import com.example.splmobile.dtos.events.UserInEventResponse
@@ -141,7 +142,7 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom("http://10.0.2.2:5000/")
+            takeFrom(API_PATH)
             encodedPath = path
         }
     }

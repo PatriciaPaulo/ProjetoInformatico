@@ -3,9 +3,10 @@ package com.example.splmobile.models
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.activities.ActivityID
 import com.example.splmobile.dtos.files.FileResponse
-import com.example.splmobile.dtos.files.FileSerializable
 import com.example.splmobile.isCodeOK
 import com.example.splmobile.services.files.FileService
+import com.soywiz.korio.file.VfsFile
+import com.soywiz.korio.file.std.VfsFileFromData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -32,24 +33,27 @@ class FileViewModel (
     // Upload Activity File
     fun uploadActivityFile(
         activityID: ActivityID,
-        path : String,
+        fileBytes : ByteArray,
+        filename : String,
         token : String
     ) = viewModelScope.launch {
         _fileUploadUIState.value = FileActivityUploadUIState.Loading
 
         var fileUploadResponse : FileResponse = viewModelScope.async() {
             log.v { "POST File Upload" }
+
+            val files : Map<String, ByteArray> = mapOf(filename to fileBytes)
+
             try {
                 fileService.postActivityUpload(
                     activityID,
-                    path,
-                    token
+                    token,
+                    files
                 )
             } catch (e : Exception) {
                 log.e(e) { "Error" }
             }
         }.await() as FileResponse
-        println(FileResponse.serializer())
 
         if(isCodeOK(fileUploadResponse.message)) {
             _fileUploadUIState.value = FileActivityUploadUIState.Success

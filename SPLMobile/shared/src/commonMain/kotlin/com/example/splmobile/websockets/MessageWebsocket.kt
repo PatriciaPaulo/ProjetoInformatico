@@ -1,6 +1,7 @@
 package com.example.splmobile.websockets
 
 import co.touchlab.kermit.Logger
+import com.example.splmobile.WEBSOCKET_PATH
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.models.MessageViewModel
 import io.ktor.client.*
@@ -55,7 +56,7 @@ class MessageWebsocket(
 
     suspend fun websocket(token:String) {
 
-        client.webSocket("ws://10.0.2.2:5001", request = {
+        client.webSocket(WEBSOCKET_PATH, request = {
             header("token", "Bearer "+token)
         }) {
             try {
