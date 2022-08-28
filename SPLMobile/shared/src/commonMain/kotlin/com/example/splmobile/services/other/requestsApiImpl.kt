@@ -1,6 +1,7 @@
 package com.example.splmobile.services.other
 
 import co.touchlab.stately.ensureNeverFrozen
+import com.example.splmobile.HttpRequestUrls
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -51,7 +52,7 @@ class requestsApiImpl(private val log: co.touchlab.kermit.Logger, engine: HttpCl
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom("https://geocode.xyz/")
+            takeFrom(HttpRequestUrls.api_geocode.url)
             encodedPath = path
         }
     }

@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.messages.*
+import com.example.splmobile.HttpRequestUrls
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -11,7 +12,6 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
@@ -159,7 +159,7 @@ class MessageServiceImpl(private val log: Logger, engine: HttpClientEngine) :
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom("http://10.0.2.2:5000/")
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

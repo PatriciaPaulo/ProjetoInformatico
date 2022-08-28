@@ -13,5 +13,4 @@ interface GarbageSpotService {
       suspend fun patchGarbageSpotStatus(garbageSpotID: Long, status: String, token: String): RequestMessageResponse
       suspend fun getGarbageTypes(token: String): GarbageTypesResponse
       suspend fun getGarbageSpotById(gsId: Long, token: String): GarbageSpotResponse
-      suspend fun postGarbageSpotsInEvent(eventID: Long, token: String): RequestMessageResponse
 }

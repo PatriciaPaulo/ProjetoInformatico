@@ -6,6 +6,7 @@ import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
+import com.example.splmobile.HttpRequestUrls
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -153,16 +154,11 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
 
     }
 
-    override suspend fun postGarbageSpotsInEvent(
-        eventID: Long,
-        token: String
-    ): RequestMessageResponse {
-        TODO("Not yet implemented")
-    }
+
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom("http://10.0.2.2:5000/")
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

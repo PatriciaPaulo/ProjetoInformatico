@@ -1,12 +1,12 @@
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.activities.ActivitiesResponse
-import com.example.splmobile.dtos.events.EventsResponse
 import com.example.splmobile.dtos.events.UserInEventResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
 import com.example.splmobile.dtos.myInfo.EmailCheckResponse
 import com.example.splmobile.dtos.myInfo.EmailRequest
 import com.example.splmobile.dtos.myInfo.UserResponse
 import com.example.splmobile.dtos.myInfo.UserSerializable
+import com.example.splmobile.HttpRequestUrls
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -31,7 +31,7 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
         install(Logging) {
             logger = object : io.ktor.client.plugins.logging.Logger {
                 override fun log(message: String) {
-                    log.v { message + "API IMP MESSAGE"}
+                    log.v { message + "API IMP MESSAGE" }
                 }
             }
 
@@ -45,11 +45,12 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
         }
 
     }
+
     override suspend fun getUser(
         token: String
     ): UserResponse {
         log.d { "Fetching my garbage spots from network" }
-        try{
+        try {
             return client.get {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
@@ -58,8 +59,8 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
 
                 url("api/users/me")
             }.body() as UserResponse
-        }catch (ex :Exception){
-            return UserResponse(UserSerializable(0,"","","",null,false),"$ex")
+        } catch (ex: Exception) {
+            return UserResponse(UserSerializable(0, "", "", "", null, false), "$ex")
         }
 
     }
@@ -68,7 +69,7 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
         token: String
     ): GarbageSpotsResponse {
         log.d { "Fetching my garbage spots from network" }
-        try{
+        try {
             return client.get {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
@@ -76,15 +77,15 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
                 contentType(ContentType.Application.Json)
                 url("api/garbageSpots/mine")
             }.body() as GarbageSpotsResponse
-        }catch (ex :Exception){
-            return GarbageSpotsResponse(emptyList(),"$ex")
+        } catch (ex: Exception) {
+            return GarbageSpotsResponse(emptyList(), "$ex")
         }
 
     }
 
     override suspend fun getMyActivities(token: String): ActivitiesResponse {
         log.d { "Fetching my activities from network" }
-        try{
+        try {
             return client.get {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
@@ -92,8 +93,8 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
                 contentType(ContentType.Application.Json)
                 url("api/activities")
             }.body() as ActivitiesResponse
-        }catch (ex :Exception){
-            return ActivitiesResponse(emptyList(),"$ex")
+        } catch (ex: Exception) {
+            return ActivitiesResponse(emptyList(), "$ex")
         }
     }
 
@@ -101,7 +102,7 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
         token: String
     ): UserInEventResponse {
         log.d { "Fetching my activities from network" }
-        try{
+        try {
             return client.get {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
@@ -109,8 +110,8 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
                 contentType(ContentType.Application.Json)
                 url("api/events/mine")
             }.body() as UserInEventResponse
-        }catch (ex :Exception){
-            return UserInEventResponse(emptyList(),"$ex")
+        } catch (ex: Exception) {
+            return UserInEventResponse(emptyList(), "$ex")
         }
     }
 
@@ -123,7 +124,7 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
         token: String
     ): UserResponse {
         log.d { "update logged in user" }
-        try{
+        try {
             return client.put {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $token")
@@ -132,16 +133,15 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
                 setBody(utilizador)
                 url("api/users/me")
             }.body() as UserResponse
-        }
-        catch (ex :Exception){
-            return UserResponse(UserSerializable(0,"","","",null,false),"$ex")
+        } catch (ex: Exception) {
+            return UserResponse(UserSerializable(0, "", "", "", null, false), "$ex")
         }
 
     }
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom("http://10.0.2.2:5000/")
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

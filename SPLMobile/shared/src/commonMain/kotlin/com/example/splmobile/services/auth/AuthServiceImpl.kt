@@ -6,6 +6,7 @@ import com.example.splmobile.dtos.auth.LoginRequest
 import com.example.splmobile.dtos.auth.LoginResponse
 import com.example.splmobile.dtos.auth.SignInRequest
 import com.example.splmobile.dtos.auth.SignInResponse
+import com.example.splmobile.HttpRequestUrls
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -71,7 +72,7 @@ class AuthServiceImpl(
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom("http://10.0.2.2:5000/")
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }
