@@ -1,4 +1,4 @@
-package com.example.splmobile.models
+package com.example.splmobile.viewmodels
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.auth.LoginRequest
@@ -89,5 +89,9 @@ class AuthViewModel (
 
     private fun handleMainError(throwable: Throwable) {
         log.e(throwable) { "Error" }
+    }
+
+    fun setGuest(){
+        mutableTokenState.value = "0"
     }
 }

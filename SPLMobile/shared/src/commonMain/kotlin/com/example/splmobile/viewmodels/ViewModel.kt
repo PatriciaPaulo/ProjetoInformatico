@@ -1,4 +1,4 @@
-package com.example.splmobile.models
+package com.example.splmobile.viewmodels
 
 import kotlinx.coroutines.CoroutineScope
 

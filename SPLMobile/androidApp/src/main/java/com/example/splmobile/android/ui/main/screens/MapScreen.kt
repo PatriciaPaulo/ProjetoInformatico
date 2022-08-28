@@ -1,6 +1,9 @@
 package com.example.splmobile.android.ui.main.screens
-import MapAppBar
+
+import AppBar
 import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -29,6 +33,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
@@ -37,10 +42,12 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.UserInfoViewModel
-import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.viewmodels.AuthViewModel
+import com.example.splmobile.viewmodels.SharedViewModel
+import com.example.splmobile.viewmodels.UserInfoViewModel
+import com.example.splmobile.viewmodels.GarbageSpotViewModel
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
@@ -67,7 +74,7 @@ fun MapScreen(
     val searchTextState by mainViewModel.searchTextState
 
     LaunchedEffect(Unit) {
-        log.d {"Get garbage spots launched"}
+        log.d { "Get garbage spots launched" }
 
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
 
@@ -78,7 +85,7 @@ fun MapScreen(
     Scaffold(
         topBar = {
 
-            MapAppBar(
+            AppBar(
                 title = textResource(R.string.lblMapSearchBar).toString(),
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState,
@@ -91,10 +98,10 @@ fun MapScreen(
 
                 },
                 onSearchClicked = {
-                        log.d {"Searched text, $it "}
-                        //only change camera position if word written is a place
+                    log.d { "Searched text, $it " }
+                    //only change camera position if word written is a place
 
-                        sharedViewModel.getCoordenadas(it)
+                    sharedViewModel.getCoordenadas(it)
 
 
                 },
@@ -119,7 +126,7 @@ fun MapScreen(
             )
         },
 
-    )
+        )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -133,7 +140,7 @@ private fun ScafoldContentSection(
     sharedViewModel: SharedViewModel,
     bottomScaffoldState: BottomSheetScaffoldState,
 
-) {
+    ) {
     var coordendasState = sharedViewModel.coordenatesUIState.collectAsState().value
     var emptyGarbageSpot = GarbageSpotDTO(
         0, "new", userInfoViewModel.myIdUIState.value, "0.0", "0.0", "Muito sujo", false,
@@ -253,7 +260,7 @@ private fun CoordenatesStateSection(
 
     when (coordendasState) {
         is SharedViewModel.CoordenatesUIState.Success -> {
-            Log.d("map","coordenatesuistate success ${coordendasState.latitude}")
+            Log.d("map", "coordenatesuistate success ${coordendasState.latitude}")
             positionState.position = CameraPosition.fromLatLngZoom(
                 LatLng(
                     coordendasState.latitude,
@@ -320,45 +327,45 @@ fun DrawerFilterCompose(
         fontStyle = MaterialTheme.typography.h6.fontStyle
     )
 
-    Log.d("Map","error, DRAWER COMPOSE ${garbageSpotsFilterState})}")
+    Log.d("Map", "error, DRAWER COMPOSE ${garbageSpotsFilterState})}")
 
-    val element1 = textResource(R.string.lblFilterGarbageSpotsStatus1).toString()
-    val element2 = textResource(R.string.lblFilterGarbageSpotsStatus2).toString()
-    val element3 = textResource(R.string.lblFilterGarbageSpotsStatus3).toString()
-    val all = textResource(R.string.lblFilterGarbageSpotsAll).toString()
-    val mine = textResource(R.string.lblFilterGarbageSpotsMine).toString()
+    val element1 = textResource(R.string.lblFilterGarbageSpotsStatus1)
+    val element2 = textResource(R.string.lblFilterGarbageSpotsStatus2)
+    val element3 = textResource(R.string.lblFilterGarbageSpotsStatus3)
+    val all = textResource(R.string.lblFilterGarbageSpotsAll)
+    val mine = textResource(R.string.lblFilterGarbageSpotsMine)
 
 
-    Column(Modifier.padding(16.dp)){
+    Column(Modifier.padding(16.dp)) {
         Button(onClick = {
             garbageSpotsFilterState.value = all
-            Log.d("Map","error, DRAWER COMPOSEtoodos")
+            Log.d("Map", "error, DRAWER COMPOSEtoodos")
         }, shape = RectangleShape) {
-            Text(text = textResource(R.string.lblFilterGarbageSpotsAll).toString())
+            Text(text = textResource(R.string.lblFilterGarbageSpotsAll))
         }
         Button(onClick = {
             garbageSpotsFilterState.value = mine
-            Log.d("Map","error, DRAWER COMPOSEamine")
+            Log.d("Map", "error, DRAWER COMPOSE mine")
         }, shape = RectangleShape) {
-            Text(text = textResource(R.string.lblFilterGarbageSpotsMine).toString())
+            Text(text = textResource(R.string.lblFilterGarbageSpotsMine))
         }
         Button(onClick = {
             garbageSpotsFilterState.value = element1
-            Log.d("Map","error, DRAWER COMPOSE1")
+            Log.d("Map", "error, DRAWER COMPOSE1")
         }, shape = RectangleShape) {
-            Text(text =  textResource(R.string.lblFilterGarbageSpotsStatus1).toString())
+            Text(text = textResource(R.string.lblFilterGarbageSpotsStatus1))
         }
         Button(onClick = {
             garbageSpotsFilterState.value = element2
-            Log.d("Map","error, DRAWER COMPOSE2")
+            Log.d("Map", "error, DRAWER COMPOSE2")
         }, shape = RectangleShape) {
-            Text(text =  textResource(R.string.lblFilterGarbageSpotsStatus2).toString())
+            Text(text = textResource(R.string.lblFilterGarbageSpotsStatus2))
         }
         Button(onClick = {
             garbageSpotsFilterState.value = element3
-            Log.d("Map","error, DRAWER COMPOS3d")
+            Log.d("Map", "error, DRAWER COMPOS3d")
         }, shape = RectangleShape) {
-            Text(text =  textResource(R.string.lblFilterGarbageSpotsStatus3).toString())
+            Text(text = textResource(R.string.lblFilterGarbageSpotsStatus3))
         }
 
     }
@@ -371,10 +378,16 @@ fun customDrawerShape() = object : Shape {
         layoutDirection: LayoutDirection,
         density: Density
     ): Outline {
-        return Outline.Rectangle(Rect(left = 0f, top = 0f, right = size.width * 3 / 5, bottom = size.height * 3 / 5))
+        return Outline.Rectangle(
+            Rect(
+                left = 0f,
+                top = 0f,
+                right = size.width * 3 / 5,
+                bottom = size.height * 3 / 5
+            )
+        )
     }
 }
-
 
 
 @Composable
@@ -389,9 +402,9 @@ fun ScreenContent(
 ) {
 
 
-    when(garbageSpotsState){
+    when (garbageSpotsState) {
         is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
-            log.d {" All garbage spots state -> Success "}
+            log.d { " All garbage spots state -> Success " }
             Box(
                 modifier = Modifier
                     .background(colorResource(id = R.color.cardview_dark_background))
@@ -419,12 +432,12 @@ fun ScreenContent(
             }
         }
         is GarbageSpotViewModel.GarbageSpotsUIState.Loading -> {
-            log.d {"Get all garbage spots state -> Loading"}
+            log.d { "Get all garbage spots state -> Loading" }
             CircularProgressIndicator()
         }
         is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
-            log.d {"Get all garbage spots state -> Error"}
-            log.d {"Error -> ${garbageSpotsState.error}"}
+            log.d { "Get all garbage spots state -> Error" }
+            log.d { "Error -> ${garbageSpotsState.error}" }
         }
     }
 }
@@ -448,7 +461,7 @@ private fun MapContent(
         position = CameraPosition.fromLatLngZoom(portugal, 7f)
 
     }
-    CoordenatesStateSection(coordendasState,cameraPosition)
+    CoordenatesStateSection(coordendasState, cameraPosition)
     Box(Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.matchParentSize(),
@@ -535,14 +548,19 @@ private fun markerFilterList(
     garbageSpotState: MutableState<GarbageSpotDTO>,
     log: Logger
 ) {
-    log.d {"Marker filtering list"}
+    log.d { "Marker filtering list" }
     filteredGarbageSpots.forEach { garbageSpot ->
 
-        val lixeiraPosition = LatLng(garbageSpot.latitude.toDouble(), garbageSpot.longitude.toDouble())
+        val lixeiraPosition =
+            LatLng(garbageSpot.latitude.toDouble(), garbageSpot.longitude.toDouble())
         //Log.d("Map", "lixeirrrraa, $garbageSpot")
         //Log.d("Map", "pos, $lixeiraPosition")
         //todo mudar o icon baseado no estado
+        val icon = bitmapDescriptor(
+            LocalContext.current, R.drawable.ic_main_profile
+        )
         Marker(
+            icon = icon,
             position = lixeiraPosition,
             title = garbageSpot.name,
             snippet = garbageSpot.status,
@@ -555,7 +573,25 @@ private fun markerFilterList(
 
     }
 }
+fun bitmapDescriptor(
+    context: Context,
+    vectorResId: Int
+): BitmapDescriptor? {
 
+    // retrieve the actual drawable
+    val drawable = ContextCompat.getDrawable(context, vectorResId) ?: return null
+    drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+    val bm = Bitmap.createBitmap(
+        drawable.intrinsicWidth,
+        drawable.intrinsicHeight,
+        Bitmap.Config.ARGB_8888
+    )
+
+    // draw it onto the bitmap
+    val canvas = android.graphics.Canvas(bm)
+    drawable.draw(canvas)
+    return BitmapDescriptorFactory.fromBitmap(bm)
+}
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnrememberedMutableState")
@@ -568,7 +604,7 @@ fun SheetContent(
     garbageSpotViewModel: GarbageSpotViewModel,
     authViewModel: AuthViewModel,
     log: Logger
-){
+) {
     BoxWithConstraints {
 
         var coroutineScope = rememberCoroutineScope()
@@ -579,22 +615,25 @@ fun SheetContent(
         //id of the current local lixo
         var selectedId = remember { mutableStateOf(garbageSpot.value.id) }
 
-        var createGarbageSpotState = garbageSpotViewModel.garbageSpotCreateUIState.collectAsState().value
-        var updateGarbageSpotState = garbageSpotViewModel.garbageSpotUpdateUIState.collectAsState().value
-        val statusList = listOf(textResource(R.string.GarbageSpotStatusListElement1).toString(), textResource(R.string.GarbageSpotStatusListElement2).toString(), textResource(R.string.GarbageSpotStatusListElement3).toString())
-
-
-
+        var createGarbageSpotState =
+            garbageSpotViewModel.garbageSpotCreateUIState.collectAsState().value
+        var updateGarbageSpotState =
+            garbageSpotViewModel.garbageSpotUpdateUIState.collectAsState().value
+        val statusList = listOf(
+            textResource(R.string.GarbageSpotStatusListElement1).toString(),
+            textResource(R.string.GarbageSpotStatusListElement2).toString(),
+            textResource(R.string.GarbageSpotStatusListElement3).toString()
+        )
 
 
         //if its a new local lixo
-        if(garbageSpot.value.id.equals(0L)){
-            log.d {"New garbage spot"}
+        if (garbageSpot.value.id.equals(0L)) {
+            log.d { "New garbage spot" }
             Column {
                 Column {
-                    when(createGarbageSpotState){
+                    when (createGarbageSpotState) {
                         is GarbageSpotViewModel.GarbageSpotCreateUIState.Success -> {
-                            log.d {"Create Garbage Spot state -> Success"}
+                            log.d { "Create Garbage Spot state -> Success" }
                             Text(
                                 text = textResource(R.string.txtGarbageSpotCreateSuccess).toString(),
                                 color = MaterialTheme.colors.primary,
@@ -604,12 +643,12 @@ fun SheetContent(
                             garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
                         }
                         is GarbageSpotViewModel.GarbageSpotCreateUIState.Loading -> {
-                            log.d {"Create Garbage Spot state -> Loading"}
+                            log.d { "Create Garbage Spot state -> Loading" }
                             CircularProgressIndicator()
                         }
                         is GarbageSpotViewModel.GarbageSpotCreateUIState.Error -> {
-                            log.d {"Create Garbage Spot state -> Error"}
-                            log.d {"Error -> ${createGarbageSpotState.error}"}
+                            log.d { "Create Garbage Spot state -> Error" }
+                            log.d { "Error -> ${createGarbageSpotState.error}" }
                             Text(
                                 text = createGarbageSpotState.error,
                                 color = MaterialTheme.colors.error,
@@ -675,30 +714,36 @@ fun SheetContent(
                     //todo redo, it bugs sometimes while placing the marker and changing name
                     //make createlocallixobutton available and assign the values inserted
                     if ((!(garbageSpot.value.latitude == "0.0" &&
-                                        garbageSpot.value.longitude == "0.0")) &&
-                        nomeGarbageSpotState.value.text.isNotEmpty() ){
+                                garbageSpot.value.longitude == "0.0")) &&
+                        nomeGarbageSpotState.value.text.isNotEmpty()
+                    ) {
                         garbageSpot.value.name = nomeGarbageSpotState.value.text
                         garbageSpot.value.status = selectedOptionText
 
                         createGarbageSpotButtonState.value = true
-                    }else{
+                    } else {
                         //error messages
                         createGarbageSpotButtonState.value = false
-                        if(garbageSpot.value.latitude == "0.0" &&
-                            garbageSpot.value.longitude == "0.0"){
-                            Text(textResource(R.string.txtPositionError),
+                        if (garbageSpot.value.latitude == "0.0" &&
+                            garbageSpot.value.longitude == "0.0"
+                        ) {
+                            Text(
+                                textResource(R.string.txtPositionError),
                                 color = MaterialTheme.colors.error,
                                 style = MaterialTheme.typography.caption,
                                 modifier = Modifier.padding(
-                                    start = dimensionResource(R.dimen.medium_spacer))
+                                    start = dimensionResource(R.dimen.medium_spacer)
+                                )
                             )
                         }
-                        if (nomeGarbageSpotState.value.text.isEmpty()){
-                            Text(textResource(R.string.txtGarbageSpotError),
+                        if (nomeGarbageSpotState.value.text.isEmpty()) {
+                            Text(
+                                textResource(R.string.txtGarbageSpotError),
                                 color = MaterialTheme.colors.error,
                                 style = MaterialTheme.typography.caption,
                                 modifier = Modifier.padding(
-                                    start = dimensionResource(R.dimen.medium_spacer))
+                                    start = dimensionResource(R.dimen.medium_spacer)
+                                )
                             )
                         }
 
@@ -708,27 +753,27 @@ fun SheetContent(
                 }
 
             }
-        }else{ // displays info on already existent local lixo
+        } else { // displays info on already existent local lixo
             Box(
                 modifier = Modifier.align(Alignment.TopCenter),
                 contentAlignment = Alignment.TopCenter
             ) {
-                    Column(Modifier.padding(28.dp)) {
-                        Text(garbageSpot.value.name)
-                        Text(garbageSpot.value.creator.toString())
-                    }
-                    Spacer(Modifier.height(32.dp))
-                    Column{
-                        DropDownMenuStatus(
-                            selectedStatus,
-                            selectedId,
-                            garbageSpot,
-                            updateGarbageSpot,
-                            bottomScaffoldState
-                        )
-                    }
-
+                Column(Modifier.padding(28.dp)) {
+                    Text(garbageSpot.value.name)
+                    Text(garbageSpot.value.creator.toString())
                 }
+                Spacer(Modifier.height(32.dp))
+                Column {
+                    DropDownMenuStatus(
+                        selectedStatus,
+                        selectedId,
+                        garbageSpot,
+                        updateGarbageSpot,
+                        bottomScaffoldState
+                    )
+                }
+
+            }
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -738,10 +783,14 @@ fun SheetContent(
             ) {
                 Button(
                     onClick = {
-                        garbageSpotViewModel.updateGarbageSpotEstado(garbageSpot.value.id,selectedStatus.value,authViewModel.tokenState.value)
+                        garbageSpotViewModel.updateGarbageSpotEstado(
+                            garbageSpot.value.id,
+                            selectedStatus.value,
+                            authViewModel.tokenState.value
+                        )
 
                         coroutineScope.launch {
-                             bottomScaffoldState.bottomSheetState.collapse()
+                            bottomScaffoldState.bottomSheetState.collapse()
 
                         }
 
@@ -806,10 +855,14 @@ private fun DropDownMenuStatus(
     //state of dropdownmenu
     var expanded by remember { mutableStateOf(false) }
     //available status for locallixo
-    val statusList = listOf(textResource(R.string.GarbageSpotStatusListElement1), textResource(R.string.GarbageSpotStatusListElement2), textResource(R.string.GarbageSpotStatusListElement3))
+    val statusList = listOf(
+        textResource(R.string.GarbageSpotStatusListElement1),
+        textResource(R.string.GarbageSpotStatusListElement2),
+        textResource(R.string.GarbageSpotStatusListElement3)
+    )
 
     //only change selected item if the id has also changed
-    if(!garbageSpot.value.id.equals(selectedId.value)){
+    if (!garbageSpot.value.id.equals(selectedId.value)) {
         //changes the current locallix
         selectedId.value = garbageSpot.value.id
         //changes status to be shown
@@ -862,7 +915,6 @@ private fun DropDownMenuStatus(
                 }
                 //update the dropmenu label to the clicked value
                 selectedStatus.value = statusList[index]
-
 
 
             }) {

@@ -21,7 +21,6 @@ import com.example.splmobile.services.messages.MessageService
 import com.example.splmobile.services.messages.MessageServiceImpl
 import com.example.splmobile.services.userInEvent.UserService
 import com.example.splmobile.services.userInEvent.UserServiceImpl
-import com.example.splmobile.websockets.MessageWebsocket
 
 import kotlinx.datetime.Clock
 import org.koin.core.KoinApplication

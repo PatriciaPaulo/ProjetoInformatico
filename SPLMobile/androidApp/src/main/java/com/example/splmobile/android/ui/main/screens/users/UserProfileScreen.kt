@@ -27,7 +27,7 @@ import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.users.UserDTO
-import com.example.splmobile.models.*
+import com.example.splmobile.viewmodels.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -64,70 +64,94 @@ fun UserProfileScreen(
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
-
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = innerPadding.calculateBottomPadding()),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally){
-                Column(modifier = Modifier
-                    .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                    when(userInfoState){
-
-                        is UserViewModel.UsersUIState.SuccessUser ->
-                        {
-                            log.d{"User info State -> Success"}
-                            ProfileSection(
-                                userInfoState.user,
-                                userViewModel,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .align(Alignment.CenterHorizontally),
-                                log
-                            )
-                        }
-                        is UserViewModel.UsersUIState.Loading -> CircularProgressIndicator()
-                        is UserViewModel.UsersUIState.Error -> Text(text = "Error getting user Info ")
-                    }
-                }
-            }
-            Column(modifier = Modifier
-                .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start) {
-
-                FriendRequestSection(friendRequestState, friendViewModel, userID, authViewModel)
-
-                when (friendsState) {
-                    is FriendViewModel.FriendsUIState.SuccessByUserID -> {
-
-                        Text(text = "Friends already")
-                    }
-                    is FriendViewModel.FriendsUIState.Error -> {
-                        Box(contentAlignment = Alignment.Center) {
-                            //todo button for friend request
-                            Button(onClick = {
-                                friendViewModel.sendFrendRequest(
-                                    userID!!.toLong(),
-                                    authViewModel.tokenState.value
-                                )
-
-                            }, shape = CutCornerShape(10)) {
-                                Text(text = textResource(R.string.btnAddFriend))
-                            }
-                        }
-                    }
-                    is FriendViewModel.FriendsUIState.Loading -> {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
+            UserStatsSection(innerPadding, userInfoState, log, userViewModel)
+            FriendSection(friendRequestState, friendViewModel, userID, authViewModel, friendsState)
 
         },
     )
+}
+
+@Composable
+private fun UserStatsSection(
+    innerPadding: PaddingValues,
+    userInfoState: UserViewModel.UsersUIState,
+    log: Logger,
+    userViewModel: UserViewModel
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = innerPadding.calculateBottomPadding()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            when (userInfoState) {
+
+                is UserViewModel.UsersUIState.SuccessUser -> {
+                    log.d { "User info State -> Success" }
+                    ProfileSection(
+                        userInfoState.user,
+                        userViewModel,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterHorizontally),
+                        log
+                    )
+                }
+                is UserViewModel.UsersUIState.Loading -> CircularProgressIndicator()
+                is UserViewModel.UsersUIState.Error -> Text(text = "Error getting user Info ")
+            }
+        }
+    }
+}
+
+@Composable
+private fun FriendSection(
+    friendRequestState: FriendViewModel.FriendRequestUIState,
+    friendViewModel: FriendViewModel,
+    userID: String?,
+    authViewModel: AuthViewModel,
+    friendsState: FriendViewModel.FriendsUIState
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start
+    ) {
+
+        FriendRequestSection(friendRequestState, friendViewModel, userID, authViewModel)
+
+        when (friendsState) {
+            is FriendViewModel.FriendsUIState.SuccessByUserID -> {
+
+                Text(text = "Friends already")
+            }
+            is FriendViewModel.FriendsUIState.Error -> {
+                Box(contentAlignment = Alignment.Center) {
+                    Button(onClick = {
+                        friendViewModel.sendFrendRequest(
+                            userID!!.toLong(),
+                            authViewModel.tokenState.value
+                        )
+
+                    }, shape = CutCornerShape(10)) {
+                        Text(text = textResource(R.string.btnAddFriend))
+                    }
+                }
+            }
+            is FriendViewModel.FriendsUIState.Loading -> {
+                CircularProgressIndicator()
+            }
+        }
+    }
 }
 
 @Composable

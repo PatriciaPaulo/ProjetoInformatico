@@ -41,11 +41,11 @@ import com.example.splmobile.dtos.equipments.EquipmentInEventDTO
 import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.GarbageSpotViewModel
-import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.viewmodels.AuthViewModel
+import com.example.splmobile.viewmodels.EventViewModel
+import com.example.splmobile.viewmodels.SharedViewModel
+import com.example.splmobile.viewmodels.GarbageSpotViewModel
+import com.example.splmobile.viewmodels.UserInfoViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap

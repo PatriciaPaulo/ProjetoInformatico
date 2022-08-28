@@ -1,4 +1,4 @@
-package com.example.splmobile.models
+package com.example.splmobile.viewmodels
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.events.EventDTO
@@ -7,7 +7,7 @@ import com.example.splmobile.dtos.messages.IndividualMessageRequest
 import com.example.splmobile.dtos.messages.MessageDTO
 import com.example.splmobile.dtos.myInfo.UserSerializable
 import com.example.splmobile.services.messages.MessageService
-import com.example.splmobile.websockets.MessageWebsocket
+import com.example.splmobile.services.websockets.MessageWebsocket
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

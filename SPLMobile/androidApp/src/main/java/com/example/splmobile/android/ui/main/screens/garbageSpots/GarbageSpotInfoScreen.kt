@@ -1,7 +1,6 @@
 package com.example.splmobile.android.ui.main.screens.garbageSpots
 
 
-
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,10 +18,9 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.GarbageSpotViewModel
-import com.example.splmobile.models.UserInfoViewModel
-import com.example.splmobile.models.UserViewModel
+import com.example.splmobile.viewmodels.AuthViewModel
+import com.example.splmobile.viewmodels.GarbageSpotViewModel
+import com.example.splmobile.viewmodels.UserViewModel
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -39,34 +37,74 @@ fun GarbageSpotInfoScreen(
     LaunchedEffect(Unit) {
 
         //garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
-        garbageSpotViewModel.getGarbageSpotById(garbageSpotId!!.toLong(),authViewModel.tokenState.value)
+        garbageSpotViewModel.getGarbageSpotById(
+            garbageSpotId!!.toLong(),
+            authViewModel.tokenState.value
+        )
 
 
     }
-    val garbageSpotByIdState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
+
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
-        when (garbageSpotByIdState) {
-            is GarbageSpotViewModel.GarbageSpotsUIState.GarbageSpotByIdSuccess -> {
-
-                userViewModel.getUserStats(garbageSpotByIdState.garbageSpot.creator,authViewModel.tokenState.value)
-                GarbageSpotComponent(
-                    innerPadding,
-                    garbageSpotId,
-                    garbageSpotByIdState,
-                    userViewModel,
-                    garbageSpotViewModel,
-                    authViewModel
-                )
 
 
-            }
-        }
+        GarbageSpotInfoUI(
+            garbageSpotViewModel,
+            userViewModel,
+            authViewModel,
+            innerPadding,
+            garbageSpotId
+        )
 
     }
 
+
+}
+
+@Composable
+private fun GarbageSpotInfoUI(
+    garbageSpotViewModel: GarbageSpotViewModel,
+    userViewModel: UserViewModel,
+    authViewModel: AuthViewModel,
+    innerPadding: PaddingValues,
+    garbageSpotId: String?
+) {
+    when (val garbageSpotByIdState =
+        garbageSpotViewModel.garbageSpotsUIState.collectAsState().value) {
+        is GarbageSpotViewModel.GarbageSpotsUIState.GarbageSpotByIdSuccess -> {
+
+            CreatorSection(userViewModel, garbageSpotByIdState, authViewModel)
+
+
+            GarbageSpotComponent(
+                innerPadding,
+                garbageSpotId,
+                garbageSpotByIdState,
+                userViewModel,
+                garbageSpotViewModel,
+                authViewModel
+            )
+
+
+
+        }
+    }
+    ResponseState(garbageSpotViewModel, authViewModel, garbageSpotId)
+}
+
+@Composable
+private fun CreatorSection(
+    userViewModel: UserViewModel,
+    garbageSpotByIdState: GarbageSpotViewModel.GarbageSpotsUIState.GarbageSpotByIdSuccess,
+    authViewModel: AuthViewModel
+) {
+    userViewModel.getUserStats(
+        garbageSpotByIdState.garbageSpot.creator,
+        authViewModel.tokenState.value
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -79,7 +117,12 @@ private fun GarbageSpotComponent(
     garbageSpotViewModel: GarbageSpotViewModel,
     authViewModel: AuthViewModel
 ) {
-    val statusListEvent = listOf( textResource(R.string.GarbageSpotStatusListElement1),textResource(R.string.GarbageSpotStatusListElement2),textResource(R.string.GarbageSpotStatusListElement3))
+
+    val statusListEvent = listOf(
+        textResource(R.string.GarbageSpotStatusListElement1),
+        textResource(R.string.GarbageSpotStatusListElement2),
+        textResource(R.string.GarbageSpotStatusListElement3)
+    )
     val creatorState = userViewModel.usersUIState.collectAsState().value
     Column(
         modifier = Modifier
@@ -97,7 +140,7 @@ private fun GarbageSpotComponent(
             fontSize = 20.sp
         )
 
-        if(garbageSpotByIdState.garbageSpot.approved){
+        if (garbageSpotByIdState.garbageSpot.approved) {
             Text(
                 text = "Aprovado",
                 fontWeight = FontWeight.Bold,
@@ -106,7 +149,7 @@ private fun GarbageSpotComponent(
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp
             )
-        }else{
+        } else {
             Text(
                 text = "Não aprovado",
                 fontWeight = FontWeight.Bold,
@@ -116,28 +159,28 @@ private fun GarbageSpotComponent(
                 fontSize = 20.sp
             )
         }
-       when(creatorState){
-           is UserViewModel.UsersUIState.SuccessUser->{
-               Text(
-                   text = "Criado por ${creatorState.user.username}",
-                   fontWeight = FontWeight.Bold,
-                   color = Color.White,
-                   modifier = Modifier.align(Alignment.CenterHorizontally),
-                   textAlign = TextAlign.Center,
-                   fontSize = 20.sp
-               )
-           }
-           is UserViewModel.UsersUIState.Error->{
-               Text(
-                   text = "Criado por ${garbageSpotByIdState.garbageSpot.creator}",
-                   fontWeight = FontWeight.Bold,
-                   color = Color.White,
-                   modifier = Modifier.align(Alignment.CenterHorizontally),
-                   textAlign = TextAlign.Center,
-                   fontSize = 20.sp
-               )
-           }
-       }
+        when (creatorState) {
+            is UserViewModel.UsersUIState.SuccessUser -> {
+                Text(
+                    text = "Criado por ${creatorState.user.username}",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp
+                )
+            }
+            is UserViewModel.UsersUIState.Error -> {
+                Text(
+                    text = "Criado por ${garbageSpotByIdState.garbageSpot.creator}",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp
+                )
+            }
+        }
         Text(
             text = "${garbageSpotByIdState.garbageSpot.createdDate}",
             color = Color.White,
@@ -162,7 +205,7 @@ private fun GarbageSpotComponent(
                     readOnly = true,
                     value = selectedOptionText,
                     onValueChange = { },
-                    label = { Text(textResource(R.string.lblEventParticipateStatus).toString()) },
+                    label = { Text(textResource(R.string.lblEventParticipateStatus)) },
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(
                             expanded = expanded
@@ -197,21 +240,19 @@ private fun GarbageSpotComponent(
             authViewModel,
             statusState
         )
-
-        ResponseState(garbageSpotViewModel, garbageSpotByIdState, selectedOptionText)
-
     }
+
 }
 
 @Composable
 private fun ResponseState(
     garbageSpotViewModel: GarbageSpotViewModel,
-    garbageSpotByIdState: GarbageSpotViewModel.GarbageSpotsUIState.GarbageSpotByIdSuccess,
-    selectedOptionText: String
-) {
+    authViewModel: AuthViewModel,
+    garbageSpotId: String?,
+    ) {
     when (garbageSpotViewModel.garbageSpotUpdateUIState.collectAsState().value) {
         is GarbageSpotViewModel.GarbageSpotUpdateUIState.Success -> {
-
+            garbageSpotViewModel.getGarbageSpotById(garbageSpotId!!.toLong(),authViewModel.tokenState.value)
             Text(textResource(id = R.string.txtGarbageSpotStatusUpdateSuccess))
         }
     }

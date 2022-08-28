@@ -35,7 +35,7 @@ import com.example.splmobile.dtos.equipments.EquipmentInEventDTO
 import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
-import com.example.splmobile.models.*
+import com.example.splmobile.viewmodels.*
 import com.google.android.gms.maps.model.LatLng
 import io.ktor.server.util.*
 import io.ktor.util.*

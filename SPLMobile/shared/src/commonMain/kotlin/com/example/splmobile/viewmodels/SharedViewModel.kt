@@ -1,9 +1,7 @@
-package com.example.splmobile.models
+package com.example.splmobile.viewmodels
 
 import co.touchlab.kermit.Logger
 
-import com.example.splmobile.dtos.auth.LoginRequest
-import com.example.splmobile.dtos.auth.LoginResponse
 import com.example.splmobile.services.other.requestsAPI
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow

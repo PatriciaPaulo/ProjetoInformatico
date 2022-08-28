@@ -33,7 +33,7 @@ import com.example.splmobile.android.ui.navigation.SetupNavGraph
 import com.example.splmobile.android.ui.theme.SPLTheme
 import com.example.splmobile.android.viewmodel.*
 import com.example.splmobile.injectLogger
-import com.example.splmobile.models.*
+import com.example.splmobile.viewmodels.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel

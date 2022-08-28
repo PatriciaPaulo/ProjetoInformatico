@@ -1,6 +1,6 @@
 package com.example.splmobile.android.ui.main.screens.users
 
-import MapAppBar
+import AppBar
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -24,7 +24,7 @@ import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.dtos.users.FriendDTO
 import com.example.splmobile.dtos.users.UserDTO
-import com.example.splmobile.models.*
+import com.example.splmobile.viewmodels.*
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -64,7 +64,7 @@ fun FriendsListScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            MapAppBar(
+            AppBar(
                 title = textResource(R.string.lblMyFriends).toString(),
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState,

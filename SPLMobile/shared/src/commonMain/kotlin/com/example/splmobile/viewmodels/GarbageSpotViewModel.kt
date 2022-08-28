@@ -1,4 +1,4 @@
-package com.example.splmobile.models
+package com.example.splmobile.viewmodels
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO

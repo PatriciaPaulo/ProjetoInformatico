@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -27,7 +26,7 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.events.UserInEventDTO
-import com.example.splmobile.models.*
+import com.example.splmobile.viewmodels.*
 
 
 @OptIn(ExperimentalMaterialApi::class)

@@ -1,6 +1,6 @@
 package com.example.splmobile.android.ui.main.screens
 
-import MapAppBar
+import AppBar
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
@@ -31,11 +31,10 @@ import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.myInfo.LocationDetails
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.GarbageSpotViewModel
-import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.viewmodels.AuthViewModel
+import com.example.splmobile.viewmodels.EventViewModel
+import com.example.splmobile.viewmodels.GarbageSpotViewModel
+import com.example.splmobile.viewmodels.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.maps.model.LatLng
 
@@ -77,107 +76,129 @@ fun CommunityScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            MapAppBar(
-                title = textResource(R.string.lblCommunitySearchBar).toString(),
-                searchWidgetState = searchWidgetState,
-                searchTextState = searchTextState,
-                onTextChange = {
-                    mainViewModel.updateSearchTextState(newValue = it)
-                },
-                onCloseClicked = {
-                    mainViewModel.updateSearchTextState(newValue = "")
-                    mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
-
-                },
-                onSearchClicked = {
-
-                },
-                onSearchTriggered = {
-                    mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
-
-                }
-            )
+            CommunityAppBar(searchWidgetState, searchTextState, mainViewModel)
         },
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
-        { innerPadding ->
-
-
-            var buttonScreenState = remember{ mutableStateOf(R.string.btnCommunity)}
-
-            Column(modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment =  Alignment.CenterHorizontally) {
-                // Apply the padding globally
-                Spacer(modifier = Modifier.height(32.dp))
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment =  Alignment.CenterVertically
-
-                ){
-                    Button(
-                        onClick = {
-                            buttonScreenState.value = R.string.btnCommunity
-                        },
-                        modifier = Modifier.align(Alignment.CenterVertically),
-
-                        ) {
-                        Text(text = textResource(R.string.btnCommunity).toString())
-                    }
-                    Button(
-                        onClick = {
-                            buttonScreenState.value = R.string.btnFriends
-                        },
-                        modifier = Modifier.align(Alignment.CenterVertically))  {
-                        Text(text = textResource(R.string.btnFriends).toString())
-                    }
-
-
-                }
-
-                if(buttonScreenState.value.equals(R.string.btnCommunity)){
-
-                    //events near me section
-                    when(eventsListState){
-                        is EventViewModel.EventsUIState.Success -> {
-                            EventsNearMeSection(navController,eventsListState.events, mapViewModel,log)
-                        }
-                        is EventViewModel.EventsUIState.Error -> {
-                            Text(text = "${eventsListState.error}")
-                        }
-                    }
-
-
-
-
-                    //create event section
-                    CreateEventSection(navController,log)
-
-                    when(garbageSpotsListState){
-                        is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
-                            log.d{"get garbage spots state -> success"}
-                            //garbagespotsnearme section
-                            GarbageSpotsNearMe(navController,garbageSpotsListState.garbageSpots,mapViewModel,log)
-                        }
-                        is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
-                            log.d{"get garbage spots state -> Error"}
-                            log.d{"Error -> ${garbageSpotsListState.error}"}
-                            Text(text = "${garbageSpotsListState.error}")
-                        }
-                    }
-
-                }
-                if(buttonScreenState.value.equals(R.string.btnFriends)){
-                    Text("friends screen")
-                }
-            }
-
-
-
+        {
+            CommunityUI(eventsListState, navController, mapViewModel, log, garbageSpotsListState)
         },
 
         )
 
+}
+
+@Composable
+private fun CommunityAppBar(
+    searchWidgetState: SearchWidgetState,
+    searchTextState: String,
+    mainViewModel: MainViewModel
+) {
+    AppBar(
+        title = textResource(R.string.lblCommunitySearchBar).toString(),
+        searchWidgetState = searchWidgetState,
+        searchTextState = searchTextState,
+        onTextChange = {
+            mainViewModel.updateSearchTextState(newValue = it)
+        },
+        onCloseClicked = {
+            mainViewModel.updateSearchTextState(newValue = "")
+            mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
+
+        },
+        onSearchClicked = {
+
+        },
+        onSearchTriggered = {
+            mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
+
+        }
+    )
+}
+
+@Composable
+private fun CommunityUI(
+    eventsListState: EventViewModel.EventsUIState,
+    navController: NavHostController,
+    mapViewModel: MapViewModel,
+    log: Logger,
+    garbageSpotsListState: GarbageSpotViewModel.GarbageSpotsUIState
+) {
+    var buttonScreenState = remember { mutableStateOf(R.string.btnCommunity) }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Apply the padding globally
+        Spacer(modifier = Modifier.height(32.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+
+        ) {
+            Button(
+                onClick = {
+                    buttonScreenState.value = R.string.btnCommunity
+                },
+                modifier = Modifier.align(Alignment.CenterVertically),
+
+                ) {
+                Text(text = textResource(R.string.btnCommunity).toString())
+            }
+            Button(
+                onClick = {
+                    buttonScreenState.value = R.string.btnFriends
+                },
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
+                Text(text = textResource(R.string.btnFriends).toString())
+            }
+
+
+        }
+
+        if (buttonScreenState.value.equals(R.string.btnCommunity)) {
+
+            //events near me section
+            when (eventsListState) {
+                is EventViewModel.EventsUIState.Success -> {
+                    EventsNearMeSection(navController, eventsListState.events, mapViewModel, log)
+                }
+                is EventViewModel.EventsUIState.Error -> {
+                    Text(text = "${eventsListState.error}")
+                }
+            }
+
+
+            //create event section
+            CreateEventSection(navController, log)
+
+            when (garbageSpotsListState) {
+                is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
+                    log.d { "get garbage spots state -> success" }
+                    //garbagespotsnearme section
+                    GarbageSpotsNearMe(
+                        navController,
+                        garbageSpotsListState.garbageSpots,
+                        mapViewModel,
+                        log
+                    )
+                }
+                is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
+                    log.d { "get garbage spots state -> Error" }
+                    log.d { "Error -> ${garbageSpotsListState.error}" }
+                    Text(text = "${garbageSpotsListState.error}")
+                }
+            }
+
+        }
+        if (buttonScreenState.value.equals(R.string.btnFriends)) {
+            Text("friends screen")
+        }
+    }
 }
 
 @Composable

@@ -1,7 +1,6 @@
 package com.example.splmobile.android.ui.main.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
@@ -10,14 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.navigation.NavController
-import com.example.splmobile.android.ui.camera.CameraView
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.dtos.activities.CreateActivitySerializable
-import com.example.splmobile.models.ActivityViewModel
-import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.viewmodels.ActivityViewModel
+import com.example.splmobile.viewmodels.AuthViewModel
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

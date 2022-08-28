@@ -1,38 +1,28 @@
 package com.example.splmobile.android.ui.main.screens.users
 
 import DefaultAppBar
-import MapAppBar
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
-import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
-import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.messages.EventMessageRequest
 import com.example.splmobile.dtos.messages.IndividualMessageRequest
 import com.example.splmobile.dtos.messages.MessageDTO
-import com.example.splmobile.models.*
+import com.example.splmobile.viewmodels.*
 import kotlinx.coroutines.launch
 
 
@@ -76,7 +66,7 @@ fun ChatUserScreen (navController : NavController,
                     .fillMaxWidth()
             ) {
 
-                NotificationState(messageViewModel, userID, authViewModel)
+                NotificationState(messageViewModel, friendshipID, authViewModel)
 
                 MessagesSection(messageViewModel,userInfoViewModel)
 
@@ -169,7 +159,7 @@ private fun SendMessageState(
 @Composable
 private fun NotificationState(
     messageViewModel: MessageViewModel,
-    userID: String?,
+    friendshipID: String?,
     authViewModel: AuthViewModel
 ) {
     when (val notificationState = messageViewModel.notiReceivedUIState.collectAsState().value) {
@@ -177,7 +167,7 @@ private fun NotificationState(
             //Text("Notification received from ${notificationState}")
 
             messageViewModel.getMessages(
-                userID!!.toLong(),
+                friendshipID!!.toLong(),
                 authViewModel.tokenState.value
             )
 

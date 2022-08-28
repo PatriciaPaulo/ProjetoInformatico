@@ -25,7 +25,7 @@ import com.example.splmobile.android.ui.main.screens.activities.OngoingActivity
 import com.example.splmobile.android.ui.main.screens.events.*
 import com.example.splmobile.android.ui.main.screens.users.*
 import com.example.splmobile.android.viewmodel.*
-import com.example.splmobile.models.*
+import com.example.splmobile.viewmodels.*
 
 import com.google.accompanist.pager.ExperimentalPagerApi
 
@@ -69,7 +69,8 @@ fun SetupNavGraph(
                 messageViewModel = messageViewModel)
         }
         composable(route = Screen.Register.route) {
-            RegisterScreen(navController = navController, authViewModel = authViewModel)
+            RegisterScreen(navController = navController,
+                authViewModel = authViewModel)
         }
         composable(route = Screen.RecoverPassword.route) {
             RecoverPasswordScreen()
@@ -118,14 +119,22 @@ fun SetupNavGraph(
                 eventViewModel = eventViewModel)
         }
         composable(BottomNavItem.Profile.route) {
-            ProfileScreen(navController =navController,
-                mainViewModel = mainViewModel,
-                userInfoViewModel = userInfoViewModel,
-                authViewModel = authViewModel,
-                sharedViewModel = sharedViewModel,
-                activityViewModel = activityViewModel,
-                log = log)
+            if(authViewModel.tokenState.value == "0") {
+                GuestScreen(navController =navController,
+                    authViewModel = authViewModel,
+                    userInfoViewModel = userInfoViewModel,)
+            }else{
+                ProfileScreen(navController =navController,
+                    mainViewModel = mainViewModel,
+                    userInfoViewModel = userInfoViewModel,
+                    authViewModel = authViewModel,
+                    sharedViewModel = sharedViewModel,
+                    activityViewModel = activityViewModel,
+                    log = log)
+            }
+
         }
+
         composable(Screen.CreateEvent.route) {
             CreateEventScreen(navController = navController,
                 mainViewModel = mainViewModel,

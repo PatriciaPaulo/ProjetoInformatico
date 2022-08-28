@@ -1,11 +1,10 @@
-package com.example.splmobile.models
+package com.example.splmobile.viewmodels
 
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.equipments.EquipmentDTO
 import com.example.splmobile.dtos.equipments.EquipmentInEventDTO
 import com.example.splmobile.dtos.events.EventDTO
 import com.example.splmobile.dtos.events.EventRequest
-import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
 import com.example.splmobile.services.events.EventService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
