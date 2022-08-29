@@ -37,7 +37,7 @@ fun SetupNavGraph(
     startDestination: String,
     log: Logger,
     mainViewModel: MainViewModel,
-    authViewModel:AuthViewModel,
+    authViewModel: AuthViewModel,
     garbageSpotViewModel: GarbageSpotViewModel,
     userInfoViewModel: UserInfoViewModel,
     eventViewModel: EventViewModel,
@@ -48,7 +48,7 @@ fun SetupNavGraph(
     messageViewModel: MessageViewModel,
     sharedViewModel: SharedViewModel,
     cameraViewModel: CameraViewModel,
-){
+) {
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -57,27 +57,34 @@ fun SetupNavGraph(
             OnboardingScreen(navController = navController)
         }
         composable(route = Screen.Authentication.route) {
-            AuthenticationScreen(navController = navController,
-                authViewModel = authViewModel,
-                userInfoViewModel =userInfoViewModel,
-                messageViewModel = messageViewModel)
-        }
-        composable(route = Screen.Login.route) {
-            LoginScreen(navController = navController,
+            AuthenticationScreen(
+                navController = navController,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
-                messageViewModel = messageViewModel)
+                messageViewModel = messageViewModel
+            )
+        }
+        composable(route = Screen.Login.route) {
+            LoginScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
+                messageViewModel = messageViewModel
+            )
         }
         composable(route = Screen.Register.route) {
-            RegisterScreen(navController = navController,
-                authViewModel = authViewModel)
+            RegisterScreen(
+                navController = navController,
+                authViewModel = authViewModel
+            )
         }
         composable(route = Screen.RecoverPassword.route) {
             RecoverPasswordScreen()
         }
 
         composable(BottomNavItem.Home.route) {
-            HomeScreen(navController = navController,
+            HomeScreen(
+                navController = navController,
                 authViewModel = authViewModel,
                 activityViewModel = activityViewModel,
                 mapViewModel = mapViewModel,
@@ -92,163 +99,213 @@ fun SetupNavGraph(
             )
         }
         composable(BottomNavItem.Map.route) {
-            MapScreen(navController =navController,
+            MapScreen(
+                navController = navController,
                 mainViewModel = mainViewModel,
                 garbageSpotViewModel = garbageSpotViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 sharedViewModel = sharedViewModel,
-                log = log)
+                log = log
+            )
         }
         composable(BottomNavItem.Community.route) {
-            CommunityScreen(navController = navController,
-                mainViewModel = mainViewModel,
-                garbageSpotViewModel = garbageSpotViewModel,
-                authViewModel = authViewModel,
-                userInfoViewModel = userInfoViewModel,
-                eventViewModel = eventViewModel,
-                mapViewModel =mapViewModel,
-                log = log)
+            if (authViewModel.tokenState.value == "0") {
+                GuestScreen(
+                    navController = navController,
+                    authViewModel = authViewModel,
+                    userInfoViewModel = userInfoViewModel,
+                )
+            } else {
+                CommunityScreen(
+                    navController = navController,
+                    mainViewModel = mainViewModel,
+                    garbageSpotViewModel = garbageSpotViewModel,
+                    authViewModel = authViewModel,
+                    userInfoViewModel = userInfoViewModel,
+                    eventViewModel = eventViewModel,
+                    mapViewModel = mapViewModel,
+                    log = log
+                )
+            }
         }
         composable(BottomNavItem.Chat.route) {
-            ChatScreen(navController = navController,
-                messageViewModel = messageViewModel,
-                friendViewModel = friendViewModel,
-                authViewModel = authViewModel,
-                userInfoViewModel = userInfoViewModel,
-                eventViewModel = eventViewModel)
+            if (authViewModel.tokenState.value == "0") {
+                GuestScreen(
+                    navController = navController,
+                    authViewModel = authViewModel,
+                    userInfoViewModel = userInfoViewModel,
+                )
+            } else {
+                ChatScreen(
+                    navController = navController,
+                    messageViewModel = messageViewModel,
+                    friendViewModel = friendViewModel,
+                    authViewModel = authViewModel,
+                    userInfoViewModel = userInfoViewModel,
+                    eventViewModel = eventViewModel
+                )
+            }
         }
         composable(BottomNavItem.Profile.route) {
-            if(authViewModel.tokenState.value == "0") {
-                GuestScreen(navController =navController,
+            if (authViewModel.tokenState.value == "0") {
+                GuestScreen(
+                    navController = navController,
                     authViewModel = authViewModel,
-                    userInfoViewModel = userInfoViewModel,)
-            }else{
-                ProfileScreen(navController =navController,
+                    userInfoViewModel = userInfoViewModel,
+                )
+            } else {
+                ProfileScreen(
+                    navController = navController,
                     mainViewModel = mainViewModel,
                     userInfoViewModel = userInfoViewModel,
                     authViewModel = authViewModel,
                     sharedViewModel = sharedViewModel,
                     activityViewModel = activityViewModel,
-                    log = log)
+                    log = log
+                )
             }
 
         }
 
         composable(Screen.CreateEvent.route) {
-            CreateEventScreen(navController = navController,
+            CreateEventScreen(
+                navController = navController,
                 mainViewModel = mainViewModel,
                 garbageSpotViewModel = garbageSpotViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 eventViewModel = eventViewModel,
                 sharedViewModel = sharedViewModel,
-                log = log)
+                log = log
+            )
 
         }
-        composable(Screen.EventInfo.route+"/{eventId}") { backStackEntry ->
-            EventInfoScreen(navController = navController,
+        composable(Screen.EventInfo.route + "/{eventId}") { backStackEntry ->
+            EventInfoScreen(
+                navController = navController,
                 eventViewModel = eventViewModel,
                 garbageSpotViewModel = garbageSpotViewModel,
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 backStackEntry.arguments?.getString("eventId"),
-                log = log)
+                log = log
+            )
 
         }
-        composable(Screen.EventEdit.route+"/{eventId}") { backStackEntry ->
-            EventEditScreen(navController = navController,
+        composable(Screen.EventEdit.route + "/{eventId}") { backStackEntry ->
+            EventEditScreen(
+                navController = navController,
                 eventViewModel = eventViewModel,
                 garbageSpotViewModel = garbageSpotViewModel,
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 backStackEntry.arguments?.getString("eventId"),
-                log = log)
+                log = log
+            )
 
         }
-        composable(Screen.GarbageSpotInfo.route+"/{garbageSpotId}") { backStackEntry ->
-            GarbageSpotInfoScreen(navController = navController,
+        composable(Screen.GarbageSpotInfo.route + "/{garbageSpotId}") { backStackEntry ->
+            GarbageSpotInfoScreen(
+                navController = navController,
                 garbageSpotViewModel = garbageSpotViewModel,
                 authViewModel = authViewModel,
                 userViewModel = userViewModel,
                 backStackEntry.arguments?.getString("garbageSpotId"),
-                log = log)
+                log = log
+            )
 
         }
         composable(Screen.EventList.route) {
-            EventListScreen(navController = navController,
+            EventListScreen(
+                navController = navController,
                 eventViewModel = eventViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 mainViewModel = mainViewModel,
-                log = log)
+                log = log
+            )
 
         }
         composable(Screen.MyEventList.route) {
-            MyEventListScreen(navController = navController,
+            MyEventListScreen(
+                navController = navController,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 mainViewModel = mainViewModel,
-                log = log)
+                log = log
+            )
 
         }
         composable(Screen.GarbageSpotList.route) {
-            GarbageSpotsListScreen(navController = navController,
+            GarbageSpotsListScreen(
+                navController = navController,
                 garbageSpotViewModel = garbageSpotViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 mainViewModel = mainViewModel,
-                log = log)
+                log = log
+            )
 
         }
-        composable(Screen.UsersInEventList.route+"/{eventID}") {backStackEntry ->
-            UsersInEventListScreen(navController = navController,
+        composable(Screen.UsersInEventList.route + "/{eventID}") { backStackEntry ->
+            UsersInEventListScreen(
+                navController = navController,
                 eventViewModel = eventViewModel,
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 mainViewModel = mainViewModel,
                 backStackEntry.arguments?.getString("eventID"),
-                log = log)
+                log = log
+            )
 
         }
-        composable(Screen.UserProfile.route+"/{userID}") {backStackEntry ->
-            UserProfileScreen(navController =navController,
+        composable(Screen.UserProfile.route + "/{userID}") { backStackEntry ->
+            UserProfileScreen(
+                navController = navController,
                 mainViewModel = mainViewModel,
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 friendViewModel = friendViewModel,
                 backStackEntry.arguments?.getString("userID"),
-                log = log)
+                log = log
+            )
         }
         composable(Screen.FriendsList.route) {
-            FriendsListScreen(navController =navController,
+            FriendsListScreen(
+                navController = navController,
                 mainViewModel = mainViewModel,
                 userViewModel = userViewModel,
                 authViewModel = authViewModel,
                 friendViewModel = friendViewModel,
                 userInfoViewModel = userInfoViewModel,
-                log = log)
+                log = log
+            )
         }
-        composable(Screen.ChatUser.route+"/{userID}/{friendshipID}") { backStackEntry->
-            ChatUserScreen(navController = navController,
+        composable(Screen.ChatUser.route + "/{userID}/{friendshipID}") { backStackEntry ->
+            ChatUserScreen(
+                navController = navController,
                 backStackEntry.arguments?.getString("userID"),
                 backStackEntry.arguments?.getString("friendshipID"),
                 messageViewModel = messageViewModel,
                 userInfoViewModel = userInfoViewModel,
                 authViewModel = authViewModel,
-                userViewModel=userViewModel)
+                userViewModel = userViewModel
+            )
         }
-        composable(Screen.ChatEvent.route+"/{eventID}") { backStackEntry->
-            ChatEventScreen(navController = navController,
+        composable(Screen.ChatEvent.route + "/{eventID}") { backStackEntry ->
+            ChatEventScreen(
+                navController = navController,
                 backStackEntry.arguments?.getString("eventID"),
                 messageViewModel = messageViewModel,
                 userInfoViewModel = userInfoViewModel,
                 authViewModel = authViewModel,
-                userViewModel=userViewModel,
-                eventViewModel = eventViewModel)
+                userViewModel = userViewModel,
+                eventViewModel = eventViewModel
+            )
         }
 
         composable(Screen.Camera.route) {
