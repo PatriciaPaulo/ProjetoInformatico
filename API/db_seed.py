@@ -237,20 +237,20 @@ if __name__ == '__main__':
 
     session.query(UserInEvent).delete()
 
-    for i in range(3):
-        event = session.query(Event).order_by(func.random()).first()
-        # status2 = ["Confirmado", "Não Confirmado", "Inscrito"]
 
-        userInEvent = UserInEvent(userID=1, eventID=event.id, status="Organizer", creator=True, enteringDate=datetime.utcnow())
-        session.add(userInEvent)
 
+    userInEvent = UserInEvent(userID=1, eventID=1, status="Organizer", creator=True, enteringDate=datetime.utcnow())
+    session.add(userInEvent)
+    userInEvent = UserInEvent(userID=1, eventID=2, status="Organizer", creator=True, enteringDate=datetime.utcnow())
+    session.add(userInEvent)
+
+    user = session.query(User).filter_by(admin=False).all()
+    event = session.query(Event).all()
     for i in range(6):
 
-        user = session.query(User).filter_by(admin=False).order_by(func.random()).first()
-        event = session.query(Event).order_by(func.random()).first()
         status2 = ["Confirmado", "Inscrito", "Não Confirmado"]
 
-        userInEvent = UserInEvent(userID=user.id, eventID=event.id, status=random.choice(status2), creator=False, enteringDate=datetime.utcnow())
+        userInEvent = UserInEvent(userID=random.choice(user).id, eventID=random.choice(event).id, status=random.choice(status2), creator=False, enteringDate=datetime.utcnow())
         session.add(userInEvent)
 
     print("---UserInEvent seed done!")

@@ -47,44 +47,53 @@ async def handler(websocket):
     print(users_event_channel)
     # save user in event
 
-    """
-    #check if theres messages not received
-    individualMessages = session.query(IndividualMessage).filter_by(receiverID=current_user.id).all()
+    # check if theres messages not received
 
+    individualMessages = session.query(IndividualMessage).filter_by(receiverID=current_user.id).all()
 
     for individualMessage in individualMessages:
         message = session.query(Message).filter_by(id=individualMessage.messageID).first()
         if message.status == "Sent":
-            send_notification(current_user.id, message)
+            send_notification_user(current_user.id, message)
 
+    for eventuser in eventsuser:
+        messages = session.query(EventMessage).filter_by(eventID=eventuser.eventID).all()
 
-    messages = session.query(EventMessage).filter_by(receiverID=current_user.id).all()
+        for eveMessage in messages:
+            message = session.query(Message).filter_by(id=eveMessage.messageID).first()
+            if message.status == "Sent":
+                send_notification_event(eventuser.eventID, message, current_user)
 
-    for eveMessage in messages:
-        message = session.query(Message).filter_by(id=eveMessage.messageID).first()
-        if message.status == "Sent":
-            send_notification(current_user.id, message)
-
-"""
     print(f"{current_user.username} connected")
-    #receives comfirmation that the notification was received by the user
-    while True:
-        messageID = await websocket.recv()
 
-        print(messageID)
-        message = session.query(Message).filter_by(id=messageID).first()
+    # receives comfirmation that the notification was received by the user
+    try:
+        while True:
 
-        if message:
-            message.status = "Received"
-            messageInd = session.query(IndividualMessage).filter_by(messageID=messageID).first()
-            if messageInd:
-                messageInd.deliveryDate = datetime.datetime.now()
+            messageID = await websocket.recv()
 
-            messageEv = session.query(EventMessage).filter_by(messageID=messageID).first()
-            if messageEv:
-                messageEv.deliveryDate = datetime.datetime.now()
+            print(messageID)
+            message = session.query(Message).filter_by(id=messageID).first()
 
-        session.commit()
+            if message:
+                message.status = "Received"
+                messageInd = session.query(IndividualMessage).filter_by(messageID=messageID).first()
+                if messageInd:
+                    messageInd.deliveryDate = datetime.datetime.now()
+
+                messageEv = session.query(EventMessage).filter_by(messageID=messageID).first()
+                if messageEv:
+                    messageEv.deliveryDate = datetime.datetime.now()
+
+            session.commit()
+    except:
+        print(f"{current_user.username} disconnected")
+        if current_user.id in users_connected:
+            del users_connected[current_user.id]
+
+        for eventuser in eventsuser:
+            if current_user.id in users_event_channel[eventuser.eventID]:
+                users_event_channel[eventuser.eventID].remove(current_user.id)
 
 
 async def main():

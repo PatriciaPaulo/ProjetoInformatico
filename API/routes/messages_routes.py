@@ -43,11 +43,6 @@ def send_message(current_user):
 
         db.session.flush()
 
-        message = Message(senderID=current_user.id, message=data['message'], status="Sent", type=data['type'],
-                          sentDate=datetime.utcnow())
-        db.session.add(message)
-
-        db.session.flush()
 
         messageInd = IndividualMessage(receiverID=data["userID"], messageID=message.id)
         db.session.add(messageInd)
