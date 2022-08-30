@@ -49,7 +49,8 @@ fun GarbageSpotsListScreen(
     LaunchedEffect(Unit) {
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
     }
-    var garbageSpotsListState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
+
+
     //search bar states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
@@ -59,7 +60,7 @@ fun GarbageSpotsListScreen(
         scaffoldState = scaffoldState,
         topBar = {
             AppBar(
-                title = textResource(R.string.lblEventListSearchBar).toString(),
+                title = textResource(R.string.lblEventListSearchBar),
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState,
                 onTextChange = {
@@ -71,10 +72,7 @@ fun GarbageSpotsListScreen(
 
                 },
                 onSearchClicked = {
-                    coroutineScope.launch {
-                        //todo
 
-                    }
                 },
                 onSearchTriggered = {
                     mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
@@ -85,8 +83,8 @@ fun GarbageSpotsListScreen(
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
-
-            Text(text = textResource(id = R.string.txtGarbageSpotsList).toString(),
+            var garbageSpotsListState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
+            Text(text = textResource(id = R.string.txtGarbageSpotsList),
                 style = MaterialTheme.typography.h4)
             when(garbageSpotsListState){
                 is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
@@ -104,7 +102,7 @@ fun GarbageSpotsListScreen(
                 is  GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
                     log.d{"Get garbage spots state -> Error"}
                     Text(
-                        text = textResource(R.string.txtGarbageSpotError).toString() ,
+                        text = textResource(R.string.txtGarbageSpotError) ,
                         color = MaterialTheme.colors.primary,
                         style = MaterialTheme.typography.caption,
                         modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))

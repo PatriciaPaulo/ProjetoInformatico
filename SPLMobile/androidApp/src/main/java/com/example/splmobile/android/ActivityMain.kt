@@ -56,6 +56,7 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     @Inject
     lateinit var splashViewModel: SplashViewModel
     private val log: Logger by injectLogger("MainActivity")
+    //koin models
     private val garbageSpotViewModel: GarbageSpotViewModel by viewModel()
     private val sharedViewModel: SharedViewModel by viewModel()
     private val authViewModel: AuthViewModel by viewModel()
@@ -65,6 +66,7 @@ class ActivityMain : ComponentActivity() , KoinComponent {
     private val userViewModel: UserViewModel by viewModel()
     private val friendViewModel: FriendViewModel by viewModel()
     private val messageViewModel: MessageViewModel by viewModel()
+
     private val mainViewModel: MainViewModel by viewModels()
     private val mapViewModel : MapViewModel by viewModels<MapViewModel>()
     private val cameraViewModel : CameraViewModel by viewModels()
@@ -130,7 +132,7 @@ class ActivityMain : ComponentActivity() , KoinComponent {
 
 
 
-
+            //builds and waits for notifications
             eventStatusChanged(messageViewModel,channel1IDeventStatus,applicationContext)
             friendRequestReceived(messageViewModel,channel1IDfriendRequest,applicationContext)
         }
