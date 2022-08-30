@@ -106,7 +106,7 @@ class MessageWebsocket(
 
                         }
                         val id = Json.parseToJsonElement(message.jsonObject["id"].toString())
-                        println("Sending reply ${id.toString()}")
+                        println("Sending reply ${id}")
                         send(id.toString())
                     }
 

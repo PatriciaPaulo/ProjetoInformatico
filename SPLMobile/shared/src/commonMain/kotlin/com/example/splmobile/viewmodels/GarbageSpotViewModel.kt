@@ -20,10 +20,19 @@ class GarbageSpotViewModel (
     val garbageSpotsUIState = _garbageSpotsUIState.asStateFlow()
     sealed class GarbageSpotsUIState {
         data class Success(val garbageSpots: List<GarbageSpotDTO>) : GarbageSpotsUIState()
-        data class GarbageSpotByIdSuccess(val garbageSpot: GarbageSpotDTO) : GarbageSpotsUIState()
         data class Error(val error: String) : GarbageSpotsUIState()
         object Loading : GarbageSpotsUIState()
         object Empty : GarbageSpotsUIState()
+    }
+
+    //state get 1 local de lixo
+    private val _garbageSpotUIState = MutableStateFlow<GarbageSpotUIState>(GarbageSpotUIState.Empty)
+    val garbageSpotUIState = _garbageSpotUIState.asStateFlow()
+    sealed class GarbageSpotUIState {
+        data class GarbageSpotByIdSuccess(val garbageSpot: GarbageSpotDTO) : GarbageSpotUIState()
+        data class Error(val error: String) : GarbageSpotUIState()
+        object Loading : GarbageSpotUIState()
+        object Empty : GarbageSpotUIState()
     }
 
     //state create garbage spot
@@ -36,6 +45,14 @@ class GarbageSpotViewModel (
         data class Error(val error: String) : GarbageSpotCreateUIState()
         object Loading : GarbageSpotCreateUIState()
         object Empty : GarbageSpotCreateUIState()
+    }
+
+    //clean state
+    fun emptyCreateGSState(){
+        _garbageSpotCreateUIState.value = GarbageSpotCreateUIState.Empty
+    }
+    fun emptyUpdateGSState(){
+        _garbageSpotUpdateUIState.value = GarbageSpotUpdateUIState.Empty
     }
 
     //state update garbage spot
@@ -84,17 +101,17 @@ class GarbageSpotViewModel (
     }
 
     fun getGarbageSpotById(gsId: Long,token: String) {
-        _garbageSpotsUIState.value = GarbageSpotsUIState.Loading
+        _garbageSpotUIState.value = GarbageSpotUIState.Loading
         log.v("getting garbage spots by id ")
         viewModelScope.launch {
             val response = garbageSpotService.getGarbageSpotById(gsId,token)
 
             if(response.message.substring(0,3)  == "200"){
                 log.v("getting all  ${response.data}")
-                _garbageSpotsUIState.value =
-                    GarbageSpotsUIState.GarbageSpotByIdSuccess(response.data)
+                _garbageSpotUIState.value =
+                    GarbageSpotUIState.GarbageSpotByIdSuccess(response.data)
             }else{
-                _garbageSpotsUIState.value = GarbageSpotsUIState.Error(response.message)
+                _garbageSpotUIState.value = GarbageSpotUIState.Error(response.message)
             }
         }
     }

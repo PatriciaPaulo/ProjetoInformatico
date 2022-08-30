@@ -75,7 +75,7 @@ fun MapScreen(
 
     LaunchedEffect(Unit) {
         log.d { "Get garbage spots launched" }
-
+        garbageSpotViewModel.emptyCreateGSState()
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
 
 
@@ -455,13 +455,13 @@ private fun MapContent(
     var filteredGarbageSpots by remember {
         mutableStateOf(emptyList<GarbageSpotDTO>())
     }
-    var coordendasState = sharedViewModel.coordenatesUIState.collectAsState().value
+    var coordinatesState = sharedViewModel.coordenatesUIState.collectAsState().value
     var portugal = LatLng(39.5, -8.0)
     var cameraPosition = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(portugal, 7f)
 
     }
-    CoordenatesStateSection(coordendasState, cameraPosition)
+    CoordenatesStateSection(coordinatesState, cameraPosition)
     Box(Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.matchParentSize(),
@@ -471,74 +471,94 @@ private fun MapContent(
 
             },
         ) {
-
             if (garbageSpotState.value.id.equals(0L)) {
 
                 log.d { "new garbage spot position $newGarbageSpotPos" }
 
                 garbageSpotState.value.longitude = newGarbageSpotPos.value.longitude.toString()
                 garbageSpotState.value.latitude = newGarbageSpotPos.value.latitude.toString()
-                Marker(position = newGarbageSpotPos.value, title = "new lixeira")
+                Marker(position = newGarbageSpotPos.value, title = textResource(id = R.string.txtNewGarbageSpot))
             } else {
                 log.d { "no position selected" }
                 newGarbageSpotPos.value = LatLng(0.0, 0.0)
             }
 
-            filteredGarbageSpots = garbageSpots.filter { garbageSpot ->
-                garbageSpot.approved
-            }
-            log.d { "Filter state value -> ${garbageSpotsFilterState.value}" }
-
-            when (garbageSpotsFilterState.value) {
-                textResource(R.string.lblFilterGarbageSpotsAll) -> {
-                    log.d { "Filter state -> ${textResource(R.string.lblFilterGarbageSpotsAll)}" }
-                    markerFilterList(filteredGarbageSpots, garbageSpotState, log)
-                }
-                textResource(R.string.lblFilterGarbageSpotsMine) -> {
-                    log.d { "Filter state -> ${textResource(R.string.lblFilterGarbageSpotsMine)}" }
-                    log.d { "My id -> ${userInfoViewModel.myIdUIState.value}" }
-
-                    markerFilterList(
-                        garbageSpots.filter { garbageSpot ->
-                            garbageSpot.creator == userInfoViewModel.myIdUIState.value
-                        },
-                        garbageSpotState,
-                        log
-                    )
-                }
-                textResource(R.string.lblFilterGarbageSpotsStatus1) -> {
-                    log.d { "Filter state -> ${textResource(R.string.lblFilterGarbageSpotsStatus1)}" }
-                    markerFilterList(
-                        filteredGarbageSpots.filter { garbageSpot ->
-                            garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus1).toString()
-                        }, garbageSpotState, log
-                    )
-                }
-                textResource(R.string.lblFilterGarbageSpotsStatus2) -> {
-                    log.d { "Filter state -> ${textResource(R.string.lblFilterGarbageSpotsStatus2)}" }
-                    markerFilterList(
-                        filteredGarbageSpots.filter { garbageSpot ->
-                            garbageSpot.status == textResource(
-                                R.string.lblFilterGarbageSpotsStatus2
-                            ).toString()
-                        },
-                        garbageSpotState,
-                        log
-                    )
-                }
-                textResource(R.string.lblFilterGarbageSpotsStatus3) -> {
-                    log.d { "Filter state -> ${textResource(R.string.lblFilterGarbageSpotsStatus3)}" }
-                    markerFilterList(
-                        filteredGarbageSpots.filter { garbageSpot ->
-                            garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus3).toString()
-                        },
-                        garbageSpotState,
-                        log
-                    )
-                }
-
-            }
+            MarkerSection(
+                filteredGarbageSpots,
+                garbageSpots,
+                log,
+                garbageSpotsFilterState,
+                garbageSpotState,
+                userInfoViewModel
+            )
         }
+    }
+}
+
+@Composable
+private fun MarkerSection(
+    filteredGarbageSpots: List<GarbageSpotDTO>,
+    garbageSpots: List<GarbageSpotDTO>,
+    log: Logger,
+    garbageSpotsFilterState: MutableState<String>,
+    garbageSpotState: MutableState<GarbageSpotDTO>,
+    userInfoViewModel: UserInfoViewModel
+) {
+    var filteredGarbageSpots1 = filteredGarbageSpots
+    filteredGarbageSpots1 = garbageSpots.filter { garbageSpot ->
+        garbageSpot.approved
+    }
+    log.d { "Filter state value -> ${garbageSpotsFilterState.value}" }
+
+
+    when (garbageSpotsFilterState.value) {
+        textResource(R.string.lblFilterGarbageSpotsAll) -> {
+            log.d { "Filter state -> ${textResource(R.string.lblFilterGarbageSpotsAll)}" }
+            markerFilterList(filteredGarbageSpots1, garbageSpotState, log)
+        }
+        textResource(R.string.lblFilterGarbageSpotsMine) -> {
+            log.d { "Filter state -> ${textResource(R.string.lblFilterGarbageSpotsMine)}" }
+            log.d { "My id -> ${userInfoViewModel.myIdUIState.value}" }
+
+            markerFilterList(
+                garbageSpots.filter { garbageSpot ->
+                    garbageSpot.creator == userInfoViewModel.myIdUIState.value
+                },
+                garbageSpotState,
+                log
+            )
+        }
+        textResource(R.string.lblFilterGarbageSpotsStatus1) -> {
+            log.d { "Filter state -> ${textResource(R.string.lblFilterGarbageSpotsStatus1)}" }
+            markerFilterList(
+                filteredGarbageSpots1.filter { garbageSpot ->
+                    garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus1).toString()
+                }, garbageSpotState, log
+            )
+        }
+        textResource(R.string.lblFilterGarbageSpotsStatus2) -> {
+            log.d { "Filter state -> ${textResource(R.string.lblFilterGarbageSpotsStatus2)}" }
+            markerFilterList(
+                filteredGarbageSpots1.filter { garbageSpot ->
+                    garbageSpot.status == textResource(
+                        R.string.lblFilterGarbageSpotsStatus2
+                    ).toString()
+                },
+                garbageSpotState,
+                log
+            )
+        }
+        textResource(R.string.lblFilterGarbageSpotsStatus3) -> {
+            log.d { "Filter state -> ${textResource(R.string.lblFilterGarbageSpotsStatus3)}" }
+            markerFilterList(
+                filteredGarbageSpots1.filter { garbageSpot ->
+                    garbageSpot.status == textResource(R.string.lblFilterGarbageSpotsStatus3).toString()
+                },
+                garbageSpotState,
+                log
+            )
+        }
+
     }
 }
 

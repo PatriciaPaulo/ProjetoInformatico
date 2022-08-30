@@ -77,8 +77,6 @@ kotlin {
                 //CIO
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
-                implementation ("com.squareup.okhttp3:okhttp:3.12.6")
-                implementation ("com.squareup.okhttp3:mockwebserver:3.12.1")
 
 
             }

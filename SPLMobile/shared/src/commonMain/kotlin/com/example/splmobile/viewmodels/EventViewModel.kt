@@ -47,6 +47,11 @@ class EventViewModel (
         object Empty : EventCreateUIState()
     }
 
+    //clean state
+    fun emptyCreateEventState(){
+        _eventCreateUIState.value = EventCreateUIState.Empty
+    }
+
     //state UPDATE event
     private val _eventUpdateUIState = MutableStateFlow<EventUpdateUIState>(EventUpdateUIState.Empty)
     val eventUpdateUIState = _eventUpdateUIState.asStateFlow()

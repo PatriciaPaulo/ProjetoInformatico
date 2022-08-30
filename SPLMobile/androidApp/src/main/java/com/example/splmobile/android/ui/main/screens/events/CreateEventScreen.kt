@@ -83,7 +83,8 @@ fun CreateEventScreen(
         garbageSpotViewModel.getGarbageTypes(authViewModel.tokenState.value)
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
         eventViewModel.getEquipments(authViewModel.tokenState.value)
-        EventViewModel.EventCreateUIState.Empty
+        eventViewModel.emptyCreateEventState()
+
     }
     val garbageSpotsState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
     val garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
@@ -277,6 +278,12 @@ fun CreateEventScreen(
                         Text(text = textResource(id = R.string.txtEventCreateError))
                     }
                     is EventViewModel.EventCreateUIState.Loading -> CircularProgressIndicator()
+                    EventViewModel.EventCreateUIState.Empty -> Text(
+                        text = "",
+                        color = MaterialTheme.colors.primary,
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                    )
                 }
 
                 Button(
