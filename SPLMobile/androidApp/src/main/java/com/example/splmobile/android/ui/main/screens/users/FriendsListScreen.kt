@@ -22,8 +22,8 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.users.FriendDTO
-import com.example.splmobile.dtos.users.UserDTO
+import com.example.splmobile.objects.users.FriendDTO
+import com.example.splmobile.objects.users.UserDTO
 import com.example.splmobile.viewmodels.*
 
 

@@ -1,8 +1,8 @@
 package com.example.splmobile.viewmodels
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.events.UserInEventDTO
-import com.example.splmobile.dtos.users.UserDTO
+import com.example.splmobile.objects.events.UserInEventDTO
+import com.example.splmobile.objects.users.UserDTO
 import com.example.splmobile.services.userInEvent.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

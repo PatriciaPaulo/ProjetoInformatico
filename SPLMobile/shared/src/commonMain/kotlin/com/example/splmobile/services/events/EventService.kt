@@ -1,8 +1,8 @@
 package com.example.splmobile.services.events
 
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.equipments.EquipmentsResponse
-import com.example.splmobile.dtos.events.*
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.equipments.EquipmentsResponse
+import com.example.splmobile.objects.events.*
 
 
 interface EventService {

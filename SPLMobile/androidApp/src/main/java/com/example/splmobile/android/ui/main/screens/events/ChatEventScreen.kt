@@ -20,8 +20,8 @@ import androidx.navigation.NavHostController
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.navigation.Screen
-import com.example.splmobile.dtos.messages.EventMessageRequest
-import com.example.splmobile.dtos.messages.MessageDTO
+import com.example.splmobile.objects.messages.EventMessageRequest
+import com.example.splmobile.objects.messages.MessageDTO
 import com.example.splmobile.viewmodels.*
 import kotlinx.coroutines.launch
 

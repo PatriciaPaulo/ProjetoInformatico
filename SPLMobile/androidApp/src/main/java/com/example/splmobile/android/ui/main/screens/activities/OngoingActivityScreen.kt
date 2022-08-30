@@ -29,7 +29,7 @@ import com.example.splmobile.android.data.StepSensorData
 import com.example.splmobile.android.data.StopWatch
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.viewmodel.MapViewModel
-import com.example.splmobile.dtos.activities.ActivityTypeSerializable
+import com.example.splmobile.objects.activities.ActivityTypeSerializable
 import com.example.splmobile.viewmodels.ActivityViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng

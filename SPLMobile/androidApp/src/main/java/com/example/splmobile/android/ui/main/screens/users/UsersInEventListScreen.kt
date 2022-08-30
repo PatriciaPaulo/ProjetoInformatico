@@ -23,8 +23,8 @@ import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.events.UserInEventDTO
-import com.example.splmobile.dtos.users.UserDTO
+import com.example.splmobile.objects.events.UserInEventDTO
+import com.example.splmobile.objects.users.UserDTO
 import com.example.splmobile.viewmodels.*
 import kotlinx.coroutines.launch
 

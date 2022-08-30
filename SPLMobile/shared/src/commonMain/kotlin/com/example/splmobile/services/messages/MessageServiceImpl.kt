@@ -2,8 +2,8 @@ package com.example.splmobile.services.messages
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.messages.*
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.messages.*
 import com.example.splmobile.HttpRequestUrls
 import io.ktor.client.*
 import io.ktor.client.call.*

@@ -1,8 +1,8 @@
 package com.example.splmobile.services.websockets
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.events.EventDTO
-import com.example.splmobile.dtos.myInfo.UserSerializable
+import com.example.splmobile.objects.events.EventDTO
+import com.example.splmobile.objects.myInfo.UserSerializable
 import com.example.splmobile.viewmodels.MessageViewModel
 import com.example.splmobile.HttpRequestUrls
 import io.ktor.client.*

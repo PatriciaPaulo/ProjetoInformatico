@@ -1,8 +1,8 @@
 package com.example.splmobile.services.friends
 
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.users.FriendResponse
-import com.example.splmobile.dtos.users.FriendsResponse
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.users.FriendResponse
+import com.example.splmobile.objects.users.FriendsResponse
 
 
 interface FriendService {

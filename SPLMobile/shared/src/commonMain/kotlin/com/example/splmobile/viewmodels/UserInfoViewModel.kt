@@ -2,11 +2,11 @@ package com.example.splmobile.viewmodels
 
 import UserInfoService
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.activities.ActivitySerializable
-import com.example.splmobile.dtos.events.UserInEventDTO
-import com.example.splmobile.dtos.myInfo.EmailCheckResponse
-import com.example.splmobile.dtos.myInfo.EmailRequest
-import com.example.splmobile.dtos.myInfo.UserSerializable
+import com.example.splmobile.objects.activities.ActivitySerializable
+import com.example.splmobile.objects.events.UserInEventDTO
+import com.example.splmobile.objects.myInfo.EmailCheckResponse
+import com.example.splmobile.objects.myInfo.EmailRequest
+import com.example.splmobile.objects.myInfo.UserSerializable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

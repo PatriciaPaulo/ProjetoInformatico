@@ -14,9 +14,9 @@ import androidx.navigation.NavController
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.navigation.Screen
-import com.example.splmobile.dtos.events.EventDTO
-import com.example.splmobile.dtos.messages.MessageDTO
-import com.example.splmobile.dtos.users.FriendDTO
+import com.example.splmobile.objects.events.EventDTO
+import com.example.splmobile.objects.messages.MessageDTO
+import com.example.splmobile.objects.users.FriendDTO
 import com.example.splmobile.viewmodels.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 

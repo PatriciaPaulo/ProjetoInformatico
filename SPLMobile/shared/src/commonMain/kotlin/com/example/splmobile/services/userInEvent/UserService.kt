@@ -1,10 +1,9 @@
 package com.example.splmobile.services.userInEvent
 
-import com.example.splmobile.dtos.RequestDataResponse
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.events.*
-import com.example.splmobile.dtos.users.UserStatsResponse
-import com.example.splmobile.dtos.users.UsersStatsResponse
+import com.example.splmobile.objects.RequestDataResponse
+import com.example.splmobile.objects.events.*
+import com.example.splmobile.objects.users.UserStatsResponse
+import com.example.splmobile.objects.users.UsersStatsResponse
 
 
 interface UserService {

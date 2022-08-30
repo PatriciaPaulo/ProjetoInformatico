@@ -1,8 +1,8 @@
 package com.example.splmobile.viewmodels
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.activities.ActivityTypeSerializable
-import com.example.splmobile.dtos.activities.CreateActivitySerializable
+import com.example.splmobile.objects.activities.ActivityTypeSerializable
+import com.example.splmobile.objects.activities.CreateActivitySerializable
 import com.example.splmobile.services.activities.ActivityService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

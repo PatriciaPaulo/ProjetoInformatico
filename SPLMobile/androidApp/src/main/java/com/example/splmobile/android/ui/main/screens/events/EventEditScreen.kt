@@ -30,11 +30,11 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
-import com.example.splmobile.dtos.equipments.EquipmentDTO
-import com.example.splmobile.dtos.equipments.EquipmentInEventDTO
-import com.example.splmobile.dtos.events.EventDTO
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
-import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
+import com.example.splmobile.objects.equipments.EquipmentDTO
+import com.example.splmobile.objects.equipments.EquipmentInEventDTO
+import com.example.splmobile.objects.events.EventDTO
+import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
+import com.example.splmobile.objects.garbageTypes.GarbageTypeDTO
 import com.example.splmobile.viewmodels.*
 import com.google.android.gms.maps.model.LatLng
 import io.ktor.server.util.*

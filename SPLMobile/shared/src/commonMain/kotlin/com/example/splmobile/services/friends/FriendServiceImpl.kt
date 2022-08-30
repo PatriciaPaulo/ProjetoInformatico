@@ -2,8 +2,8 @@ package com.example.splmobile.services.friends
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.users.*
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.users.*
 import com.example.splmobile.HttpRequestUrls
 import io.ktor.client.*
 import io.ktor.client.call.*

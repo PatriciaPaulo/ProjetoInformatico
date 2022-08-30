@@ -24,8 +24,8 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
-import com.example.splmobile.dtos.events.EventDTO
-import com.example.splmobile.dtos.events.UserInEventDTO
+import com.example.splmobile.objects.events.EventDTO
+import com.example.splmobile.objects.events.UserInEventDTO
 import com.example.splmobile.viewmodels.*
 
 

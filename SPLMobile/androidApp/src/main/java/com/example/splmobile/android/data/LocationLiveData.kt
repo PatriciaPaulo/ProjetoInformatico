@@ -8,10 +8,8 @@ import android.location.Location
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
-import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.myInfo.LocationDetails
+import com.example.splmobile.objects.myInfo.LocationDetails
 import com.google.android.gms.location.*
-import com.google.android.gms.tasks.CancellationToken
 
 class LocationLiveData (var context : Context) : LiveData<LocationDetails>() {
     private val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)

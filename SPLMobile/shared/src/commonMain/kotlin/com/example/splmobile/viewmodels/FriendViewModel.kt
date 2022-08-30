@@ -1,7 +1,7 @@
 package com.example.splmobile.viewmodels
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.users.FriendDTO
+import com.example.splmobile.objects.users.FriendDTO
 import com.example.splmobile.services.friends.FriendService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

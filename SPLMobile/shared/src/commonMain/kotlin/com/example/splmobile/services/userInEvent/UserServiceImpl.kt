@@ -2,11 +2,11 @@ package com.example.splmobile.services.userInEvent
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
-import com.example.splmobile.dtos.RequestDataResponse
-import com.example.splmobile.dtos.events.*
-import com.example.splmobile.dtos.users.UserDTO
-import com.example.splmobile.dtos.users.UserStatsResponse
-import com.example.splmobile.dtos.users.UsersStatsResponse
+import com.example.splmobile.objects.RequestDataResponse
+import com.example.splmobile.objects.events.*
+import com.example.splmobile.objects.users.UserDTO
+import com.example.splmobile.objects.users.UserStatsResponse
+import com.example.splmobile.objects.users.UsersStatsResponse
 import com.example.splmobile.HttpRequestUrls
 import io.ktor.client.*
 import io.ktor.client.call.*

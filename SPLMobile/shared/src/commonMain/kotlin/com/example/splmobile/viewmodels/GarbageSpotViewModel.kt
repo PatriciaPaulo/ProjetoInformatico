@@ -1,8 +1,8 @@
 package com.example.splmobile.viewmodels
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
-import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
+import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
+import com.example.splmobile.objects.garbageTypes.GarbageTypeDTO
 
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
 import kotlinx.coroutines.flow.*

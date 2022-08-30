@@ -28,9 +28,9 @@ import com.example.splmobile.android.ui.main.screens.activities.calculateDistanc
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.android.viewmodel.MapViewModel
-import com.example.splmobile.dtos.events.EventDTO
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
-import com.example.splmobile.dtos.myInfo.LocationDetails
+import com.example.splmobile.objects.events.EventDTO
+import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
+import com.example.splmobile.objects.myInfo.LocationDetails
 import com.example.splmobile.viewmodels.AuthViewModel
 import com.example.splmobile.viewmodels.EventViewModel
 import com.example.splmobile.viewmodels.GarbageSpotViewModel

@@ -41,7 +41,7 @@ import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
+import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.viewmodels.AuthViewModel
 import com.example.splmobile.viewmodels.SharedViewModel
 import com.example.splmobile.viewmodels.UserInfoViewModel

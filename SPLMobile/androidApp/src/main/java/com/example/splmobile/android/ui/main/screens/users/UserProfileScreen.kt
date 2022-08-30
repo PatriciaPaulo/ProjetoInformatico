@@ -26,7 +26,7 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.users.UserDTO
+import com.example.splmobile.objects.users.UserDTO
 import com.example.splmobile.viewmodels.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 

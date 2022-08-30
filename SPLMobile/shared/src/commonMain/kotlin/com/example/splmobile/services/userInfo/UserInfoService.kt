@@ -1,11 +1,10 @@
-import com.example.splmobile.dtos.activities.ActivitiesResponse
-import com.example.splmobile.dtos.events.EventsResponse
-import com.example.splmobile.dtos.events.UserInEventResponse
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
-import com.example.splmobile.dtos.myInfo.EmailCheckResponse
-import com.example.splmobile.dtos.myInfo.EmailRequest
-import com.example.splmobile.dtos.myInfo.UserResponse
-import com.example.splmobile.dtos.myInfo.UserSerializable
+import com.example.splmobile.objects.activities.ActivitiesResponse
+import com.example.splmobile.objects.events.UserInEventResponse
+import com.example.splmobile.objects.garbageSpots.GarbageSpotsResponse
+import com.example.splmobile.objects.myInfo.EmailCheckResponse
+import com.example.splmobile.objects.myInfo.EmailRequest
+import com.example.splmobile.objects.myInfo.UserResponse
+import com.example.splmobile.objects.myInfo.UserSerializable
 
 interface UserInfoService {
     suspend fun getUser(token: String): UserResponse
