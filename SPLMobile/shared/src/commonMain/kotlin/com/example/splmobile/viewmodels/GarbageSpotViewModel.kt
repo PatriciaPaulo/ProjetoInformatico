@@ -51,9 +51,7 @@ class GarbageSpotViewModel (
     fun emptyCreateGSState(){
         _garbageSpotCreateUIState.value = GarbageSpotCreateUIState.Empty
     }
-    fun emptyUpdateGSState(){
-        _garbageSpotUpdateUIState.value = GarbageSpotUpdateUIState.Empty
-    }
+
 
     //state update garbage spot
     private val _garbageSpotUpdateUIState = MutableStateFlow<GarbageSpotUpdateUIState>(
@@ -67,7 +65,9 @@ class GarbageSpotViewModel (
 
         object Empty : GarbageSpotUpdateUIState()
     }
-
+    fun emptyUpdateGSState(){
+        _garbageSpotUpdateUIState.value = GarbageSpotUpdateUIState.Empty
+    }
     //state get garbage types
     private val _garbageTypeUIState = MutableStateFlow<GarbageTypesUIState>(GarbageTypesUIState.Empty)
     val garbageTypesUIState = _garbageTypeUIState.asStateFlow()
