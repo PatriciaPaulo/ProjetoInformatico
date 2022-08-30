@@ -36,7 +36,7 @@ fun GarbageSpotInfoScreen(
     val log = log.withTag("GarbageSpotInfoScreen")
     LaunchedEffect(Unit) {
 
-        //garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
+        garbageSpotViewModel.emptyUpdateGSState()
         garbageSpotViewModel.getGarbageSpotById(
             garbageSpotId!!.toLong(),
             authViewModel.tokenState.value
@@ -73,8 +73,8 @@ private fun GarbageSpotInfoUI(
     garbageSpotId: String?
 ) {
     when (val garbageSpotByIdState =
-        garbageSpotViewModel.garbageSpotsUIState.collectAsState().value) {
-        is GarbageSpotViewModel.GarbageSpotsUIState.GarbageSpotByIdSuccess -> {
+        garbageSpotViewModel.garbageSpotUIState.collectAsState().value) {
+        is GarbageSpotViewModel.GarbageSpotUIState.GarbageSpotByIdSuccess -> {
 
             CreatorSection(userViewModel, garbageSpotByIdState, authViewModel)
 
@@ -98,7 +98,7 @@ private fun GarbageSpotInfoUI(
 @Composable
 private fun CreatorSection(
     userViewModel: UserViewModel,
-    garbageSpotByIdState: GarbageSpotViewModel.GarbageSpotsUIState.GarbageSpotByIdSuccess,
+    garbageSpotByIdState: GarbageSpotViewModel.GarbageSpotUIState.GarbageSpotByIdSuccess,
     authViewModel: AuthViewModel
 ) {
     userViewModel.getUserStats(
@@ -112,7 +112,7 @@ private fun CreatorSection(
 private fun GarbageSpotComponent(
     innerPadding: PaddingValues,
     garbageSpotId: String?,
-    garbageSpotByIdState: GarbageSpotViewModel.GarbageSpotsUIState.GarbageSpotByIdSuccess,
+    garbageSpotByIdState: GarbageSpotViewModel.GarbageSpotUIState.GarbageSpotByIdSuccess,
     userViewModel: UserViewModel,
     garbageSpotViewModel: GarbageSpotViewModel,
     authViewModel: AuthViewModel
@@ -286,7 +286,7 @@ private fun ButtonSection(
 @Composable
 private fun ButtonState(
     selectedOptionText: String,
-    garbageSpotByIdState: GarbageSpotViewModel.GarbageSpotsUIState.GarbageSpotByIdSuccess
+    garbageSpotByIdState: GarbageSpotViewModel.GarbageSpotUIState.GarbageSpotByIdSuccess
 ): MutableState<Boolean> {
     val statusState = remember { mutableStateOf(false) }
     when (selectedOptionText) {
