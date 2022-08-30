@@ -138,6 +138,7 @@
     <string name="lblCreateEvent">Criar</string>
     <string name="txtNoEvents">Não tens eventos</string>
     <string name="txtNoEquipmentInEvent">Equipamento não é necessário</string>
+    <string name="txtNewGarbageSpot">Novo Local de Lixo</string>
 
 
 </resources>
