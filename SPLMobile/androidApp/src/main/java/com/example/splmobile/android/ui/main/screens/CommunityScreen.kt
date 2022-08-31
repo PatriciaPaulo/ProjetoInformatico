@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -94,26 +95,17 @@ private fun CommunityAppBar(
     searchTextState: String,
     mainViewModel: MainViewModel
 ) {
-    AppBar(
-        title = textResource(R.string.lblCommunitySearchBar).toString(),
-        searchWidgetState = searchWidgetState,
-        searchTextState = searchTextState,
-        onTextChange = {
-            mainViewModel.updateSearchTextState(newValue = it)
+    TopAppBar(
+        title = {
+            Text(
+                text = textResource(R.string.lblCommunitySearchBar)
+            )
         },
-        onCloseClicked = {
-            mainViewModel.updateSearchTextState(newValue = "")
-            mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
-
-        },
-        onSearchClicked = {
-
-        },
-        onSearchTriggered = {
-            mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
+        actions = {
 
         }
     )
+
 }
 
 @Composable
@@ -139,23 +131,23 @@ private fun CommunityUI(
             verticalAlignment = Alignment.CenterVertically
 
         ) {
-            Button(
+            /*Button(
                 onClick = {
                     buttonScreenState.value = R.string.btnCommunity
                 },
                 modifier = Modifier.align(Alignment.CenterVertically),
 
                 ) {
-                Text(text = textResource(R.string.btnCommunity).toString())
-            }
-            Button(
+                Text(text = textResource(R.string.btnCommunity))
+            }*/
+            /*Button(
                 onClick = {
                     buttonScreenState.value = R.string.btnFriends
                 },
                 modifier = Modifier.align(Alignment.CenterVertically)
             ) {
-                Text(text = textResource(R.string.btnFriends).toString())
-            }
+                Text(text = textResource(R.string.btnFriends))
+            }*/
 
 
         }
@@ -216,8 +208,8 @@ private fun GarbageSpotsNearMe(
 
     ) {
 
-        Text(text = textResource(R.string.lblGarbageSpotsNearMe).toString())
-        ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems).toString()),
+        Text(text = textResource(R.string.lblGarbageSpotsNearMe))
+        ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems)),
             style = MaterialTheme.typography.body1,
             onClick = {
                 navController.navigate(Screen.GarbageSpotList.route)
@@ -233,7 +225,6 @@ private fun GarbageSpotsNearMe(
     ) {
         val location by mapViewModel.getLocationLiveData().observeAsState()
 
-        //todo testar com tele
         if(location == null){
             Text("Erro a ler a sua localização")
         }else{

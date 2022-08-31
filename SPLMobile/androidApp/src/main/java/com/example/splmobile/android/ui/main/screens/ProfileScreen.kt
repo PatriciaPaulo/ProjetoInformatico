@@ -117,11 +117,11 @@ fun ProfileScreen(
                         },
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
-                        Text(text = textResource(R.string.btnFriends).toString())
+                        Text(text = textResource(R.string.btnFriends))
                     }
                 }
                 Text(
-                    text = "Your last Activities",
+                    text = textResource(R.string.lblLastActivities),
                     fontStyle = MaterialTheme.typography.h6.fontStyle
                 )
 
@@ -135,7 +135,7 @@ fun ProfileScreen(
                 ) {
 
                     Text(
-                        text = "Your last Events",
+                        text = textResource(R.string.lblLastEvents),
                         fontStyle = MaterialTheme.typography.h6.fontStyle
                     )
                     Spacer(Modifier.width(86.dp))
@@ -169,7 +169,7 @@ fun MyActivitySection(
             is UserInfoViewModel.MyActivitiesUIState.SuccessLast5 -> {
                 usersActivitiesState.activities.forEach {
                     TextButton(onClick = {}) {
-                        Text(text = "Activity ${it.id} que começou em ${it.startDate}. ")
+                        Text(text = "Actividade ${it.id} que começou em ${it.startDate}. ")
                     }
 
                 }
@@ -179,7 +179,7 @@ fun MyActivitySection(
             is UserInfoViewModel.MyActivitiesUIState.Loading -> CircularProgressIndicator()
             is UserInfoViewModel.MyActivitiesUIState.Error -> {
                 TextButton(onClick = {}) {
-                    Text(text = "No Activities Available!. ")
+                    Text(text = textResource(R.string.lblNoActivities))
                 }
             }
         }
@@ -227,7 +227,7 @@ private fun MyEventsSection(
             is UserInfoViewModel.MyEventsUIState.Error -> {
                 log.d { "Get my events state -> Error" }
                 TextButton(onClick = {}) {
-                    Text(text = "No Events Available!. ")
+                    Text(text = textResource(R.string.lblNoEvents))
                 }
             }
         }

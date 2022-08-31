@@ -772,7 +772,7 @@ private fun garbageSpotsSelection(
     allGarbageSpotListEvent: MutableState<List<GarbageSpotDTO>>,
     listGarbageSpotsInEvent: MutableState<SnapshotStateList<Long>>
 ) {
-    Text(text = textResource(R.string.lblGarbageSpots).toString())
+    Text(text = textResource(R.string.lblGarbageSpots))
 
 
     LazyColumn(

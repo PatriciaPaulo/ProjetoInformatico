@@ -86,7 +86,7 @@ fun EventEditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { textResource(R.string.lblEditEvent).toString()},
+                title = { textResource(R.string.lblEditEvent)},
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() },
@@ -106,9 +106,9 @@ fun EventEditScreen(
             is EventViewModel.EventByIdUIState.Success -> {
                 log.d{"event id state -> Success"}
 
-                val accessibilityListEvent = listOf(textResource(R.string.EventAccessibilityElement1).toString(), textResource(R.string.EventAccessibilityElement2).toString(), textResource(R.string.EventAccessibilityElement3).toString())
-                val quantityListEvent = listOf(textResource(R.string.EventQuantityElement1).toString(), textResource(R.string.EventQuantityElement2).toString(), textResource(R.string.EventQuantityElement3).toString())
-                val restrictionsListEvent = listOf(textResource(R.string.EventRestrictionsElement1).toString(), textResource(R.string.EventRestrictionsElement2).toString())
+                val accessibilityListEvent = listOf(textResource(R.string.EventAccessibilityElement1), textResource(R.string.EventAccessibilityElement2), textResource(R.string.EventAccessibilityElement3))
+                val quantityListEvent = listOf(textResource(R.string.EventQuantityElement1), textResource(R.string.EventQuantityElement2), textResource(R.string.EventQuantityElement3))
+                val restrictionsListEvent = listOf(textResource(R.string.EventRestrictionsElement1), textResource(R.string.EventRestrictionsElement2))
 
                 val accessibilityExpanded = remember { mutableStateOf(false) }
                 val accessibilitySelectedOptionText = remember { mutableStateOf(eventState.event.accessibility) }
@@ -187,7 +187,7 @@ fun EventEditScreen(
                             }
                         )
                         Spacer(modifier = Modifier.height(32.dp))
-                        //todo make sure it works
+
                         eventObservations.value?.let {
                             TextField(
                                 value = it,
@@ -237,20 +237,6 @@ fun EventEditScreen(
                             is EventViewModel.EquipmentUIState.Success -> {
                                 allEquipmentListEvent.value = equipmentsState.equipments
                                 EquipmentSelection(allEquipmentListEvent, listEquipamentsInEvent)
-                            }
-                        }
-
-
-
-                        when(garbageSpotsState){
-                            is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
-                                allGarbageSpotListEvent.value = garbageSpotsState.garbageSpots.filter {
-                                    calculateDistance(
-                                        LatLng(eventState.event.latitude.toDouble(),eventState.event.longitude.toDouble()),
-                                        LatLng(it.latitude.toDouble(),it.longitude.toDouble())
-                                    )<50.00 && it.approved
-                                }
-                                garbageSpotsSelection(allGarbageSpotListEvent, listGarbageSpotsInEvent)
                             }
                         }
 
@@ -429,8 +415,7 @@ private fun garbageTypeSelection(
     garbageTypeListEvent: MutableState<List<GarbageTypeDTO>>,
     listGarbageTypeInEvent: MutableState<SnapshotStateList<Long>>
 ) {
-    Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
-    //todo redo , select only updating after state change and not when clicked
+    Text(text = textResource(R.string.lblGarbageTypeCreateEvent))
 
     LazyColumn(
         modifier = Modifier
@@ -495,78 +480,6 @@ private fun garbageTypeSelection(
     }
 }
 
-@Composable
-private fun garbageSpotsSelection(
-    garbageSpotListEvent: MutableState<List<GarbageSpotDTO>>,
-    listGarbageSpotsInEvent: MutableState<SnapshotStateList<Long>>
-) {
-    Text(text = textResource(R.string.lblGarbageTypeCreateEvent).toString())
-    //todo redo , select only updating after state change and not when clicked
-
-    LazyColumn(
-        modifier = Modifier
-            .height(200.dp)
-            .width(200.dp)
-            .selectableGroup(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        items(garbageSpotListEvent.value.size) { index ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = listGarbageSpotsInEvent.value.contains(
-                            garbageSpotListEvent.value.get(index).id
-                        ),
-                        onClick = {
-                            Log.d("selection types", "garbage clicked")
-                            if (listGarbageSpotsInEvent.value.contains(
-                                    garbageSpotListEvent.value.get(index).id
-                                )
-                            ) {
-                                Log.d("selection types", "removing garbage type")
-                                listGarbageSpotsInEvent.value.remove(
-                                    garbageSpotListEvent.value.get(index).id
-                                )
-
-                            } else {
-                                Log.d("selection types", "adding garbage type")
-                                listGarbageSpotsInEvent.value.add(
-                                    garbageSpotListEvent.value.get(index).id
-                                )
-
-                            }
-                        }
-                    )
-                    .background(
-                        if ((listGarbageSpotsInEvent.value.contains(
-                                garbageSpotListEvent.value.get(index).id
-                            ))
-                        ) Color.Gray
-                        else Color.Transparent
-                    )
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = garbageSpotListEvent.value[index].name +" " +garbageSpotListEvent.value[index].approved)
-
-
-                if ((listGarbageSpotsInEvent.value.contains(garbageSpotListEvent.value[index].id))) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Selected",
-                        tint = Color.Green,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-            }
-
-        }
-    }
-}
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun EventAccessibilitySelection(
