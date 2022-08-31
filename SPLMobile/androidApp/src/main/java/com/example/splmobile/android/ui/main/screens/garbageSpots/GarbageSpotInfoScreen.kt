@@ -132,6 +132,14 @@ private fun GarbageSpotComponent(
             .wrapContentSize(Alignment.Center)
     ) {
         Text(
+            text = "Local de lixo #${garbageSpotByIdState.garbageSpot.id}",
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            textAlign = TextAlign.Center,
+            fontSize = 24.sp
+        )
+        Text(
             text = "${garbageSpotByIdState.garbageSpot.name}",
             fontWeight = FontWeight.Bold,
             color = Color.White,

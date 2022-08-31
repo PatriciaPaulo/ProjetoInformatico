@@ -324,7 +324,7 @@ fun AllUsersList(
 
             }
             if(usersInEventListSearch.find{it.userID == user.id }!= null){
-                Text(text = "in event", style = MaterialTheme.typography.h6)
+                usersInEventListSearch.find{it.userID == user.id }?.status?.let { Text(text = it, style = MaterialTheme.typography.h6) }
 
             }
         }

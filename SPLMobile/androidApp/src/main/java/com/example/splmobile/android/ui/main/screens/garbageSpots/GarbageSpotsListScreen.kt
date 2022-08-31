@@ -1,7 +1,6 @@
 package com.example.splmobile.android.ui.main.screens.garbageSpots
 
 
-
 import AppBar
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -60,7 +59,7 @@ fun GarbageSpotsListScreen(
         scaffoldState = scaffoldState,
         topBar = {
             AppBar(
-                title = textResource(R.string.lblEventListSearchBar),
+                title = textResource(R.string.txtGarbageSpotsList),
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState,
                 onTextChange = {
@@ -83,34 +82,38 @@ fun GarbageSpotsListScreen(
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
-            var garbageSpotsListState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
-            Text(text = textResource(id = R.string.txtGarbageSpotsList),
-                style = MaterialTheme.typography.h4)
-            when(garbageSpotsListState){
-                is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
-                    log.d{"Get garbage spots state -> Success"}
-                    LazyColumn(modifier = Modifier
-                        .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
+            var garbageSpotsListState =
+                garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
 
-                        items(garbageSpotsListState.garbageSpots.filter { it.approved || it.creator == userInfoViewModel.myIdUIState.value } .size){ index ->
-                            GarbageSpotsList(gs = garbageSpotsListState.garbageSpots.get(index), navController = navController)
+            when (garbageSpotsListState) {
+                is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
+                    log.d { "Get garbage spots state -> Success" }
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(top = 32.dp, bottom = innerPadding.calculateBottomPadding())
+                    ) {
+
+                        items(garbageSpotsListState.garbageSpots.filter { it.approved || it.creator == userInfoViewModel.myIdUIState.value }.size) { index ->
+                            GarbageSpotsList(
+                                gs = garbageSpotsListState.garbageSpots.get(index),
+                                navController = navController
+                            )
                         }
 
 
                     }
                 }
-                is  GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
-                    log.d{"Get garbage spots state -> Error"}
+                is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
+                    log.d { "Get garbage spots state -> Error" }
                     Text(
-                        text = textResource(R.string.txtGarbageSpotError) ,
+                        text = textResource(R.string.txtGarbageSpotError),
                         color = MaterialTheme.colors.primary,
                         style = MaterialTheme.typography.caption,
                         modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                     )
                 }
-                is  GarbageSpotViewModel.GarbageSpotsUIState.Loading -> CircularProgressIndicator()
+                is GarbageSpotViewModel.GarbageSpotsUIState.Loading -> CircularProgressIndicator()
             }
-
 
 
         },
@@ -120,8 +123,9 @@ fun GarbageSpotsListScreen(
 }
 
 @Composable
-fun GarbageSpotsList(navController: NavHostController, gs :GarbageSpotDTO){
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
+fun GarbageSpotsList(navController: NavHostController, gs: GarbageSpotDTO) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -134,8 +138,8 @@ fun GarbageSpotsList(navController: NavHostController, gs :GarbageSpotDTO){
                 )
 
 
-    ){
-        Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
+    ) {
+        Image(painter = painterResource(id = R.drawable.ic_main_map), contentDescription = null)
         Column() {
             Text(text = gs.name, style = MaterialTheme.typography.h6)
             Text(text = gs.status, style = MaterialTheme.typography.body1)

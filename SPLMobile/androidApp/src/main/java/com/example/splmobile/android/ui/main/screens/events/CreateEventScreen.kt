@@ -171,7 +171,7 @@ fun CreateEventScreen(
 
 
                     Spacer(modifier = Modifier.height(32.dp))
-                    Text("PONTO DE ENCONTRO")
+                    Text("Ponto de Encontro")
                     PlacePickerComponent(locationEvent,log)
                     Spacer(modifier = Modifier.height(32.dp))
                     DatePickInput(startDateEvent, log)
@@ -242,6 +242,7 @@ fun CreateEventScreen(
 
                                 allGarbageSpotListEvent.value = garbageSpotsState.garbageSpots.filter {
                                     calculateDistance(locationEvent.value,LatLng(it.latitude.toDouble(),it.longitude.toDouble()))<50.00
+                                            && it.approved
                                 }
 
                                 garbageSpotsSelection(allGarbageSpotListEvent, listGarbageSpotsInEvent)
@@ -353,6 +354,7 @@ private fun EquipmentSelection(
 
     Row(horizontalArrangement = Arrangement.SpaceAround){
         Text(text = textResource(R.string.lblEquipment))
+        Spacer(Modifier.width(5.dp))
         Text(text = textResource(R.string.lblEquipmentIsProvided))
     }
 
@@ -509,7 +511,7 @@ private fun EventDurationInput(durationEvent: MutableState<TextFieldValue>) {
         value = durationEvent.value,
         onValueChange = { durationEvent.value = it },
         label = {
-            Text(text = textResource(id = R.string.lblDurationCreateEvent).toString())
+            Text(text = textResource(id = R.string.lblDurationCreateEvent))
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     )
@@ -783,6 +785,7 @@ private fun garbageSpotsSelection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         items(allGarbageSpotListEvent.value.size) { index ->
             Row(
                 modifier = Modifier
@@ -957,7 +960,7 @@ fun DatePickerComponent(
     ){
        // Creating a button that on
         // click displays/shows the DatePickerDialog
-        Text(text= "Date")
+        Text(text= "Data de início")
         Text(dateEvent.value)
         Button(
             onClick = {
