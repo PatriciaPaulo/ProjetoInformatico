@@ -97,7 +97,6 @@ fun MapScreen(
                 onCloseClicked = {
                     mainViewModel.updateSearchTextState(newValue = "")
                     mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
-
                 },
                 onSearchClicked = {
                     log.d { "Searched text, $it " }
@@ -125,7 +124,8 @@ fun MapScreen(
                 authViewModel,
                 sharedViewModel,
                 bottomScaffoldState,
-                navController
+                navController,
+                mainViewModel
             )
         },
 
@@ -143,6 +143,7 @@ private fun ScafoldContentSection(
     sharedViewModel: SharedViewModel,
     bottomScaffoldState: BottomSheetScaffoldState,
     navController : NavHostController,
+    mainViewModel : MainViewModel
 
     ) {
     var coordendasState = sharedViewModel.coordenatesUIState.collectAsState().value
@@ -249,6 +250,7 @@ private fun ScafoldContentSection(
                 garbageSpotsFilterState,
                 userInfoViewModel,
                 sharedViewModel,
+                mainViewModel,
                 log
             )
 
@@ -402,6 +404,7 @@ fun ScreenContent(
     garbageSpotsFilterState: MutableState<String>,
     userInfoViewModel: UserInfoViewModel,
     sharedViewModel: SharedViewModel,
+    mainViewModel : MainViewModel,
     log: Logger
 ) {
 
@@ -431,7 +434,8 @@ fun ScreenContent(
                     garbageSpots,
                     garbageSpotsFilterState,
                     userInfoViewModel,
-                    sharedViewModel
+                    sharedViewModel,
+                    mainViewModel
                 )
             }
         }
@@ -454,7 +458,8 @@ private fun MapContent(
     garbageSpots: List<GarbageSpotDTO>,
     garbageSpotsFilterState: MutableState<String>,
     userInfoViewModel: UserInfoViewModel,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
+    mainViewModel: MainViewModel
 ) {
     var filteredGarbageSpots by remember {
         mutableStateOf(emptyList<GarbageSpotDTO>())
@@ -465,7 +470,15 @@ private fun MapContent(
         position = CameraPosition.fromLatLngZoom(portugal, 7f)
 
     }
-    CoordenatesStateSection(coordinatesState, cameraPosition)
+    when (mainViewModel.searchWidgetState.value){
+        SearchWidgetState.OPENED ->{
+            CoordenatesStateSection(coordinatesState, cameraPosition)
+        }
+        SearchWidgetState.CLOSED ->{
+            cameraPosition.position = CameraPosition.fromLatLngZoom(portugal, 7f)
+        }
+    }
+
     Box(Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.matchParentSize(),
@@ -481,7 +494,9 @@ private fun MapContent(
 
                 garbageSpotState.value.longitude = newGarbageSpotPos.value.longitude.toString()
                 garbageSpotState.value.latitude = newGarbageSpotPos.value.latitude.toString()
-                Marker(position = newGarbageSpotPos.value, title = textResource(id = R.string.txtNewGarbageSpot))
+                Marker(position = newGarbageSpotPos.value, title = textResource(id = R.string.txtNewGarbageSpot),icon = bitmapDescriptor(
+                    LocalContext.current, R.drawable.bin_icon
+                ))
             } else {
                 log.d { "no position selected" }
                 newGarbageSpotPos.value = LatLng(0.0, 0.0)
@@ -663,9 +678,9 @@ fun SheetContent(
         var updateGarbageSpotState =
             garbageSpotViewModel.garbageSpotUpdateUIState.collectAsState().value
         val statusList = listOf(
-            textResource(R.string.GarbageSpotStatusListElement1).toString(),
-            textResource(R.string.GarbageSpotStatusListElement2).toString(),
-            textResource(R.string.GarbageSpotStatusListElement3).toString()
+            textResource(R.string.GarbageSpotStatusListElement1),
+            textResource(R.string.GarbageSpotStatusListElement2),
+            textResource(R.string.GarbageSpotStatusListElement3)
         )
 
 
@@ -696,7 +711,7 @@ fun SheetContent(
 
                         })
                         )
-                    Text(garbageSpot.value.creator.toString())
+
                 }
                 Spacer(Modifier.height(32.dp))
                 Column {
@@ -733,7 +748,7 @@ fun SheetContent(
                     },
                     enabled = updateGarbageSpot.value,
                 ) {
-                    Text(textResource(R.string.btnUpdateGarbageSpotStatus).toString())
+                    Text(textResource(R.string.btnUpdateGarbageSpotStatus))
                 }
                 GarbageSpotStatusUpdateState(
                     updateGarbageSpotState,
