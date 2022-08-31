@@ -109,7 +109,7 @@
     <string name="txtFutureEvents">Eventos Futuros</string>
     <string name="txtMyEventsList">Os Meus Eventos</string>
     <string name="btnUpdateParticipateOnEvent">Alterar estado</string>
-    <string name="txtGarbageSpotsList">Todos os Locais de Lixo</string>
+    <string name="txtGarbageSpotsList">Locais de Lixo</string>
     <string name="lblEventInfoDescription">Descrição</string>
     <string name="EventOrganizerStatusElement2">Começado</string>
     <string name="EventOrganizerStatusElement1">Criado</string>
