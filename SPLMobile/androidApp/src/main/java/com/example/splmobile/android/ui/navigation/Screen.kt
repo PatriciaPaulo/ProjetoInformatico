@@ -31,8 +31,8 @@ sealed class Screen (val route: String) {
 
 sealed class BottomNavItem(var title:String, var icon:Int, var route:String){
     object Home : BottomNavItem("Home", R.drawable.ic_main_home,"home")
-    object Map: BottomNavItem("Map", R.drawable.ic_main_map,"map")
-    object Profile: BottomNavItem("Profile", R.drawable.ic_main_profile,"profile")
-    object Community: BottomNavItem("Community", R.drawable.ic_main_community,"community")
-    object Chat: BottomNavItem("Chat", R.drawable.ic_main_chat,"chat")
+    object Map: BottomNavItem("Mapa", R.drawable.ic_main_map,"map")
+    object Profile: BottomNavItem("Perfil", R.drawable.ic_main_profile,"profile")
+    object Community: BottomNavItem("Comunidade", R.drawable.ic_main_community,"community")
+    object Chat: BottomNavItem("Conversa", R.drawable.ic_main_chat,"chat")
 }
