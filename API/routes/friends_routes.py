@@ -64,7 +64,7 @@ def friend_request(current_user):
             db.session.add(new_friendship)
             db.session.commit()
 
-            send_notification_request(user)
+            send_notification_request(user,current_user)
             return make_response(jsonify(
                 {'data': get_friend_data(current_user, new_friendship), 'message': '200 OK - Friend request sent'}),
                                  200)
