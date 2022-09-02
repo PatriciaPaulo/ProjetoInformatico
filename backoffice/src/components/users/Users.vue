@@ -11,19 +11,19 @@
     :filters="filters"
     class="p-datatable-sm"
   >
-    <template #empty> No users found. </template>
-    <template #loading> Loading users data. Please wait. </template>
+    <template #empty> Utilizadores não encontrados. </template>
+    <template #loading> A carregar os dados sobre os utilizadores. Porfavor aguarde. </template>
     <template #header>
       <div class="flex justify-content-between">
         <div class="">
           <select class="form-select" id="selectBlocked" v-model="filter">
             <option value="-1">Todos</option>
-            <option value="1">Admins</option>
-            <option value="0">Users</option>
+            <option value="1">Administradores</option>
+            <option value="0">Utilizadores</option>
           </select>
         </div>
         <div>
-          <h1 class="">Users</h1>
+          <h1 class="">Utilizadores</h1>
         </div>
 
         <div>
@@ -37,11 +37,20 @@
         </div>
       </div>
     </template>
-    <Column field="name" header="Name" :sortable="true"></Column>
+    <Column field="name" header="Nome" :sortable="true"></Column>
     <Column field="username" header="Username" :sortable="true"></Column>
     <Column field="email" header="Email" :sortable="true"></Column>
-    <Column field="admin" header="Admin" :sortable="true"></Column>
-    <Column header="Block" >
+      <Column header="Admin">
+        <template #body="{ data }">
+          <div class="d-flex justify-content-between">
+            <i v-if="data.admin" class="bi bi-xs bi-check2"></i>
+            <i v-else class="bi bi-xs bi-x"></i>
+          </div>
+        </template>
+      </Column>
+    
+    
+    <Column header="Bloqueado" >
       <template #body="{ data }">
         <div v-if="data.id !== this.$store.state.loggedInUser.id" class="d-flex justify-content-between">
           <button
@@ -58,7 +67,7 @@
         </div>
       </template>
     </Column>
-    <Column header="Delete">  
+    <Column header="Eliminar">  
       <template #body="{ data }">
         <div v-if="data.id !== this.$store.state.loggedInUser.id" class="d-flex justify-content-between">
           <button
@@ -136,7 +145,7 @@ export default {
     },
     blockUser(user) {
       this.$confirm.require({
-        message: `Are you sure you want to block user ${user.username}?`,
+        message: `Tens a certeza que queres bloquear o utilizador ${user.username}?`,
         header: "Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: () => {
@@ -146,7 +155,7 @@ export default {
             .dispatch("blockUser", user)
             .then((response) => {
               this.$toast.success(
-                "User " + user.username + " has been blocked."
+                "Utilizador " + user.username + " foi bloqueado."
               );
               this.$store.dispatch("loadUsers", response);
             })

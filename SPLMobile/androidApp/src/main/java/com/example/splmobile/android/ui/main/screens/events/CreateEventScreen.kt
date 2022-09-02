@@ -36,16 +36,16 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.equipments.EquipmentDTO
-import com.example.splmobile.dtos.equipments.EquipmentInEventDTO
-import com.example.splmobile.dtos.events.EventDTO
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
-import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.SharedViewModel
-import com.example.splmobile.models.GarbageSpotViewModel
-import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.objects.equipments.EquipmentDTO
+import com.example.splmobile.objects.equipments.EquipmentInEventDTO
+import com.example.splmobile.objects.events.EventDTO
+import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
+import com.example.splmobile.objects.garbageTypes.GarbageTypeDTO
+import com.example.splmobile.viewmodels.AuthViewModel
+import com.example.splmobile.viewmodels.EventViewModel
+import com.example.splmobile.viewmodels.SharedViewModel
+import com.example.splmobile.viewmodels.GarbageSpotViewModel
+import com.example.splmobile.viewmodels.UserInfoViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -83,7 +83,8 @@ fun CreateEventScreen(
         garbageSpotViewModel.getGarbageTypes(authViewModel.tokenState.value)
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
         eventViewModel.getEquipments(authViewModel.tokenState.value)
-        EventViewModel.EventCreateUIState.Empty
+        eventViewModel.emptyCreateEventState()
+
     }
     val garbageSpotsState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
     val garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
@@ -170,7 +171,7 @@ fun CreateEventScreen(
 
 
                     Spacer(modifier = Modifier.height(32.dp))
-                    Text("PONTO DE ENCONTRO")
+                    Text("Ponto de Encontro")
                     PlacePickerComponent(locationEvent,log)
                     Spacer(modifier = Modifier.height(32.dp))
                     DatePickInput(startDateEvent, log)
@@ -241,13 +242,14 @@ fun CreateEventScreen(
 
                                 allGarbageSpotListEvent.value = garbageSpotsState.garbageSpots.filter {
                                     calculateDistance(locationEvent.value,LatLng(it.latitude.toDouble(),it.longitude.toDouble()))<50.00
+                                            && it.approved
                                 }
 
                                 garbageSpotsSelection(allGarbageSpotListEvent, listGarbageSpotsInEvent)
                             }
 
                             else{
-                                Text(text="Picka a location first")
+                                Text(text= textResource(id = R.string.lblPickALocation))
                             }
 
 
@@ -263,7 +265,7 @@ fun CreateEventScreen(
                     is EventViewModel.EventCreateUIState.Success -> {
                         log.d{"event create state -> success"}
                         Text(
-                            text = textResource(R.string.txtEventCreatedSuccess).toString(),
+                            text = textResource(R.string.txtEventCreatedSuccess),
                             color = MaterialTheme.colors.primary,
                             style = MaterialTheme.typography.caption,
                             modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
@@ -274,9 +276,15 @@ fun CreateEventScreen(
                     is EventViewModel.EventCreateUIState.Error -> {
                         log.d{"event create state -> Error"}
                         log.d{"Error -> ${ createEventState.error}"}
-                        Text(text = "Error message - " + createEventState.error)
+                        Text(text = textResource(id = R.string.txtEventCreateError))
                     }
                     is EventViewModel.EventCreateUIState.Loading -> CircularProgressIndicator()
+                    EventViewModel.EventCreateUIState.Empty -> Text(
+                        text = "",
+                        color = MaterialTheme.colors.primary,
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                    )
                 }
 
                 Button(
@@ -325,7 +333,7 @@ fun CreateEventScreen(
                         }
                     },
                 ) {
-                  Text(text= "Criar")
+                  Text(text= textResource(id = R.string.lblCreateEvent))
                 }
 
 
@@ -346,6 +354,7 @@ private fun EquipmentSelection(
 
     Row(horizontalArrangement = Arrangement.SpaceAround){
         Text(text = textResource(R.string.lblEquipment))
+        Spacer(Modifier.width(5.dp))
         Text(text = textResource(R.string.lblEquipmentIsProvided))
     }
 
@@ -368,36 +377,46 @@ private fun EquipmentSelection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .selectable(
-                        selected =  listEquipmentInEvent.value.contains(
-                            listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                        selected = listEquipmentInEvent.value.contains(
+                            listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
                         ),
                         onClick = {
                             Log.d("equipement", "equipment clicked")
 
 
-                            var element =  listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
+                            var element =
+                                listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
                             Log.d("equipement", "$element")
 
-                                if ( element !=null) {
-                                    Log.d("equipment", "removing garbage type")
+                            if (element != null) {
+                                Log.d("equipment", "removing garbage type")
 
-                                    //remove item
-                                    listEquipmentInEvent.value.remove(element)
+                                //remove item
+                                listEquipmentInEvent.value.remove(element)
 
 
-                                } else {
-                                    Log.d("equipment", "adding equipment type")
-                                    listEquipmentInEvent.value.add(EquipmentInEventDTO(0, 0,allEquipmentListEvent.value[index].id,listChecked.value[index],"observations"))
-                                    Log.d("equipment", "list ${listEquipmentInEvent.value}")
-                                }
+                            } else {
+                                Log.d("equipment", "adding equipment type")
+                                listEquipmentInEvent.value.add(
+                                    EquipmentInEventDTO(
+                                        0,
+                                        0,
+                                        allEquipmentListEvent.value[index].id,
+                                        listChecked.value[index],
+                                        "observations"
+                                    )
+                                )
+                                Log.d("equipment", "list ${listEquipmentInEvent.value}")
                             }
+                        }
 
 
                     )
                     .background(
-                        if (  listEquipmentInEvent.value.contains(
-                                listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
-                            )  ) Color.Gray
+                        if (listEquipmentInEvent.value.contains(
+                                listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
+                            )
+                        ) Color.Gray
                         else Color.Transparent
                     )
                     .padding(8.dp),
@@ -492,7 +511,7 @@ private fun EventDurationInput(durationEvent: MutableState<TextFieldValue>) {
         value = durationEvent.value,
         onValueChange = { durationEvent.value = it },
         label = {
-            Text(text = textResource(id = R.string.lblDurationCreateEvent).toString())
+            Text(text = textResource(id = R.string.lblDurationCreateEvent))
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     )
@@ -755,7 +774,7 @@ private fun garbageSpotsSelection(
     allGarbageSpotListEvent: MutableState<List<GarbageSpotDTO>>,
     listGarbageSpotsInEvent: MutableState<SnapshotStateList<Long>>
 ) {
-    Text(text = textResource(R.string.lblGarbageSpots).toString())
+    Text(text = textResource(R.string.lblGarbageSpots))
 
 
     LazyColumn(
@@ -766,6 +785,7 @@ private fun garbageSpotsSelection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         items(allGarbageSpotListEvent.value.size) { index ->
             Row(
                 modifier = Modifier
@@ -940,7 +960,7 @@ fun DatePickerComponent(
     ){
        // Creating a button that on
         // click displays/shows the DatePickerDialog
-        Text(text= "Date")
+        Text(text= "Data de início")
         Text(dateEvent.value)
         Button(
             onClick = {

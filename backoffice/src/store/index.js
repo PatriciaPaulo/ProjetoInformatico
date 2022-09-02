@@ -38,20 +38,26 @@ export default createStore({
         state.users.splice(idx, 1)
       }
     },
-    //GarbageSpotss
-    setGarbageSpotss(state, garbageSpots) {
+    //GarbageSpots
+    setGarbageSpots(state, garbageSpots) {
       state.garbageSpots = garbageSpots
     },
-    resetGarbageSpotss(state) {
+    resetGarbageSpots(state) {
       state.garbageSpots = null
     },
     insertGarbageSpots(state, newGarbageSpots) {
       state.garbageSpots.push(newGarbageSpots)
     },
-    updateGarbageSpots(state, updateGarbageSpots) {
-      let idx = state.garbageSpots.findIndex((t) => t.id === updateGarbageSpots.id)
+    updateGarbageSpot(state, updateGarbageSpot) {
+      let idx = state.garbageSpots.findIndex((t) => t.id === updateGarbageSpot.id)
       if (idx >= 0) {
-        state.garbageSpots[idx] = updateGarbageSpots
+        state.garbageSpots[idx] = updateGarbageSpot
+      }
+    },
+    removeGarbageSpot(state, garbageSpot) {
+      let idx = state.garbageSpots.findIndex((t) => t.id === garbageSpot.id)
+      if (idx >= 0) {
+        state.garbageSpots.splice(idx, 1);
       }
     },
     //Events
@@ -148,13 +154,13 @@ export default createStore({
       try {
         let response = await axios.get('garbageSpots')
       
-        context.commit('setGarbageSpotss', response.data.data)
+        context.commit('setGarbageSpots', response.data.data)
         response.data.data.forEach(element => {
           console.log("garbage spots retrieved" + element.approved)
         });
         return response.data.data
       } catch (error) {
-        context.commit('resetGarbageSpotss', null)
+        context.commit('resetGarbageSpots', null)
         throw error
       }
     },
@@ -168,14 +174,35 @@ export default createStore({
         throw error
       }
     },
+    async loadCreator(context,eventID) { 
+      let response = await axios.get('events/'+eventID+'/creator')
+      return response.data.data   
+    },
+    async cancelarEvento(context, event) {
+      event.status = "Cancelado"
+      let response = await axios.patch('events/'+ event.id+'/updateStatus', 
+      event.status, 
+      {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+      } )
+      context.commit('updateEvent', event)
+      return response.data
+    },
     async aprovarGarbageSpot(context, garbageSpot) {
       let response = await axios.patch('garbageSpots/' + garbageSpot.id + '/approve', { 'approved': garbageSpot.approved })
-      context.commit('updateGarbageSpots', garbageSpot)
+      context.commit('updateGarbageSpot', garbageSpot)
       return response.data
     },
     async updateStatusGarbageSpots(context, garbageSpot) {
-      let response = await axios.patch('garbageSpots/' + garbageSpot.id + '/updateGarbageSpotStatus', { 'status': garbageSpot.estado })
-      context.commit('updateGarbageSpots', garbageSpot)
+      let response = await axios.patch('garbageSpots/' + garbageSpot.id + '/updateGarbageSpotStatus', { 'status': garbageSpot.status })
+      context.commit('updateGarbageSpot', garbageSpot)
+      return response.data
+    },
+    async deleteGarbageSpot(context, garbageSpot) {
+      let response = await axios.delete('garbageSpots/' + garbageSpot.id)
+      context.commit('removeGarbageSpot', garbageSpot)
       return response.data
     },
     async deleteUser(context, user) {

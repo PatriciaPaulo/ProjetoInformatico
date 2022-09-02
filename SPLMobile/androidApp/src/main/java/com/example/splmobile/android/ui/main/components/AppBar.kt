@@ -39,7 +39,7 @@ fun DefaultAppBar(
 }
 
 @Composable
-fun MapAppBar(
+fun AppBar(
     title: String,
     searchWidgetState: SearchWidgetState,
     searchTextState: String,

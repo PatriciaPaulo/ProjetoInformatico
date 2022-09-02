@@ -1,7 +1,6 @@
 import os
 
-from flask import Flask, request, current_app, flash, url_for
-from werkzeug.utils import redirect, secure_filename
+from flask import Flask
 
 from routes.equipment_routes import equipment_routes_blueprint
 from routes.file_routes import file_routes_blueprint
@@ -15,7 +14,7 @@ from routes.userinevent_routes import users_event_routes_blueprint
 from routes.friends_routes import friends_routes_blueprint
 from routes.messages_routes import messages_routes_blueprint
 
-from models import db, Base, User
+from models import db, Base
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -61,5 +60,5 @@ if __name__ == '__main__':
 
         session.commit()
 
-        # app.run(host='0.0.0.0', port=5000,debug=True)
+        # app.run(host='0.0.0.0', port=5000,debug=False)
         app.run(debug=True, use_reloader=False)

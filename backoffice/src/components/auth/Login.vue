@@ -1,10 +1,10 @@
 <template>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="login">
-    <h3 class="mt-5 mb-3 text-light text-center">Login</h3>
+    <h3 class="mt-5 mb-3 text-center">Login</h3>
     <hr />
     <div class="mb-3 mx-auto">
       <div class="mb-3 w-25 mx-auto">
-        <label for="inputUsername" class="form-label text-light">Email</label>
+        <label for="inputUsername" class="form-label">Email</label>
         <input
           type="text"
           class="form-control"
@@ -16,7 +16,7 @@
     </div>
     <div class="mb-3 mx-auto">
       <div class="mb-3 w-25 mx-auto">
-        <label for="inputPassword" class="form-label text-light">Password</label>
+        <label for="inputPassword" class="form-label">Password</label>
         <input
           type="password"
           class="form-control"
@@ -28,7 +28,7 @@
     </div>
     <div class="mb-3 d-flex justify-content-center">
       <button type="button" class="btn btn-dark px-5" @click="login">
-        Login
+        Entrar
       </button>
     </div>
   </form>
@@ -52,20 +52,20 @@ export default {
         .dispatch("login", this.credentials)
         .then(() => {
           this.$toast.success(
-            "User " +
+            "Utilizador " +
               this.$store.state.loggedInUser.name +
-              " has entered the application."
+              " entrou na aplicação."
           );
           this.$router.push({ name: "Dashboard" });
         })
         .catch((error) => {
           this.credentials.password = "";
           if (error.response.status == 403) {
-            this.$toast.error("USER IS BLOCKED!");
+            this.$toast.error("Utilizador está bloqueado!");
           } else if (error.response.status == 409) {
-            this.$toast.error("USER IS DELETED!");
+            this.$toast.error("Utilizador foi eliminado!");
           } else {
-            this.$toast.error("User credentials are invalid!");
+            this.$toast.error("Crendenciais erradas!");
           }
         });
     },

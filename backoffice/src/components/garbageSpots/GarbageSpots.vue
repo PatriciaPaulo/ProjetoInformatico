@@ -10,12 +10,12 @@
         stripedRows
         :rows="10"
         :loading="isLoading"
-        :globalFilterFields="['nome', 'estado', 'criador', 'aprovado']"
+        :globalFilterFields="['name', 'status', 'id', 'approved']"
         :filters="filters"
         class="p-datatable-sm"
       >
-        <template #empty> No garbageSpots found. </template>
-        <template #loading> Loading garbageSpots data. Please wait. </template>
+        <template #empty> Locais de lixo não encontrados. </template>
+        <template #loading> A carregar os dados sobre os locais de lixo. Porfavor aguarde. </template>
         <template #header>
           <div class="flex justify-content-between">
             <div class="">
@@ -26,7 +26,7 @@
               </select>
             </div>
             <div>
-              <h1 class="">GarbageSpots</h1>
+              <h1 class="">Locais de Lixo</h1>
             </div>
 
             <div>
@@ -41,7 +41,7 @@
           </div>
         </template>
         <Column field="name" header="Nome" :sortable="true"></Column>
-        <Column field="criador" header="Criador" :sortable="true">
+        <Column field="criador" header="Criador">
           <template #body="{ data }">
             {{ userName(data.creator) }}
           </template>
@@ -128,18 +128,33 @@ export default {
       console.log("id  - "+ garbageSpot.id)
       this.$router.push({ name: "GarbageSpot", params: { id: garbageSpot.id } });
     },
+    
     deleteGarbageSpot(garbageSpot) {
-      this.$store
+       this.$confirm.require({
+        message: `Tens a certeza que queres eliminar o local de lixo ${garbageSpot.name}?`,
+        header: "Confirmation",
+        icon: "pi pi-exclamation-triangle",
+        accept: () => {
+          //callback to execute when user confirms the action
+        this.$store
         .dispatch("deleteGarbageSpot", garbageSpot)
         .then(() => {
           this.$toast.success(
-            "GarbageSpot " + garbageSpot.name + " was deleted successfully."
+            "Local de lixo " + garbageSpot.name + " eliminado com sucesso."
           );
           
         })
         .catch((error) => {
           console.log(error);
         });
+        },
+        reject: () => {
+          //callback to execute when user rejects the action
+        
+        },
+       
+        })
+      
     },
     loadGarbageSpots() {
       this.isLoading = true;
@@ -158,7 +173,7 @@ export default {
       var r = this.$store.getters.users.filter(user => {
         return user.id === id
       })
-      return r[0] ? r[0].username : "Not found"
+      return r[0] ? r[0].username : "Não encontrado"
     },
    
   },

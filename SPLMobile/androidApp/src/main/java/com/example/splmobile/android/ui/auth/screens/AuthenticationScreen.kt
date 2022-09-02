@@ -20,11 +20,10 @@ import com.example.splmobile.android.*
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.MessageViewModel
-import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.viewmodels.AuthViewModel
+import com.example.splmobile.viewmodels.MessageViewModel
+import com.example.splmobile.viewmodels.UserInfoViewModel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 
@@ -71,7 +70,7 @@ fun AuthenticationScreen(
     }
 
     // if login failed build Authentication Screen
-    AuthenticationUI(navController)
+    AuthenticationUI(navController,authViewModel)
 }
 
 // Check if user was previously logged in
@@ -93,7 +92,8 @@ fun isAuthenticated() : Triple<Boolean, String, String> {
 // Build Authentication Screen
 @Composable
 fun AuthenticationUI (
-    navController : NavHostController
+    navController : NavHostController,
+    authViewModel: AuthViewModel,
 ){
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -128,7 +128,8 @@ fun AuthenticationUI (
 
             // Visit as Guest Button
             btnGoToVisitGuest(Modifier) {
-                //TODO go to main page as guest
+                authViewModel.setGuest()
+                navController.navigate(BottomNavItem.Home.route)
             }
         }
     }

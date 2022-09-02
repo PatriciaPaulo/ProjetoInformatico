@@ -7,6 +7,9 @@ import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.events.EventsResponse
 import com.example.splmobile.dtos.users.FriendsResponse
 import com.example.splmobile.dtos.users.UsersStatsResponse
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.users.*
+import com.example.splmobile.HttpRequestUrls
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -89,8 +92,8 @@ class FriendServiceImpl (private val log: Logger, engine: HttpClientEngine) : Fr
 
     override suspend fun postFriendRequest(
         userID: Long, token: String
-    ): RequestMessageResponse {
-        log.d { "post new Garbage Spot" }
+    ): FriendResponse {
+        log.d { "post new friend request" }
         try{
             return client.post {
                 headers {
@@ -100,16 +103,16 @@ class FriendServiceImpl (private val log: Logger, engine: HttpClientEngine) : Fr
                 setBody(userID)
 
                 url("api/friends")
-            }.body() as RequestMessageResponse
+            }.body() as FriendResponse
         }
         catch (ex :Exception){
-            return RequestMessageResponse("$ex")
+            return FriendResponse(FriendDTO(0, UserDTO(0,"","","","",""),"",""),"$ex")
         }
     }
 
     override suspend fun removeFriend(
         friendshipID: Long, token: String
-    ): RequestMessageResponse {
+    ): FriendResponse {
         log.d { "remove friend" }
         try{
             return client.delete() {
@@ -117,10 +120,10 @@ class FriendServiceImpl (private val log: Logger, engine: HttpClientEngine) : Fr
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 url("api/friends/"+friendshipID)
-            }.body() as RequestMessageResponse
+            }.body() as FriendResponse
         }
         catch (ex :Exception){
-            return RequestMessageResponse("$ex")
+            return FriendResponse(FriendDTO(0, UserDTO(0,"","","","",""),"",""),"$ex")
         }
     }
 

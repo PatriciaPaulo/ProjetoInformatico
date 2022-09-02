@@ -9,6 +9,11 @@ import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
 import com.example.splmobile.dtos.garbageTypes.UnitTypeDTO
 import com.example.splmobile.dtos.garbageTypes.UnitTypeResponse
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.garbageSpots.GarbageSpotsResponse
+import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
+import com.example.splmobile.objects.garbageTypes.GarbageTypesResponse
+import com.example.splmobile.HttpRequestUrls
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -104,7 +109,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
 
     }
     override suspend fun patchGarbageSpotStatus(
-        garbageSpot: GarbageSpotDTO,
+        garbageSpotID: Long,
         status: String,
         token: String,
     ): RequestMessageResponse {
@@ -115,16 +120,8 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
-                setBody(GarbageSpotDTO(garbageSpot.id,
-                    garbageSpot.name,
-                    garbageSpot.creator,
-                    garbageSpot.latitude,
-                    garbageSpot.longitude,
-                    garbageSpot.status,
-                    garbageSpot.approved,
-                    "",
-                    emptyList()))
-                url("api/garbageSpots/"+garbageSpot.id+"/updateGarbageSpotStatus")
+                setBody(status)
+                url("api/garbageSpots/"+garbageSpotID+"/updateGarbageSpotStatus")
             }.body() as RequestMessageResponse
         }
         catch (ex :Exception){
@@ -181,6 +178,7 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
     ): RequestMessageResponse {
         TODO("Not yet implemented")
     }
+
 
     private fun HttpRequestBuilder.url(path: String) {
         url {

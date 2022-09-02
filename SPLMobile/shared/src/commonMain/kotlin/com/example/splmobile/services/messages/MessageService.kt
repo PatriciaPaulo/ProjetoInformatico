@@ -1,7 +1,7 @@
 package com.example.splmobile.services.messages
 
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.messages.*
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.messages.*
 
 
 interface MessageService {

@@ -1,7 +1,10 @@
 package com.example.splmobile.services.activities
 
-import com.example.splmobile.dtos.activities.*
-import com.example.splmobile.dtos.messages.MessagesResponse
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.activities.ActivitiesTypeResponse
+import com.example.splmobile.objects.activities.CreateActivitySerializable
+import com.example.splmobile.objects.activities.*
+import com.example.splmobile.objects.messages.MessagesResponse
 
 interface ActivityService {
     suspend fun postCreateActivity(activity : CreateActivitySerializable, token : String) : CreateActivityResponse

@@ -2,9 +2,13 @@ package com.example.splmobile.services.activities
 
 
 import co.touchlab.stately.ensureNeverFrozen
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.activities.ActivitiesTypeResponse
+import com.example.splmobile.objects.activities.CreateActivitySerializable
+import com.example.splmobile.HttpRequestUrls
 import com.example.splmobile.API_PATH
-import com.example.splmobile.dtos.activities.*
-import com.example.splmobile.dtos.messages.MessagesResponse
+import com.example.splmobile.objects.activities.*
+import com.example.splmobile.objects.messages.MessagesResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*

@@ -33,6 +33,7 @@ import com.example.splmobile.isEmailValid
 import com.example.splmobile.isTextFieldEmpty
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.passwordsMatch
+import com.example.splmobile.viewmodels.AuthViewModel
 
 @Composable
 fun RegisterScreen(

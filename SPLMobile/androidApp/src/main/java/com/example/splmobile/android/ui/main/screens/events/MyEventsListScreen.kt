@@ -1,7 +1,7 @@
 package com.example.splmobile.android.ui.main.screens.events
 
 
-import MapAppBar
+import AppBar
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -23,9 +23,9 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.events.UserInEventDTO
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.objects.events.UserInEventDTO
+import com.example.splmobile.viewmodels.AuthViewModel
+import com.example.splmobile.viewmodels.UserInfoViewModel
 import kotlinx.coroutines.launch
 
 
@@ -57,7 +57,7 @@ fun MyEventListScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            MapAppBar(
+            AppBar(
                 title = textResource(R.string.txtMyEventsList).toString(),
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState,

@@ -1,6 +1,6 @@
 package com.example.splmobile.android.ui.main.screens.events
 
-import MapAppBar
+import AppBar
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -22,10 +22,10 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.events.EventDTO
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.EventViewModel
-import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.objects.events.EventDTO
+import com.example.splmobile.viewmodels.AuthViewModel
+import com.example.splmobile.viewmodels.EventViewModel
+import com.example.splmobile.viewmodels.UserInfoViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -56,55 +56,59 @@ fun EventListScreen(
 
 
     Scaffold(
-    scaffoldState = scaffoldState,
-    topBar = {
-        MapAppBar(
-            title = textResource(R.string.lblEventListSearchBar).toString(),
-            searchWidgetState = searchWidgetState,
-            searchTextState = searchTextState,
-            onTextChange = {
-                mainViewModel.updateSearchTextState(newValue = it)
-            },
-            onCloseClicked = {
-                mainViewModel.updateSearchTextState(newValue = "")
-                mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
+        scaffoldState = scaffoldState,
+        topBar = {
+            AppBar(
+                title = textResource(R.string.lblEventListSearchBar),
+                searchWidgetState = searchWidgetState,
+                searchTextState = searchTextState,
+                onTextChange = {
+                    mainViewModel.updateSearchTextState(newValue = it)
+                },
+                onCloseClicked = {
+                    mainViewModel.updateSearchTextState(newValue = "")
+                    mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
 
-            },
-            onSearchClicked = {
-                coroutineScope.launch {
-                    //todo
+                },
+                onSearchClicked = {
+                    coroutineScope.launch {
+
+
+                    }
+                },
+                onSearchTriggered = {
+                    mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
 
                 }
-            },
-            onSearchTriggered = {
-                mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
+            )
+        },
+        bottomBar = { BottomNavigationBar(navController = navController) },
+        content =
+        { innerPadding ->
 
-            }
-        )
-    },
-    bottomBar = { BottomNavigationBar(navController = navController) },
-    content =
-    { innerPadding ->
 
-        Text(text = textResource(id = R.string.txtFutureEvents).toString(),
-            style = MaterialTheme.typography.h4)
-            when(eventsListState){
+            when (eventsListState) {
                 is EventViewModel.EventsUIState.Success -> {
-                    log.d{"all events state -> Success"}
-                    LazyColumn(modifier = Modifier
-                                .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
+                    log.d { "all events state -> Success" }
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(top = 32.dp, bottom = innerPadding.calculateBottomPadding())
+                    ) {
 
-                        items(eventsListState.events.size){ index ->
-                            EventsList(event = eventsListState.events.get(index), navController = navController)
+                        items(eventsListState.events.size) { index ->
+                            EventsList(
+                                event = eventsListState.events.get(index),
+                                navController = navController
+                            )
                         }
 
 
                     }
                 }
                 is EventViewModel.EventsUIState.Error -> {
-                    log.d{"all events state -> Error"}
+                    log.d { "all events state -> Error" }
                     Text(
-                        text = textResource(R.string.txtEventError).toString() ,
+                        text = textResource(R.string.txtEventError).toString(),
                         color = MaterialTheme.colors.primary,
                         style = MaterialTheme.typography.caption,
                         modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
@@ -114,16 +118,16 @@ fun EventListScreen(
             }
 
 
+        },
 
-    },
-
-    )
+        )
 
 }
 
 @Composable
-fun EventsList(navController: NavHostController,event :EventDTO){
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
+fun EventsList(navController: NavHostController, event: EventDTO) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -133,18 +137,18 @@ fun EventsList(navController: NavHostController,event :EventDTO){
                     navController.navigate(Screen.EventInfo.route + "/${event.id}")
                 },
 
-            )
+                )
 
-        
-    ){
-        Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
+
+    ) {
+        Image(painter = painterResource(id = R.drawable.ic_main_map), contentDescription = null)
         Column() {
             Text(text = event.name, style = MaterialTheme.typography.h6)
             Text(text = event.status, style = MaterialTheme.typography.body1)
             Text(text = event.startDate, style = MaterialTheme.typography.body2)
 
         }
-    }  
+    }
 }
 /*
 @Preview

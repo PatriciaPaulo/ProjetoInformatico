@@ -1,8 +1,7 @@
 package com.example.splmobile.android.ui.main.screens.garbageSpots
 
 
-
-import MapAppBar
+import AppBar
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -24,10 +23,10 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
-import com.example.splmobile.models.AuthViewModel
-import com.example.splmobile.models.GarbageSpotViewModel
-import com.example.splmobile.models.UserInfoViewModel
+import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
+import com.example.splmobile.viewmodels.AuthViewModel
+import com.example.splmobile.viewmodels.GarbageSpotViewModel
+import com.example.splmobile.viewmodels.UserInfoViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -49,7 +48,8 @@ fun GarbageSpotsListScreen(
     LaunchedEffect(Unit) {
         garbageSpotViewModel.getGarbageSpots(authViewModel.tokenState.value)
     }
-    var garbageSpotsListState = garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
+
+
     //search bar states
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
@@ -58,8 +58,8 @@ fun GarbageSpotsListScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            MapAppBar(
-                title = textResource(R.string.lblEventListSearchBar).toString(),
+            AppBar(
+                title = textResource(R.string.txtGarbageSpotsList),
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState,
                 onTextChange = {
@@ -71,10 +71,7 @@ fun GarbageSpotsListScreen(
 
                 },
                 onSearchClicked = {
-                    coroutineScope.launch {
-                        //todo
 
-                    }
                 },
                 onSearchTriggered = {
                     mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
@@ -85,34 +82,38 @@ fun GarbageSpotsListScreen(
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
+            var garbageSpotsListState =
+                garbageSpotViewModel.garbageSpotsUIState.collectAsState().value
 
-            Text(text = textResource(id = R.string.txtGarbageSpotsList).toString(),
-                style = MaterialTheme.typography.h4)
-            when(garbageSpotsListState){
+            when (garbageSpotsListState) {
                 is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
-                    log.d{"Get garbage spots state -> Success"}
-                    LazyColumn(modifier = Modifier
-                        .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
+                    log.d { "Get garbage spots state -> Success" }
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(top = 32.dp, bottom = innerPadding.calculateBottomPadding())
+                    ) {
 
-                        items(garbageSpotsListState.garbageSpots.filter { it.approved || it.creator == userInfoViewModel.myIdUIState.value } .size){ index ->
-                            GarbageSpotsList(gs = garbageSpotsListState.garbageSpots.get(index), navController = navController)
+                        items(garbageSpotsListState.garbageSpots.filter { it.approved || it.creator == userInfoViewModel.myIdUIState.value }.size) { index ->
+                            GarbageSpotsList(
+                                gs = garbageSpotsListState.garbageSpots.get(index),
+                                navController = navController
+                            )
                         }
 
 
                     }
                 }
-                is  GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
-                    log.d{"Get garbage spots state -> Error"}
+                is GarbageSpotViewModel.GarbageSpotsUIState.Error -> {
+                    log.d { "Get garbage spots state -> Error" }
                     Text(
-                        text = textResource(R.string.txtGarbageSpotError).toString() ,
+                        text = textResource(R.string.txtGarbageSpotError),
                         color = MaterialTheme.colors.primary,
                         style = MaterialTheme.typography.caption,
                         modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                     )
                 }
-                is  GarbageSpotViewModel.GarbageSpotsUIState.Loading -> CircularProgressIndicator()
+                is GarbageSpotViewModel.GarbageSpotsUIState.Loading -> CircularProgressIndicator()
             }
-
 
 
         },
@@ -122,8 +123,9 @@ fun GarbageSpotsListScreen(
 }
 
 @Composable
-fun GarbageSpotsList(navController: NavHostController, gs :GarbageSpotDTO){
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
+fun GarbageSpotsList(navController: NavHostController, gs: GarbageSpotDTO) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -136,8 +138,8 @@ fun GarbageSpotsList(navController: NavHostController, gs :GarbageSpotDTO){
                 )
 
 
-    ){
-        Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
+    ) {
+        Image(painter = painterResource(id = R.drawable.ic_main_map), contentDescription = null)
         Column() {
             Text(text = gs.name, style = MaterialTheme.typography.h6)
             Text(text = gs.status, style = MaterialTheme.typography.body1)

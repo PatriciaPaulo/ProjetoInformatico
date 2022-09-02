@@ -2,10 +2,11 @@ package com.example.splmobile.services.events
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.equipments.EquipmentsResponse
+import com.example.splmobile.objects.events.*
+import com.example.splmobile.HttpRequestUrls
 import com.example.splmobile.API_PATH
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.equipments.EquipmentsResponse
-import com.example.splmobile.dtos.events.*
 import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
 import io.ktor.client.*
 import io.ktor.client.call.*

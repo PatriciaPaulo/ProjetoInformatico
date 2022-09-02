@@ -2,7 +2,6 @@ package com.example.splmobile.android.ui.main.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,20 +9,15 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.splmobile.android.R
+import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.navigation.Screen
-import com.example.splmobile.dtos.events.EventDTO
-import com.example.splmobile.dtos.events.UserInEventDTO
-import com.example.splmobile.dtos.messages.MessageDTO
-import com.example.splmobile.dtos.users.FriendDTO
-import com.example.splmobile.models.*
+import com.example.splmobile.objects.events.EventDTO
+import com.example.splmobile.objects.messages.MessageDTO
+import com.example.splmobile.objects.users.FriendDTO
+import com.example.splmobile.viewmodels.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 
@@ -180,29 +174,31 @@ private fun EventsListSection(
 
     when (eventsListState) {
         is UserInfoViewModel.MyEventsUIState.Success -> {
-            messageViewModel.getLastEventMessage(
-                authViewModel.tokenState.value
-            )
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(600.dp),
-            ) {
-                items(eventsListState.events.size) { index ->
-                    EventsListWithLastMessage(
-                        eventsListState.events.get(index).event.id,
-                        messageViewModel,
-                        eventsListState,
-                        index,
-                        navController,
-                        userInfoViewModel
-                    )
+            if(eventsListState.events.size>0){
+                messageViewModel.getLastEventMessage(
+                    authViewModel.tokenState.value
+                )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(600.dp),
+                ) {
+                    items(eventsListState.events.size) { index ->
+                        EventsListWithLastMessage(
+                            eventsListState.events.get(index).event.id,
+                            messageViewModel,
+                            eventsListState,
+                            index,
+                            navController,
+                            userInfoViewModel
+                        )
 
+                    }
                 }
-
-
             }
-
+            else{
+                Text(text= textResource(id = R.string.txtNoEvents))
+            }
 
         }
         is UserInfoViewModel.MyEventsUIState.Loading -> {
@@ -327,6 +323,9 @@ private fun FriendsListSection(
                 }
 
 
+            }
+            else{
+                Text(text= textResource(id = R.string.txtNoFriends))
             }
 
 

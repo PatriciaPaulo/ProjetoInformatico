@@ -16,6 +16,10 @@ import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.dtos.activities.CreateActivitySerializable
 import com.example.splmobile.models.ActivityViewModel
 import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.android.viewmodel.MapViewModel
+import com.example.splmobile.objects.activities.CreateActivitySerializable
+import com.example.splmobile.viewmodels.ActivityViewModel
+import com.example.splmobile.viewmodels.AuthViewModel
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

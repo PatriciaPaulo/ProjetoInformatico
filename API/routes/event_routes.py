@@ -1,9 +1,14 @@
 from flask import jsonify, make_response, request
 from flask_restful import Api
 from flask import Blueprint
-from models import  Event, db, GarbageSpot, GarbageSpotInEvent, UserInEvent, GarbageInEvent, Garbage, Equipment, EquipmentInEvent
+from sqlalchemy import desc
+
+from models import Event, db, GarbageSpot, GarbageSpotInEvent, UserInEvent, GarbageInEvent, Garbage, Equipment, \
+    EquipmentInEvent, User
 from utils import token_required
 from datetime import datetime
+
+from websockets_server import send_notification_event_status
 
 event_routes_blueprint = Blueprint('event_routes', __name__, )
 api = Api(event_routes_blueprint)
@@ -47,7 +52,7 @@ def create_event(current_user):
             new_garbageInEvent = GarbageInEvent(eventID=new_event.id, garbageID=garbageTypeID)
             db.session.add(new_garbageInEvent)
 
-    organizador = UserInEvent(userID=current_user.id, eventID=new_event.id, status="Organizer", creator=True)
+    organizador = UserInEvent(userID=current_user.id, eventID=new_event.id, status="Organizer", creator=True, enteringDate=datetime.utcnow())
     db.session.add(organizador)
 
     if len(data['garbageSpotList']) > 0:
@@ -59,10 +64,12 @@ def create_event(current_user):
 
     if len(data['equipmentList']) > 0:
         for equipment in data['equipmentList']:
-            print(equipment )
+            print(equipment)
             equipmentExists = db.session.query(Equipment).filter_by(id=equipment['equipmentID']).first()
             if equipmentExists:
-                new_equipmentInEvent = EquipmentInEvent(eventID=new_event.id, equipmentID=equipment['equipmentID'],observations=equipment['observations'],isProvided=equipment['isProvided'])
+                new_equipmentInEvent = EquipmentInEvent(eventID=new_event.id, equipmentID=equipment['equipmentID'],
+                                                        observations=equipment['observations'],
+                                                        isProvided=equipment['isProvided'])
                 db.session.add(new_equipmentInEvent)
 
     db.session.commit()
@@ -74,7 +81,7 @@ def create_event(current_user):
 @event_routes_blueprint.route('/events', methods=['GET'])
 def get_events():
     # todo order by date
-    events = db.session.query(Event).all()
+    events = db.session.query(Event).order_by(desc(Event.createdDate)).all()
     output = []
     for event in events:
         event_data = {}
@@ -107,8 +114,6 @@ def get_events():
             event_data['equipments'].append(equipmentSer)
         output.append(event_data)
 
-
-
     return make_response(jsonify({'data': output, 'message': '200 OK - All Events Retrieved'}), 200)
 
 
@@ -124,7 +129,7 @@ def get_event_id(event_id):
                   'status': event.status, 'duration': event.duration, 'startDate': event.startDate,
                   'description': event.description, 'accessibility': event.accessibility,
                   'restrictions': event.restrictions, 'quantity': event.quantity, 'observations': event.observations,
-                  'createdDate': event.createdDate, 'garbageSpots': [], 'garbageTypes': [] ,'equipments': []}
+                  'createdDate': event.createdDate, 'garbageSpots': [], 'garbageTypes': [], 'equipments': []}
 
     for garbageSpot in db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
         garbageSpotSer = GarbageSpotInEvent.serialize(garbageSpot)
@@ -141,18 +146,37 @@ def get_event_id(event_id):
     return make_response(jsonify({'data': event_data, 'message': '200 OK - Event Retrieved'}), 200)
 
 
+# Get Events Creator
+@event_routes_blueprint.route('/events/<event_id>/creator', methods=['GET'])
+@token_required
+def get_events_creator(current_user,event_id):
+    event = db.session.query(Event).filter_by(id=event_id).first()
+    if not event:
+        return make_response(
+            jsonify({'message': '404 NOT OK - Event doesnt exist!'}), 404)
+
+    userInEvent = db.session.query(UserInEvent).filter_by(creator=True).first()
+    if not userInEvent:
+        return make_response(jsonify({'message': '404 NOT OK - Creator Not Found'}), 403)
+
+    user = db.session.query(User).filter_by(id=userInEvent.userID).first()
+    if not user:
+        return make_response(
+            jsonify({'message': '404 NOT OK - User doesnt exist!'}), 404)
+
+    return make_response(jsonify({'data': user.serialize(), 'message': '200 OK - Event Creator Retrieved'}), 200)
+
 # Update Event by Event Organizer (User)
 @event_routes_blueprint.route('/events/<event_id>', methods=['PUT'])
 @token_required
 def update_event(current_user, event_id):
-
     event = db.session.query(Event).filter_by(id=event_id).first()
 
     if not event:
         return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
 
     userInEvent = db.session.query(UserInEvent).filter_by(userID=current_user.id, eventID=event_id).first()
-    if userInEvent and userInEvent.status!="Organizer":
+    if userInEvent and userInEvent.status != "Organizer":
         return make_response(jsonify({'message': '403 NOT OK - You Can\'t Update This Event'}), 403)
 
     event_data = request.get_json()
@@ -173,12 +197,12 @@ def update_event(current_user, event_id):
 
     db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id).delete()
     db.session.query(GarbageInEvent).filter_by(eventID=event.id).delete()
+    db.session.query(EquipmentInEvent).filter_by(eventID=event.id).delete()
     db.session.commit()
-
 
     print(event_data['garbageTypeList'])
     print(event_data['garbageSpotList'])
-
+    print(event_data['equipmentList'])
 
     for garbageTypeID in event_data['garbageTypeList']:
         garbageExists = db.session.query(Garbage).filter_by(id=garbageTypeID).first()
@@ -186,12 +210,21 @@ def update_event(current_user, event_id):
             new_garbageInEvent = GarbageInEvent(eventID=event.id, garbageID=garbageTypeID)
             db.session.add(new_garbageInEvent)
 
+    for equipment in event_data['equipmentList']:
+        equipmentExists = db.session.query(Equipment).filter_by(id=equipment['equipmentID']).first()
+        if equipmentExists:
+            new_equipmentInEvent = EquipmentInEvent(eventID=event.id, equipmentID=equipment['equipmentID'],
+                                                    observations=equipment['observations'],
+                                                    isProvided=equipment['isProvided'])
+            db.session.add(new_equipmentInEvent)
+
     if len(event_data['garbageSpotList']) > 0:
         for garbageSpotID in event_data['garbageSpotList']:
             garbageSpotExists = db.session.query(GarbageSpot).filter_by(id=garbageSpotID).first()
             if garbageSpotExists:
                 new_garbageSpotInEvent = GarbageSpotInEvent(eventID=event.id, garbageSpotID=garbageSpotID)
                 db.session.add(new_garbageSpotInEvent)
+
 
 
     db.session.commit()
@@ -209,10 +242,10 @@ def update_status_event(current_user, event_id):
         return make_response(jsonify({'message': '404 NOT OK - No Event Found'}), 404)
     userInEvent = db.session.query(UserInEvent).filter_by(userID=current_user.id, eventID=event_id).first()
 
-    if not userInEvent:
+    if not userInEvent and not current_user.admin:
         return make_response(jsonify({'message': '404 NOT OK - User in Event Not Found'}), 404)
 
-    if userInEvent.status != "Organizer":
+    if not current_user.admin and userInEvent.status != "Organizer":
         return make_response(jsonify({'message': '403 NOT OK - You Can\'t Update This Event'}), 403)
 
     event_data = request.get_json()
@@ -220,7 +253,8 @@ def update_status_event(current_user, event_id):
     event.status = event_data
 
     db.session.commit()
-
+    if not current_user.admin:
+        send_notification_event_status(event, current_user)
     return make_response(jsonify({'message': '200 OK - Event Updated'}), 200)
 
 
@@ -300,7 +334,8 @@ def get_my_events(current_user):
                                    'description': event.description, 'accessibility': event.accessibility,
                                    'restrictions': event.restrictions, 'quantity': event.quantity,
                                    'observations': event.observations,
-                                   'createdDate': event.createdDate, 'garbageSpots': [], 'garbageTypes': [], 'equipments': []}
+                                   'createdDate': event.createdDate, 'garbageSpots': [], 'garbageTypes': [],
+                                   'equipments': []}
 
             for garbageSpot in db.session.query(GarbageSpotInEvent).filter_by(eventID=event.id):
                 garbageSpotSer = GarbageSpotInEvent.serialize(garbageSpot)
@@ -314,12 +349,9 @@ def get_my_events(current_user):
                 equipmentSer = EquipmentInEvent.serialize(equipment)
                 event_data['event']['equipments'].append(equipmentSer)
         event_data['status'] = user_event.status
+        event_data['enteringDate'] = user_event.enteringDate
         event_data['creator'] = user_event.creator
 
         output.append(event_data)
 
-
     return make_response(jsonify({'data': output, 'message': '200 OK - All Events Retrieved'}), 200)
-
-
-

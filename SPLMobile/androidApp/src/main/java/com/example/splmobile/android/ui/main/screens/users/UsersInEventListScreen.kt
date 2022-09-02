@@ -1,13 +1,12 @@
 package com.example.splmobile.android.ui.main.screens.users
 
-import MapAppBar
+import AppBar
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,9 +23,9 @@ import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
-import com.example.splmobile.dtos.events.UserInEventDTO
-import com.example.splmobile.dtos.users.UserDTO
-import com.example.splmobile.models.*
+import com.example.splmobile.objects.events.UserInEventDTO
+import com.example.splmobile.objects.users.UserDTO
+import com.example.splmobile.viewmodels.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -67,7 +66,7 @@ fun UsersInEventListScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            MapAppBar(
+            AppBar(
                 title = textResource(R.string.lblPartipantsInEvent).toString(),
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState,
@@ -325,7 +324,7 @@ fun AllUsersList(
 
             }
             if(usersInEventListSearch.find{it.userID == user.id }!= null){
-                Text(text = "in event", style = MaterialTheme.typography.h6)
+                usersInEventListSearch.find{it.userID == user.id }?.status?.let { Text(text = it, style = MaterialTheme.typography.h6) }
 
             }
         }
