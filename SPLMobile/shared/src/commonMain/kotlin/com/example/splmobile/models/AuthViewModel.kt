@@ -79,7 +79,7 @@ class AuthViewModel (
             }
         }.await() as SignInResponse
 
-        if(registerResponse.status == 200){
+        if(isCodeOK(registerResponse.message)){
             _registerUIState.value = RegisterUIState.Success
         } else {
             _registerUIState.value = RegisterUIState.Error(registerResponse.message)

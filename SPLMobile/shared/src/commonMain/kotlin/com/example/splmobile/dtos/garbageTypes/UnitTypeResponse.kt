@@ -2,10 +2,8 @@ package com.example.splmobile.dtos.garbageTypes
 
 import kotlinx.serialization.Serializable
 
-
 @Serializable
-data class GarbageTypeInEventDTO(
-    val id: Long,
-    val eventID: Long,
-    val garbageID: Long,
+data class UnitTypeResponse(
+    val data: List<UnitTypeDTO>,
+    val message: String,
 )

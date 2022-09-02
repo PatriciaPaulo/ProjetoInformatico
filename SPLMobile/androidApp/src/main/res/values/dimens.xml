@@ -2,7 +2,7 @@
 <resources>
     <!-- BUTTONS -->
     <dimen name="btn_small">36dp</dimen> <!-- Automatic 48px target size -->
-    <dimen name="btn_medium"></dimen>
+    <dimen name="btn_medium">48dp</dimen>
     <dimen name="btn_large">64dp</dimen>
 
     <!-- TEXT -->
@@ -26,9 +26,12 @@
 
     <!-- SHAPES -->
     <dimen name="cornerRadius">12dp</dimen>
+    <dimen name="txtBoxMedium">150dp</dimen>
+    <dimen name="txtBoxSmall">75dp</dimen>
 
     <!-- LOGO AND BRANDING -->
     <!-- TODO Adjust sizes when we have permanent logo -->
     <dimen name="small_logo">48dp</dimen>
+
 
 </resources>

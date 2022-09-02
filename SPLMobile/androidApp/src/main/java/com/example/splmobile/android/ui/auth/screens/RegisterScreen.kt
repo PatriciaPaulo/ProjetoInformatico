@@ -32,6 +32,7 @@ import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.isEmailValid
 import com.example.splmobile.isTextFieldEmpty
 import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.passwordsMatch
 
 @Composable
 fun RegisterScreen(
@@ -116,7 +117,8 @@ fun RegisterComposableUI(
     }
 
     val context = LocalContext.current
-
+    val coroutineScope = rememberCoroutineScope()
+    val registerUIState by authViewModel.registerUIState.collectAsState()
     LaunchedEffect(Unit) {
         authViewModel.registerUIState.collect { registerUIState ->
 
@@ -129,7 +131,7 @@ fun RegisterComposableUI(
                     }
 
                     showRequestState = false
-                    navController.navigate(BottomNavItem.Home.route)
+                    navController.navigate(Screen.Login.route)
                 }
                 is AuthViewModel.RegisterUIState.Error -> {
                     showErrorState = registerUIState.message
@@ -146,22 +148,27 @@ fun RegisterComposableUI(
         password = password,
         passwordError = passwordError,
         passwordUpdate = passwordUpdate,
+        passwordConf = passwordConfirmation,
+        passwordConfError = passwordConfError,
+        passwordConfUpdate = passwordConfUpdate,
         showRequestState = showRequestState,
         showErrorState = showErrorState,
         navController = navController
     ) {
         // validate()
-        if(isEmailValid(email) && !isTextFieldEmpty(password)){
-            authViewModel.login(email, password)
+        if(isEmailValid(email) && !isTextFieldEmpty(password) && !isTextFieldEmpty(passwordConfirmation) && passwordsMatch(password, passwordConfirmation)) {
+            authViewModel.registerUser(email, password, passwordConfirmation)
         } else {
             emailError = !isEmailValid(email)
             passwordError = isTextFieldEmpty(password)
+            passwordConfError = isTextFieldEmpty(passwordConfirmation) && passwordsMatch(password, passwordConfirmation)
         }
     }
 }
 
 
 // TODO Change ERROR text
+// TODO Change ALL text (has logins text)
 @Composable
 fun RegisterValidationUI(
     email : String,
@@ -170,6 +177,9 @@ fun RegisterValidationUI(
     password : String,
     passwordError : Boolean,
     passwordUpdate : (String) -> Unit,
+    passwordConf : String,
+    passwordConfError : Boolean,
+    passwordConfUpdate : (String) -> Unit,
     navController: NavHostController,
     showRequestState : Boolean,
     showErrorState : String,
@@ -182,7 +192,7 @@ fun RegisterValidationUI(
             .fillMaxHeight()
     ) {
 
-        // Login by Email
+        // Register by Email
         Column(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -193,7 +203,7 @@ fun RegisterValidationUI(
         ) {
 
             Text(
-                text = textResource(R.string.lblLoginToYourAcc).toString(),
+                text = stringResource(R.string.lblLoginToYourAcc),
                 style = TextStyle(fontSize = dimensionResource(R.dimen.small_title).value.sp),
             )
 
@@ -211,13 +221,13 @@ fun RegisterValidationUI(
                 },
                 label = {
                     Text(
-                        text = textResource(R.string.insertEmail).toString(),
+                        text = stringResource(R.string.insertEmail),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )
                 },
                 placeholder = {
                     Text(
-                        text = textResource(R.string.emailPlaceholder).toString(),
+                        text = stringResource(R.string.emailPlaceholder),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     ) },
                 singleLine = true,
@@ -253,13 +263,13 @@ fun RegisterValidationUI(
                 },
                 label = {
                     Text(
-                        text = textResource(R.string.insertPassword).toString(),
+                        text = stringResource(R.string.insertPassword),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )
                 },
                 placeholder = {
                     Text(
-                        text = textResource(R.string.passwordPlaceholder).toString(),
+                        text = stringResource(R.string.passwordPlaceholder),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )
                 },
@@ -282,7 +292,49 @@ fun RegisterValidationUI(
                 )
             }
 
-            if(!showErrorState.isBlank()) {
+            // password confirmation
+            OutlinedTextField(
+                value = passwordConf,
+                onValueChange = passwordConfUpdate,
+                leadingIcon = {
+                    Image(
+                        painterResource(R.drawable.ic_main_home),
+                        contentDescription = null
+                    )
+                },
+                label = {
+                    Text(
+                        text = stringResource(R.string.insertPassword),
+                        fontSize = dimensionResource(R.dimen.txt_medium).value.sp
+                    )
+                },
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.passwordPlaceholder),
+                        fontSize = dimensionResource(R.dimen.txt_medium).value.sp
+                    )
+                },
+                singleLine = true,
+                isError = passwordConfError,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password
+                ),
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimensionResource(R.dimen.btn_large))
+            )
+            if(passwordConfError) {
+                //TODO Tratar dos erros
+                Text(
+                    text = stringResource(R.string.registerInstead),
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+                )
+            }
+
+            if(showErrorState.isNotBlank()) {
                 Text(
                     text = showErrorState,
                     color = MaterialTheme.colors.error,
@@ -305,7 +357,7 @@ fun RegisterValidationUI(
                 )
             }
 
-            // Login Button
+            // Register Button
             Button(
                 onClick = {
                     validate()
@@ -319,7 +371,7 @@ fun RegisterValidationUI(
                     CircularProgressIndicator()
                 } else {
                     Text(
-                        textResource(R.string.lblLogin).toString(),
+                        stringResource(R.string.lblLogin),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )
                 }
@@ -354,7 +406,7 @@ fun RegisterValidationUI(
             */
         }
 
-        // Register Instead
+        // Login Instead
         Column (
             modifier = Modifier
                 .fillMaxWidth(),
@@ -362,18 +414,18 @@ fun RegisterValidationUI(
         ){
             TextButton(
                 onClick = {
-                    navController.navigate(Screen.Register.route)
+                    navController.navigate(Screen.Login.route)
                 },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             ) {
                 Text(
                     text = AnnotatedString(
-                        text = textResource(R.string.noAccountYet).toString(),
+                        text = textResource(R.string.noAccountYet),
                         spanStyle = SpanStyle(color = MaterialTheme.colors.onBackground)
                     ).plus(
                         AnnotatedString(
-                            text = " " + textResource(R.string.registerInstead).toString(),
+                            text = " " + textResource(R.string.registerInstead),
                         )
                     ),
                     fontSize = dimensionResource(R.dimen.txt_small).value.sp,

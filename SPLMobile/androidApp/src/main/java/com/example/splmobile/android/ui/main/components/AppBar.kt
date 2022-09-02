@@ -3,10 +3,12 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.components.SearchBar
@@ -63,4 +65,28 @@ fun MapAppBar(
             )
         }
     }
+}
+
+@Composable
+fun BackAppBar(
+    title: String,
+    navController: NavController
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title
+            )
+        },
+        actions = {
+            IconButton(
+                onClick = { navController.navigateUp() }) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Seta Para Trás icon",
+                    tint = Color.White
+                )
+            }
+        }
+    )
 }

@@ -3,6 +3,7 @@ package com.example.splmobile.models
 import co.touchlab.kermit.Logger
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
+import com.example.splmobile.dtos.garbageTypes.UnitTypeDTO
 
 import com.example.splmobile.services.garbageSpots.GarbageSpotService
 import kotlinx.coroutines.flow.*
@@ -61,7 +62,15 @@ class GarbageSpotViewModel (
         object Empty : GarbageTypesUIState()
     }
 
-
+    //State Get UnitTypes
+    private val _unitTypeUIState = MutableStateFlow<UnitTypesUIState>(UnitTypesUIState.Empty)
+    val unitTypeUIState = _unitTypeUIState.asStateFlow()
+    sealed class UnitTypesUIState {
+        data class Success(val unitTypes: List<UnitTypeDTO>) : UnitTypesUIState()
+        data class Error(val error: String) : UnitTypesUIState()
+        object Loading : UnitTypesUIState()
+        object Empty : UnitTypesUIState()
+    }
 
 
     override fun onCleared() {
@@ -136,7 +145,7 @@ class GarbageSpotViewModel (
     //garbage type section
     fun getGarbageTypes(token: String) {
         _garbageTypeUIState.value = GarbageTypesUIState.Loading
-        log.v("getting all garbage spot")
+        log.v("getting all garbage types")
         viewModelScope.launch {
             val response = garbageSpotService.getGarbageTypes(token)
 
@@ -146,9 +155,22 @@ class GarbageSpotViewModel (
                 _garbageTypeUIState.value = GarbageTypesUIState.Error(response.message)
             }
         }
-
     }
 
+    // Get Unit Types
+    fun getUnitTypes() {
+        _unitTypeUIState.value = UnitTypesUIState.Loading
+        log.v("Getting Unit Types")
+        viewModelScope.launch {
+            val response = garbageSpotService.getUnitTypes()
+
+            if(response.message.substring(0,3)  == "200"){
+                _unitTypeUIState.value = UnitTypesUIState.Success(response.data)
+            }else{
+                _unitTypeUIState.value = UnitTypesUIState.Error(response.message)
+            }
+        }
+    }
 
 
 

@@ -67,7 +67,15 @@ class AuthServiceImpl(
     }
 
     override suspend fun postSignIn(signInRequest: SignInRequest): SignInResponse {
-        TODO("Not yet implemented")
+        try {
+            return client.post {
+                url("api/register")
+                contentType(ContentType.Application.Json)
+                setBody(SignInRequest(signInRequest.email, signInRequest.password, signInRequest.passwordConfirmation))
+            }.body()
+        } catch (e : ClientRequestException) {
+            return SignInResponse(e.message)
+        }
     }
 
     private fun HttpRequestBuilder.url(path: String) {

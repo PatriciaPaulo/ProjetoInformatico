@@ -22,8 +22,11 @@ import io.ktor.util.*
 import kotlinx.serialization.json.Json
 import co.touchlab.kermit.Logger as KermitLogger
 import com.soywiz.korio.file.std.*
+import io.ktor.client.utils.*
 import io.ktor.http.content.*
+import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
+
 
 class FileServiceImpl (
     private val log : KermitLogger,
@@ -80,29 +83,32 @@ class FileServiceImpl (
          */
 
         try {
-            return client.post {
-                println("MULTIPARTFORMDATA IMAGEM")
-
-                //contentType(ContentType.MultiPart.FormData)
-                setBody(MultiPartFormDataContent(
-                    formData {
-                        uploadFiles.entries.forEach {
-                            this.appendInput(
-                                key = "file",
-                                headers = Headers.build {
-                                    append(HttpHeaders.ContentDisposition,
-                                        "filename=${it.key}")
-                                },
-                                size = it.value.size.toLong()
-                            ) { buildPacket { writeFully(it.value) } }
+            val parts: List<PartData> = formData {
+                for (file in uploadFiles) {
+                    this.append(
+                        file.key,
+                        file.value,
+                        Headers.build {
+                            append(HttpHeaders.ContentType, "image/png")
                         }
-                    },
-                ))
-
-                onUpload { bytesSentTotal, contentLength ->
-                    println("Sent $bytesSentTotal bytes from $contentLength")
+                    )
+                    println(file.key)
+                    println(file.value)
+                    println(file.value.size)
                 }
+            }
 
+            return client.submitFormWithBinaryData (
+                formData = formData{
+                    for (file in uploadFiles) {
+                        append("name", file.key)
+                        append("file", file.value, Headers.build {
+                            append(HttpHeaders.ContentType, "image/jpeg")
+                            append(HttpHeaders.ContentDisposition, "filename=\"${file.key}\"")
+                        })
+                    }
+                }
+            ) {
                 url("/api/upload/activities/${activity.id}")
             }.body() as FileResponse
         } catch (e : Exception) {

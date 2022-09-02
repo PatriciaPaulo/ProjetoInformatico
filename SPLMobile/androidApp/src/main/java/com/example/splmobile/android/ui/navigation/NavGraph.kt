@@ -9,6 +9,7 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.ui.auth.screens.*
 import com.example.splmobile.android.ui.camera.CameraScreen
 import com.example.splmobile.android.ui.main.screens.*
+import com.example.splmobile.android.ui.main.screens.activities.AddGarbageToActivity
 import com.example.splmobile.android.ui.main.screens.events.CreateEventScreen
 import com.example.splmobile.android.ui.main.screens.events.EventInfoScreen
 import com.example.splmobile.android.ui.main.screens.events.EventListScreen
@@ -77,10 +78,11 @@ fun SetupNavGraph(
         }
 
         composable(BottomNavItem.Home.route) {
-            HomeScreen(navController = navController,
-                authViewModel = authViewModel,
+            HomeScreen(
+                navController = navController,
                 activityViewModel = activityViewModel,
-                mapViewModel = mapViewModel,
+                authViewModel = authViewModel,
+                log = log,
             )
         }
 
@@ -88,7 +90,10 @@ fun SetupNavGraph(
             OngoingActivity(
                 navController = navController,
                 mapViewModel = mapViewModel,
-                activityViewModel = activityViewModel
+                activityViewModel = activityViewModel,
+                authViewModel = authViewModel,
+                garbageSpotViewModel = garbageSpotViewModel,
+                log = log,
             )
         }
         composable(BottomNavItem.Map.route) {
@@ -248,6 +253,16 @@ fun SetupNavGraph(
                 authViewModel = authViewModel,
                 fileViewModel = fileViewModel,
                 cameraViewModel = cameraViewModel
+            )
+        }
+
+        composable(Screen.ManageGarbage.route) {
+            AddGarbageToActivity(
+                garbageSpotViewModel = garbageSpotViewModel,
+                authViewModel = authViewModel,
+                activityViewModel = activityViewModel,
+                navController = navController,
+                log = log
             )
         }
 

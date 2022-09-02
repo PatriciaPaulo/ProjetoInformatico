@@ -2,6 +2,11 @@ package com.example.splmobile.dtos.activities
 
 import kotlinx.serialization.Serializable
 
+@Serializable
+data class CreateActivityResponse(
+    val id : Int,
+    val message : String,
+)
 
 @Serializable
 data class ActivitiesResponse(

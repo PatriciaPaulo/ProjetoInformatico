@@ -10,46 +10,82 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.data.StepSensorData
 import com.example.splmobile.android.data.StopWatch
 import com.example.splmobile.android.textResource
+import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.dtos.activities.ActivityTypeSerializable
+import com.example.splmobile.dtos.activities.CreateActivitySerializable
 import com.example.splmobile.models.ActivityViewModel
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.serialization.builtins.serializer
 import kotlin.math.*
 
 // TODO (if time) -> allow to go to previous screens, save variables states, keep time going, show green bar saying in progress and block creating another activity
 // TODO (else) -> disallow going back to other screens
 
 @Composable
-fun OngoingActivity (
+fun OngoingActivity(
     navController: NavController,
     mapViewModel: MapViewModel,
-    activityViewModel: ActivityViewModel
+    activityViewModel: ActivityViewModel,
+    authViewModel: AuthViewModel,
+    garbageSpotViewModel: GarbageSpotViewModel,
+    log: Logger
+) {
+    LaunchedEffect(Unit) {
+
+
+    }
+
+    var createActivityState = activityViewModel.activityCreateUIState.collectAsState().value
+
+
+
+    onGoingActivityUI(navController, mapViewModel, activityViewModel, authViewModel, garbageSpotViewModel, log)
+
+}
+
+
+@Composable
+fun onGoingActivityUI(
+    navController: NavController,
+    mapViewModel: MapViewModel,
+    activityViewModel: ActivityViewModel,
+    authViewModel: AuthViewModel,
+    garbageSpotViewModel: GarbageSpotViewModel,
+    log: Logger
 ) {
     // Current Location
     val location by mapViewModel.getLocationLiveData().observeAsState()
@@ -58,12 +94,12 @@ fun OngoingActivity (
     // Default Location, Center of Portugal
     val defaultLocation = LatLng(39.5, -8.0)
     var pointerLocation by remember { mutableStateOf(defaultLocation) }
-    val cameraLatLng : CameraPosition
+    val cameraLatLng: CameraPosition
 
     var distanceTravelled by remember { mutableStateOf(0.0) }
     when (location) {
         // If location is null camera position will be default location
-        null ->{
+        null -> {
             cameraLatLng = CameraPosition.fromLatLngZoom(defaultLocation, 16f)
         }
 
@@ -74,7 +110,7 @@ fun OngoingActivity (
             var parseLocationLiveData = LatLng(lat, lng)
 
             // calculate distance travelled since last location
-            if(lastLocation != null) {
+            if (lastLocation != null) {
                 distanceTravelled += calculateDistance(parseLocationLiveData, lastLocation)
             }
             lastLocation = parseLocationLiveData
@@ -92,12 +128,12 @@ fun OngoingActivity (
     step(stepCounter)
 
     val shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp)
-    Column(){
+    Column() {
         // Show Map Box
         Box(
             modifier = Modifier
                 .weight(1f)
-        ){
+        ) {
             mapActivityUI(cameraPosition, pointerLocation)
         }
 
@@ -106,14 +142,14 @@ fun OngoingActivity (
             modifier = Modifier
                 .weight(1f)
                 .clip(shape)
-        ){
+        ) {
             val shortDistance = round(distanceTravelled * 10.0) / 10.0
-            ongoingActivityDataUI(shortDistance, activityViewModel)
+            ongoingActivityDataUI(shortDistance, activityViewModel, navController)
         }
     }
 }
 
-fun calculateDistance(currentLocation: LatLng, lastLocation: LatLng?) : Double {
+fun calculateDistance(currentLocation: LatLng, lastLocation: LatLng?): Double {
     val EARTH_RADIUS = 6371 // in km
 
     // Convert to Radians
@@ -126,14 +162,14 @@ fun calculateDistance(currentLocation: LatLng, lastLocation: LatLng?) : Double {
     val dlng = lastLng - curLng
     val dlat = lastLat - curLat
 
-    val a = sin(dlat/2).pow(2) + cos(curLat) * cos(lastLat) * sin(dlng / 2).pow(2)
+    val a = sin(dlat / 2).pow(2) + cos(curLat) * cos(lastLat) * sin(dlng / 2).pow(2)
     val c = 2 * asin(sqrt(a))
 
     return (c * EARTH_RADIUS)
 }
 
 @Composable
-private fun step(stepCounter : Float) {
+private fun step(stepCounter: Float) {
     println("-------------- STEP COUNT DEBUG ------------")
     // Get Current Context
     val context = LocalContext.current
@@ -164,7 +200,7 @@ private fun runStopWatch() {
 }
 
 @Composable
-private fun mapActivityUI(cameraPosition : CameraPositionState, pointerLocation : LatLng) {
+private fun mapActivityUI(cameraPosition: CameraPositionState, pointerLocation: LatLng) {
     // TODO If not permission, show custom image saying oopsie and on click to call permission requester
     GoogleMap(
         modifier = Modifier
@@ -179,10 +215,13 @@ private fun mapActivityUI(cameraPosition : CameraPositionState, pointerLocation 
     }
 }
 
-// TODO 1/2 da screen
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun ongoingActivityDataUI(distance : Double, activityViewModel: ActivityViewModel) {
+private fun ongoingActivityDataUI(
+    distance: Double,
+    activityViewModel: ActivityViewModel,
+    navController: NavController
+) {
     LaunchedEffect(Unit) {
         // Get Activity Types from DB
         activityViewModel.getActivityTypes()
@@ -198,13 +237,16 @@ private fun ongoingActivityDataUI(distance : Double, activityViewModel: Activity
     var activityTypesList = remember { mutableStateOf(emptyList<ActivityTypeSerializable>()) }
     var actTypeExpanded by remember { mutableStateOf(false) }
 
-    when(activityTypeState) {
+    var showGarbageTypeManager by remember { mutableStateOf(false) }
+
+    when (activityTypeState) {
         is ActivityViewModel.ActivityTypeUIState.Success -> {
             activityTypesList.value = activityTypeState.activityTypes
         }
     }
 
-    var actTypeSelected by remember { mutableStateOf("Escolha uma opção")}
+    // TODO Change to res
+    var actTypeSelected by remember { mutableStateOf("Escolha uma opção") }
 
 
     Column(
@@ -213,7 +255,7 @@ private fun ongoingActivityDataUI(distance : Double, activityViewModel: Activity
     ) {
         // Activity Name, Edit Name Buttons
         Row() {
-            if(activityNameStatus){
+            if (activityNameStatus) {
                 // Editable Activity Name
                 OutlinedTextField(
                     value = activityName,
@@ -229,7 +271,7 @@ private fun ongoingActivityDataUI(distance : Double, activityViewModel: Activity
                 )
             }
 
-            if(!activityNameStatus){
+            if (!activityNameStatus) {
                 // Edit Name Button
                 Button(
                     modifier = Modifier
@@ -331,12 +373,15 @@ private fun ongoingActivityDataUI(distance : Double, activityViewModel: Activity
                 modifier = Modifier
                     .weight(1F)
             ) {
+                Text("8 Kg") // TODO Change to get lixo from activity and roughly calculate how much lixo there is
                 Button(
                     modifier = Modifier
                         .size(dimensionResource(R.dimen.btn_large))
                         .align(Alignment.Center),
-                    onClick = { }
-                ) { }
+                    onClick = { navController.navigate(Screen.ManageGarbage.route) }
+                ) {
+                    Text("+") // TODO Change to ICON
+                }
             }
 
             // Travelled Distance
@@ -344,10 +389,10 @@ private fun ongoingActivityDataUI(distance : Double, activityViewModel: Activity
                 modifier = Modifier
                     .weight(1F)
             ) {
-                Column (
+                Column(
                     modifier = Modifier
                         .align(Alignment.Center)
-                ){
+                ) {
                     Text(
                         text = distance.toString(),
                         fontSize = dimensionResource(R.dimen.title).value.sp
@@ -369,18 +414,9 @@ private fun ongoingActivityDataUI(distance : Double, activityViewModel: Activity
                 ) { }
             }
         }
-
-        // TODO Concluir BTN
-        // TODO Cancelar BTN
-        // TODO Backtrace button fazer o mesmo que cancelar action
     }
-}
+    // TODO Concluir BTN
+    // TODO Cancelar BTN
+    // TODO Backtrace button fazer o mesmo que cancelar action
 
-// TODO 1/2 da screen ? revise size
-@Composable
-private fun addGarbageToActivityUI() {
-    // TODO Adicionar Garbage Type (Text Field with Suggestions)
-    // TODO Adicionar Garbage Type (If can't find match add to db or admin request?)
-    // TODO Adicionar Quantidade de Lixo
-    // TODO Adicionar Drop Box garbage unit type
 }

@@ -1,12 +1,13 @@
 package com.example.splmobile.services.activities
 
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.activities.ActivitiesResponse
-import com.example.splmobile.dtos.activities.ActivitiesTypeResponse
-import com.example.splmobile.dtos.activities.ActivitySerializable
-import com.example.splmobile.dtos.activities.CreateActivitySerializable
+import com.example.splmobile.dtos.activities.*
+import com.example.splmobile.dtos.messages.MessagesResponse
 
 interface ActivityService {
-    suspend fun postCreateActivity(activity : CreateActivitySerializable, token : String) : RequestMessageResponse
+    suspend fun postCreateActivity(activity : CreateActivitySerializable, token : String) : CreateActivityResponse
     suspend fun getActivityTypes() : ActivitiesTypeResponse
+    suspend fun getGarbageInActivity(currentActivity : Int, token: String) : GarbageInActivityResponse
+    suspend fun patchGarbageInActivity(currentActivity: Long, garbageInActivityID : Long, garbage: GarbageAmountDTO, token: String) : MessagesResponse
+    suspend fun postGarbageInActivity(garbage: GarbageInActivityDTO, token: String, activityID: Long) : AddGarbageInActivityResponse
+    suspend fun deleteGarbageInActivity(garbageToDelete: Long, token: String): MessagesResponse
 }

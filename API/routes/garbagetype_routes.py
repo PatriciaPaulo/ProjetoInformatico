@@ -3,7 +3,7 @@ from flask import jsonify, make_response, request
 from flask_restful import Api
 from flask import jsonify, make_response, request
 from flask_restful import Api
-from models import db, Garbage, GarbageType
+from models import db, Garbage
 from utils import token_required
 
 from models import db, Garbage
@@ -29,7 +29,7 @@ def create_garbage(current_user):
     db.session.add(new_garbageType)
     db.session.commit()
 
-    return make_response(jsonify({'data': GarbageType.serialize(new_garbageType), 'message': '200 OK - Garbage Type Created'}), 200)\
+    return make_response(jsonify({'data': Garbage.serialize(new_garbageType), 'message': '200 OK - Garbage Type Created'}), 200)\
 
 
 

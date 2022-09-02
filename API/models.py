@@ -1,5 +1,6 @@
+
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, Column, Integer, String, Boolean, ForeignKey, Numeric, Text, DateTime
+from sqlalchemy import MetaData, Column, Integer, String, Boolean, ForeignKey, Numeric, Text, DateTime, DECIMAL
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 
@@ -44,7 +45,6 @@ class Activity(Base):
     eventID = Column(Integer, ForeignKey('event.id'), nullable=True)
     userID = Column(Integer, ForeignKey('user.id'), nullable=False)
     distanceTravelled = Column(String(50))
-    steps = Column(String(50))
     activityTypeID = Column(Integer, ForeignKey('activity_type.id'), nullable=False)
     startDate = Column(DateTime)
     endDate = Column(DateTime)
@@ -55,7 +55,6 @@ class Activity(Base):
             'userID': self.userID,
             'eventID': self.eventID,
             'distanceTravelled': self.distanceTravelled,
-            'steps': self.steps,
             'startDate': self.startDate,
             'endDate': self.endDate,
             'activityTypeID': self.activityTypeID
@@ -92,6 +91,12 @@ class PictureInActivity(Base):
         }
 # endregion
 
+# region UnitTypes
+class UnitType(Base):
+    __tablename__ = "unit_type"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(128), nullable=False)
+# endregion
 
 # region GarbageInActivity
 class GarbageInActivity(Base):
@@ -99,8 +104,8 @@ class GarbageInActivity(Base):
     id = Column(Integer, primary_key=True)
     activityID = Column(Integer, ForeignKey('activity.id'), nullable=False)
     garbageID = Column(Integer, ForeignKey('garbage.id'), nullable=False)
-    amount = Column(String(128), nullable=False)
-    unitType = Column(String(128), nullable=False)
+    amount = Column(DECIMAL, nullable=False)
+    unitTypeID = Column(Integer, ForeignKey('unit_type.id'), nullable=False)
 
     def serialize(self):
         return {
@@ -108,7 +113,7 @@ class GarbageInActivity(Base):
             'activityID': self.activityID,
             'garbageID': self.garbageID,
             'amount': self.amount,
-            'unitType': self.unitType
+            'unitTypeID': self.unitTypeID
         }
 # endregion
 
@@ -171,7 +176,6 @@ class Equipment(Base):
         return {
             'id': self.id,
             'name': self.name
-
         }
 # endregion
 

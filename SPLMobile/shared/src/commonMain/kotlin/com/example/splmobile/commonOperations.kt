@@ -13,3 +13,13 @@ fun isTextFieldEmpty(text : String) : Boolean {
 fun isCodeOK(message : String) : Boolean {
     return message.substring(0,3) == "200"
 }
+
+fun passwordsMatch(password : String, passwordConfirmation : String): Boolean {
+    return password == passwordConfirmation
+}
+
+fun isNumber(text : String) : Boolean {
+    val NUMBER_REGEX = "^[0-9]*\$"
+
+    return NUMBER_REGEX.toRegex().matches(text)
+}

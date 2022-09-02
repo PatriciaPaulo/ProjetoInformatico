@@ -1,6 +1,7 @@
 # IMPORTS FOR DB ACCESS/MANIPULATION
 import datetime
-from models import User, GarbageSpot, Activity, Event, Message, Garbage, GarbageInActivity, GarbageType, ActivityType
+from models import User, GarbageSpot, Activity, Event, Message, Garbage, GarbageInActivity, GarbageType, ActivityType, \
+    UnitType
 from models import Equipment, EquipmentInEvent,IndividualMessage,EventMessage
 from models import UserInEvent,GarbageSpotInEvent
 from werkzeug.security import generate_password_hash
@@ -177,7 +178,6 @@ if __name__ == '__main__':
         userID = session.query(User).filter_by(admin=False).order_by(func.random()).first()
         eventID = session.query(Event).order_by(func.random()).first()
         distanceTravelled = randrange(99999)
-        steps = randrange(99999)
         startDate = datetime.datetime.utcnow()
         td = timedelta(days=randrange(3))
         # your calculated date
@@ -186,12 +186,20 @@ if __name__ == '__main__':
 
         activityType = session.query(ActivityType).order_by(func.random()).first()
 
-        activity = Activity(userID=userID.id, eventID=eventID.id, distanceTravelled=distanceTravelled, steps=steps,
+        activity = Activity(userID=userID.id, eventID=eventID.id, distanceTravelled=distanceTravelled,
                             startDate=startDate, endDate=random.choice(endDate), activityTypeID=activityType.id)
         session.add(activity)
 
     print("---Activity seed done!")
 
+    # SEED UNIT TYPE
+    session.query(UnitType).delete()
+    for i in range(3):
+        name = ["kg", "unidade", "litro"]
+        ut = UnitType(name=name[i])
+        session.add(ut)
+
+    print("---Unit Type seed done!")
 
     # SEED LIXONAATIVIDADE
     session.query(GarbageInActivity).delete()
@@ -200,10 +208,10 @@ if __name__ == '__main__':
         activityID = session.query(Activity).order_by(func.random()).first()
         garbageID = session.query(Garbage).order_by(func.random()).first()
         amount = randrange(100)
-        unitType = ["kgs","litros","unidades"]
+        unitTypeID = session.query(UnitType).order_by(func.random()).first()
 
 
-        garbageInActivity = GarbageInActivity(activityID=activityID.id, garbageID=garbageID.id, amount=amount, unitType=random.choice(unitType))
+        garbageInActivity = GarbageInActivity(activityID=activityID.id, garbageID=garbageID.id, amount=amount, unitTypeID=unitTypeID.id)
         session.add(garbageInActivity)
 
 
@@ -218,6 +226,7 @@ if __name__ == '__main__':
 
 
     print("---Equipment seed done!")
+
 
     # SEED EQUIPAMENTONOEVENTO
     session.query(EquipmentInEvent).delete()

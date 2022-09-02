@@ -201,7 +201,7 @@ fun LoginValidationUI(
         ) {
 
             Text(
-                text = textResource(R.string.lblLoginToYourAcc).toString(),
+                text = stringResource(R.string.lblLoginToYourAcc),
                 style = TextStyle(fontSize = dimensionResource(R.dimen.small_title).value.sp),
             )
 
@@ -219,12 +219,12 @@ fun LoginValidationUI(
                 },
                 label = {
                     Text(
-                        text = textResource(R.string.insertEmail).toString(),
+                        text = stringResource(R.string.insertEmail),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )},
                 placeholder = {
                     Text(
-                        text = textResource(R.string.emailPlaceholder).toString(),
+                        text = stringResource(R.string.emailPlaceholder),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     ) },
                 singleLine = true,
@@ -260,12 +260,12 @@ fun LoginValidationUI(
                 },
                 label = {
                     Text(
-                        text = textResource(R.string.insertPassword).toString(),
+                        text = stringResource(R.string.insertPassword),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )},
                 placeholder = {
                     Text(
-                        text = textResource(R.string.passwordPlaceholder).toString(),
+                        text = stringResource(R.string.passwordPlaceholder),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )},
                 singleLine = true,
@@ -308,7 +308,7 @@ fun LoginValidationUI(
                     .align(Alignment.End),
             ) {
                 Text(
-                    text = AnnotatedString(textResource(R.string.forgotPassword).toString()),
+                    text = AnnotatedString(stringResource(R.string.forgotPassword)),
                     fontSize = dimensionResource(R.dimen.txt_small).value.sp
                 )
             }
@@ -327,39 +327,11 @@ fun LoginValidationUI(
                     CircularProgressIndicator()
                 } else {
                     Text(
-                        textResource(R.string.lblLogin).toString(),
+                        stringResource(R.string.lblLogin),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )
                 }
             }
-
-            // Line Break
-            /*
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Divider(
-                    color = Color.Blue,
-                    thickness = dimensionResource(R.dimen.hr),
-                    modifier = Modifier
-                        .weight(4f)
-                )
-                Text(
-                    textResource(R.string.orLineBreak).toString(),
-                    modifier = Modifier
-                        .weight(1f),
-                    textAlign = TextAlign.Center
-                )
-                Divider(
-                    color = Color.Blue,
-                    thickness = dimensionResource(R.dimen.hr),
-                    modifier = Modifier
-                        .weight(4f)
-                )
-            }
-            */
         }
 
         // Register Instead
@@ -377,11 +349,11 @@ fun LoginValidationUI(
             ) {
                 Text(
                     text = AnnotatedString(
-                        text = textResource(R.string.noAccountYet).toString(),
+                        text = stringResource(R.string.noAccountYet),
                         spanStyle = SpanStyle(color = MaterialTheme.colors.onBackground)
                     ).plus(
                         AnnotatedString(
-                            text = " " + textResource(R.string.registerInstead).toString(),
+                            text = " " + stringResource(R.string.registerInstead),
                         )
                     ),
                     fontSize = dimensionResource(R.dimen.txt_small).value.sp,

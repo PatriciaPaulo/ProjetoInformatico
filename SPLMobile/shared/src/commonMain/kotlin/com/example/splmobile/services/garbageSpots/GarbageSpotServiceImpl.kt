@@ -7,6 +7,8 @@ import com.example.splmobile.dtos.RequestMessageResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
 import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
+import com.example.splmobile.dtos.garbageTypes.UnitTypeDTO
+import com.example.splmobile.dtos.garbageTypes.UnitTypeResponse
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -160,6 +162,17 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
             return GarbageSpotResponse(emptyGarbageSpot,"$ex")
         }
 
+    }
+
+    override suspend fun getUnitTypes(): UnitTypeResponse {
+        try {
+            return client.get {
+                contentType(ContentType.Application.Json)
+                url("api/unitTypes")
+            }.body() as UnitTypeResponse
+        } catch (ex : Exception) {
+            return UnitTypeResponse(emptyList(), "$ex")
+        }
     }
 
     override suspend fun postGarbageSpotsInEvent(

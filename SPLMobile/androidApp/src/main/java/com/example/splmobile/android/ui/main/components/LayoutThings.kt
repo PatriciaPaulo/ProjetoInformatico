@@ -4,8 +4,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.HdrPlus
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +31,10 @@ import com.example.splmobile.android.R
 @Composable
 fun test() {
     iconBoxUI("Vale Limpar", "Mira de Aire", 13.0, "22-10-2013 15h00", null)
+    ListItemUI("Titulo Garbage", "cenas cenas cenas")
 }
+
+
 
 @Composable
 fun iconBoxUI(name : String, location : String?, distance : Double?, details : String, iconPath : String?){
@@ -100,4 +108,25 @@ fun iconBoxUI(name : String, location : String?, distance : Double?, details : S
             )
         }
     }
+}
+
+@Composable
+fun ListItemUI(title : String, details : String) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            Text(
+                text = title,
+                fontSize = dimensionResource(R.dimen.txt_large).value.sp,
+                modifier = Modifier
+                    .padding(end = dimensionResource(R.dimen.small_spacer))
+            )
+            Text(
+                text = details,
+                fontSize = dimensionResource(R.dimen.txt_medium).value.sp,
+            )
+        }
+
 }

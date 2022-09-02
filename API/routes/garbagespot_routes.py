@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot,GarbageSpotInEvent
+from models import User, Activity, Event, db, GarbageSpot, GarbageSpotInEvent, UnitType
 from utils import token_required,admin_required,guest
 import jwt
 from datetime import datetime
@@ -138,7 +138,7 @@ def approve_garbageSpot(current_user,garbageSpot_id):
 # Update Garbage Spot State by any User
 @garbagespot_routes_blueprint.route('/garbageSpots/<garbageSpot_id>/updateGarbageSpotStatus', methods=['PATCH'])
 @token_required
-def update_status_garbageSpot(current_user,garbageSpot_id):
+def update_status_garbageSpot(current_user, garbageSpot_id):
     garbageSpot = db.session.query(GarbageSpot).filter_by(id=garbageSpot_id).first()
     if not garbageSpot:
         return make_response(jsonify({'message': '404 NOT OK - No Garbage Spot Found'}), 404)
@@ -177,3 +177,24 @@ def get_my_garbageSpot(current_user):
         return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Garbage Spot Found'}), 404)
 
     return make_response(jsonify({'data': output, 'message': '200 OK - All Garbage Spot Retrieved'}), 200)
+
+
+# Get Garbage UnitTypes
+@garbagespot_routes_blueprint.route('/unitTypes', methods=['GET'])
+def get_unit_types():
+
+    unit_types = db.session.query(UnitType).all()
+
+    output = []
+    for ut in unit_types:
+        ut_data = {}
+
+        ut_data['id'] = ut.id
+        ut_data['name'] = ut.name
+
+        output.append(ut_data)
+
+    if len(output) == 0:
+        return make_response(jsonify({'data':[],'message':'404 NOT OK - No Units Found'}), 404)
+
+    return make_response(jsonify({'data': output, 'message': '200 OK - All Units Retrieved'}), 200)

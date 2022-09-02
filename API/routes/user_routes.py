@@ -39,14 +39,14 @@ def register_user():
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
     # Generates username
-    split_email = data['email'].partition['@']
-    generated_username = split_email[0]
+    email = data['email']
+    #username = email.partition['@'][0]
 
-    new_user = User(username=generated_username, email=data['email'], password=hashed_password)
+    new_user = User(username="NOVO_USERNAME5", email=data['email'], password=hashed_password, icon="default.jpg")
     db.session.add(new_user)
     db.session.commit()
 
-    return make_response("200 OK - User created successfully", 200)
+    return make_response(jsonify({'message': '200 OK - New User Registered'}), 200)
 
 
 # User Login

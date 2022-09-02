@@ -49,6 +49,8 @@ fun CameraView(
             // onImageCaptured true if image was from gallery
             onImageCaptured(uri, true)
         }
+
+        println("URI: $uri")
     }
 
     CameraPreviewView(imageCapture, lensFacing) { cameraUIAction ->

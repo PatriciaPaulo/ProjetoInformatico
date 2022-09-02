@@ -1,9 +1,10 @@
+import io
 import os.path
 
-import flask
 from flask import Blueprint, request, flash, make_response, current_app
 from flask_restful import Api
 from werkzeug.utils import secure_filename
+from PIL import Image
 
 from models import PictureInActivity, db, PictureInGarbageSpot, User
 from utils import token_required
@@ -83,6 +84,15 @@ def upload_activity_file(current_user, activity_id):
 
 
 # Upload Activity File
+@file_routes_blueprint.route('/upload/activities1/<activity_id>', methods=['POST'])
+@token_required
+def upload_activity1_file(current_user, activity_id):
+    print(request.get_data())
+
+    return make_response("200 OK", 200)
+
+
+# Upload GarbageSpot File
 @file_routes_blueprint.route('/upload/garbagespots/<garbagespot_id>', methods=['POST'])
 def upload_garbagespot_file(garbagespot_id):
     # Check if post request has file
@@ -108,3 +118,15 @@ def upload_garbagespot_file(garbagespot_id):
         file.save(os.path.join(upload_folder, filename))
         return make_response("200 OK - GarbageSpot file saved", 200)
 
+
+# Upload GarbageSpot File
+@file_routes_blueprint.route('/upload/binary/<garbagespot_id>', methods=['POST'])
+def upload_binary_file(garbagespot_id):
+    # Check if post request has file
+    raw_data = request.get_data()
+    image = Image.open(io.BytesIO(raw_data))
+    upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], "garbagespots")
+
+    image.save(os.path.join(upload_folder, "Teste.jpg"))
+
+    return make_response("200 OK - GarbageSpot file saved", 200)

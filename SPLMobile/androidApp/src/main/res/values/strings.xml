@@ -36,6 +36,14 @@
     <string name="activityTitle">Nome da Atividade</string>
     <string name="activityType">Tipo de Atividade</string>
     <string name="km">KM</string>
+    <string name="selecioneLixo">Tipo de lixo</string>
+    <string name="selecioneUT">Unidade de medida</string>
+    <string name="activityBDError">Erro de Servidor. Por favor tente novamente, se este erro persistir contacte os desenvolvedores da app.</string>
+    <string name="manageGarbage">Gestor de Lixo</string>
+    <string name="addGarbage">Adicione Lixo Apanhado</string>
+    <string name="listGarbage">Lista de Lixo Apanhado</string>
+    <string name="noGarbage">Ainda não apanhou lixo!</string>
+    <string name="dataMissing">Por favor preencha corretamente todos os campos.</string>
 
     <!-- CAMERA CONTROLS -->
     <string name="icn_camera_view_switch_camera_content_description">Switch Camera</string>
