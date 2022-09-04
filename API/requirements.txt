@@ -5,7 +5,6 @@ Flask==2.1.1
 Flask-RESTful==0.3.9
 Flask-SQLAlchemy==2.5.1
 Flask-Mail==0.9.1 # TODO Delete if not used
-Pillow==8.4
 greenlet==1.1.2
 importlib-metadata==4.11.3
 itsdangerous==2.1.2
@@ -21,3 +20,5 @@ names==0.3.0
 random-word==1.0.7
 pyyaml==6.0
 websockets==10.3
+Pillow==8.4
+image==1.5.33
