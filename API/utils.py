@@ -12,11 +12,9 @@ class Guest(object):
 def guest(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        token = None
         if 'authorization' in request.headers:
             token = request.headers['authorization']
 
-        else:
             try:
                 if token == "0":
                     current_user = Guest()
@@ -29,7 +27,9 @@ def guest(f):
                 print(ex)
                 return make_response(jsonify({'message': 'token is invalid'}), 400)
 
-            return f(current_user, *args, **kwargs)
+        else:
+            return make_response(jsonify({'message': 'token not found'}), 403)
+        return f(current_user, *args, **kwargs)
 
     return decorator
 
