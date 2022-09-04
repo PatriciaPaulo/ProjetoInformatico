@@ -1,6 +1,5 @@
 package com.example.splmobile.android.ui.main.screens
 
-import AppBar
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
@@ -16,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -32,10 +30,10 @@ import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.objects.events.EventDTO
 import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.objects.myInfo.LocationDetails
-import com.example.splmobile.viewmodels.AuthViewModel
-import com.example.splmobile.viewmodels.EventViewModel
-import com.example.splmobile.viewmodels.GarbageSpotViewModel
-import com.example.splmobile.viewmodels.UserInfoViewModel
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.EventViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.maps.model.LatLng
 

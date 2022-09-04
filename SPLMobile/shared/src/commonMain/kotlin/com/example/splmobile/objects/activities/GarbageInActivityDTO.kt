@@ -1,4 +1,4 @@
-package com.example.splmobile.dtos.activities
+package com.example.splmobile.objects.activities
 
 import kotlinx.serialization.Serializable
 

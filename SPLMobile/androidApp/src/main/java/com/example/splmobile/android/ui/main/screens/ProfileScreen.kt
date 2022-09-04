@@ -32,10 +32,10 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.objects.myInfo.UserSerializable
-import com.example.splmobile.viewmodels.ActivityViewModel
-import com.example.splmobile.viewmodels.AuthViewModel
-import com.example.splmobile.viewmodels.SharedViewModel
-import com.example.splmobile.viewmodels.UserInfoViewModel
+import com.example.splmobile.models.ActivityViewModel
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.SharedViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)

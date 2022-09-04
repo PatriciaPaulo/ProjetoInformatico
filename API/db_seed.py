@@ -250,8 +250,6 @@ if __name__ == '__main__':
 
     session.query(UserInEvent).delete()
 
-
-
     userInEvent = UserInEvent(userID=1, eventID=1, status="Organizer", creator=True, enteringDate=datetime.utcnow())
     session.add(userInEvent)
     userInEvent = UserInEvent(userID=1, eventID=2, status="Organizer", creator=True, enteringDate=datetime.utcnow())

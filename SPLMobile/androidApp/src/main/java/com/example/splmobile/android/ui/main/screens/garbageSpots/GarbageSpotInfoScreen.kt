@@ -18,9 +18,9 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
-import com.example.splmobile.viewmodels.AuthViewModel
-import com.example.splmobile.viewmodels.GarbageSpotViewModel
-import com.example.splmobile.viewmodels.UserViewModel
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.models.UserViewModel
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

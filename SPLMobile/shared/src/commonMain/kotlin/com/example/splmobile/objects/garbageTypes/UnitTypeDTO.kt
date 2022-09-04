@@ -1,4 +1,4 @@
-package com.example.splmobile.object.garbageTypes
+package com.example.splmobile.objects.garbageTypes
 
 import kotlinx.serialization.Serializable
 

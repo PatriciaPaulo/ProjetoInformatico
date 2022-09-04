@@ -4,7 +4,6 @@ import AppBar
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,10 +43,10 @@ import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
-import com.example.splmobile.viewmodels.AuthViewModel
-import com.example.splmobile.viewmodels.GarbageSpotViewModel
-import com.example.splmobile.viewmodels.SharedViewModel
-import com.example.splmobile.viewmodels.UserInfoViewModel
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.models.SharedViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition

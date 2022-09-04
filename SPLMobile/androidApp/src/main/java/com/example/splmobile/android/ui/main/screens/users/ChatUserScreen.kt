@@ -22,7 +22,7 @@ import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.objects.messages.IndividualMessageRequest
 import com.example.splmobile.objects.messages.MessageDTO
-import com.example.splmobile.viewmodels.*
+import com.example.splmobile.models.*
 import kotlinx.coroutines.launch
 
 

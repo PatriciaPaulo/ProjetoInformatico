@@ -1,6 +1,7 @@
-package com.example.splmobile.viewmodels
+package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
+import com.example.splmobile.isCodeOK
 import com.example.splmobile.objects.equipments.EquipmentDTO
 import com.example.splmobile.objects.equipments.EquipmentInEventDTO
 import com.example.splmobile.objects.events.EventDTO
@@ -63,8 +64,16 @@ class EventViewModel (
         object Empty : EventUpdateUIState()
     }
 
+    //state get my eventos
+    private val _myEventsUIState = MutableStateFlow<MyEventsUIState>(MyEventsUIState.Empty)
+    val myEventsUIState = _myEventsUIState.asStateFlow()
 
-
+    sealed class MyEventsUIState {
+        data class Success(val events: List<EventDTO>) : MyEventsUIState()
+        data class Error(val error: String) : MyEventsUIState()
+        object Loading : MyEventsUIState()
+        object Empty : MyEventsUIState()
+    }
 
     fun getEvents() {
         _eventsUIState.value = EventsUIState.Loading
@@ -79,8 +88,8 @@ class EventViewModel (
                 _eventsUIState.value = EventsUIState.Error(response.message)
             }
         }
-
     }
+
     fun getEventsByID(eventoId: Long) {
         _eventByIdUIState.value = EventByIdUIState.Loading
         log.v("getting all events ")
@@ -153,7 +162,6 @@ class EventViewModel (
         object Empty : EquipmentUIState()
     }
 
-    //garbage type section
     fun getEquipments(token: String) {
         _equipmentUIState.value = EquipmentUIState.Loading
         log.v("getting all EQUIMENTS")

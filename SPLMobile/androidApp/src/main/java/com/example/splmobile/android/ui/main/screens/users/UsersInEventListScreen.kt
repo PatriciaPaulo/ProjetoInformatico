@@ -25,7 +25,7 @@ import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.objects.events.UserInEventDTO
 import com.example.splmobile.objects.users.UserDTO
-import com.example.splmobile.viewmodels.*
+import com.example.splmobile.models.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)

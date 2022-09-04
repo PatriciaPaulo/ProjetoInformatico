@@ -1,5 +1,7 @@
-package com.example.splmobile.dtos.activities
+package com.example.splmobile.objects.activities
 
+import com.example.splmobile.objects.activities.ExplicitGarbageInActivityDTO
+import com.example.splmobile.objects.activities.GarbageInActivityDTO
 import kotlinx.serialization.Serializable
 
 @Serializable

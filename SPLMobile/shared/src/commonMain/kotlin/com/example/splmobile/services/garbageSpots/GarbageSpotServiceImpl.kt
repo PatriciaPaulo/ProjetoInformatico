@@ -3,17 +3,12 @@ package com.example.splmobile.services.garbageSpots
 import GarbageSpotResponse
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.API_PATH
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotsResponse
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotDTO
-import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
-import com.example.splmobile.dtos.garbageTypes.UnitTypeDTO
-import com.example.splmobile.dtos.garbageTypes.UnitTypeResponse
+import com.example.splmobile.HttpRequestUrls
+import com.example.splmobile.objects.garbageTypes.UnitTypeResponse
 import com.example.splmobile.objects.RequestMessageResponse
 import com.example.splmobile.objects.garbageSpots.GarbageSpotsResponse
 import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.objects.garbageTypes.GarbageTypesResponse
-import com.example.splmobile.HttpRequestUrls
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -172,17 +167,9 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
         }
     }
 
-    override suspend fun postGarbageSpotsInEvent(
-        eventID: Long,
-        token: String
-    ): RequestMessageResponse {
-        TODO("Not yet implemented")
-    }
-
-
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom(API_PATH)
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

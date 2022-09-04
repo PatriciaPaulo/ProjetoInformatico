@@ -1,12 +1,10 @@
-package com.example.splmobile.viewmodels
+package com.example.splmobile.models
 
 import co.touchlab.kermit.Logger
-import com.example.splmobile.dtos.activities.ActivityID
-import com.example.splmobile.dtos.files.FileResponse
 import com.example.splmobile.isCodeOK
+import com.example.splmobile.objects.activities.ActivityID
+import com.example.splmobile.objects.files.FileResponse
 import com.example.splmobile.services.files.FileService
-import com.soywiz.korio.file.VfsFile
-import com.soywiz.korio.file.std.VfsFileFromData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch

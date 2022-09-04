@@ -2,13 +2,10 @@ from flask import jsonify, make_response, request, current_app, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Api
 from flask import Blueprint
-<<<<<<< HEAD
 from models import User, Activity, Event, db, GarbageSpot, GarbageSpotInEvent, UnitType
 from utils import token_required,admin_required,guest
-=======
 from models import User, Activity, Event, db, GarbageSpot, GarbageSpotInEvent
 from utils import token_required, admin_required, guest
->>>>>>> origin/main
 import jwt
 from datetime import datetime
 
@@ -179,7 +176,6 @@ def get_my_garbageSpot(current_user):
     return make_response(jsonify({'data': output, 'message': '200 OK - All Garbage Spot Retrieved'}), 200)
 
 
-<<<<<<< HEAD
 # Get Garbage UnitTypes
 @garbagespot_routes_blueprint.route('/unitTypes', methods=['GET'])
 def get_unit_types():
@@ -199,7 +195,7 @@ def get_unit_types():
         return make_response(jsonify({'data':[],'message':'404 NOT OK - No Units Found'}), 404)
 
     return make_response(jsonify({'data': output, 'message': '200 OK - All Units Retrieved'}), 200)
-=======
+
 @garbagespot_routes_blueprint.route('/garbageSpots/<garbageSpot_id>', methods=['DELETE'])
 @admin_required
 def delete_garbage_spot(current_user, garbageSpot_id):
@@ -211,4 +207,3 @@ def delete_garbage_spot(current_user, garbageSpot_id):
     db.session.delete(garbageSpot)
     db.session.commit()
     return make_response(jsonify({'message': '200 OK - Garbage Spot Deleted'}), 200)
->>>>>>> origin/main

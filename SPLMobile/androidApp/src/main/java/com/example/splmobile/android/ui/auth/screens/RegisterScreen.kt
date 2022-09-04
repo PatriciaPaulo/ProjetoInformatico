@@ -27,13 +27,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavHostController
 import com.example.splmobile.android.*
 import com.example.splmobile.android.R
-import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.isEmailValid
 import com.example.splmobile.isTextFieldEmpty
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.passwordsMatch
-import com.example.splmobile.viewmodels.AuthViewModel
 
 @Composable
 fun RegisterScreen(

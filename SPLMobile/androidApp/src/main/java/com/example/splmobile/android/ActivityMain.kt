@@ -17,9 +17,11 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
@@ -36,6 +38,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -46,6 +49,8 @@ val Context.dataStore : DataStore<Preferences> by preferencesDataStore(name = "s
 
 const val EMAIL_KEY = "email"
 const val PASSWORD_KEY = "password"
+val patternReceiver = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z")
+val patternConverter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
 
 @ExperimentalAnimationApi
 @ExperimentalPagerApi

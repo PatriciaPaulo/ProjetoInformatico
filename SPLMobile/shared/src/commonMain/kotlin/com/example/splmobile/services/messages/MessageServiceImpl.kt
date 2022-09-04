@@ -3,11 +3,11 @@ package com.example.splmobile.services.messages
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.API_PATH
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.messages.*
-import com.example.splmobile.objects.RequestMessageResponse
-import com.example.splmobile.objects.messages.*
 import com.example.splmobile.HttpRequestUrls
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.messages.EventMessageRequest
+import com.example.splmobile.objects.messages.IndividualMessageRequest
+import com.example.splmobile.objects.messages.MessagesResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -162,7 +162,7 @@ class MessageServiceImpl(private val log: Logger, engine: HttpClientEngine) :
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom(API_PATH)
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

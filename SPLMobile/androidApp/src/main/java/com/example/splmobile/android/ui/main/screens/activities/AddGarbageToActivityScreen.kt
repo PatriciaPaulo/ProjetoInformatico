@@ -22,15 +22,15 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.ListItemUI
 
-import com.example.splmobile.dtos.activities.ExplicitGarbageInActivityDTO
-import com.example.splmobile.dtos.activities.GarbageAmountDTO
-import com.example.splmobile.dtos.activities.GarbageInActivityDTO
-import com.example.splmobile.dtos.garbageTypes.GarbageTypeDTO
-import com.example.splmobile.dtos.garbageTypes.UnitTypeDTO
+import com.example.splmobile.objects.activities.ExplicitGarbageInActivityDTO
+import com.example.splmobile.objects.activities.GarbageAmountDTO
+import com.example.splmobile.objects.activities.GarbageInActivityDTO
 import com.example.splmobile.isNumber
 import com.example.splmobile.models.ActivityViewModel
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.objects.garbageTypes.GarbageTypeDTO
+import com.example.splmobile.objects.garbageTypes.UnitTypeDTO
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterialApi::class)
@@ -369,7 +369,6 @@ fun AddGarbageToActivityUI(
                 }
 
                 if(showError) {
-
                         Text(
                             text = errorString,
                             color = MaterialTheme.colors.error,

@@ -2,12 +2,14 @@ package com.example.splmobile.services.events
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
+import com.example.splmobile.API_PATH
+import com.example.splmobile.HttpRequestUrls
 import com.example.splmobile.objects.RequestMessageResponse
 import com.example.splmobile.objects.equipments.EquipmentsResponse
-import com.example.splmobile.objects.events.*
-import com.example.splmobile.HttpRequestUrls
-import com.example.splmobile.API_PATH
-import com.example.splmobile.dtos.garbageTypes.GarbageTypesResponse
+import com.example.splmobile.objects.events.EventDTO
+import com.example.splmobile.objects.events.EventRequest
+import com.example.splmobile.objects.events.EventResponse
+import com.example.splmobile.objects.events.EventsResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -157,7 +159,7 @@ class EventServiceImpl (
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom(API_PATH)
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

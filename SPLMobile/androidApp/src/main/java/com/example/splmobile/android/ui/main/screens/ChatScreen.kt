@@ -17,7 +17,7 @@ import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.objects.events.EventDTO
 import com.example.splmobile.objects.messages.MessageDTO
 import com.example.splmobile.objects.users.FriendDTO
-import com.example.splmobile.viewmodels.*
+import com.example.splmobile.models.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 

@@ -5,6 +5,7 @@ import com.example.splmobile.objects.RequestMessageResponse
 import com.example.splmobile.objects.garbageSpots.GarbageSpotsResponse
 import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
 import com.example.splmobile.objects.garbageTypes.GarbageTypesResponse
+import com.example.splmobile.objects.garbageTypes.UnitTypeResponse
 
 
 interface GarbageSpotService {

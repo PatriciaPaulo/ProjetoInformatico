@@ -24,10 +24,9 @@ import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
-import com.example.splmobile.viewmodels.AuthViewModel
-import com.example.splmobile.viewmodels.GarbageSpotViewModel
-import com.example.splmobile.viewmodels.UserInfoViewModel
-import kotlinx.coroutines.launch
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.models.UserInfoViewModel
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

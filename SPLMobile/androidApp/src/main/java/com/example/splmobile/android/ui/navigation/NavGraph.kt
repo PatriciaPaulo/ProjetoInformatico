@@ -26,7 +26,7 @@ import com.example.splmobile.android.ui.main.screens.activities.OngoingActivity
 import com.example.splmobile.android.ui.main.screens.events.*
 import com.example.splmobile.android.ui.main.screens.users.*
 import com.example.splmobile.android.viewmodel.*
-import com.example.splmobile.viewmodels.*
+import com.example.splmobile.models.*
 
 import com.google.accompanist.pager.ExperimentalPagerApi
 
@@ -89,6 +89,8 @@ fun SetupNavGraph(
                 navController = navController,
                 activityViewModel = activityViewModel,
                 authViewModel = authViewModel,
+                userInfoViewModel = userInfoViewModel,
+                mapViewModel = mapViewModel,
                 log = log,
             )
         }

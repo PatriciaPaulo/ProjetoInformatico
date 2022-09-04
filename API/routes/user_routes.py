@@ -121,7 +121,6 @@ def get_all_users(current_user):
 @token_required
 def get_users(current_user):
     # Query for all users
-    print("im here")
     result = []
     users = db.session.query(User).filter_by(deleted_at=None).all()
 
@@ -165,8 +164,6 @@ def get_user_stat(current_user,user_id):
 
             today = datetime.utcnow()
             activities_completed = db.session.query(Activity).filter(Activity.userID== user.id,Activity.endDate <= today).count()
-
-
 
             garbage_spots_created = db.session.query(GarbageSpot).filter(GarbageSpot.creator==user.id).count()
 

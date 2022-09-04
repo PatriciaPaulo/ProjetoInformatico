@@ -3,13 +3,12 @@ package com.example.splmobile.services.friends
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.API_PATH
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.events.EventsResponse
-import com.example.splmobile.dtos.users.FriendsResponse
-import com.example.splmobile.dtos.users.UsersStatsResponse
-import com.example.splmobile.objects.RequestMessageResponse
-import com.example.splmobile.objects.users.*
 import com.example.splmobile.HttpRequestUrls
+import com.example.splmobile.objects.RequestMessageResponse
+import com.example.splmobile.objects.users.FriendDTO
+import com.example.splmobile.objects.users.FriendResponse
+import com.example.splmobile.objects.users.FriendsResponse
+import com.example.splmobile.objects.users.UserDTO
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -129,7 +128,7 @@ class FriendServiceImpl (private val log: Logger, engine: HttpClientEngine) : Fr
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom(API_PATH)
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

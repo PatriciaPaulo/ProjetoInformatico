@@ -6,7 +6,7 @@
     <dimen name="btn_large">64dp</dimen>
 
     <!-- TEXT -->
-    <dimen name="description">10sp</dimen>
+    <dimen name="description">12sp</dimen>
     <dimen name="txt_small">14sp</dimen>
     <dimen name="txt_medium">16sp</dimen>
     <dimen name="txt_large">18sp</dimen>

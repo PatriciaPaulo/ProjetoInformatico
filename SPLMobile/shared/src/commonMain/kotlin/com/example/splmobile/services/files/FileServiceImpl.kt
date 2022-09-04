@@ -2,12 +2,12 @@ package com.example.splmobile.services.files
 
 import co.touchlab.stately.ensureNeverFrozen
 import com.example.splmobile.API_PATH
-import com.example.splmobile.dtos.activities.ActivityID
-import com.example.splmobile.dtos.files.FileResponse
-import com.example.splmobile.dtos.files.FileSerializable
-import com.example.splmobile.dtos.garbageSpots.GarbageSpotID
-import com.example.splmobile.dtos.users.UserID
-import com.soywiz.korio.file.VfsFile
+import com.example.splmobile.HttpRequestUrls
+import com.example.splmobile.objects.activities.ActivityID
+import com.example.splmobile.objects.files.FileResponse
+import com.example.splmobile.objects.files.FileSerializable
+import com.example.splmobile.objects.garbageSpots.GarbageSpotID
+import com.example.splmobile.objects.users.UserID
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -17,15 +17,10 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.util.*
 import kotlinx.serialization.json.Json
 import co.touchlab.kermit.Logger as KermitLogger
-import com.soywiz.korio.file.std.*
-import io.ktor.client.utils.*
-import io.ktor.http.content.*
-import io.ktor.utils.io.*
-import io.ktor.utils.io.core.*
 
 
 class FileServiceImpl (
@@ -135,7 +130,7 @@ class FileServiceImpl (
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom(API_PATH)
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

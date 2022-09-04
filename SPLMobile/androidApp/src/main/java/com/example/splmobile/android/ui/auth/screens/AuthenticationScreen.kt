@@ -20,9 +20,9 @@ import com.example.splmobile.android.*
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
-import com.example.splmobile.viewmodels.AuthViewModel
-import com.example.splmobile.viewmodels.MessageViewModel
-import com.example.splmobile.viewmodels.UserInfoViewModel
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.MessageViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 

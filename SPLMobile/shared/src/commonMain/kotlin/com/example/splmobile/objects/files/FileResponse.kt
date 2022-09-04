@@ -1,4 +1,4 @@
-package com.example.splmobile.dtos.files
+package com.example.splmobile.objects.files
 
 import kotlinx.serialization.Serializable
 

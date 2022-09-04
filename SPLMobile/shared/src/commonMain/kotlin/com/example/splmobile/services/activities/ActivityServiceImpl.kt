@@ -2,11 +2,8 @@ package com.example.splmobile.services.activities
 
 
 import co.touchlab.stately.ensureNeverFrozen
-import com.example.splmobile.objects.RequestMessageResponse
-import com.example.splmobile.objects.activities.ActivitiesTypeResponse
-import com.example.splmobile.objects.activities.CreateActivitySerializable
-import com.example.splmobile.HttpRequestUrls
 import com.example.splmobile.API_PATH
+import com.example.splmobile.HttpRequestUrls
 import com.example.splmobile.objects.activities.*
 import com.example.splmobile.objects.messages.MessagesResponse
 import io.ktor.client.*
@@ -178,7 +175,7 @@ class ActivityServiceImpl (
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom(API_PATH)
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

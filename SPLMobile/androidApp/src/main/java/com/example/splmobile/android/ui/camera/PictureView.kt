@@ -19,9 +19,9 @@ import com.example.splmobile.android.viewmodel.CameraViewModel
 import kotlin.io.path.Path
 import kotlin.io.path.deleteIfExists
 import com.example.splmobile.android.R
-import com.example.splmobile.dtos.activities.ActivityID
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.FileViewModel
+import com.example.splmobile.objects.activities.ActivityID
 import java.io.File
 
 private val TAG = "PIC/VIEW"

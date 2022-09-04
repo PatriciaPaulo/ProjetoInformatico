@@ -77,7 +77,7 @@ fun iconBoxUI(name : String, location : String?, distance : Double?, details : S
             // Event/Garbage Spot Name
             Text(
                 text = name,
-                fontSize = dimensionResource(R.dimen.txt_medium).value.sp,
+                fontSize = dimensionResource(R.dimen.txt_small).value.sp,
                 color = MaterialTheme.colors.onPrimary
             )
 

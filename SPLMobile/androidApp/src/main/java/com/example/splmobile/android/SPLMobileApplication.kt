@@ -8,7 +8,7 @@ import com.example.splmobile.AppInfo
 import com.example.splmobile.models.FileViewModel
 import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.initKoin
-import com.example.splmobile.viewmodels.*
+import com.example.splmobile.models.*
 
 import dagger.hilt.android.HiltAndroidApp
 import org.koin.android.ext.koin.androidApplication

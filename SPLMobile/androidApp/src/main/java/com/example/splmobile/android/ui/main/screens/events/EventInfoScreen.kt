@@ -26,7 +26,7 @@ import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.objects.events.EventDTO
 import com.example.splmobile.objects.events.UserInEventDTO
-import com.example.splmobile.viewmodels.*
+import com.example.splmobile.models.*
 
 
 @OptIn(ExperimentalMaterialApi::class)

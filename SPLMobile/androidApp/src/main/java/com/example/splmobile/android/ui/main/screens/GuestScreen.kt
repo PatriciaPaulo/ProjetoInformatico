@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.main.BottomNavigationBar
-import com.example.splmobile.viewmodels.AuthViewModel
-import com.example.splmobile.viewmodels.UserInfoViewModel
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.UserInfoViewModel
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

@@ -2,19 +2,13 @@ package com.example.splmobile.services.userInEvent
 
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
+import com.example.splmobile.API_PATH
+import com.example.splmobile.HttpRequestUrls
 import com.example.splmobile.objects.RequestDataResponse
-import com.example.splmobile.objects.events.*
+import com.example.splmobile.objects.events.UserInEventResponse
 import com.example.splmobile.objects.users.UserDTO
 import com.example.splmobile.objects.users.UserStatsResponse
 import com.example.splmobile.objects.users.UsersStatsResponse
-import com.example.splmobile.HttpRequestUrls
-import com.example.splmobile.API_PATH
-import com.example.splmobile.dtos.RequestDataResponse
-import com.example.splmobile.dtos.RequestMessageResponse
-import com.example.splmobile.dtos.events.*
-import com.example.splmobile.dtos.users.UserDTO
-import com.example.splmobile.dtos.users.UserStatsResponse
-import com.example.splmobile.dtos.users.UsersStatsResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -172,7 +166,7 @@ class UserServiceImpl(
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom(API_PATH)
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

@@ -1,4 +1,6 @@
 import co.touchlab.kermit.Logger
+import com.example.splmobile.API_PATH
+import com.example.splmobile.HttpRequestUrls
 import com.example.splmobile.objects.activities.ActivitiesResponse
 import com.example.splmobile.objects.events.UserInEventResponse
 import com.example.splmobile.objects.garbageSpots.GarbageSpotsResponse
@@ -6,7 +8,6 @@ import com.example.splmobile.objects.myInfo.EmailCheckResponse
 import com.example.splmobile.objects.myInfo.EmailRequest
 import com.example.splmobile.objects.myInfo.UserResponse
 import com.example.splmobile.objects.myInfo.UserSerializable
-import com.example.splmobile.HttpRequestUrls
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -141,7 +142,7 @@ class UserInfoServiceImpl(private val log: Logger, engine: HttpClientEngine) : U
 
     private fun HttpRequestBuilder.url(path: String) {
         url {
-            takeFrom(API_PATH)
+            takeFrom(HttpRequestUrls.api_emulator.url)
             encodedPath = path
         }
     }

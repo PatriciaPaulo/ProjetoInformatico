@@ -23,9 +23,9 @@ import com.example.splmobile.android.ui.main.components.SearchWidgetState
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.objects.events.EventDTO
-import com.example.splmobile.viewmodels.AuthViewModel
-import com.example.splmobile.viewmodels.EventViewModel
-import com.example.splmobile.viewmodels.UserInfoViewModel
+import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.EventViewModel
+import com.example.splmobile.models.UserInfoViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)

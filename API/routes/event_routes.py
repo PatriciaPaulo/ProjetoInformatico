@@ -80,7 +80,6 @@ def create_event(current_user):
 # Get All Events by User
 @event_routes_blueprint.route('/events', methods=['GET'])
 def get_events():
-    # todo order by date
     events = db.session.query(Event).order_by(desc(Event.createdDate)).all()
     output = []
     for event in events:
@@ -232,7 +231,7 @@ def update_event(current_user, event_id):
     return make_response(jsonify({'message': '200 OK - Event Updated'}), 200)
 
 
-# Update Event by Event Organizer (User)
+# Update Event Status by Event Organizer (User)
 @event_routes_blueprint.route('/events/<event_id>/updateStatus', methods=['PATCH'])
 @token_required
 def update_status_event(current_user, event_id):
@@ -314,7 +313,7 @@ def get_events_na_garbageSpot(current_user, garbageSpot_id):
     return make_response(jsonify({'data': result, 'message': '200 OK - All Events Retrieved From Garbage Spot'}), 200)
 
 
-# Get Garbage Spots created by Logged User
+# Get events user is registered
 @event_routes_blueprint.route('/events/mine', methods=['GET'])
 @token_required
 def get_my_events(current_user):

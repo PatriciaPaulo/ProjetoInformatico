@@ -1,7 +1,7 @@
 package com.example.splmobile.android.viewmodel
 
 import android.net.Uri
-import com.example.splmobile.viewmodels.ViewModel
+import com.example.splmobile.models.ViewModel
 
 class CameraViewModel : ViewModel() {
     private var uri : Uri? = null

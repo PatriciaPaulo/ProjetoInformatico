@@ -1,4 +1,4 @@
-package com.example.splmobile.viewmodels
+package com.example.splmobile.models
 
 import UserInfoService
 import co.touchlab.kermit.Logger

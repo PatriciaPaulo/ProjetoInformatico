@@ -27,7 +27,7 @@ import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.objects.users.UserDTO
-import com.example.splmobile.viewmodels.*
+import com.example.splmobile.models.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)

@@ -53,6 +53,27 @@ def get_activities(current_user):
     return make_response(jsonify({'data': output, 'message': '200 OK - All Activities From Logged In User Retrieved'}),
                          200)
 
+# Get last activity
+@activity_routes_blueprint.route('/lastActivity', methods=['GET'])
+@token_required
+def get_last_activity(current_user):
+    activity = db.sessions.query(Activity).filter_by(userID=current_user.id).last()
+
+    activity_data = {}
+    activity_data['id'] = activity.id
+    activity_data['eventID'] = activity.eventID
+    activity_data['userID'] = activity.userID
+    activity_data['distanceTravelled'] = activity.distanceTravelled
+    activity_data['startDate'] = activity.startDate
+    activity_data['endDate'] = activity.endDate
+    activity_data['activityType'] = activity.activityTypeID
+
+    if len(activity_data) == 0:
+        return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Activities Found'}), 404)
+
+    return make_response(jsonify({'data': activity_data, 'message': '200 OK - All Activities From Logged In User Retrieved'}),
+                         200)
+
 
 # Update Logged User Activity
 @activity_routes_blueprint.route('/activities/<activity_id>', methods=['PUT'])

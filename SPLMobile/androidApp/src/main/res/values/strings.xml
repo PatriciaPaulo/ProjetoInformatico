@@ -44,6 +44,8 @@
     <string name="listGarbage">Lista de Lixo Apanhado</string>
     <string name="noGarbage">Ainda não apanhou lixo!</string>
     <string name="dataMissing">Por favor preencha corretamente todos os campos.</string>
+    <string name="guestOnHome">Algumas funcionalidades não estão disponíveis para convidados.</string>
+    <string name="eventsError">Não foi possível obter os eventos inscritos.</string>
 
     <!-- CAMERA CONTROLS -->
     <string name="icn_camera_view_switch_camera_content_description">Switch Camera</string>

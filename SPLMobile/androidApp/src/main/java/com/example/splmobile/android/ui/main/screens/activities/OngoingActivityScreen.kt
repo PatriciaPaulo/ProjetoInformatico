@@ -5,26 +5,21 @@ import android.hardware.Sensor
 import android.hardware.SensorManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.*
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -35,20 +30,16 @@ import com.example.splmobile.android.data.StopWatch
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MapViewModel
-import com.example.splmobile.dtos.activities.ActivityTypeSerializable
-import com.example.splmobile.dtos.activities.CreateActivitySerializable
+import com.example.splmobile.objects.activities.ActivityTypeSerializable
 import com.example.splmobile.models.ActivityViewModel
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.GarbageSpotViewModel
-import com.example.splmobile.objects.activities.ActivityTypeSerializable
-import com.example.splmobile.viewmodels.ActivityViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.serialization.builtins.serializer
 import kotlin.math.*
 
 // TODO (if time) -> allow to go to previous screens, save variables states, keep time going, show green bar saying in progress and block creating another activity
@@ -63,17 +54,9 @@ fun OngoingActivity(
     garbageSpotViewModel: GarbageSpotViewModel,
     log: Logger
 ) {
-    LaunchedEffect(Unit) {
-
-
-    }
-
-    var createActivityState = activityViewModel.activityCreateUIState.collectAsState().value
-
 
 
     onGoingActivityUI(navController, mapViewModel, activityViewModel, authViewModel, garbageSpotViewModel, log)
-
 }
 
 
