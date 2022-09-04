@@ -63,10 +63,8 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
         log.d { "Fetching garbageSpots from network" }
         try{
             return client.get {
-                if(token.isNotEmpty()){
-                    headers {
-                        append(HttpHeaders.Authorization, "Bearer $token")
-                    }
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
                 url("api/garbageSpots")
@@ -86,10 +84,8 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
         log.d { "post new Garbage Spot" }
         try{
             return client.post {
-                if(token.isNotEmpty()){
-                    headers {
-                        append(HttpHeaders.Authorization, "Bearer $token")
-                    }
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
                 setBody(GarbageSpotDTO(garbageSpot.id, garbageSpot.name, garbageSpot.creator,garbageSpot.latitude,garbageSpot.longitude,garbageSpot.status,garbageSpot.approved,
@@ -142,10 +138,8 @@ class GarbageSpotServiceImpl(private val log: KermitLogger, engine: HttpClientEn
     ): GarbageSpotResponse {
         try{
             return client.get {
-                if(token.isNotEmpty()){
-                    headers {
-                        append(HttpHeaders.Authorization, "Bearer $token")
-                    }
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 contentType(ContentType.Application.Json)
                 url("api/garbageSpots/"+gsId)
