@@ -14,9 +14,8 @@ def guest(f):
     def decorator(*args, **kwargs):
         if 'authorization' in request.headers:
             token = request.headers['authorization']
-
             try:
-                if token == "0":
+                if token.split(" ")[1] == "0":
                     current_user = Guest()
                     current_user.id = 0
                 else:
