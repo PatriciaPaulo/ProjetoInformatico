@@ -202,7 +202,7 @@ fun RegisterValidationUI(
         ) {
 
             Text(
-                text = stringResource(R.string.lblLoginToYourAcc),
+                text = stringResource(R.string.lblRegister),
                 style = TextStyle(fontSize = dimensionResource(R.dimen.small_title).value.sp),
             )
 
@@ -419,15 +419,12 @@ fun RegisterValidationUI(
                     .align(Alignment.CenterHorizontally)
             ) {
                 Text(
-                    text = AnnotatedString(
-                        text = textResource(R.string.noAccountYet),
-                        spanStyle = SpanStyle(color = MaterialTheme.colors.onBackground)
-                    ).plus(
-                        AnnotatedString(
-                            text = " " + textResource(R.string.registerInstead),
-                        )
+                    AnnotatedString(
+                        text = " " + textResource(R.string.lblLoginToYourAcc),
+
                     ),
                     fontSize = dimensionResource(R.dimen.txt_small).value.sp,
+
                 )
             }
         }

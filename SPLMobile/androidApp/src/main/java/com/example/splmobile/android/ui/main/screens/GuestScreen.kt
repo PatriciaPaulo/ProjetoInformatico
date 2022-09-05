@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.splmobile.android.R
 import com.example.splmobile.android.ui.main.BottomNavigationBar
+import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.UserInfoViewModel
 
@@ -38,22 +40,30 @@ fun GuestScreen(
                     .background(colorResource(id = R.color.cardview_dark_background))
                     .wrapContentSize(Alignment.Center)
             ) {
-                Text(
-                    text = "Registe-se",
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp
-                )
-                Text(
-                    text = "Entre na aplicação",
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp
-                )
+                TextButton(onClick = {
+                    navController.navigate(Screen.Login.route)
+                }) {
+                    Text(
+                        text = "Entre na aplicação",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp
+                    )
+                }
+                TextButton(onClick = {
+                    navController.navigate(Screen.Register.route)
+                }) {
+                    Text(
+                        text = "Registe-se",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp
+                    )
+                }
+
+
             }
         }
     )

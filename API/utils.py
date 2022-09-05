@@ -12,22 +12,22 @@ class Guest(object):
 def guest(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        token = None
         if 'authorization' in request.headers:
             token = request.headers['authorization']
-        if not token:
-            #return make_response(jsonify({'message': 'a valid token is missing'}), 400)
-            current_user = Guest()
-            current_user.id = 0
-        else:
             try:
-                data = jwt.decode(token.split(" ")[1], current_app.config['SECRET_KEY'], algorithms=["HS256"])
-                current_user = db.session.query(User).filter_by(email=data['email']).first()
+                if token.split(" ")[1] == "0":
+                    current_user = Guest()
+                    current_user.id = 0
+                else:
+                    data = jwt.decode(token.split(" ")[1], current_app.config['SECRET_KEY'], algorithms=["HS256"])
+                    current_user = db.session.query(User).filter_by(email=data['email']).first()
 
             except Exception as ex:
                 print(ex)
                 return make_response(jsonify({'message': 'token is invalid'}), 400)
 
+        else:
+            return make_response(jsonify({'message': 'token not found'}), 403)
         return f(current_user, *args, **kwargs)
 
     return decorator
