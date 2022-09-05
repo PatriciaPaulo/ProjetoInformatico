@@ -94,9 +94,15 @@ fun GarbageSpotsListScreen(
                     ) {
                         if(searchTextState.isNotEmpty()){
 
-                            items(garbageSpotsListState.garbageSpots.filter { (it.approved || it.creator == userInfoViewModel.myIdUIState.value) &&it.name.contains(searchTextState)  }.size) { index ->
+                            items(garbageSpotsListState.garbageSpots.filter { (
+                                    it.approved || it.creator == userInfoViewModel.myIdUIState.value) && (it.name.contains(searchTextState) ||
+                                    (it.status.contains(searchTextState))
+
+                                    )
+                            }.size) { index ->
                                 GarbageSpotsList(
-                                    gs = garbageSpotsListState.garbageSpots.filter { (it.approved || it.creator == userInfoViewModel.myIdUIState.value) &&it.name.contains(searchTextState)  }.get(index),
+                                    gs = garbageSpotsListState.garbageSpots.filter { (it.approved || it.creator == userInfoViewModel.myIdUIState.value) &&(it.name.contains(searchTextState) ||
+                                            (it.status.contains(searchTextState)) )}.get(index),
                                     navController = navController
                                 )
                             }

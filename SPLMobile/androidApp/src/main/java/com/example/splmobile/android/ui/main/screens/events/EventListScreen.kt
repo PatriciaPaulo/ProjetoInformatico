@@ -98,9 +98,9 @@ fun EventListScreen(
                             .padding(top = 32.dp, bottom = innerPadding.calculateBottomPadding())
                     ) {
                         if(searchTextState.isNotEmpty()){
-                            items(eventsListState.events.filter { it.name.contains(searchTextState) }.size) { index ->
+                            items(eventsListState.events.filter { it.name.contains(searchTextState) || (it.status.contains(searchTextState)) }.size) { index ->
                                 EventsList(
-                                    event = eventsListState.events.filter { it.name.contains(searchTextState) }.get(index),
+                                    event = eventsListState.events.filter { it.name.contains(searchTextState) || (it.status.contains(searchTextState)) }.get(index),
                                     navController = navController
                                 )
                             }
