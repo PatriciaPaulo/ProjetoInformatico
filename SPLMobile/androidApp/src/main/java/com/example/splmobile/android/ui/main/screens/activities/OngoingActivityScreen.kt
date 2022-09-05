@@ -1,50 +1,45 @@
 package com.example.splmobile.android.ui.main.screens.activities
 
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorManager
-import androidx.compose.foundation.background
+import BackAppBar
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
-import com.example.splmobile.android.data.StepSensorData
-import com.example.splmobile.android.data.StopWatch
 import com.example.splmobile.android.textResource
+import com.example.splmobile.android.ui.main.BottomNavigationBar
+import com.example.splmobile.android.ui.navigation.BottomNavItem
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.objects.activities.ActivityTypeSerializable
 import com.example.splmobile.models.ActivityViewModel
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.GarbageSpotViewModel
+import com.example.splmobile.objects.activities.ActivitySerializable
+import com.example.splmobile.objects.activities.PatchActivitySerializable
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
+import java.time.LocalDateTime
 import kotlin.math.*
 
-// TODO (if time) -> allow to go to previous screens, save variables states, keep time going, show green bar saying in progress and block creating another activity
-// TODO (else) -> disallow going back to other screens
-
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun OngoingActivity(
     navController: NavController,
@@ -54,9 +49,24 @@ fun OngoingActivity(
     garbageSpotViewModel: GarbageSpotViewModel,
     log: Logger
 ) {
+    val log = log.withTag("OngoingActivity")
 
+    val title = stringResource(R.string.activityTitle)
+    Scaffold(
+        topBar = { BackAppBar(title, navController) },
+        bottomBar = { BottomNavigationBar(navController = navController) },
+        content = {
+            onGoingActivityUI(
+                navController,
+                mapViewModel,
+                activityViewModel,
+                authViewModel,
+                garbageSpotViewModel,
+                log
+            )
+        }
+    )
 
-    onGoingActivityUI(navController, mapViewModel, activityViewModel, authViewModel, garbageSpotViewModel, log)
 }
 
 
@@ -106,15 +116,21 @@ fun onGoingActivityUI(
         position = cameraLatLng
     }
 
-    var stepCounter by remember { mutableStateOf(0f) }
-    step(stepCounter)
+    var showError by remember { mutableStateOf(false) }
+    var showErrorState = { source : Int ->
+        if(source == 1){
+            showError = true
+        } else {
+            showError = false
+        }
+    }
 
     val shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp)
     Column() {
         // Show Map Box
         Box(
             modifier = Modifier
-                .weight(1f)
+                .weight(2f)
         ) {
             mapActivityUI(cameraPosition, pointerLocation)
         }
@@ -122,11 +138,18 @@ fun onGoingActivityUI(
         // Information panel
         Box(
             modifier = Modifier
-                .weight(1f)
+                .weight(3f)
                 .clip(shape)
         ) {
             val shortDistance = round(distanceTravelled * 10.0) / 10.0
-            ongoingActivityDataUI(shortDistance, activityViewModel, navController)
+            ongoingActivityDataUI(
+                shortDistance,
+                activityViewModel,
+                authViewModel,
+                navController,
+                showError,
+                showErrorState
+            )
         }
     }
 }
@@ -151,37 +174,6 @@ fun calculateDistance(currentLocation: LatLng, lastLocation: LatLng?): Double {
 }
 
 @Composable
-private fun step(stepCounter: Float) {
-    println("-------------- STEP COUNT DEBUG ------------")
-    // Get Current Context
-    val context = LocalContext.current
-
-    // Set up the sensor manager
-    val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-
-    // Set up sensor to get steps
-    val stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-
-
-    val stepSensorData = StepSensorData(stepCounter)
-
-    stepSensor?.let {
-        sensorManager.registerListener(stepSensorData, it, SensorManager.SENSOR_DELAY_UI)
-    }
-}
-
-@Composable
-private fun runStopWatch() {
-    val stopWatch = remember { StopWatch() }
-
-    stopWatch.startStopwatch()
-
-    Text(
-        text = stopWatch.formattedTime
-    )
-}
-
-@Composable
 private fun mapActivityUI(cameraPosition: CameraPositionState, pointerLocation: LatLng) {
     // TODO If not permission, show custom image saying oopsie and on click to call permission requester
     GoogleMap(
@@ -202,114 +194,73 @@ private fun mapActivityUI(cameraPosition: CameraPositionState, pointerLocation: 
 private fun ongoingActivityDataUI(
     distance: Double,
     activityViewModel: ActivityViewModel,
-    navController: NavController
+    authViewModel: AuthViewModel,
+    navController: NavController,
+    showError: Boolean,
+    showErrorState : (Int) -> Unit
 ) {
+    var currentActivity = ActivitySerializable(-1, null, null, null, null, null)
     LaunchedEffect(Unit) {
         // Get Activity Types from DB
         activityViewModel.getActivityTypes()
+        currentActivity = activityViewModel.getCurrentActivity()
     }
-
-    val defaultTitle = stringResource(R.string.activityTitle)
-    var activityName by remember { mutableStateOf(defaultTitle) }
-    var activityNameUpdate by remember { mutableStateOf(defaultTitle) }
-    // Status returns true if name is being edited
-    var activityNameStatus by remember { mutableStateOf(false) }
 
     var activityTypeState = activityViewModel.activityTypeUIState.collectAsState().value
     var activityTypesList = remember { mutableStateOf(emptyList<ActivityTypeSerializable>()) }
     var actTypeExpanded by remember { mutableStateOf(false) }
-
-    var showGarbageTypeManager by remember { mutableStateOf(false) }
-
+    val chooseOptionString = stringResource(R.string.chooseOption)
+    var actTypeSelected by remember { mutableStateOf(ActivityTypeSerializable(-1, chooseOptionString, ""))}
     when (activityTypeState) {
         is ActivityViewModel.ActivityTypeUIState.Success -> {
             activityTypesList.value = activityTypeState.activityTypes
         }
     }
 
-    // TODO Change to res
-    var actTypeSelected by remember { mutableStateOf("Escolha uma opção") }
+
+    // TODO Garbage adds bug add pa sempre?
+    var garbageInActivityState = activityViewModel.garbageInActivityUIState.collectAsState().value
+    var garbageKgAmount by remember { mutableStateOf(0f) }
+    var garbageLtAmount by remember { mutableStateOf(0f) }
+    var garbageUnAmount by remember { mutableStateOf(0f) }
+    when (garbageInActivityState) {
+        is ActivityViewModel.GarbageInActivityUIState.Success -> {
+            garbageInActivityState.activities.forEach { garbage ->
+                if (garbage.unit == "kg") {
+                    garbageKgAmount += garbage.amount
+                } else if (garbage.unit == "unidade") {
+                    garbageUnAmount += garbage.amount
+                } else {
+                    garbageLtAmount += garbage.amount
+                }
+            }
+        }
+    }
+
+
+    if (currentActivity.id != -1L) {
+        activityTypesList.value.forEach { type ->
+            if (currentActivity.activityTypeID == type.id) {
+                actTypeSelected = type
+            }
+        }
+
+
+    }
+
+    var finishActivityState = activityViewModel.activityFinishUIState.collectAsState().value
+    when(finishActivityState) {
+        is ActivityViewModel.ActivityFinishUIState.Success -> {
+            activityViewModel.setCurrentActivity(ActivitySerializable(-1, null, null, null, null, null))
+            navController.navigate(BottomNavItem.Home.route)
+        }
+    }
 
 
     Column(
         modifier = Modifier
             .padding(dimensionResource(R.dimen.default_margin))
     ) {
-        // Activity Name, Edit Name Buttons
-        Row() {
-            if (activityNameStatus) {
-                // Editable Activity Name
-                OutlinedTextField(
-                    value = activityName,
-                    onValueChange = { activityName = it },
-                    textStyle = TextStyle(fontSize = dimensionResource(R.dimen.small_title).value.sp),
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                )
-            } else {
-                // Non-editable Activity Name
-                Text(
-                    text = activityName,
-                    fontSize = dimensionResource(R.dimen.small_title).value.sp,
-                )
-            }
-
-            if (!activityNameStatus) {
-                // Edit Name Button
-                Button(
-                    modifier = Modifier
-                        .size(dimensionResource(R.dimen.btn_small)),
-                    onClick = {
-                        activityNameStatus = true
-                    }
-                ) {
-                    Icon(
-                        painterResource(R.drawable.ic_main_chat),
-                        contentDescription = null
-                    )
-                }
-
-            } else {
-                Row() {
-                    // Save Name Button
-                    Button(
-                        modifier = Modifier
-                            .size(dimensionResource(R.dimen.btn_small)),
-                        onClick = {
-                            activityNameUpdate = activityName
-                            activityNameStatus = false
-                        }
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.ic_main_profile),
-                            contentDescription = null
-                        )
-                    }
-
-                    // Cancel Button
-                    Button(
-                        modifier = Modifier
-                            .size(dimensionResource(R.dimen.btn_small)),
-                        onClick = {
-                            activityName = activityNameUpdate
-                            activityNameStatus = false
-                        }
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.ic_main_home),
-                            contentDescription = null
-                        )
-                    }
-                }
-            }
-
-            // TODO Have to check if mutable state of Activity Name remains if I change page (thinks nots)
-        }
-
-
-        // Chronometer
-        // TODO On app close keep counting
-        runStopWatch()
-
         // Escolher Activity Type
         Row() {
             ExposedDropdownMenuBox(
@@ -318,7 +269,7 @@ private fun ongoingActivityDataUI(
             ) {
                 TextField(
                     readOnly = true,
-                    value = actTypeSelected,
+                    value = actTypeSelected.name,
                     onValueChange = { },
                     label = { Text(textResource(R.string.activityType)) },
                     trailingIcon = {
@@ -338,8 +289,9 @@ private fun ongoingActivityDataUI(
                     activityTypesList.value.forEach { selectedOption ->
                         DropdownMenuItem(
                             onClick = {
-                                actTypeSelected = selectedOption.name
+                                actTypeSelected = selectedOption
                                 actTypeExpanded = false
+                                showErrorState(2)
                             }
                         ) {
                             Text(text = selectedOption.name)
@@ -349,56 +301,134 @@ private fun ongoingActivityDataUI(
             }
         }
 
-        Row() {
-            // TODO Resumo Lixo
-            Box(
-                modifier = Modifier
-                    .weight(1F)
-            ) {
-                Text("8 Kg") // TODO Change to get lixo from activity and roughly calculate how much lixo there is
-                Button(
-                    modifier = Modifier
-                        .size(dimensionResource(R.dimen.btn_large))
-                        .align(Alignment.Center),
-                    onClick = { navController.navigate(Screen.ManageGarbage.route) }
-                ) {
-                    Text("+") // TODO Change to ICON
-                }
-            }
+        if(showError) {
+            Text(stringResource(R.string.dataMissing))
+        }
 
-            // Travelled Distance
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            // Garbage Collected Resume
             Box(
                 modifier = Modifier
                     .weight(1F)
+                    .height(dimensionResource(R.dimen.btn_large))
             ) {
-                Column(
+                //Number
+                Text(
+                    text = garbageKgAmount.toString(),
+                    fontSize = dimensionResource(R.dimen.txt_large).value.sp,
                     modifier = Modifier
                         .align(Alignment.Center)
+                )
+
+                //Unit
+                Text(
+                    text = stringResource(R.string.kg),
+                    fontSize = dimensionResource(R.dimen.txt_small).value.sp,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(1F)
+                    .height(dimensionResource(R.dimen.btn_large))
+            ) {
+                //Number
+                Text(
+                    text = garbageLtAmount.toString(),
+                    fontSize = dimensionResource(R.dimen.txt_large).value.sp,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                )
+
+                //Unit
+                var ltString = stringResource(R.string.lt)
+                if (garbageLtAmount != 1f) {
+                    ltString += "s"
+                }
+                Text(
+                    text = ltString,
+                    fontSize = dimensionResource(R.dimen.txt_small).value.sp,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(1F)
+                    .height(dimensionResource(R.dimen.btn_large))
+            ) {
+                //Number
+                Text(
+                    text = garbageUnAmount.toInt().toString(),
+                    fontSize = dimensionResource(R.dimen.txt_large).value.sp,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                )
+
+                //Unit
+                var unString = stringResource(R.string.un)
+                if (garbageUnAmount != 1f) {
+                    unString += "s"
+                }
+                Text(
+                    text = unString,
+                    fontSize = dimensionResource(R.dimen.txt_small).value.sp,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(1F)
+                    .height(dimensionResource(R.dimen.btn_large))
+            ) {
+                IconButton(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    onClick = { navController.navigate(Screen.ManageGarbage.route) },
                 ) {
-                    Text(
-                        text = distance.toString(),
-                        fontSize = dimensionResource(R.dimen.title).value.sp
+                    Icon(
+                        imageVector = Icons.Default.AddCircle,
+                        contentDescription = "Plus icon",
+                        tint = MaterialTheme.colors.primary
                     )
-                    Text(textResource(R.string.km))
                 }
-            }
-
-            // TODO Add/Edit pictures
-            Box(
-                modifier = Modifier
-                    .weight(1F)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(0.75f)
-                        .align(Alignment.Center)
-                        .background(color = Color.Blue),
-                ) { }
             }
         }
-    }
-    // TODO Concluir BTN
-    // TODO Cancelar BTN
-    // TODO Backtrace button fazer o mesmo que cancelar action
 
+
+        Button(
+            modifier = Modifier
+                .padding(vertical = dimensionResource(R.dimen.small_spacer))
+                .height(dimensionResource(R.dimen.btn_medium))
+                .fillMaxWidth(),
+            onClick = {
+                if(actTypeSelected.id == -1L) {
+                    showErrorState(1)
+                } else {
+                    // Finish Activity
+                    println("${activityViewModel.getCurrentActivity().id} ${distance} ${actTypeSelected.id} ${LocalDateTime.now()}")
+                    activityViewModel.finishActivity(
+                        PatchActivitySerializable(
+                            id = activityViewModel.getCurrentActivity().id,
+                            distanceTravelled = distance.toString(),
+                            activityTypeID = actTypeSelected.id,
+                            endDate = LocalDateTime.now().toString()
+                        ),
+                        authViewModel.tokenState.value,
+                    )
+                }
+            },
+        ) {
+            Text(
+                text = stringResource(R.string.btnConcluir)
+            )
+        }
+    }
 }

@@ -33,9 +33,12 @@
     <string name="orLineBreak"> ou </string>
 
     <!-- ACTIVITIES -->
-    <string name="activityTitle">Nome da Atividade</string>
+    <string name="activityTitle">Atividade</string>
     <string name="activityType">Tipo de Atividade</string>
     <string name="km">KM</string>
+    <string name="kg">kg</string>
+    <string name="lt">litro</string>
+    <string name="un">unidade</string>
     <string name="selecioneLixo">Tipo de lixo</string>
     <string name="selecioneUT">Unidade de medida</string>
     <string name="activityBDError">Erro de Servidor. Por favor tente novamente, se este erro persistir contacte os desenvolvedores da app.</string>
@@ -46,6 +49,14 @@
     <string name="dataMissing">Por favor preencha corretamente todos os campos.</string>
     <string name="guestOnHome">Algumas funcionalidades não estão disponíveis para convidados.</string>
     <string name="eventsError">Não foi possível obter os eventos inscritos.</string>
+    <string name="editActivity">Editar atividade</string>
+    <string name="startActivity">Iniciar atividade</string>
+    <string name="startEventActivity">Participar no evento</string>
+    <string name="onGoingEvent">Um evento para o qual estás inscrito está a decorrer! Termina a atividade para poderes participar.</string>
+    <string name="noEvent">Não queres participar?</string>
+    <string name="doActivity">Faz uma atividade!</string>
+    <string name="chooseOption">Escolha uma opção</string>
+    <string name="btnConcluir">Concluir Atividade</string>
 
     <!-- CAMERA CONTROLS -->
     <string name="icn_camera_view_switch_camera_content_description">Switch Camera</string>
@@ -153,5 +164,8 @@
     <string name="lblLastEvents">Os teus últimos eventos</string>
     <string name="lblNoActivities">Atividades não encontradas</string>
 
+    <!-- EVENTOS -->
+    <string name="lblNextEvents">Próximos eventos</string>
+    <string name="noNextEvents">Não está inscrito em eventos futuros!</string>
 
 </resources>

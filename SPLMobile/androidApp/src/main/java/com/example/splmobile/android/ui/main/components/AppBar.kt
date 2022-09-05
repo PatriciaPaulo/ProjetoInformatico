@@ -27,7 +27,8 @@ fun DefaultAppBar(
         },
         actions = {
             IconButton(
-                onClick = { onSearchClicked() }) {
+                onClick = { onSearchClicked() })
+            {
                 Icon(
                     imageVector = icon,
                     contentDescription = "Procurar icon",
