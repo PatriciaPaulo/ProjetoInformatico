@@ -30,14 +30,14 @@ import com.example.splmobile.android.R
 @Preview
 @Composable
 fun test() {
-    iconBoxUI("Vale Limpar", "Mira de Aire", 13.0, "22-10-2013 15h00", null)
+    //iconBoxUI("Vale Limpar", "Mira de Aire", 13.0, "22-10-2013 15h00", null)
     ListItemUI("Titulo Garbage", "cenas cenas cenas")
 }
 
 
 
 @Composable
-fun iconBoxUI(name : String, location : String?, distance : Double?, details : String, iconPath : String?){
+fun iconBoxUI(modifier: Modifier, name : String, location : String?, distance : Double?, details : String, iconPath : String?){
     val cornerRadius = RoundedCornerShape(dimensionResource(R.dimen.cornerRadius))
 
     Box(

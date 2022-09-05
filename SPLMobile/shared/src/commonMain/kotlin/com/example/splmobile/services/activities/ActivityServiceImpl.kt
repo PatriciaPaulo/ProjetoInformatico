@@ -2,8 +2,8 @@ package com.example.splmobile.services.activities
 
 
 import co.touchlab.stately.ensureNeverFrozen
-import com.example.splmobile.API_PATH
 import com.example.splmobile.HttpRequestUrls
+import com.example.splmobile.objects.RequestMessageResponse
 import com.example.splmobile.objects.activities.*
 import com.example.splmobile.objects.messages.MessagesResponse
 import io.ktor.client.*
@@ -34,7 +34,7 @@ class ActivityServiceImpl (
         install(Logging) {
             logger = object : Logger {
                 override fun log(message: String) {
-                    log.v { message + "ACTIVITY IMP MESSAGE" }
+                    log.v { message + " ACTIVITY IMP MESSAGE" }
                 }
             }
 
@@ -57,7 +57,7 @@ class ActivityServiceImpl (
     override suspend fun postCreateActivity(
         activity: CreateActivitySerializable,
         token: String
-    ) : CreateActivityResponse  {
+    ): ActivityResponse {
         log.d { "Post New Activity" }
         try {
             return client.post {
@@ -69,9 +69,31 @@ class ActivityServiceImpl (
                 contentType(ContentType.Application.Json)
                 setBody(activity)
                 url("api/activities")
-            }.body() as CreateActivityResponse
+            }.body() as ActivityResponse
         } catch (e : Exception) {
-            return CreateActivityResponse(0,"$e")
+            return ActivityResponse(ActivitySerializable(0, null, null, null, null, null),"$e")
+        }
+    }
+
+    override suspend fun patchActivity(
+        activity: PatchActivitySerializable,
+        token: String
+    ): RequestMessageResponse {
+        log.d { "PATCH New Activity" }
+
+        try {
+            return client.patch {
+                if(token.isNotEmpty()){
+                    headers{
+                        append(HttpHeaders.Authorization, "Bearer $token")
+                    }
+                }
+                contentType(ContentType.Application.Json)
+                setBody(activity)
+                url("api/activities/${activity.id}")
+            }.body() as RequestMessageResponse
+        } catch (e : Exception) {
+            return RequestMessageResponse("$e")
         }
     }
 
@@ -88,7 +110,7 @@ class ActivityServiceImpl (
     }
 
     override suspend fun getGarbageInActivity(
-        currentActivity: Int,
+        currentActivity: Long,
         token: String
     ): GarbageInActivityResponse {
         log.d { "Get All Garbage in Activity $currentActivity" }
@@ -170,6 +192,22 @@ class ActivityServiceImpl (
             }.body()
     } catch (e : ClientRequestException) {
             return MessagesResponse(emptyList(), "$e")
+        }
+    }
+
+    override suspend fun getLastActivity(token: String): ActivityResponse {
+        log.d { "GET Last Activity" }
+        try {
+            return client.get {
+                if (token.isNotEmpty()) {
+                    headers{
+                        append(HttpHeaders.Authorization, "Bearer $token")
+                    }
+                }
+                url("api/activities/last")
+            }.body()
+        } catch (e : ClientRequestException) {
+            return ActivityResponse(ActivitySerializable(0, null, null, null, null, null), e.message)
         }
     }
 

@@ -7,9 +7,17 @@ data class ActivitySerializable(
     val id: Long,
     var eventID: Long?,
     var distanceTravelled: String?,
-    var activityType: String?,
+    var activityTypeID: Long?,
     val startDate: String?,
     val endDate: String?,
+)
+
+@Serializable
+data class PatchActivitySerializable(
+    val id: Long,
+    var distanceTravelled: String?,
+    val activityTypeID: Long?,
+    val endDate: String?
 )
 
 @Serializable

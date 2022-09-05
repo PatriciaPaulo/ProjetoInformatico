@@ -3,14 +3,14 @@ package com.example.splmobile.objects.activities
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateActivityResponse(
-    val id : Int,
-    val message : String,
+data class ActivitiesResponse(
+    val data: List<ActivitySerializable>,
+    val message: String,
 )
 
 @Serializable
-data class ActivitiesResponse(
-    val data: List<ActivitySerializable>,
+data class ActivityResponse(
+    val data: ActivitySerializable,
     val message: String,
 )
 

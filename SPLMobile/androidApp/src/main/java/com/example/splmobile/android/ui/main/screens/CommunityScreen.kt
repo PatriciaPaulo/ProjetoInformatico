@@ -18,14 +18,18 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.patternConverter
+import com.example.splmobile.android.patternReceiver
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
+import com.example.splmobile.android.ui.main.components.iconBoxUI
 import com.example.splmobile.android.ui.main.screens.activities.calculateDistance
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
@@ -39,6 +43,8 @@ import com.example.splmobile.models.GarbageSpotViewModel
 import com.example.splmobile.models.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.maps.model.LatLng
+import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -349,6 +355,13 @@ private fun EventsNearMeSection(
 
     ) {
         val location by mapViewModel.getLocationLiveData().observeAsState()
+        var parseLocationLiveData = LatLng(0.0, 0.0)
+        if (location != null) {
+            val lat = location!!.latitude.toDouble()
+            val lng = location!!.longitude.toDouble()
+            parseLocationLiveData = LatLng(lat, lng)
+        }
+
         if(location == null){
             Text("Erro a ler a sua localização")
         }else{
@@ -360,31 +373,28 @@ private fun EventsNearMeSection(
             }
             else{
                 LazyHorizontalGrid(
-                    modifier = Modifier
-                        .height(100.dp),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.small_spacer)),
                     rows = GridCells.Fixed(1),
-
-                    ){
+                ){
                     events.filter { ev -> ev.status == "Criado" &&
                             locationNearMe(location!!,
                                 LatLng(ev.latitude.toDouble(), ev.longitude.toDouble()))<50
-                    }.forEachIndexed { index, card ->
+                    }.forEachIndexed { index, event ->
                         item(span = { GridItemSpan(1) }) {
-                            Card(
-                                Modifier.clickable {
-                                    log.d { "Event clicked -> $card" }
-                                    log.d { "Navigated to new screen" }
-                                    navController.navigate(Screen.EventInfo.route + "/${card.id}")
-                                },
-                            ) {
-                                Column() {
-                                    Text(text = card.name)
-                                    Text(text = card.startDate)
-                                    Text(text = card.status)
-                                }
 
-
-                            }
+                            iconBoxUI(
+                                modifier = Modifier
+                                    .clickable { navController.navigate(Screen.EventInfo.route + "/${event.id}") },
+                                name = event.name,
+                                distance = if (location != null) (calculateDistance(
+                                    parseLocationLiveData,
+                                    LatLng(event.latitude.toDouble(), event.longitude.toDouble())
+                                ) * 10.0).roundToInt() / 10.0
+                                else null,
+                                location = null,
+                                details = event.status,
+                                iconPath = null,
+                            )
                         }
                     }
                 }

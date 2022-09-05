@@ -1,12 +1,13 @@
-from flask import jsonify, make_response, request, current_app, Flask
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_restful import Api
+from datetime import datetime
+
 from flask import Blueprint
-from models import User, Activity, Event, db, GarbageSpot, GarbageSpotInEvent, ActivityType, GarbageInActivity, \
-    GarbageType, UnitType, Garbage
-from utils import token_required, admin_required, guest
-import jwt
-import datetime
+from flask import jsonify, make_response, request
+from flask_restful import Api
+from sqlalchemy import desc
+
+from models import Activity, db, ActivityType, GarbageInActivity, \
+    UnitType, Garbage
+from utils import token_required
 
 activity_routes_blueprint = Blueprint('activity_routes', __name__, )
 api = Api(activity_routes_blueprint)
@@ -16,18 +17,24 @@ api = Api(activity_routes_blueprint)
 @activity_routes_blueprint.route('/activities', methods=['POST'])
 @token_required
 def start_activity(current_user):
+    last_activity: Activity = db.session.query(Activity).filter_by(userID=current_user.id).order_by(
+        desc(Activity.id)).first()
+
+    if last_activity.endDate is None:
+        return make_response(jsonify({'data': [], 'message': '403 FORBIDDEN - Last activity not finished!'}), 403)
+
     data = request.get_json()
 
     new_activity = Activity(eventID=data['eventID'] if data['eventID'] is not None else None,
                             userID=current_user.id,
                             distanceTravelled=0,
-                            startDate=datetime.datetime.utcnow(),
+                            startDate=datetime.utcnow(),
                             endDate=None,
                             activityTypeID=0)
     db.session.add(new_activity)
     db.session.commit()
 
-    return make_response(jsonify({'id': new_activity.id, 'message': '200 OK - Activity Started'}), 200)
+    return make_response(jsonify({'data': Activity.serialize(new_activity), 'message': '200 OK - Activity Started'}), 200)
 
 
 # Get Logged User Activities
@@ -44,7 +51,7 @@ def get_activities(current_user):
         activity_data['distanceTravelled'] = ati.distanceTravelled
         activity_data['startDate'] = ati.startDate
         activity_data['endDate'] = ati.endDate
-        activity_data['activityType'] = ati.activityTypeID
+        activity_data['activityTypeID'] = ati.activityTypeID
         output.append(activity_data)
 
     if len(output) == 0:
@@ -53,11 +60,15 @@ def get_activities(current_user):
     return make_response(jsonify({'data': output, 'message': '200 OK - All Activities From Logged In User Retrieved'}),
                          200)
 
+
 # Get last activity
-@activity_routes_blueprint.route('/lastActivity', methods=['GET'])
+@activity_routes_blueprint.route('/activities/last', methods=['GET'])
 @token_required
 def get_last_activity(current_user):
-    activity = db.sessions.query(Activity).filter_by(userID=current_user.id).last()
+    activity: Activity = db.session.query(Activity).filter_by(userID=current_user.id).order_by(desc(Activity.id)).first()
+
+    if activity is None:
+        return make_response(jsonify({'data': [], 'message': 'User does not have last activity'}), 200)
 
     activity_data = {}
     activity_data['id'] = activity.id
@@ -66,17 +77,18 @@ def get_last_activity(current_user):
     activity_data['distanceTravelled'] = activity.distanceTravelled
     activity_data['startDate'] = activity.startDate
     activity_data['endDate'] = activity.endDate
-    activity_data['activityType'] = activity.activityTypeID
+    activity_data['activityTypeID'] = activity.activityTypeID
 
     if len(activity_data) == 0:
         return make_response(jsonify({'data': [], 'message': '404 NOT OK - No Activities Found'}), 404)
 
-    return make_response(jsonify({'data': activity_data, 'message': '200 OK - All Activities From Logged In User Retrieved'}),
-                         200)
+    return make_response(
+        jsonify({'data': activity_data, 'message': '200 OK - All Activities From Logged In User Retrieved'}),
+        200)
 
 
 # Update Logged User Activity
-@activity_routes_blueprint.route('/activities/<activity_id>', methods=['PUT'])
+@activity_routes_blueprint.route('/activities/<activity_id>', methods=['PATCH'])
 @token_required
 def update_activity(current_user, activity_id):
     activity = db.session.query(Activity).filter_by(id=activity_id, userID=current_user.id).first()
@@ -84,9 +96,10 @@ def update_activity(current_user, activity_id):
         return make_response(jsonify({'message': '404 NOT OK - No Activity Found'}), 404)
 
     activity_data = request.get_json()
+    time = datetime.strptime(activity_data['endDate'], '%Y-%m-%dT%H:%M:%S.%f')
     activity.distanceTravelled = activity_data['distanceTravelled']
-    activity.duration = activity_data['endDate']
-    activity.activityType = activity_data['activityType']
+    activity.endDate = time
+    activity.activityTypeID = activity_data['activityTypeID']
 
     db.session.commit()
 
@@ -195,12 +208,12 @@ def create_garbage_in_activity(current_user, activity_id):
         db.session.commit()
 
         return make_response(jsonify(
-            {'data': GarbageInActivity.serialize(new_gb_in_activity), 'message': '200 OK - Added Garbage to Activity'}), 200)
+            {'data': GarbageInActivity.serialize(new_gb_in_activity), 'message': '200 OK - Added Garbage to Activity'}),
+            200)
 
     except:
 
         return make_response(jsonify({'data': [], 'message': '200 OK - 400 NOT OK - Unknown error!'}), 400)
-
 
 
 # Delete Garbage in Activity

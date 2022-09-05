@@ -14,10 +14,17 @@ class ActivityViewModel (
 
     // Classes
     sealed class ActivityStartUIState {
-        data class Success(val currentActivity : Int): ActivityStartUIState()
+        data class Success(val currentActivity : ActivitySerializable): ActivityStartUIState()
         data class Error(val error : String) : ActivityStartUIState()
         object Loading : ActivityStartUIState()
         object Empty : ActivityStartUIState()
+    }
+
+    sealed class ActivityFinishUIState {
+        object Success: ActivityFinishUIState()
+        data class Error(val error : String) : ActivityFinishUIState()
+        object Loading : ActivityFinishUIState()
+        object Empty : ActivityFinishUIState()
     }
 
     sealed class ActivityTypeUIState {
@@ -55,12 +62,21 @@ class ActivityViewModel (
         object Empty : DeleteGarbageInActivityUIState()
     }
 
+    sealed class LastActivityUIState {
+        data class Success(val activity: ActivitySerializable): LastActivityUIState()
+        data class Error(val error: String) : LastActivityUIState()
+        object Loading : LastActivityUIState()
+        object Empty : LastActivityUIState()
+    }
 
     // Variables
-    private var currentActivity : Int = 0
+    private var currentActivity : ActivitySerializable = ActivitySerializable(-1, null, null, null, null, null)
 
     private val _activityCreateUIState = MutableStateFlow<ActivityStartUIState>(ActivityStartUIState.Empty)
     val activityCreateUIState = _activityCreateUIState.asStateFlow()
+
+    private val _activityFinishUIState = MutableStateFlow<ActivityFinishUIState>(ActivityFinishUIState.Empty)
+    val activityFinishUIState = _activityFinishUIState.asStateFlow()
 
     private val _activityTypeUIState = MutableStateFlow<ActivityTypeUIState>(ActivityTypeUIState.Empty)
     val activityTypeUIState = _activityTypeUIState.asStateFlow()
@@ -77,12 +93,15 @@ class ActivityViewModel (
     private val _deleteGarbageInActivity = MutableStateFlow<DeleteGarbageInActivityUIState>(DeleteGarbageInActivityUIState.Empty)
     val deleteGarbageInActivity = _deleteGarbageInActivity.asStateFlow()
 
-    fun getCurrentActivity() : Int {
+    private val _lastActivity = MutableStateFlow<LastActivityUIState>(LastActivityUIState.Empty)
+    val lastActivity = _lastActivity.asStateFlow()
+
+    fun getCurrentActivity() : ActivitySerializable {
         return currentActivity
     }
 
-    fun setCurrentActivity(activityID : Int) {
-        currentActivity = activityID
+    fun setCurrentActivity(activity : ActivitySerializable) {
+        currentActivity = activity
     }
 
 
@@ -95,9 +114,23 @@ class ActivityViewModel (
         viewModelScope.launch {
             val response = activityService.postCreateActivity(activity, token)
             if(response.message.substring(0,3) == "200"){
-                _activityCreateUIState.value = ActivityStartUIState.Success(response.id)
+                _activityCreateUIState.value = ActivityStartUIState.Success(response.data)
             } else {
                 _activityCreateUIState.value = ActivityStartUIState.Error(response.message)
+            }
+        }
+    }
+
+    // Finish Activity
+    fun finishActivity(activity: PatchActivitySerializable, token: String) {
+        _activityFinishUIState.value = ActivityFinishUIState.Loading
+
+        viewModelScope.launch {
+            val response = activityService.patchActivity(activity, token)
+            if(response.message.substring(0,3) == "200"){
+                _activityFinishUIState.value = ActivityFinishUIState.Success
+            } else {
+                _activityFinishUIState.value = ActivityFinishUIState.Error(response.message)
             }
         }
     }
@@ -117,7 +150,7 @@ class ActivityViewModel (
     }
 
     // Get Garbage in Activity
-    fun getGarbageInActivity(currentActivity : Int, token: String) {
+    fun getGarbageInActivity(currentActivity : Long, token: String) {
         _garbageInActivityUIState.value = GarbageInActivityUIState.Loading
 
         viewModelScope.launch {
@@ -168,6 +201,20 @@ class ActivityViewModel (
                 _deleteGarbageInActivity.value = DeleteGarbageInActivityUIState.Success
             } else {
                 _deleteGarbageInActivity.value = DeleteGarbageInActivityUIState.Error(response.message)
+            }
+        }
+    }
+
+    // Get Last Activity
+    fun getLastActivity(token: String) {
+        _lastActivity.value = LastActivityUIState.Loading
+
+        viewModelScope.launch {
+            val response = activityService.getLastActivity(token)
+            if(response.message.substring(0,3) == "200"){
+                _lastActivity.value = LastActivityUIState.Success(response.data)
+            } else {
+                _lastActivity.value = LastActivityUIState.Error(response.message)
             }
         }
     }
