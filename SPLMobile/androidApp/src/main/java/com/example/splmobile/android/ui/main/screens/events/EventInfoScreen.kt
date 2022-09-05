@@ -308,12 +308,12 @@ private fun OrganizerSection(
             },
 
             ) {
-            Text(text = textResource(R.string.btnUpdateParticipateOnEvent).toString())
+            Text(text = textResource(R.string.btnUpdateParticipateOnEvent))
         }
     }
     Row(horizontalArrangement = Arrangement.SpaceBetween) {
         //button for organizers to add new organizers
-        if (event.status.equals(textResource(R.string.EventOrganizerStatusElement1).toString())) {
+
             Button(
                 onClick = {
                     navController.navigate(Screen.UsersInEventList.route + "/${event.id}")
@@ -321,19 +321,20 @@ private fun OrganizerSection(
                 },
 
                 ) {
-                Text(text = textResource(R.string.btnCheckParticipantsOnEvent).toString())
+                Text(text = textResource(R.string.btnCheckParticipantsOnEvent))
             }
-        }
 
-        //buton for ORGANIZERS to update event
-        Button(
-            onClick = {
-                navController.navigate(Screen.EventEdit.route + "/${event.id}")
+        if (event.status.equals(textResource(R.string.EventOrganizerStatusElement1))) {
+            //buton for ORGANIZERS to update event
+            Button(
+                onClick = {
+                    navController.navigate(Screen.EventEdit.route + "/${event.id}")
 
-            },
+                },
 
-            ) {
-            Text(text = textResource(R.string.btnUpdateEvent).toString())
+                ) {
+                Text(text = textResource(R.string.btnUpdateEvent))
+            }
         }
     }
 }
