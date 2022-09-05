@@ -82,7 +82,7 @@
     <string name="btnCreateEvent">Organizar Evento</string>
     <string name="lblEventsNearMe">Eventos Próximos de mim</string>
     <string name="lblNoEventForMe">Não existe o evento que procura?</string>
-    <string name="lblGarbageSpotsNearMe">Local de Lixo Próximo de mim</string>
+    <string name="lblGarbageSpotsNearMe">Locais de Lixo Próximos de mim</string>
     <string name="lblSeeMoreItems">Ver mais</string>
     <string name="lblBarCreateEvent">Criar Evento</string>
     <string name="lblNameCreateEvent">Nome do Evento</string>

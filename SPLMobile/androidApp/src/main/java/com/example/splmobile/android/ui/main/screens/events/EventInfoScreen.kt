@@ -21,12 +21,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.patternConverter
+import com.example.splmobile.android.patternReceiver
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.objects.events.EventDTO
 import com.example.splmobile.objects.events.UserInEventDTO
 import com.example.splmobile.models.*
+import java.time.LocalDateTime
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -147,12 +150,15 @@ private fun MainComponent(
         }
         Text(text = event.name, style = MaterialTheme.typography.h5)
         Row(horizontalArrangement = Arrangement.SpaceAround) {
-            Text(text = event.startDate, style = MaterialTheme.typography.body1)
-            Text(text = event.status, style = MaterialTheme.typography.body1)
+            val eventTime = LocalDateTime.parse(event.startDate, patternReceiver)
+            val eventString = eventTime.format(patternConverter).toString()
+
+            Text(text = "Dia de começo" + eventString, style = MaterialTheme.typography.body1)
+            Text(text = " "+ event.status, style = MaterialTheme.typography.body1)
         }
 
         Text(
-            text = textResource(id = R.string.lblEventInfoDescription).toString(),
+            text = textResource(id = R.string.lblEventInfoDescription),
             style = MaterialTheme.typography.h6
         )
         Text(text = event.description, style = MaterialTheme.typography.body1)
@@ -421,7 +427,7 @@ private fun SignInEventSection(
     userViewModel: UserViewModel,
     authViewModel: AuthViewModel
 ) {
-    if (event.status == textResource(R.string.EventOrganizerStatusElement1).toString()) {
+    if (event.status == textResource(R.string.EventOrganizerStatusElement1)) {
         Button(
             onClick = {
                 userViewModel.participateInEvent(
@@ -433,7 +439,7 @@ private fun SignInEventSection(
                 .fillMaxWidth(),
 
             ) {
-            Text(text = textResource(R.string.btnParticipateOnEvent).toString())
+            Text(text = textResource(R.string.btnParticipateOnEvent))
         }
     }
 }

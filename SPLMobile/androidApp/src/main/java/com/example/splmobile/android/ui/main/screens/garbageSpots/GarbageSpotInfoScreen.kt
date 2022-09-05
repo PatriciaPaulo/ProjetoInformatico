@@ -16,11 +16,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.patternConverter
+import com.example.splmobile.android.patternReceiver
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.GarbageSpotViewModel
 import com.example.splmobile.models.UserViewModel
+import java.time.LocalDateTime
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -189,8 +192,10 @@ private fun GarbageSpotComponent(
                 )
             }
         }
+        val gsTime = LocalDateTime.parse(garbageSpotByIdState.garbageSpot.createdDate, patternReceiver)
+        val gsString = gsTime.format(patternConverter).toString()
         Text(
-            text = "${garbageSpotByIdState.garbageSpot.createdDate}",
+            text = "Às ${gsString}",
             color = Color.White,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             textAlign = TextAlign.Center,
