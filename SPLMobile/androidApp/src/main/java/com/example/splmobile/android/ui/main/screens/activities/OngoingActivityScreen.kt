@@ -213,7 +213,7 @@ private fun ongoingActivityDataUI(
     var actTypeSelected by remember { mutableStateOf(ActivityTypeSerializable(-1, chooseOptionString, ""))}
     when (activityTypeState) {
         is ActivityViewModel.ActivityTypeUIState.Success -> {
-            activityTypesList.value = activityTypeState.activityTypes
+            typeListSuccess(activityTypesList, activityTypeState)
         }
     }
 
@@ -225,15 +225,15 @@ private fun ongoingActivityDataUI(
     var garbageUnAmount by remember { mutableStateOf(0f) }
     when (garbageInActivityState) {
         is ActivityViewModel.GarbageInActivityUIState.Success -> {
-            garbageInActivityState.activities.forEach { garbage ->
-                if (garbage.unit == "kg") {
-                    garbageKgAmount += garbage.amount
-                } else if (garbage.unit == "unidade") {
-                    garbageUnAmount += garbage.amount
-                } else {
-                    garbageLtAmount += garbage.amount
-                }
-            }
+            val triple = garbageInActivitySuccess(
+                garbageInActivityState,
+                garbageKgAmount,
+                garbageUnAmount,
+                garbageLtAmount
+            )
+            garbageKgAmount = triple.first
+            garbageLtAmount = triple.second
+            garbageUnAmount = triple.third
         }
     }
 
@@ -251,8 +251,7 @@ private fun ongoingActivityDataUI(
     var finishActivityState = activityViewModel.activityFinishUIState.collectAsState().value
     when(finishActivityState) {
         is ActivityViewModel.ActivityFinishUIState.Success -> {
-            activityViewModel.setCurrentActivity(ActivitySerializable(-1, null, null, null, null, null))
-            navController.navigate(BottomNavItem.Home.route)
+            finishActivitySuccess(activityViewModel, navController)
         }
     }
 
@@ -431,4 +430,40 @@ private fun ongoingActivityDataUI(
             )
         }
     }
+}
+
+private fun finishActivitySuccess(
+    activityViewModel: ActivityViewModel,
+    navController: NavController
+) {
+    activityViewModel.setCurrentActivity(ActivitySerializable(-1, null, null, null, null, null))
+    navController.navigate(BottomNavItem.Home.route)
+}
+
+private fun typeListSuccess(
+    activityTypesList: MutableState<List<ActivityTypeSerializable>>,
+    activityTypeState: ActivityViewModel.ActivityTypeUIState.Success
+) {
+    activityTypesList.value = activityTypeState.activityTypes
+}
+
+private fun garbageInActivitySuccess(
+    garbageInActivityState: ActivityViewModel.GarbageInActivityUIState.Success,
+    garbageKgAmount: Float,
+    garbageUnAmount: Float,
+    garbageLtAmount: Float
+): Triple<Float, Float, Float> {
+    var garbageKgAmount1 = garbageKgAmount
+    var garbageUnAmount1 = garbageUnAmount
+    var garbageLtAmount1 = garbageLtAmount
+    garbageInActivityState.activities.forEach { garbage ->
+        if (garbage.unit == "kg") {
+            garbageKgAmount1 += garbage.amount
+        } else if (garbage.unit == "unidade") {
+            garbageUnAmount1 += garbage.amount
+        } else {
+            garbageLtAmount1 += garbage.amount
+        }
+    }
+    return Triple(garbageKgAmount1, garbageLtAmount1, garbageUnAmount1)
 }
