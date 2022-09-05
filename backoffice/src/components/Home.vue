@@ -1,6 +1,7 @@
 <template>
   <br />
-  <div class="text-center">
+ 
+  <div class="text-left">
     <h1>Gestão e Monitorização da Aplicação Móvel</h1>
     <br />
     <h1>Social Plogging Lovers</h1>

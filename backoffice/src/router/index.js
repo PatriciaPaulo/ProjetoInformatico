@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-import Dashboard from "../components/Dashboard.vue"
+import PaginaInicial from "../components/PaginaInicial.vue"
 import Home from "../components/Home.vue"
 import Login from "../components/auth/Login.vue"
 import Admin from "../components/users/Admin.vue"
@@ -18,9 +18,9 @@ const routes = [
     component: Home
   },
   {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: Dashboard
+    path: '/paginainicial',
+    name: 'PaginaInicial',
+    component: PaginaInicial
   },
   {
     path: '/admin',
@@ -93,7 +93,7 @@ router.beforeEach((to, from, next) => {
 
   //
   if (store.state.loggedInUser && (to.name === 'Home') ) {
-    next({ name: 'Dashboard' })
+    next({ name: 'PaginaInicial' })
     return
   }
   if ((to.name === 'Login') || (to.name === 'Home') ) {

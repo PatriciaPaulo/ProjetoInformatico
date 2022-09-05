@@ -130,11 +130,11 @@ export default {
           this.$toast.success(`Administrador ${this.credentials.name} foi criado.`);
           this.$emit("register");
           this.$router.push({
-            name: "Dashboard",
+            name: "PaginaInicial",
           });
         })
         .catch((error) => {
-          this.$toast.error(`Cant register with these credentials! - ${error}}`);
+          this.$toast.error(`Credenciais inválidas! - ${error}}`);
         });
     },
   },

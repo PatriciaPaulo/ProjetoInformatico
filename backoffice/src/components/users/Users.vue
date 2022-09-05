@@ -1,6 +1,14 @@
 <template>
   <hr />
   <ConfirmDialog></ConfirmDialog>
+  <router-link
+        class="nav-link w-100 me-3"
+        :class="{ active: $route.name === 'Admin' }"
+        :to="{ name: 'Admin' }"
+      >
+        <button type="button" class="btn btn-dark">Criar Administrador</button>
+
+      </router-link>
   <DataTable
     :value="filteredUsers"
     :paginator="true"
