@@ -6,13 +6,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
+import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.objects.events.EventDTO
 import com.example.splmobile.objects.messages.MessageDTO
@@ -45,7 +50,11 @@ fun ChatScreen(navController :NavController,
 
     Scaffold(
         topBar = {
-          Row(horizontalArrangement = Arrangement.SpaceEvenly){
+          Row(
+              modifier = Modifier
+                  .fillMaxWidth(),
+              horizontalArrangement = Arrangement.SpaceEvenly
+          ){
               Button(
                   onClick = {
                       screenState.value=false
@@ -60,6 +69,7 @@ fun ChatScreen(navController :NavController,
               }
           }
         },
+        bottomBar = { BottomNavigationBar(navController = navController) },
         content = {
             NotificationSection(messageViewModel, authViewModel)
 
@@ -72,7 +82,7 @@ fun ChatScreen(navController :NavController,
                         navController,
                         userInfoViewModel
                     )
-                    }
+                }
                 true -> {
                     EventsSection(
                         messageViewModel,
@@ -83,10 +93,8 @@ fun ChatScreen(navController :NavController,
                     )
                 }
             }
-
         }
     )
-
 }
 
 @Composable
@@ -245,7 +253,7 @@ fun EventsList(event: EventDTO,
                lastMessage: MessageDTO,
                userInfoViewModel :UserInfoViewModel) {
 
-    Row(horizontalArrangement = Arrangement.End,
+    Row(horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -255,37 +263,44 @@ fun EventsList(event: EventDTO,
             })
     ) {
         Column{
-            Text(
-                text = event.name,
-                style = MaterialTheme.typography.h6,
-                color = MaterialTheme.colors.secondary
-            )
-
-            if(userInfoViewModel.myIdUIState.value == lastMessage.senderID){
-                Text(
-                    text = lastMessage.message,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.primary
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.AccountCircle,
+                    "",
+                    modifier = Modifier
+                        .size(dimensionResource(R.dimen.small_logo))
                 )
-            }else{
+                Column() {
+                    Text(
+                        text = event.name,
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.secondary
+                    )
 
-                Text(
-                    text = lastMessage.message,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.primary
-                )
-
-
-
+                    if(userInfoViewModel.myIdUIState.value == lastMessage.senderID){
+                        Text(
+                            modifier = Modifier
+                                .padding(start= dimensionResource(R.dimen.textbox_margin)),
+                            text = lastMessage.message,
+                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colors.primary
+                        )
+                    }else{
+                        Text(
+                            modifier = Modifier
+                                .padding(start= dimensionResource(R.dimen.textbox_margin)),
+                            text = lastMessage.message,
+                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colors.primary
+                        )
+                    }
+                }
             }
+
         }
-
-
-
     }
-
-
-
 }
 
 @Composable
@@ -307,7 +322,6 @@ private fun FriendsListSection(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(600.dp)
                 ) {
                     items(friendsListState.friends.size) { index ->
                         FriendsListWithLastMessage(
@@ -366,46 +380,57 @@ private fun FriendsListWithLastMessage(
 @Composable
 fun FriendsList(friend: FriendDTO, navController: NavController, lastMessage: MessageDTO,userInfoViewModel :UserInfoViewModel) {
 
-        Row(horizontalArrangement = Arrangement.End,
+        Row(
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(dimensionResource(R.dimen.small_spacer))
                 .clickable(onClick = {
                     navController.navigate(Screen.ChatUser.route + "/${friend.user.id}/${friend.id}")
                 })
         ) {
-            Column{
-                Text(
-                    text = friend.user.name,
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.secondary
-                )
-                Text(
-                    text = friend.user.id.toString(),
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.secondary
-                )
-                if(userInfoViewModel.myIdUIState.value == lastMessage.senderID){
-                    Text(
-                        text = lastMessage.message,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.primary
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.AccountCircle,
+                        "",
+                        modifier = Modifier
+                            .size(dimensionResource(R.dimen.btn_small))
                     )
-                }else{
-                    Text(
-                        text = lastMessage.message,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.primary
-                    )
+                    Column() {
+                        Text(
+                            text = friend.user.name,
+                            style = MaterialTheme.typography.h6,
+                            color = MaterialTheme.colors.secondary
+                        )
+                        Text(
+                            text = friend.user.id.toString(),
+                            style = MaterialTheme.typography.h6,
+                            color = MaterialTheme.colors.secondary
+                        )
+                        if (userInfoViewModel.myIdUIState.value == lastMessage.senderID) {
+                            Text(
+                                modifier = Modifier
+                                    .padding(start = dimensionResource(R.dimen.textbox_margin)),
+                                text = lastMessage.message,
+                                style = MaterialTheme.typography.body1,
+                                color = MaterialTheme.colors.primary
+                            )
+                        } else {
+                            Text(
+                                modifier = Modifier
+                                    .padding(start = dimensionResource(R.dimen.textbox_margin)),
+                                text = lastMessage.message,
+                                style = MaterialTheme.typography.body1,
+                                color = MaterialTheme.colors.primary
+                            )
 
+                        }
+                    }
                 }
             }
-
-
-
         }
-
-
-
 }
