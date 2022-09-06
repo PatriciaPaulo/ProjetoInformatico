@@ -67,8 +67,8 @@ def get_activities(current_user):
 def get_last_activity(current_user):
     activity: Activity = db.session.query(Activity).filter_by(userID=current_user.id).order_by(desc(Activity.id)).first()
 
-    if activity is None:
-        return make_response(jsonify({'data': [], 'message': 'User does not have last activity'}), 200)
+    if not activity:
+        return make_response(jsonify({'data': [], 'message': 'User does not have last activity'}), 404)
 
     activity_data = {}
     activity_data['id'] = activity.id
