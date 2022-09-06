@@ -9,7 +9,7 @@
       stripedRows
       :rows="10"
       :loading="eventsIsLoading"
-      :globalFilterFields="['nome', 'estado', 'organizador']"
+      :globalFilterFields="['name', 'status']"
       :filters="filters"
       class="p-datatable-sm"
     >

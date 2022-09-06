@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.patternConverter
+import com.example.splmobile.android.patternReceiver
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
@@ -27,6 +29,7 @@ import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.UserInfoViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -94,13 +97,22 @@ fun EventListScreen(
                         modifier = Modifier
                             .padding(top = 32.dp, bottom = innerPadding.calculateBottomPadding())
                     ) {
-
-                        items(eventsListState.events.size) { index ->
-                            EventsList(
-                                event = eventsListState.events.get(index),
-                                navController = navController
-                            )
+                        if(searchTextState.isNotEmpty()){
+                            items(eventsListState.events.filter { it.name.contains(searchTextState) || (it.status.contains(searchTextState)) }.size) { index ->
+                                EventsList(
+                                    event = eventsListState.events.filter { it.name.contains(searchTextState) || (it.status.contains(searchTextState)) }.get(index),
+                                    navController = navController
+                                )
+                            }
+                        }else{
+                            items(eventsListState.events.size) { index ->
+                                EventsList(
+                                    event = eventsListState.events.get(index),
+                                    navController = navController
+                                )
+                            }
                         }
+
 
 
                     }
@@ -145,17 +157,11 @@ fun EventsList(navController: NavHostController, event: EventDTO) {
         Column() {
             Text(text = event.name, style = MaterialTheme.typography.h6)
             Text(text = event.status, style = MaterialTheme.typography.body1)
-            Text(text = event.startDate, style = MaterialTheme.typography.body2)
+            val eventTime = LocalDateTime.parse(event.startDate, patternReceiver)
+            val eventString = eventTime.format(patternConverter).toString()
+
+            Text(text = eventString, style = MaterialTheme.typography.body2)
 
         }
     }
 }
-/*
-@Preview
-@Composable
-fun PreEventList(){
-    var event = remember {
-        EventSerializable(0,"Name","","","","","yesterday","","","","","")
-    }
-    EventsList(event = event)
-}*/

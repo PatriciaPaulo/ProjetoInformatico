@@ -195,6 +195,7 @@ private fun MyEventsSection(
     navController: NavHostController,
     log: Logger
 ) {
+    log.d("state -> ${usersEventsState}")
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -205,19 +206,29 @@ private fun MyEventsSection(
             is UserInfoViewModel.MyEventsUIState.Success -> {
                 log.d { "Get my events state -> Success" }
                 var sizeOfList = 0
-                if (usersEventsState.events.size > 5) {
-                    sizeOfList = 5
-                } else {
-                    sizeOfList = usersEventsState.events.size
-                }
-                usersEventsState.events.subList(0, sizeOfList).forEach { it ->
+                if(usersEventsState.events.size == 0){
                     TextButton(onClick = {
-                        navController.navigate(Screen.EventInfo.route + "/${it.event.id}")
+
                     }) {
-                        Text(text = "Evento ${it.event.id} com estado de ${it.status}. ")
+                        Text(text = textResource(R.string.lblNoEvents))
                     }
 
+                }else{
+                    if (usersEventsState.events.size > 5) {
+                        sizeOfList = 5
+                    } else {
+                        sizeOfList = usersEventsState.events.size
+                    }
+                    usersEventsState.events.subList(0, sizeOfList).forEach { it ->
+                        TextButton(onClick = {
+                            navController.navigate(Screen.EventInfo.route + "/${it.event.id}")
+                        }) {
+                            Text(text = "Evento ${it.event.id} com estado de ${it.status}. ")
+                        }
+
+                    }
                 }
+
 
             }
             is UserInfoViewModel.MyEventsUIState.Loading -> {
@@ -226,9 +237,7 @@ private fun MyEventsSection(
             }
             is UserInfoViewModel.MyEventsUIState.Error -> {
                 log.d { "Get my events state -> Error" }
-                TextButton(onClick = {}) {
-                    Text(text = textResource(R.string.lblNoEvents))
-                }
+
             }
         }
 

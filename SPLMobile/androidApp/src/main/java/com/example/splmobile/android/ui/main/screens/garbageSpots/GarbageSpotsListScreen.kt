@@ -21,6 +21,7 @@ import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
+import com.example.splmobile.android.ui.main.screens.events.EventsList
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.android.viewmodel.MainViewModel
 import com.example.splmobile.objects.garbageSpots.GarbageSpotDTO
@@ -91,14 +92,28 @@ fun GarbageSpotsListScreen(
                         modifier = Modifier
                             .padding(top = 32.dp, bottom = innerPadding.calculateBottomPadding())
                     ) {
+                        if(searchTextState.isNotEmpty()){
 
-                        items(garbageSpotsListState.garbageSpots.filter { it.approved || it.creator == userInfoViewModel.myIdUIState.value }.size) { index ->
-                            GarbageSpotsList(
-                                gs = garbageSpotsListState.garbageSpots.get(index),
-                                navController = navController
-                            )
+                            items(garbageSpotsListState.garbageSpots.filter { (
+                                    it.approved || it.creator == userInfoViewModel.myIdUIState.value) && (it.name.contains(searchTextState) ||
+                                    (it.status.contains(searchTextState))
+
+                                    )
+                            }.size) { index ->
+                                GarbageSpotsList(
+                                    gs = garbageSpotsListState.garbageSpots.filter { (it.approved || it.creator == userInfoViewModel.myIdUIState.value) &&(it.name.contains(searchTextState) ||
+                                            (it.status.contains(searchTextState)) )}.get(index),
+                                    navController = navController
+                                )
+                            }
+                        }else{
+                            items(garbageSpotsListState.garbageSpots.filter { it.approved || it.creator == userInfoViewModel.myIdUIState.value }.size) { index ->
+                                GarbageSpotsList(
+                                    gs = garbageSpotsListState.garbageSpots.filter { it.approved || it.creator == userInfoViewModel.myIdUIState.value }.get(index),
+                                    navController = navController
+                                )
+                            }
                         }
-
 
                     }
                 }

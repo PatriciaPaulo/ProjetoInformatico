@@ -11,6 +11,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -212,12 +215,20 @@ private fun GarbageSpotsNearMe(
 
     ) {
 
-        Text(text = textResource(R.string.lblGarbageSpotsNearMe))
-        ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems)),
-            style = MaterialTheme.typography.body1,
+        Text(text = textResource(R.string.lblGarbageSpotsNearMe),style = MaterialTheme.typography.h6)
+        Button(
             onClick = {
+
                 navController.navigate(Screen.GarbageSpotList.route)
-            })
+            },
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+        ) {
+            Text(text = textResource(R.string.lblSeeMoreItems))
+
+        }
+
+
 
     }
 
@@ -288,7 +299,7 @@ private fun CreateEventSection(
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        Text(text = textResource(R.string.lblNoEventForMe).toString())
+        Text(text = textResource(R.string.lblNoEventForMe))
     }
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -304,9 +315,9 @@ private fun CreateEventSection(
             },
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .fillMaxWidth()
+
         ) {
-            Text(text = textResource(R.string.btnCreateEvent).toString())
+            Text(text = textResource(R.string.btnCreateEvent))
         }
 
     }
@@ -326,13 +337,18 @@ private fun EventsNearMeSection(
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        Text(text = textResource(R.string.lblEventsNearMe))
-        ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems)),
-            style = MaterialTheme.typography.body1,
+        Text(text = textResource(R.string.lblEventsNearMe), style = MaterialTheme.typography.h6)
+        Button(
             onClick = {
-                log.d{"Navigated to new screen"}
+
                 navController.navigate(Screen.EventList.route)
-            })
+            },
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+        ) {
+            Text(text = textResource(R.string.lblSeeMoreItems))
+
+        }
 
 
     }
@@ -344,7 +360,6 @@ private fun EventsNearMeSection(
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        //todo testar com o telemovel
         val location by mapViewModel.getLocationLiveData().observeAsState()
         var parseLocationLiveData = LatLng(0.0, 0.0)
         if (location != null) {

@@ -21,12 +21,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.patternConverter
+import com.example.splmobile.android.patternReceiver
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.objects.events.EventDTO
 import com.example.splmobile.objects.events.UserInEventDTO
 import com.example.splmobile.models.*
+import java.time.LocalDateTime
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -140,32 +143,7 @@ private fun MainComponent(
             .padding(top = 32.dp, bottom = innerPadding.calculateBottomPadding()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row() {
-            val image: Painter = painterResource(id = R.drawable.ic_onboarding_participate)
-            Image(painter = image, contentDescription = "")
-
-        }
-        Text(text = event.name, style = MaterialTheme.typography.h5)
-        Row(horizontalArrangement = Arrangement.SpaceAround) {
-            Text(text = event.startDate, style = MaterialTheme.typography.body1)
-            Text(text = event.status, style = MaterialTheme.typography.body1)
-        }
-
-        Text(
-            text = textResource(id = R.string.lblEventInfoDescription).toString(),
-            style = MaterialTheme.typography.h6
-        )
-        Text(text = event.description, style = MaterialTheme.typography.body1)
-        Text(text = "Garbage Spots in event")
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-
-        ) {
-            GarbageSpotsStateSection(garbageSpotsState, event, log, navController)
-        }
+        EventInfoSection(event, garbageSpotsState, log, navController)
 
         EquipmentStateSection(equipmentState, event)
         Spacer(Modifier.height(10.dp))
@@ -188,56 +166,119 @@ private fun MainComponent(
 
         }
 
-        when (eventStatusState) {
-            is EventViewModel.EventUpdateUIState.UpdateStatusSuccess -> {
-                Text(
-                    text = textResource(R.string.txtEventStatusUpdate).toString(),
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                )
-            }
-            is EventViewModel.EventUpdateUIState.Loading -> {
-                CircularProgressIndicator()
-            }
-            is EventViewModel.EventUpdateUIState.Error -> {
-                Text(
-                    text = textResource(R.string.txtParticipateInEventError).toString() + " - " + eventStatusState.error,
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                )
-            }
-        }
+        EventStatusState(eventStatusState)
 
-        when (participateState) {
-            is UserViewModel.EventParticipateUIState.SuccessParticipate -> {
-                Text(
-                    text = textResource(R.string.txtParticipateInEventMessage).toString(),
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                )
-            }
-            is UserViewModel.EventParticipateUIState.SuccessUpdate -> {
-                Text(
-                    text = textResource(R.string.txtParticipateInEventStatusUpdateMessage).toString(),
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                )
-            }
-            is UserViewModel.EventParticipateUIState.Loading -> CircularProgressIndicator()
-            is UserViewModel.EventParticipateUIState.Error -> {
-                Text(
-                    text = textResource(R.string.txtParticipateInEventError).toString() + " - " + participateState.error,
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
-                )
-            }
+        ParticipateState(participateState, eventViewModel, event)
+    }
+}
+
+@Composable
+private fun EventInfoSection(
+    event: EventDTO,
+    garbageSpotsState: GarbageSpotViewModel.GarbageSpotsUIState,
+    log: Logger,
+    navController: NavController
+) {
+    Row() {
+        val image: Painter = painterResource(id = R.drawable.ic_onboarding_participate)
+        Image(painter = image, contentDescription = "")
+
+    }
+    Text(text = event.name, style = MaterialTheme.typography.h4)
+    val eventTime = LocalDateTime.parse(event.startDate, patternReceiver)
+    val eventString = eventTime.format(patternConverter).toString()
+
+    Text(text = "Dia de começo " + eventString, style = MaterialTheme.typography.body1)
+    Row(horizontalArrangement = Arrangement.SpaceAround) {
+
+        Text(text = "Estado: ", style = MaterialTheme.typography.body1)
+        Text(text = " " + event.status, style = MaterialTheme.typography.body1)
+    }
+
+    Text(
+        text = textResource(id = R.string.lblEventInfoDescription),
+        style = MaterialTheme.typography.h6
+    )
+    Text(text = event.description, style = MaterialTheme.typography.body1)
+    Text(text = "Locais de Lixo no Evento", style = MaterialTheme.typography.h6)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+
+    ) {
+        GarbageSpotsStateSection(garbageSpotsState, event, log, navController)
+    }
+}
+
+@Composable
+private fun EventStatusState(eventStatusState: EventViewModel.EventUpdateUIState) {
+    when (eventStatusState) {
+        is EventViewModel.EventUpdateUIState.UpdateStatusSuccess -> {
+            Text(
+                text = textResource(R.string.txtEventStatusUpdate).toString(),
+                color = MaterialTheme.colors.primary,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+            )
+        }
+        is EventViewModel.EventUpdateUIState.Loading -> {
+            CircularProgressIndicator()
+        }
+        is EventViewModel.EventUpdateUIState.Error -> {
+            Text(
+                text = textResource(R.string.txtParticipateInEventError).toString() + " - " + eventStatusState.error,
+                color = MaterialTheme.colors.primary,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+            )
         }
     }
+}
+
+@Composable
+private fun ParticipateState(
+    participateState: UserViewModel.EventParticipateUIState,
+    eventViewModel: EventViewModel,
+    event: EventDTO
+) {
+    when (participateState) {
+        is UserViewModel.EventParticipateUIState.SuccessParticipate -> {
+            ParticipateSuccess(eventViewModel, event)
+        }
+        is UserViewModel.EventParticipateUIState.SuccessUpdate -> {
+            Text(
+                text = textResource(R.string.txtParticipateInEventStatusUpdateMessage),
+                color = MaterialTheme.colors.primary,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+            )
+        }
+        is UserViewModel.EventParticipateUIState.Loading -> CircularProgressIndicator()
+        is UserViewModel.EventParticipateUIState.Error -> {
+            Text(
+                text = textResource(R.string.txtParticipateInEventError),
+                color = MaterialTheme.colors.primary,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+            )
+        }
+    }
+}
+
+@Composable
+private fun ParticipateSuccess(
+    eventViewModel: EventViewModel,
+    event: EventDTO
+) {
+    Text(
+        text = textResource(R.string.txtParticipateInEventMessage),
+        color = MaterialTheme.colors.primary,
+        style = MaterialTheme.typography.caption,
+        modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
+    )
+
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -308,12 +349,12 @@ private fun OrganizerSection(
             },
 
             ) {
-            Text(text = textResource(R.string.btnUpdateParticipateOnEvent).toString())
+            Text(text = textResource(R.string.btnUpdateParticipateOnEvent))
         }
     }
     Row(horizontalArrangement = Arrangement.SpaceBetween) {
         //button for organizers to add new organizers
-        if (event.status.equals(textResource(R.string.EventOrganizerStatusElement1).toString())) {
+
             Button(
                 onClick = {
                     navController.navigate(Screen.UsersInEventList.route + "/${event.id}")
@@ -321,19 +362,20 @@ private fun OrganizerSection(
                 },
 
                 ) {
-                Text(text = textResource(R.string.btnCheckParticipantsOnEvent).toString())
+                Text(text = textResource(R.string.btnCheckParticipantsOnEvent))
             }
-        }
 
-        //buton for ORGANIZERS to update event
-        Button(
-            onClick = {
-                navController.navigate(Screen.EventEdit.route + "/${event.id}")
+        if (event.status.equals(textResource(R.string.EventOrganizerStatusElement1))) {
+            //buton for ORGANIZERS to update event
+            Button(
+                onClick = {
+                    navController.navigate(Screen.EventEdit.route + "/${event.id}")
 
-            },
+                },
 
-            ) {
-            Text(text = textResource(R.string.btnUpdateEvent).toString())
+                ) {
+                Text(text = textResource(R.string.btnUpdateEvent))
+            }
         }
     }
 }
@@ -420,7 +462,7 @@ private fun SignInEventSection(
     userViewModel: UserViewModel,
     authViewModel: AuthViewModel
 ) {
-    if (event.status == textResource(R.string.EventOrganizerStatusElement1).toString()) {
+    if (event.status == textResource(R.string.EventOrganizerStatusElement1)) {
         Button(
             onClick = {
                 userViewModel.participateInEvent(
@@ -432,7 +474,7 @@ private fun SignInEventSection(
                 .fillMaxWidth(),
 
             ) {
-            Text(text = textResource(R.string.btnParticipateOnEvent).toString())
+            Text(text = textResource(R.string.btnParticipateOnEvent))
         }
     }
 }
@@ -444,13 +486,14 @@ private fun EquipmentStateSection(
 ) {
     when (equipmentState) {
         is EventViewModel.EquipmentUIState.Success -> {
-            Text("Equipamento")
-            if (equipmentState.equipments.size > 0) {
+            Text("Equipamento",style = MaterialTheme.typography.h6)
+            if (event.equipments.size >0) {
                 Row(horizontalArrangement = Arrangement.SpaceEvenly) {
                     Text("É fornecido")
                     Text("É preciso trazer")
                 }
                 Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+
                     LazyVerticalGrid(
                         modifier = Modifier
                             .height(50.dp)

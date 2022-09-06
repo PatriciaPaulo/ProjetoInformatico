@@ -133,6 +133,8 @@ def get_activity_types():
 def get_garbage_in_activity(current_user, activity_id):
     activity: Activity = db.session.query(Activity).filter_by(id=activity_id).first()
 
+    if not activity:
+        return make_response("404 Not Found - Activity not found.", 404)
     if activity.userID != current_user.id:
         return make_response("403 FORBIDDEN - Data doesn't belong to logged user.", 403)
 

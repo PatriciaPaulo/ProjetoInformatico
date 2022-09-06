@@ -109,11 +109,11 @@
             >
               <router-link
                 class="nav-link w-100 me-3"
-                :class="{ active: $route.name === 'Dashboard' }"
-                :to="{ name: 'Dashboard' }"
+                :class="{ active: $route.name === 'PaginaInicial' }"
+                :to="{ name: 'PaginaInicial' }"
               >
                 <i class="bi bi-list-check"></i>
-                Dashboard
+                Pagina Inicial
               </router-link>
             </li>
             <li
