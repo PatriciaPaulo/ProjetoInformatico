@@ -1,9 +1,10 @@
 <template>
-  <form class="row g-3 needs-validation" novalidate @submit.prevent="login">
-    <h3 class="mt-5 mb-3 text-center">Login</h3>
+  
+  <form class="row g-3 needs-validation " novalidate @submit.prevent="login">
+    <h3 class="mt-5 mb-3">Login</h3>
     <hr />
     <div class="mb-3 mx-auto">
-      <div class="mb-3 w-25 mx-auto">
+      <div class="mb-3 w-25 ">
         <label for="inputUsername" class="form-label">Email</label>
         <input
           type="text"
@@ -15,7 +16,7 @@
       </div>
     </div>
     <div class="mb-3 mx-auto">
-      <div class="mb-3 w-25 mx-auto">
+      <div class="mb-3 w-25">
         <label for="inputPassword" class="form-label">Password</label>
         <input
           type="password"
@@ -26,7 +27,7 @@
         />
       </div>
     </div>
-    <div class="mb-3 d-flex justify-content-center">
+    <div class="mb-5 ">
       <button type="button" class="btn btn-dark px-5" @click="login">
         Entrar
       </button>
@@ -48,7 +49,10 @@ export default {
   },
   methods: {
     login() {
-      this.$store
+      if(this.credentials.email== "" ||this.credentials.password=="" ){
+        this.$toast.error("Preencha todos os campos!");
+      }else{
+        this.$store
         .dispatch("login", this.credentials)
         .then(() => {
           this.$toast.success(
@@ -56,7 +60,7 @@ export default {
               this.$store.state.loggedInUser.name +
               " entrou na aplicação."
           );
-          this.$router.push({ name: "Dashboard" });
+          this.$router.push({ name: "PaginaInicial" });
         })
         .catch((error) => {
           this.credentials.password = "";
@@ -68,12 +72,11 @@ export default {
             this.$toast.error("Crendenciais erradas!");
           }
         });
+      }
+     
     },
   },
-  mounted() {
-    this.credentials.email = this.$route.params.email;
-    this.credentials.password = this.$route.params.password;
-  },
+
 };
 </script>
 

@@ -7,6 +7,7 @@ from models import User, db
 
 class Guest(object):
     id = ""
+    admin = False
 
 
 def guest(f):

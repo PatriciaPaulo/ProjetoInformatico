@@ -1,6 +1,6 @@
 <template>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="register">
-    <h3 class="mt-5 mb-3 text-center">Criar Admin</h3>
+    <h3 class="mt-5 mb-3 text-center">Criar Administrador</h3>
 
     <hr />
     <div class="mb-3 mx-auto">
@@ -15,6 +15,30 @@
           required
           v-model="credentials.username"
         />
+      </div>
+      <div class="mb-3 mx-auto">
+        <div class="mb-3 w-25 mx-auto">
+          <label for="inputEmail" class="form-label ">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="inputEmail"
+            required
+            v-model="credentials.email"
+          />
+        </div>
+      </div>
+      <div class="mb-3 mx-auto">
+        <div class="mb-3 w-25 mx-auto">
+          <label for="inputName" class="form-label ">Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="inputName"
+            required
+            v-model="credentials.name"
+          />
+        </div>
       </div>
       <div class="mb-3 w-25 mx-auto">
         <label for="inputPassword" class="form-label "
@@ -40,30 +64,8 @@
           v-model="credentials.passwordConfirmation"
         />
       </div>
-      <div class="mb-3 mx-auto">
-        <div class="mb-3 w-25 mx-auto">
-          <label for="inputName" class="form-label ">Name</label>
-          <input
-            type="text"
-            class="form-control"
-            id="inputName"
-            required
-            v-model="credentials.name"
-          />
-        </div>
-      </div>
-      <div class="mb-3 mx-auto">
-        <div class="mb-3 w-25 mx-auto">
-          <label for="inputEmail" class="form-label ">Email</label>
-          <input
-            type="email"
-            class="form-control"
-            id="inputEmail"
-            required
-            v-model="credentials.email"
-          />
-        </div>
-      </div>
+     
+     
     </div>
 
     <div class="mb-3 d-flex justify-content-center">
@@ -106,7 +108,7 @@ export default {
           this.credentials.passwordConfirmation.length === 0 ||
           this.credentials.password != this.credentials.passwordConfirmation
         ) {
-            this.$toast.error("Passsword e Password conformation precisam de ser identicas");
+            this.$toast.error("Palavra-Passe e Confirmação da Palavra-Passe precisam de ser idênticas");
   
            
         } else {
@@ -115,7 +117,7 @@ export default {
               /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
             )
           ) {
-              this.$toast.error("Email invalido");
+              this.$toast.error("Email inválido");
   
           } else {
             this.register();
