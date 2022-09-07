@@ -129,7 +129,7 @@ export default {
   methods: {
     deleteUser(user) {
       this.$confirm.require({
-        message: `Are you sure you want to delete user ${user.username}?`,
+        message: `Tens a certeza que queres eliminar o utilizador ${user.username}?`,
         header: "Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: () => {
@@ -179,7 +179,7 @@ export default {
     },
     unblockUser(user) {
       this.$confirm.require({
-        message: `Are you sure you want to unblock user ${user.username}?`,
+        message: `Tens a certeza que queres desbloquear o utilizador ${user.username}?`,
         header: "Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: () => {
