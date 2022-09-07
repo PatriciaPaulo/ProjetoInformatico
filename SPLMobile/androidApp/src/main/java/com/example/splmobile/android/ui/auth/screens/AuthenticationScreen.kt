@@ -101,24 +101,26 @@ fun AuthenticationUI (
     authViewModel: AuthViewModel,
 ){
     Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        Image(
+            painterResource(R.drawable.ic_logo),
+            contentDescription = "App Icon",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(dimensionResource(R.dimen.big_logo))
+        )
+    }
+    Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ){
 
-            Image(
-                painterResource(R.drawable.ic_logo),
-                contentDescription = "App Icon",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(dimensionResource(R.dimen.big_logo))
-            )
 
 
-        Spacer(
-            modifier = Modifier
-                .size(300.dp)
-        )
 
         // Box for Buttons
         Column(

@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -254,13 +255,17 @@ private fun GarbageSpotComponent(
             modifier = Modifier
                 .size(dimensionResource(R.dimen.small_spacer))
         )
-        ButtonSection(
-            garbageSpotViewModel,
-            garbageSpotId,
-            selectedOptionText,
-            authViewModel,
-            statusState
-        )
+        Column(
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            ButtonSection(
+                garbageSpotViewModel,
+                garbageSpotId,
+                selectedOptionText,
+                authViewModel,
+                statusState
+            )
+        }
     }
 
 }
@@ -297,7 +302,8 @@ private fun ButtonSection(
         },
         enabled = statusState.value,
         modifier = Modifier
-            .height(dimensionResource(R.dimen.btn_medium)),
+            .height(dimensionResource(R.dimen.btn_medium))
+            ,
 
         ) {
         Text(text = textResource(R.string.btnUpdateParticipateOnEvent))

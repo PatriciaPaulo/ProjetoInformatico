@@ -41,7 +41,7 @@ def start_activity(current_user):
 @activity_routes_blueprint.route('/activities', methods=['GET'])
 @token_required
 def get_activities(current_user):
-    activities = db.session.query(Activity).filter_by(userID=current_user.id).all()
+    activities = db.session.query(Activity).filter_by(userID=current_user.id).order_by(desc(Activity.id)).all()
     output = []
     for ati in activities:
         activity_data = {}

@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.patternConverter
+import com.example.splmobile.android.patternReceiver
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.main.components.SearchWidgetState
@@ -28,6 +30,7 @@ import com.example.splmobile.objects.events.UserInEventDTO
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.UserInfoViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -143,7 +146,10 @@ fun UserInEventsList(navController: NavHostController,user_event :UserInEventDTO
             }
             Text(text = user_event.event.name, style = MaterialTheme.typography.h6)
             Text(text = user_event.event.status, style = MaterialTheme.typography.body1)
-            Text(text = user_event.event.startDate, style = MaterialTheme.typography.body2)
+            val eventTime = LocalDateTime.parse(user_event.event.startDate, patternReceiver)
+            val eventString = eventTime.format(patternConverter).toString()
+
+            Text(text = eventString, style = MaterialTheme.typography.body2)
 
         }
     }

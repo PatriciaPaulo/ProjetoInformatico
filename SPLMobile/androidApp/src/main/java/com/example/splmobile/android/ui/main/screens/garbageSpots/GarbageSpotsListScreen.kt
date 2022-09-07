@@ -158,7 +158,7 @@ fun GarbageSpotsList(navController: NavHostController, gs: GarbageSpotDTO) {
         Column() {
             Text(text = gs.name, style = MaterialTheme.typography.h6)
             Text(text = gs.status, style = MaterialTheme.typography.body1)
-            Text(text = gs.approved.toString(), style = MaterialTheme.typography.body2)
+           // Text(text = gs.approved.toString(), style = MaterialTheme.typography.body2)
 
         }
     }

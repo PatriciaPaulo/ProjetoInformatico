@@ -126,7 +126,7 @@ private fun CommunityUI(
     var buttonScreenState = remember { mutableStateOf(R.string.btnCommunity) }
 
     Column(
-        modifier = Modifier.fillMaxWidth().padding(20.dp),
+        modifier = Modifier.fillMaxWidth().padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Apply the padding globally
@@ -305,7 +305,6 @@ private fun EventsNearMeSection(
     mapViewModel: MapViewModel,
     log: Logger
 ) {
-    Spacer(modifier = Modifier.height(32.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,

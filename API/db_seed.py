@@ -118,7 +118,7 @@ if __name__ == '__main__':
     # SEED ActivityType
     session.query(ActivityType).delete()
     for i in range(3):
-        name = ["Walk", "Run", "Bike"]
+        name = ["Caminhada", "Corrida", "Andar de Bicicleta"]
         actiType = ActivityType(name=name[i])
         session.add(actiType)
 
