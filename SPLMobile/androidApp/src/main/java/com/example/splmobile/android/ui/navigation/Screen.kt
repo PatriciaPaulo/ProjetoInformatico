@@ -26,6 +26,7 @@ sealed class Screen (val route: String) {
     object FriendsList : Screen(route = "friends_list")
     object ChatUser : Screen(route = "chat_user")
     object ChatEvent : Screen(route = "chat_event")
+    object ActivityInfo : Screen(route = "activity_info")
 
     object OngoingActivity : Screen(route = "ongoing_activity")
     object ManageGarbage : Screen(route = "manage_garbage")

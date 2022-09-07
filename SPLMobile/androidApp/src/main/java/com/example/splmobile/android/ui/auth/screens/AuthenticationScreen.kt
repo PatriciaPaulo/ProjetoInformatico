@@ -117,7 +117,7 @@ fun AuthenticationUI (
 
         Spacer(
             modifier = Modifier
-                .size(dimensionResource(R.dimen.big_spacer))
+                .size(300.dp)
         )
 
         // Box for Buttons

@@ -1,6 +1,7 @@
 package com.example.splmobile.android.ui.main.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -8,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -128,7 +130,9 @@ fun MyNextEventsUI(
                     val eventTime = LocalDateTime.parse(event.startDate, patternReceiver)
                     val eventString = eventTime.format(patternConverter).toString()
                     Card (modifier = Modifier
-                        .clickable { navController.navigate(Screen.EventInfo.route + "/${event.id}") }) {
+                        .clickable { navController.navigate(Screen.EventInfo.route + "/${event.id}") }
+                        .background(color = Color.Transparent)
+                    ) {
                         iconBoxUI(
                             modifier = Modifier
                                 .clickable {

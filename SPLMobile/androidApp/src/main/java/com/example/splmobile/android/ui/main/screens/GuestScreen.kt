@@ -1,9 +1,11 @@
 package com.example.splmobile.android.ui.main.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -12,7 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -40,6 +45,14 @@ fun GuestScreen(
                     .background(colorResource(id = R.color.cardview_dark_background))
                     .wrapContentSize(Alignment.Center)
             ) {
+                Image(
+                    painterResource(R.drawable.ic_logo),
+                    contentDescription = "App Icon",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(dimensionResource(R.dimen.big_logo))
+                )
+
                 TextButton(onClick = {
                     navController.navigate(Screen.Login.route)
                 }) {

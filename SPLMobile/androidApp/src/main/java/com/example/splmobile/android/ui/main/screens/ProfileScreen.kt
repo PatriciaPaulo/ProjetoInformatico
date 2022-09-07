@@ -178,8 +178,10 @@ fun MyActivitySection(
                     val activityTime = LocalDateTime.parse(it.startDate, patternReceiver)
                     val actString = activityTime.format(patternConverter).toString()
 
-                    TextButton(onClick = {}) {
-                        Text(text = "Atividade ${it.id} que começou em ${actString}. ")
+                    TextButton(onClick = {
+                        navController.navigate(Screen.ActivityInfo.route+"/${it.id}")
+                    }) {
+                        Text(text = "Actividade ${it.id} que começou em ${it.startDate}. ")
                     }
 
                 }
