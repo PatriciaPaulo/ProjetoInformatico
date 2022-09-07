@@ -61,7 +61,7 @@ fun ChatUserScreen (navController : NavController,
                 }
             }
            ,
-        bottomBar = { BottomNavigationBar(navController = navController) },
+        bottomBar = { },
         content = { innerPadding ->
             Column(
                 modifier = Modifier

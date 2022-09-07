@@ -280,7 +280,7 @@ fun RegisterValidationUI(
             )
             if(passwordError) {
                 Text(
-                    text = stringResource(R.string.registerInstead),
+                    text = stringResource(R.string.lblFieldError),
                     color = MaterialTheme.colors.error,
                     style = MaterialTheme.typography.caption,
                     modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
@@ -293,7 +293,7 @@ fun RegisterValidationUI(
                 onValueChange = passwordConfUpdate,
                 leadingIcon = {
                     Image(
-                        painterResource(R.drawable.ic_main_home),
+                        imageVector = Icons.Default.VpnKey,
                         contentDescription = null
                     )
                 },
@@ -322,7 +322,7 @@ fun RegisterValidationUI(
             if(passwordConfError) {
                 //TODO Tratar dos erros
                 Text(
-                    text = stringResource(R.string.registerInstead),
+                    text = stringResource(R.string.lblFieldError),
                     color = MaterialTheme.colors.error,
                     style = MaterialTheme.typography.caption,
                     modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
@@ -366,7 +366,7 @@ fun RegisterValidationUI(
                     CircularProgressIndicator()
                 } else {
                     Text(
-                        stringResource(R.string.lblLogin),
+                        stringResource(R.string.lblRegister),
                         fontSize = dimensionResource(R.dimen.txt_medium).value.sp
                     )
                 }

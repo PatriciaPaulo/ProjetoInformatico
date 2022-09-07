@@ -90,12 +90,12 @@ fun CreateEventScreen(
     val garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
     val equipmentsState = eventViewModel.equipmentUIState.collectAsState().value
     val createEventState = eventViewModel.eventCreateUIState.collectAsState().value
-    val allGarbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>())}
-    val allGarbageSpotListEvent = remember { mutableStateOf(emptyList<GarbageSpotDTO>())}
-    val allEquipmentListEvent = remember { mutableStateOf(emptyList<EquipmentDTO>())}
-    val listGarbageTypeInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
-    val listGarbageSpotsInEvent = remember { mutableStateOf(SnapshotStateList<Long>())}
-    val listEquipmentInEvent = remember { mutableStateOf(SnapshotStateList<EquipmentInEventDTO>())}
+    val allGarbageTypeListEvent = remember { mutableStateOf(emptyList<GarbageTypeDTO>()) }
+    val allGarbageSpotListEvent = remember { mutableStateOf(emptyList<GarbageSpotDTO>()) }
+    val allEquipmentListEvent = remember { mutableStateOf(emptyList<EquipmentDTO>()) }
+    val listGarbageTypeInEvent = remember { mutableStateOf(SnapshotStateList<Long>()) }
+    val listGarbageSpotsInEvent = remember { mutableStateOf(SnapshotStateList<Long>()) }
+    val listEquipmentInEvent = remember { mutableStateOf(SnapshotStateList<EquipmentInEventDTO>()) }
 
 
 
@@ -103,7 +103,7 @@ fun CreateEventScreen(
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
-                title = {textResource(R.string.lblBarCreateEvent).toString()},
+                title = { textResource(R.string.lblBarCreateEvent) },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() },
@@ -111,7 +111,7 @@ fun CreateEventScreen(
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = "go back",
-                            )
+                        )
                     }
 
                 }
@@ -119,12 +119,11 @@ fun CreateEventScreen(
         },
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
-        {  innerPadding ->
-
+        { innerPadding ->
 
 
             var nameEvent = remember { mutableStateOf(TextFieldValue("")) }
-            var locationEvent = remember { mutableStateOf(LatLng(0.0,0.0)) }
+            var locationEvent = remember { mutableStateOf(LatLng(0.0, 0.0)) }
             var observationsEvent = remember { mutableStateOf(TextFieldValue("")) }
             var descriptionEvent = remember { mutableStateOf(TextFieldValue("")) }
             var durationEvent = remember { mutableStateOf(TextFieldValue("")) }
@@ -134,37 +133,52 @@ fun CreateEventScreen(
             //garbageTypeListEvent
 
 
-
-
-            val accessibilityListEvent = listOf(textResource(R.string.EventAccessibilityElement1).toString(), textResource(R.string.EventAccessibilityElement2).toString(), textResource(R.string.EventAccessibilityElement3).toString())
-            val quantityListEvent = listOf(textResource(R.string.EventQuantityElement1).toString(), textResource(R.string.EventQuantityElement2).toString(), textResource(R.string.EventQuantityElement3).toString())
-            val restrictionsListEvent = listOf(textResource(R.string.EventRestrictionsElement1).toString(), textResource(R.string.EventRestrictionsElement2).toString())
+            val accessibilityListEvent = listOf(
+                textResource(R.string.EventAccessibilityElement1).toString(),
+                textResource(R.string.EventAccessibilityElement2).toString(),
+                textResource(R.string.EventAccessibilityElement3).toString()
+            )
+            val quantityListEvent = listOf(
+                textResource(R.string.EventQuantityElement1).toString(),
+                textResource(R.string.EventQuantityElement2).toString(),
+                textResource(R.string.EventQuantityElement3).toString()
+            )
+            val restrictionsListEvent = listOf(
+                textResource(R.string.EventRestrictionsElement1).toString(),
+                textResource(R.string.EventRestrictionsElement2).toString()
+            )
 
             val accessibilityExpanded = remember { mutableStateOf(false) }
-            val accessibilitySelectedOptionText = remember { mutableStateOf(accessibilityListEvent[0]) }
+            val accessibilitySelectedOptionText =
+                remember { mutableStateOf(accessibilityListEvent[0]) }
             val quantityExpanded = remember { mutableStateOf(false) }
             val quantitySelectedOptionText = remember { mutableStateOf(quantityListEvent[0]) }
             val restrictionsExpanded = remember { mutableStateOf(false) }
-            val restrictionsSelectedOptionText = remember { mutableStateOf(restrictionsListEvent[0]) }
+            val restrictionsSelectedOptionText =
+                remember { mutableStateOf(restrictionsListEvent[0]) }
 
             val statusEvent = remember {
                 mutableStateOf(TextFieldValue("Criado"))
             }
 
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = innerPadding.calculateBottomPadding()),
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = innerPadding.calculateBottomPadding()),
                 verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment =  Alignment.CenterHorizontally) {
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
 
                 //details section
-                Column(modifier = Modifier.fillMaxWidth(),
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment =  Alignment.CenterHorizontally) {
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     val image: Painter = painterResource(id = R.drawable.ic_onboarding_participate)
-                    Image(painter = image,contentDescription = "")
+                    Image(painter = image, contentDescription = "")
 
                     Spacer(modifier = Modifier.height(32.dp))
                     EventNameInput(nameEvent)
@@ -172,7 +186,7 @@ fun CreateEventScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                     Text("Ponto de Encontro")
-                    PlacePickerComponent(locationEvent,log)
+                    PlacePickerComponent(locationEvent, log)
                     Spacer(modifier = Modifier.height(32.dp))
                     DatePickInput(startDateEvent, log)
                     Spacer(modifier = Modifier.height(32.dp))
@@ -207,7 +221,7 @@ fun CreateEventScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    when(garbageTypesState){
+                    when (garbageTypesState) {
                         is GarbageSpotViewModel.GarbageTypesUIState.Success -> {
                             allGarbageTypeListEvent.value = garbageTypesState.garbageTypes
                             garbageTypeSelection(allGarbageTypeListEvent, listGarbageTypeInEvent)
@@ -218,7 +232,7 @@ fun CreateEventScreen(
                         }
                     }
 
-                    when(equipmentsState){
+                    when (equipmentsState) {
                         is EventViewModel.EquipmentUIState.Success -> {
                             allEquipmentListEvent.value = equipmentsState.equipments
                             EquipmentSelection(allEquipmentListEvent, listEquipmentInEvent)
@@ -235,23 +249,28 @@ fun CreateEventScreen(
                     EventObservationsInput(observationsEvent)
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    when(garbageSpotsState){
+                    when (garbageSpotsState) {
                         is GarbageSpotViewModel.GarbageSpotsUIState.Success -> {
-                            if( (!locationEvent.value.longitude.equals(0.0)) &&
-                                (!locationEvent.value.latitude.equals(0.0))){
+                            if ((!locationEvent.value.longitude.equals(0.0)) &&
+                                (!locationEvent.value.latitude.equals(0.0))
+                            ) {
 
-                                allGarbageSpotListEvent.value = garbageSpotsState.garbageSpots.filter {
-                                    calculateDistance(locationEvent.value,LatLng(it.latitude.toDouble(),it.longitude.toDouble()))<50.00
-                                            && it.approved
-                                }
+                                allGarbageSpotListEvent.value =
+                                    garbageSpotsState.garbageSpots.filter {
+                                        calculateDistance(
+                                            locationEvent.value,
+                                            LatLng(it.latitude.toDouble(), it.longitude.toDouble())
+                                        ) < 50.00
+                                                && it.approved
+                                    }
 
-                                garbageSpotsSelection(allGarbageSpotListEvent, listGarbageSpotsInEvent)
+                                garbageSpotsSelection(
+                                    allGarbageSpotListEvent,
+                                    listGarbageSpotsInEvent
+                                )
+                            } else {
+                                Text(text = textResource(id = R.string.lblPickALocation))
                             }
-
-                            else{
-                                Text(text= textResource(id = R.string.lblPickALocation))
-                            }
-
 
 
                         }
@@ -261,9 +280,9 @@ fun CreateEventScreen(
                 }
 
 
-                when(createEventState){
+                when (createEventState) {
                     is EventViewModel.EventCreateUIState.Success -> {
-                        log.d{"event create state -> success"}
+                        log.d { "event create state -> success" }
                         Text(
                             text = textResource(R.string.txtEventCreatedSuccess),
                             color = MaterialTheme.colors.primary,
@@ -274,8 +293,8 @@ fun CreateEventScreen(
 
                     }
                     is EventViewModel.EventCreateUIState.Error -> {
-                        log.d{"event create state -> Error"}
-                        log.d{"Error -> ${ createEventState.error}"}
+                        log.d { "event create state -> Error" }
+                        log.d { "Error -> ${createEventState.error}" }
                         Text(text = textResource(id = R.string.txtEventCreateError))
                     }
                     is EventViewModel.EventCreateUIState.Loading -> CircularProgressIndicator()
@@ -296,12 +315,14 @@ fun CreateEventScreen(
                             startDateEvent.value.isNotEmpty() &&
                             (!locationEvent.value.longitude.equals(0.0)) &&
                             (!locationEvent.value.latitude.equals(0.0))
-                            //&&listGarbageTypeInEvent.value.isNotEmpty()
+                        //&&listGarbageTypeInEvent.value.isNotEmpty()
                         ) {
                             log.d { "create event fields verified" }
-                            var date: Date = SimpleDateFormat("dd/MM/yyyyHH:mm").parse(startDateEvent.value)
+                            var date: Date =
+                                SimpleDateFormat("dd/MM/yyyyHH:mm").parse(startDateEvent.value)
 
-                            startDateEvent.value = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(date.toZonedDateTime())
+                            startDateEvent.value =
+                                DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(date.toZonedDateTime())
                             eventViewModel.createEvent(
                                 EventDTO(
                                     0,
@@ -316,14 +337,13 @@ fun CreateEventScreen(
                                     restrictionsSelectedOptionText.value,
                                     quantitySelectedOptionText.value,
                                     observationsEvent.value.text,
-                                    ""
-                                    , emptyList(), emptyList(), emptyList()),
+                                    "", emptyList(), emptyList(), emptyList()
+                                ),
                                 listGarbageSpotsInEvent.value,
                                 listGarbageTypeInEvent.value,
                                 listEquipmentInEvent.value,
                                 authViewModel.tokenState.value
                             )
-
 
 
                         } else {
@@ -333,7 +353,7 @@ fun CreateEventScreen(
                         }
                     },
                 ) {
-                  Text(text= textResource(id = R.string.lblCreateEvent))
+                    Text(text = textResource(id = R.string.lblCreateEvent))
                 }
 
 
@@ -352,13 +372,13 @@ private fun EquipmentSelection(
 ) {
 
 
-    Row(horizontalArrangement = Arrangement.SpaceAround){
+    Row(horizontalArrangement = Arrangement.SpaceAround) {
         Text(text = textResource(R.string.lblEquipment))
         Spacer(Modifier.width(5.dp))
         Text(text = textResource(R.string.lblEquipmentIsProvided))
     }
 
-    val listChecked = remember { mutableStateOf(SnapshotStateList<Boolean>())}
+    val listChecked = remember { mutableStateOf(SnapshotStateList<Boolean>()) }
     LazyColumn(
         modifier = Modifier
             .height(200.dp)
@@ -368,87 +388,91 @@ private fun EquipmentSelection(
         verticalArrangement = Arrangement.Center
     ) {
         items(allEquipmentListEvent.value.size) { index ->
-            if(listChecked.value.size < allEquipmentListEvent.value.size){
-                listChecked.value.add(index,false)
-            }
+            if (allEquipmentListEvent.value.size > 0) {
 
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = listEquipmentInEvent.value.contains(
-                            listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
-                        ),
-                        onClick = {
-                            Log.d("equipement", "equipment clicked")
-
-
-                            var element =
-                                listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
-                            Log.d("equipement", "$element")
-
-                            if (element != null) {
-                                Log.d("equipment", "removing garbage type")
-
-                                //remove item
-                                listEquipmentInEvent.value.remove(element)
-
-
-                            } else {
-                                Log.d("equipment", "adding equipment type")
-                                listEquipmentInEvent.value.add(
-                                    EquipmentInEventDTO(
-                                        0,
-                                        0,
-                                        allEquipmentListEvent.value[index].id,
-                                        listChecked.value[index],
-                                        "observations"
-                                    )
-                                )
-                                Log.d("equipment", "list ${listEquipmentInEvent.value}")
-                            }
-                        }
-
-
-                    )
-                    .background(
-                        if (listEquipmentInEvent.value.contains(
-                                listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
-                            )
-                        ) Color.Gray
-                        else Color.Transparent
-                    )
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = allEquipmentListEvent.value[index].name)
-
-                Checkbox(
-                    checked = listChecked.value.get(index),
-                    onCheckedChange = { listChecked.value[index] = it }
-                )
-
-
-                if ( listEquipmentInEvent.value.contains(
-                        listEquipmentInEvent.value.find { it.equipmentID ==allEquipmentListEvent.value[index].id }
-                    )) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Selected",
-                        tint = Color.Green,
-                        modifier = Modifier.size(20.dp)
-                    )
+                if (listChecked.value.size < allEquipmentListEvent.value.size) {
+                    listChecked.value.add(index, false)
                 }
 
-            }
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .selectable(
+                            selected = listEquipmentInEvent.value.contains(
+                                listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
+                            ),
+                            onClick = {
+                                Log.d("equipement", "equipment clicked")
+
+
+                                var element =
+                                    listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
+                                Log.d("equipement", "$element")
+
+                                if (element != null) {
+                                    Log.d("equipment", "removing garbage type")
+
+                                    //remove item
+                                    listEquipmentInEvent.value.remove(element)
+
+
+                                } else {
+                                    Log.d("equipment", "adding equipment type")
+                                    listEquipmentInEvent.value.add(
+                                        EquipmentInEventDTO(
+                                            0,
+                                            0,
+                                            allEquipmentListEvent.value[index].id,
+                                            listChecked.value[index],
+                                            "observations"
+                                        )
+                                    )
+                                    Log.d("equipment", "list ${listEquipmentInEvent.value}")
+                                }
+                            }
+
+
+                        )
+                        .background(
+                            if (listEquipmentInEvent.value.contains(
+                                    listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
+                                )
+                            ) Color.Gray
+                            else Color.Transparent
+                        )
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = allEquipmentListEvent.value[index].name)
+
+                    Checkbox(
+                        checked = listChecked.value.get(index),
+                        onCheckedChange = { listChecked.value[index] = it }
+                    )
+
+
+                    if (listEquipmentInEvent.value.contains(
+                            listEquipmentInEvent.value.find { it.equipmentID == allEquipmentListEvent.value[index].id }
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Selected",
+                            tint = Color.Green,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                }
+            }
         }
     }
 }
 
-fun calculateDistance(eventLocation: LatLng, garbageLocation: LatLng?) : Double {
+fun calculateDistance(eventLocation: LatLng, garbageLocation: LatLng?): Double {
     val EARTH_RADIUS = 6371 // in km
 
     // Convert to Radians
@@ -461,13 +485,14 @@ fun calculateDistance(eventLocation: LatLng, garbageLocation: LatLng?) : Double 
     val dlng = lastLng - curLng
     val dlat = lastLat - curLat
 
-    val a = sin(dlat/2).pow(2) + cos(curLat) * cos(lastLat) * sin(dlng / 2).pow(2)
+    val a = sin(dlat / 2).pow(2) + cos(curLat) * cos(lastLat) * sin(dlng / 2).pow(2)
     val c = 2 * asin(sqrt(a))
-   // Log.d("event create", (c * EARTH_RADIUS).toString())
+    // Log.d("event create", (c * EARTH_RADIUS).toString())
 
 
     return (c * EARTH_RADIUS)
 }
+
 @Composable
 private fun EventNameInput(nameEvent: MutableState<TextFieldValue>) {
     TextField(
@@ -843,12 +868,11 @@ private fun garbageSpotsSelection(
 }
 
 
-
 @Composable
 fun PlacePickerComponent(
     locationEvent: MutableState<LatLng>, log: Logger
 ) {
-    log.d{"Picking place"}
+    log.d { "Picking place" }
     val dialogState = rememberMaterialDialogState()
     MaterialDialog(
         dialogState = dialogState,
@@ -880,14 +904,15 @@ fun PlacePickerComponent(
     }
 
 
-    Row(modifier = Modifier.fillMaxWidth(),
+    Row(
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment =  Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
 
-    ){
+    ) {
         // Creating a button that on
-        Text(text= "Local")
-        if(!(locationEvent.value.latitude.equals(0.0) && locationEvent.value.longitude.equals(0.0))){
+        Text(text = "Local")
+        if (!(locationEvent.value.latitude.equals(0.0) && locationEvent.value.longitude.equals(0.0))) {
             Text("Escolhido")
         }
         Button(
@@ -898,7 +923,7 @@ fun PlacePickerComponent(
             Icon(Icons.Default.LocationOn, contentDescription = "location   picker")
         }
     }
-    if(locationEvent.value.latitude.equals(0.0) && locationEvent.value.longitude.equals(0.0)  ){
+    if (locationEvent.value.latitude.equals(0.0) && locationEvent.value.longitude.equals(0.0)) {
         Text(
             text = stringResource(R.string.txtNecessaryField),
             color = MaterialTheme.colors.error,
@@ -916,7 +941,7 @@ fun DatePickerComponent(
     dateEvent: MutableState<String>,
     log: Logger
 ) {
-    log.d{"Picking date"}
+    log.d { "Picking date" }
     // Fetching the Local Context
     val mContext = LocalContext.current
     // Declaring integer values
@@ -942,24 +967,25 @@ fun DatePickerComponent(
     val mDatePickerDialog = DatePickerDialog(
         mContext,
         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-            mDate.value = "$mDayOfMonth/${mMonth+1}/$mYear"
+            mDate.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
         }, mYear, mMonth, mDay
     )
     // Creating a TimePicker dialod
     val mTimePickerDialog = TimePickerDialog(
         mContext,
-        {_, mHour : Int, mMinute: Int ->
+        { _, mHour: Int, mMinute: Int ->
             mTime.value = "$mHour:$mMinute"
         }, mHour, mMinute, true
     )
-    Row(modifier = Modifier.fillMaxWidth(),
+    Row(
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment =  Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
 
-    ){
-       // Creating a button that on
+    ) {
+        // Creating a button that on
         // click displays/shows the DatePickerDialog
-        Text(text= "Data de início")
+        Text(text = "Data de início")
         Text(dateEvent.value)
         Button(
             onClick = {
@@ -971,10 +997,7 @@ fun DatePickerComponent(
             Icon(Icons.Default.List, contentDescription = "DATEPICKER")
         }
     }
-    dateEvent.value ="${mDate.value}${mTime.value}"
-
-
-
+    dateEvent.value = "${mDate.value}${mTime.value}"
 
 
 }

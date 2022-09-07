@@ -58,7 +58,7 @@ fun ChatEventScreen(
                 }
             }
         },
-        bottomBar = { BottomNavigationBar(navController = navController) },
+        bottomBar = {  },
         content = { innerPadding ->
             Column(
                 modifier = Modifier

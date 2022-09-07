@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-5 mb-3">event #{{ this.id }}</h3>
+  <h3 class="mt-5 mb-3">Evento #{{ this.id }}</h3>
   <hr />
   <div v-if="event" class="d-flex flex-wrap justify-content-between">
     <div class="w-75 pe-4">
@@ -89,12 +89,12 @@
     :globalFilterFields="['nome', 'estado', 'criador']"
     class="p-datatable-sm"
   >
-    <template #empty> No garbageSpots found. </template>
-    <template #loading> Loading garbageSpots data. Please wait. </template>
+    <template #empty> Locais de Lixo não foram encontrados. </template>
+    <template #loading>A carregar locais de lixo. Por favor aguarde. </template>
     <template #header>
       <div class="flex justify-content-between">
         <div>
-          <h1 class="">GarbageSpots</h1>
+          <h1 class="">Locais de Lixo</h1>
         </div>
       </div>
     </template>
