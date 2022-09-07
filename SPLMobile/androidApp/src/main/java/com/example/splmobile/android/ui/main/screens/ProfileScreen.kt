@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.patternConverter
+import com.example.splmobile.android.patternReceiver
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
@@ -37,6 +39,7 @@ import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
@@ -70,11 +73,6 @@ fun ProfileScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        drawerContent = {
-            Text("Settings?", modifier = Modifier.padding(16.dp))
-            Divider()
-            // Drawer items
-        },
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
@@ -83,7 +81,7 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(bottom = innerPadding.calculateBottomPadding()),
+                    .padding(bottom = innerPadding.calculateBottomPadding(), top = 20.dp,start= 15.dp, end = 15.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -119,33 +117,42 @@ fun ProfileScreen(
                     ) {
                         Text(text = textResource(R.string.btnFriends))
                     }
+                    Divider(modifier = Modifier.padding(10.dp),color = Color.Gray, thickness = 1.dp)
                 }
                 Text(
+                    modifier = Modifier.align(Alignment.Start),
                     text = textResource(R.string.lblLastActivities),
-                    fontStyle = MaterialTheme.typography.h6.fontStyle
+                    style = MaterialTheme.typography.h6
                 )
 
                 MyActivitySection(usersActivitiesState, navController, log)
 
+                Divider(modifier = Modifier.padding(10.dp),color = Color.Gray, thickness = 1.dp)
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
 
                 ) {
 
                     Text(
                         text = textResource(R.string.lblLastEvents),
-                        fontStyle = MaterialTheme.typography.h6.fontStyle
+                        style = MaterialTheme.typography.h6
                     )
-                    Spacer(Modifier.width(86.dp))
-                    ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems)),
-                        style = MaterialTheme.typography.body1,
+                    Button(
                         onClick = {
                             navController.navigate(Screen.MyEventList.route)
-                        })
+                        },
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Text(text = textResource(R.string.lblSeeMoreItems))
+
+                    }
 
                 }
+
                 MyEventsSection(usersEventsState, navController, log)
             }
         },
@@ -168,6 +175,9 @@ fun MyActivitySection(
         when (usersActivitiesState) {
             is UserInfoViewModel.MyActivitiesUIState.SuccessLast5 -> {
                 usersActivitiesState.activities.forEach {
+                    val activityTime = LocalDateTime.parse(it.startDate, patternReceiver)
+                    val actString = activityTime.format(patternConverter).toString()
+
                     TextButton(onClick = {
                         navController.navigate(Screen.ActivityInfo.route+"/${it.id}")
                     }) {
@@ -356,7 +366,7 @@ fun ProfileSection(
                     editableState.value = !editableState.value
                 },
 
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 if (editableState.value) {
                     Icon(Icons.Default.Close, contentDescription = "editable")

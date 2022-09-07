@@ -12,7 +12,11 @@ import websockets
 from models import User, Message, IndividualMessage, EventMessage, UserInEvent, Event
 
 SECRET_KEY = '6e129cb9707e18357de8b945656c430f'
-engine = create_engine('sqlite:///spl.db')
+engine = create_engine(
+    'sqlite:///spl.db',
+    connect_args={'check_same_thread': False}
+)
+
 users_connected = dict()
 users_event_channel = dict()
 websocket_listen_event_loop = asyncio.new_event_loop()

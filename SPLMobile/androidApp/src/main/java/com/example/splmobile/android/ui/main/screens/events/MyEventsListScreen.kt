@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -146,4 +147,5 @@ fun UserInEventsList(navController: NavHostController,user_event :UserInEventDTO
 
         }
     }
+    Divider(color = Color.Gray, thickness = 1.dp)
 }

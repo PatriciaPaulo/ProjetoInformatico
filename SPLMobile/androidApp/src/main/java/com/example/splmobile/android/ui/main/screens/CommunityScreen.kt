@@ -2,10 +2,8 @@ package com.example.splmobile.android.ui.main.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -20,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -111,9 +108,6 @@ private fun CommunityAppBar(
                 text = textResource(R.string.lblCommunitySearchBar)
             )
         },
-        actions = {
-
-        }
     )
 
 }
@@ -129,7 +123,7 @@ private fun CommunityUI(
     var buttonScreenState = remember { mutableStateOf(R.string.btnCommunity) }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
 
     ) {
@@ -359,6 +353,7 @@ private fun EventsNearMeSection(
             else{
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.small_spacer)),
+                    rows = GridCells.Fixed(1),
                 ){
                     events.filter { ev -> ev.status == "Criado" &&
                             locationNearMe(location!!,

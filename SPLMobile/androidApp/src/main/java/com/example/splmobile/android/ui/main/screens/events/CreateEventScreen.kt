@@ -295,8 +295,8 @@ fun CreateEventScreen(
                             durationEvent.value.text.isNotEmpty() &&
                             startDateEvent.value.isNotEmpty() &&
                             (!locationEvent.value.longitude.equals(0.0)) &&
-                            (!locationEvent.value.latitude.equals(0.0)) &&
-                            listGarbageTypeInEvent.value.isNotEmpty()
+                            (!locationEvent.value.latitude.equals(0.0))
+                            //&&listGarbageTypeInEvent.value.isNotEmpty()
                         ) {
                             log.d { "create event fields verified" }
                             var date: Date = SimpleDateFormat("dd/MM/yyyyHH:mm").parse(startDateEvent.value)
@@ -888,8 +888,7 @@ fun PlacePickerComponent(
         // Creating a button that on
         Text(text= "Local")
         if(!(locationEvent.value.latitude.equals(0.0) && locationEvent.value.longitude.equals(0.0))){
-            Text(locationEvent.value.latitude.toString())
-            Text(locationEvent.value.longitude.toString())
+            Text("Escolhido")
         }
         Button(
             onClick = {

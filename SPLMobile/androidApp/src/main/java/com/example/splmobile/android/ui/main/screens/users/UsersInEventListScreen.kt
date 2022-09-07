@@ -11,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -36,7 +37,7 @@ fun UsersInEventListScreen(
     eventViewModel: EventViewModel,
     userViewModel: UserViewModel,
     authViewModel: AuthViewModel,
-    userInfoViewModel:  UserInfoViewModel,
+    userInfoViewModel: UserInfoViewModel,
     mainViewModel: MainViewModel,
     eventID: String?,
     log: Logger
@@ -47,7 +48,7 @@ fun UsersInEventListScreen(
 
 
     LaunchedEffect(Unit) {
-        userViewModel.getUsersInEvent(eventID!!.toLong(),authViewModel.tokenState.value)
+        userViewModel.getUsersInEvent(eventID!!.toLong(), authViewModel.tokenState.value)
         userViewModel.getAllUsers(authViewModel.tokenState.value)
         userInfoViewModel.getMyInfo(authViewModel.tokenState.value)
     }
@@ -58,10 +59,10 @@ fun UsersInEventListScreen(
     val searchWidgetState by mainViewModel.searchWidgetState
     val searchTextState by mainViewModel.searchTextState
 
-    val listSearch = remember{ mutableStateOf(emptyList<UserDTO>())}
-    val usersInEventListSearch = remember{ mutableStateOf(emptyList<UserInEventDTO>())}
+    val listSearch = remember { mutableStateOf(emptyList<UserDTO>()) }
+    val usersInEventListSearch = remember { mutableStateOf(emptyList<UserInEventDTO>()) }
 
-    val screenState = remember{ mutableStateOf(false)}
+    val screenState = remember { mutableStateOf(false) }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -77,121 +78,140 @@ fun UsersInEventListScreen(
                 onCloseClicked = {
                     mainViewModel.updateSearchTextState(newValue = "")
                     mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
-                    screenState.value=false
-
+                    screenState.value = false
 
 
                 },
                 onSearchClicked = {
                     coroutineScope.launch {
                         var search = it
-                        if(it.isNotEmpty()){
-                            listSearch.value.filter{
+                        if (it.isNotEmpty()) {
+                            listSearch.value.filter {
                                 it.username.contains(search) || it.name.contains(search)
                             }
-                        }else{
+                        } else {
                             userViewModel.getAllUsers(authViewModel.tokenState.value)
                         }
 
                     }
 
 
-
-
                 },
                 onSearchTriggered = {
                     mainViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
-                    screenState.value=true
+                    screenState.value = true
                 }
             )
         },
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
-            when(screenState.value){
-                true->{
-                    log.d{ "true"}
-                    when(usersListState){
+            when (screenState.value) {
+                true -> {
+                    log.d { "true" }
+                    when (usersListState) {
 
                         is UserViewModel.UsersUIState.SuccessUsers -> {
-                            if(mainViewModel.searchTextState.value.isNotEmpty()){
-                                listSearch.value  =  usersListState.users.filter{
-                                    log.d{"mainViewModel.searchTextState.value"}
-                                    it.username.contains(mainViewModel.searchTextState.value) || it.name.contains(mainViewModel.searchTextState.value)
+                            if (mainViewModel.searchTextState.value.isNotEmpty()) {
+                                listSearch.value = usersListState.users.filter {
+                                    log.d { "mainViewModel.searchTextState.value" }
+                                    it.username.contains(mainViewModel.searchTextState.value) || it.name.contains(
+                                        mainViewModel.searchTextState.value
+                                    )
                                 }
-                            }else{
+                            } else {
                                 listSearch.value = usersListState.users
                             }
-                            log.d{"Get all users state -> Success"}
-                            LazyColumn(modifier = Modifier
-                                .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
+                            log.d { "Get all users state -> Success" }
+                            Text(
+                                text = textResource(R.string.txtAllUsers),
+                                style = MaterialTheme.typography.h6
+                            )
 
-                                items(listSearch.value.size){ index ->
 
-                                    AllUsersList(user = listSearch.value.get(index),
-                                        eventID=eventID,
+                            LazyColumn(
+                                modifier = Modifier
+                                    .padding(
+                                        top = 32.dp,
+                                        bottom = innerPadding.calculateBottomPadding(),
+                                        start = 20.dp,
+                                        end = 20.dp
+                                    )
+                            ) {
+
+                                items(listSearch.value.size) { index ->
+
+                                    AllUsersList(
+                                        user = listSearch.value.get(index),
+                                        eventID = eventID,
                                         navController = navController,
                                         usersInEventListSearch = usersInEventListSearch.value,
                                         loggedInUserID = loggedInUserID,
-                                        log=log,
-                                        authViewModel=authViewModel,
-                                        userViewModel = userViewModel)
+                                        log = log,
+                                        authViewModel = authViewModel,
+                                        userViewModel = userViewModel
+                                    )
                                 }
 
 
                             }
                         }
-                        is  UserViewModel.UsersUIState.Error -> {
-                            log.d{"Get all users state -> Error"}
+                        is UserViewModel.UsersUIState.Error -> {
+                            log.d { "Get all users state -> Error" }
                             Text(
-                                text = textResource(R.string.txtUsersInEventError).toString() ,
+                                text = textResource(R.string.txtUsersInEventError).toString(),
                                 color = MaterialTheme.colors.primary,
                                 style = MaterialTheme.typography.caption,
                                 modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                             )
                         }
-                        is  UserViewModel.UsersUIState.Loading -> CircularProgressIndicator()
+                        is UserViewModel.UsersUIState.Loading -> CircularProgressIndicator()
                     }
                 }
-                false->{
-                    log.d{"false"}
-                    when(usersEventListState){
+                false -> {
+                    log.d { "false" }
+                    when (usersEventListState) {
 
                         is UserViewModel.UsersInEventUIState.Success -> {
                             usersInEventListSearch.value = usersEventListState.user_events
-                            log.d{"Get users in event state -> Success"}
-                            LazyColumn(modifier = Modifier
-                                .padding(top = 32.dp,bottom = innerPadding.calculateBottomPadding())){
+                            log.d { "Get users in event state -> Success" }
+                            LazyColumn(
+                                modifier = Modifier
+                                    .padding(
+                                        top = 32.dp,
+                                        bottom = innerPadding.calculateBottomPadding()
+                                    )
+                            ) {
 
-                                items(usersEventListState.user_events.size){ index ->
+                                items(usersEventListState.user_events.size) { index ->
                                     UsersList(
                                         clickedUser = usersEventListState.user_events.get(index),
                                         loggedInUserID = loggedInUserID,
-                                        eventID=eventID!!.toLong(),
-                                        userViewModel=userViewModel,
+                                        eventID = eventID!!.toLong(),
+                                        userViewModel = userViewModel,
                                         navController = navController,
                                         usersInEventListSearch = usersInEventListSearch.value,
                                         userInfoViewModel = userInfoViewModel,
-                                        authViewModel=authViewModel)
+                                        authViewModel = authViewModel
+                                    )
                                 }
 
 
                             }
                         }
-                        is  UserViewModel.UsersInEventUIState.Error -> {
-                            log.d{"Get user in event state -> Error"}
+                        is UserViewModel.UsersInEventUIState.Error -> {
+                            log.d { "Get user in event state -> Error" }
                             Text(
-                                text = textResource(R.string.txtUsersInEventError).toString() ,
+                                text = textResource(R.string.txtUsersInEventError).toString(),
                                 color = MaterialTheme.colors.primary,
                                 style = MaterialTheme.typography.caption,
                                 modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                             )
                         }
-                        is  UserViewModel.UsersInEventUIState.Loading -> CircularProgressIndicator()
-                }}
+                        is UserViewModel.UsersInEventUIState.Loading -> CircularProgressIndicator()
+                    }
+                }
             }
-
-
 
 
         },
@@ -204,16 +224,18 @@ fun UsersInEventListScreen(
 @Composable
 fun UsersList(
     navController: NavHostController,
-    clickedUser :UserInEventDTO,
-    eventID:Long,
+    clickedUser: UserInEventDTO,
+    eventID: Long,
     loggedInUserID: Long,
-    userViewModel:UserViewModel,
+    userViewModel: UserViewModel,
     usersInEventListSearch: List<UserInEventDTO>,
     userInfoViewModel: UserInfoViewModel,
     authViewModel: AuthViewModel
-){
+) {
     var expanded by remember { mutableStateOf(false) }
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
+    val usersListState = userViewModel.usersUIState.collectAsState().value
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -226,67 +248,86 @@ fun UsersList(
                 )
 
 
-    ){
-        Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
+    ) {
+        Image(painter = painterResource(id = R.drawable.ic_main_map), contentDescription = null)
         Column() {
             Text(text = clickedUser.userID.toString(), style = MaterialTheme.typography.h6)
             Text(text = clickedUser.status, style = MaterialTheme.typography.body1)
-            Text(text = "Event status -" + clickedUser.event.status, style = MaterialTheme.typography.body2)
+            when(usersListState){
+                is UserViewModel.UsersUIState.SuccessUsers->{
+                    usersListState.users.find { it.id == clickedUser.userID }?.name?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.h6
+                        )
+                    }
+                }
+            }
+
+
+
+        }
 
 
     }
-        Box(contentAlignment = Alignment.CenterEnd) {
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+    Divider(color = Color.Gray, thickness = 1.dp)
+    Box(contentAlignment = Alignment.CenterEnd) {
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            // se creator -> atualizo se id != do creator
+            if (usersInEventListSearch
+                    .any {
+                        it.creator && it.userID == loggedInUserID
+                    }
             ) {
-                // se creator -> atualizo se id != do creator
-                if(usersInEventListSearch
-                        .any{
-                            it.creator && it.userID == loggedInUserID
-                        }){
-                    if(clickedUser.userID!=loggedInUserID){
-                        if(clickedUser.status == "Organizer"){
-                            DropdownMenuItem(onClick = {
-                                //remove
-                                var user_event = usersInEventListSearch.find{
-                                    it.userID == clickedUser.userID
-                                }
-                                if(user_event!=null){
-                                    userViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event!!.id,"Inscrito",authViewModel.tokenState.value)
-
-                                }
-
-                            }) {
-                                Text("Remover organizador")
+                if (clickedUser.userID != loggedInUserID) {
+                    if (clickedUser.status == "Organizer") {
+                        DropdownMenuItem(onClick = {
+                            //remove
+                            var user_event = usersInEventListSearch.find {
+                                it.userID == clickedUser.userID
                             }
-                            Divider()
+                            if (user_event != null) {
+                                userViewModel.participateStatusUpdateInEvent(
+                                    eventID!!.toLong(),
+                                    user_event!!.id,
+                                    "Inscrito",
+                                    authViewModel.tokenState.value
+                                )
 
+                            }
+
+                        }) {
+                            Text("Remover organizador")
                         }
-                    }
+                        Divider()
 
-
-                }
-
-                if(clickedUser.userID!=loggedInUserID) {
-                    DropdownMenuItem(onClick = {
-                        navController.navigate(Screen.UserProfile.route + "/${clickedUser.userID}")
-                    }) {
-                        Text("Ver perfil")
-                    }
-                }else{
-                    DropdownMenuItem(onClick = {
-                        navController.navigate(BottomNavItem.Profile.route)
-                    }) {
-                        Text("Ver perfil")
                     }
                 }
-            }
+
+
             }
 
+            if (clickedUser.userID != loggedInUserID) {
+                DropdownMenuItem(onClick = {
+                    navController.navigate(Screen.UserProfile.route + "/${clickedUser.userID}")
+                }) {
+                    Text("Ver perfil")
+                }
+            } else {
+                DropdownMenuItem(onClick = {
+                    navController.navigate(BottomNavItem.Profile.route)
+                }) {
+                    Text("Ver perfil")
+                }
+            }
+        }
 
     }
 }
+
 @Composable
 fun AllUsersList(
     navController: NavHostController,
@@ -297,24 +338,26 @@ fun AllUsersList(
     log: Logger,
     loggedInUserID: Long,
     eventID: String?
-){
+) {
     var expanded by remember { mutableStateOf(false) }
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .clickable(
-                onClick = {
-                    expanded = true
-                },
+    if (loggedInUserID != user.id) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .clickable(
+                    onClick = {
+                        expanded = true
+                    },
 
-                )
+                    )
 
 
-    ){
-        if(loggedInUserID != user.id) {
-            Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
+        ) {
+
+            Image(painter = painterResource(id = R.drawable.ic_main_map), contentDescription = null)
             Column() {
 
                 //Text(text = user.id.toString(), style = MaterialTheme.typography.h6)
@@ -323,29 +366,38 @@ fun AllUsersList(
 
 
             }
-            if(usersInEventListSearch.find{it.userID == user.id }!= null){
-                usersInEventListSearch.find{it.userID == user.id }?.status?.let { Text(text = it, style = MaterialTheme.typography.h6) }
+            if (usersInEventListSearch.find { it.userID == user.id } != null) {
+                usersInEventListSearch.find { it.userID == user.id }?.status?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.h6
+                    )
+                }
 
             }
+
+
         }
         var stateParticipate = userViewModel.eventParticipateUIState.collectAsState().value
 
-        when(stateParticipate){
+        when (stateParticipate) {
             is UserViewModel.EventParticipateUIState.SuccessUpdate -> {
-                if(user.id == stateParticipate.userID){
+                if (user.id == stateParticipate.userID) {
                     Text(text = "Atualizado", style = MaterialTheme.typography.body1)
                 }
 
             }
             is UserViewModel.EventParticipateUIState.SuccessOrganizer -> {
-                if(user.id == stateParticipate.userID){
+                if (user.id == stateParticipate.userID) {
                     Text(text = "Adicionado", style = MaterialTheme.typography.body1)
                 }
             }
         }
 
+        Divider(color = Color.Gray, thickness = 1.dp)
 
     }
+
     Box(contentAlignment = Alignment.CenterEnd) {
 
         DropdownMenu(
@@ -356,69 +408,94 @@ fun AllUsersList(
                 /* Handle refresh! */
 
                 //if logged in user is the creator ->
-                if(usersInEventListSearch
-                        .any{
-                            log.d{"$it"}
+                if (usersInEventListSearch
+                        .any {
+                            log.d { "$it" }
                             it.creator && it.userID == loggedInUserID
-                        }){
+                        }
+                ) {
                     //if user is already organizer
-                    if(usersInEventListSearch
-                            .any{
-                                log.d{"$it"}
-                                it.status=="Organizer" && it.userID == user.id
-                            }){
+                    if (usersInEventListSearch
+                            .any {
+                                log.d { "$it" }
+                                it.status == "Organizer" && it.userID == user.id
+                            }
+                    ) {
                         //if user is already organizer
                         //remove
-                        var user_event = usersInEventListSearch.find{
+                        var user_event = usersInEventListSearch.find {
                             it.userID == user.id
                         }
 
-                        userViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event!!.id,"Inscrito",authViewModel.tokenState.value)
+                        userViewModel.participateStatusUpdateInEvent(
+                            eventID!!.toLong(),
+                            user_event!!.id,
+                            "Inscrito",
+                            authViewModel.tokenState.value
+                        )
 
 
-                    }else{
+                    } else {
                         //add
-                        var user_event = usersInEventListSearch.find{
+                        var user_event = usersInEventListSearch.find {
                             it.userID == user.id
                         }
-                        if(user_event == null){
+                        if (user_event == null) {
                             //create signup
-                            userViewModel.participateInEventOrganizer(eventID!!.toLong(), user.id,authViewModel.tokenState.value)
+                            userViewModel.participateInEventOrganizer(
+                                eventID!!.toLong(),
+                                user.id,
+                                authViewModel.tokenState.value
+                            )
 
-                        }
-                        else{
+                        } else {
                             //update status
-                            userViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event.id,"Organizer",authViewModel.tokenState.value)
+                            userViewModel.participateStatusUpdateInEvent(
+                                eventID!!.toLong(),
+                                user_event.id,
+                                "Organizer",
+                                authViewModel.tokenState.value
+                            )
 
                         }
                     }
-                }else{
+                } else {
                     //not the creator but is an organizer
-                    if(usersInEventListSearch
-                            .any{
-                                log.d{"$it"}
-                                it.status=="Organizer" && it.userID == loggedInUserID
-                            }){
+                    if (usersInEventListSearch
+                            .any {
+                                log.d { "$it" }
+                                it.status == "Organizer" && it.userID == loggedInUserID
+                            }
+                    ) {
                         //if user is already organizer
-                        if(usersInEventListSearch
-                                .any{
-                                    log.d{"$it"}
-                                    it.status=="Organizer" && it.userID == user.id
-                                }){
+                        if (usersInEventListSearch
+                                .any {
+                                    log.d { "$it" }
+                                    it.status == "Organizer" && it.userID == user.id
+                                }
+                        ) {
                             //if user is already organizer
-                        }else{
+                        } else {
                             //add
-                            var user_event = usersInEventListSearch.find{
+                            var user_event = usersInEventListSearch.find {
                                 it.userID == user.id
                             }
-                            if(user_event == null){
+                            if (user_event == null) {
                                 //create signup
-                                userViewModel.participateInEventOrganizer(eventID!!.toLong(),loggedInUserID,authViewModel.tokenState.value)
+                                userViewModel.participateInEventOrganizer(
+                                    eventID!!.toLong(),
+                                    loggedInUserID,
+                                    authViewModel.tokenState.value
+                                )
 
-                            }
-                            else{
+                            } else {
                                 //update status
-                                userViewModel.participateStatusUpdateInEvent(eventID!!.toLong(),user_event.id,"Organizer",authViewModel.tokenState.value)
+                                userViewModel.participateStatusUpdateInEvent(
+                                    eventID!!.toLong(),
+                                    user_event.id,
+                                    "Organizer",
+                                    authViewModel.tokenState.value
+                                )
 
                             }
                         }
@@ -430,37 +507,41 @@ fun AllUsersList(
             }) {
                 //check if in event
                 //if logged in user is the creator ->
-                if(usersInEventListSearch
-                        .any{
-                            log.d{"$it"}
+                if (usersInEventListSearch
+                        .any {
+                            log.d { "$it" }
                             it.creator && it.userID == loggedInUserID
-                        }){
+                        }
+                ) {
                     //if user is already organizer
-                    if(usersInEventListSearch
-                            .any{
-                                log.d{"$it"}
-                                it.status=="Organizer" && it.userID == user.id
-                            }){
+                    if (usersInEventListSearch
+                            .any {
+                                log.d { "$it" }
+                                it.status == "Organizer" && it.userID == user.id
+                            }
+                    ) {
                         //if user is already organizer
                         Text("Remover como organizador")
-                    }else{
+                    } else {
                         Text("Adicionar como organizador")
                     }
-                }else{
+                } else {
                     //not the creator but is an organizer
-                    if(usersInEventListSearch
-                            .any{
-                                log.d{"$it"}
-                                it.status=="Organizer" && it.userID == loggedInUserID
-                            }){
+                    if (usersInEventListSearch
+                            .any {
+                                log.d { "$it" }
+                                it.status == "Organizer" && it.userID == loggedInUserID
+                            }
+                    ) {
                         //if user is already organizer
-                        if(usersInEventListSearch
-                                .any{
-                                    log.d{"$it"}
-                                    it.status=="Organizer" && it.userID == user.id
-                                }){
+                        if (usersInEventListSearch
+                                .any {
+                                    log.d { "$it" }
+                                    it.status == "Organizer" && it.userID == user.id
+                                }
+                        ) {
                             //if user is already organizer
-                        }else{
+                        } else {
                             Text("Adicionar como organizador")
                         }
                     }
@@ -469,13 +550,11 @@ fun AllUsersList(
             }
             Divider()
             DropdownMenuItem(onClick = {
-                navController.navigate(Screen.UserProfile.route+"/${user.id}")
+                navController.navigate(Screen.UserProfile.route + "/${user.id}")
             }) {
                 Text("Ver perfil")
             }
-    }
-
-
+        }
 
 
     }

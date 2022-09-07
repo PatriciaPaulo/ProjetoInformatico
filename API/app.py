@@ -23,7 +23,12 @@ from websockets_server import start_websockets
 
 SECRET_KEY = '6e129cb9707e18357de8b945656c430f'
 
-engine = create_engine('sqlite:///spl.db')
+engine = create_engine(
+    'sqlite:///spl.db',
+    connect_args={'check_same_thread': False}
+)
+
+
 
 if __name__ == '__main__':
     # App Config
