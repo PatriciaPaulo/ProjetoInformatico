@@ -168,7 +168,7 @@ if __name__ == '__main__':
     for i in range(5):
         userID = session.query(User).filter_by(admin=False).order_by(func.random()).first()
         eventID = session.query(Event).order_by(func.random()).first()
-        distanceTravelled = randrange(99999)
+        distanceTravelled = randrange(50)
         startDate = datetime.utcnow()
         td = timedelta(days=randrange(3))
         # your calculated date

@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.patternConverter
+import com.example.splmobile.android.patternReceiver
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
@@ -37,6 +39,7 @@ import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.SharedViewModel
 import com.example.splmobile.models.UserInfoViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
@@ -137,7 +140,6 @@ fun ProfileScreen(
                         text = textResource(R.string.lblLastEvents),
                         style = MaterialTheme.typography.h6
                     )
-                    Spacer(Modifier.width(86.dp))
                     Button(
                         onClick = {
                             navController.navigate(Screen.MyEventList.route)
@@ -173,8 +175,11 @@ fun MyActivitySection(
         when (usersActivitiesState) {
             is UserInfoViewModel.MyActivitiesUIState.SuccessLast5 -> {
                 usersActivitiesState.activities.forEach {
+                    val activityTime = LocalDateTime.parse(it.startDate, patternReceiver)
+                    val actString = activityTime.format(patternConverter).toString()
+
                     TextButton(onClick = {}) {
-                        Text(text = "Actividade ${it.id} que começou em ${it.startDate}. ")
+                        Text(text = "Atividade ${it.id} que começou em ${actString}. ")
                     }
 
                 }

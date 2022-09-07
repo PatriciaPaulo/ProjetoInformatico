@@ -295,8 +295,8 @@ fun CreateEventScreen(
                             durationEvent.value.text.isNotEmpty() &&
                             startDateEvent.value.isNotEmpty() &&
                             (!locationEvent.value.longitude.equals(0.0)) &&
-                            (!locationEvent.value.latitude.equals(0.0)) &&
-                            listGarbageTypeInEvent.value.isNotEmpty()
+                            (!locationEvent.value.latitude.equals(0.0))
+                            //&&listGarbageTypeInEvent.value.isNotEmpty()
                         ) {
                             log.d { "create event fields verified" }
                             var date: Date = SimpleDateFormat("dd/MM/yyyyHH:mm").parse(startDateEvent.value)
