@@ -189,7 +189,7 @@ private fun EventInfoSection(
         Image(painter = image, contentDescription = "")
 
     }
-    Text(text = event.name, style = MaterialTheme.typography.h4)
+    Text(text = event.name, style = MaterialTheme.typography.h5)
     val eventTime = LocalDateTime.parse(event.startDate, patternReceiver)
     val eventString = eventTime.format(patternConverter).toString()
 

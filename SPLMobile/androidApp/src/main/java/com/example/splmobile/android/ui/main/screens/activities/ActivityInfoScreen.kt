@@ -17,12 +17,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import co.touchlab.kermit.Logger
 import com.example.splmobile.android.R
+import com.example.splmobile.android.patternConverter
+import com.example.splmobile.android.patternReceiver
 import com.example.splmobile.android.textResource
+import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.models.ActivityViewModel
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.objects.activities.ActivitySerializable
 import com.example.splmobile.objects.activities.ExplicitGarbageInActivityDTO
+import java.time.LocalDateTime
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -70,6 +74,7 @@ fun ActivityInfoScreen(
                 }
             )
         },
+        bottomBar = { BottomNavigationBar(navController = navController) }
     ) {
         var activityByIDState = activityViewModel.activityByID.collectAsState().value
         when(activityByIDState) {
@@ -144,7 +149,13 @@ private fun ActivityInfoUI(
             )
         }
 
-        Text("${activity.startDate} - ${activity.endDate}", style = MaterialTheme.typography.body1)
+        val startDate = LocalDateTime.parse(activity.startDate, patternReceiver)
+        val startString = startDate.format(patternConverter).toString()
+
+        val endDate = LocalDateTime.parse(activity.endDate, patternReceiver)
+        val endString = startDate.format(patternConverter).toString()
+
+        Text("${startString} - ${endString}", style = MaterialTheme.typography.body1)
         Spacer(
             modifier = Modifier
                 .size(dimensionResource(R.dimen.big_spacer))
@@ -152,19 +163,23 @@ private fun ActivityInfoUI(
 
         Text("Lixo Apanhado na Atividade", style = MaterialTheme.typography.h5)
 
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+            ){
                 item {
                     garbageList.forEach { gb ->
                         var gb_unit = ""
                         if(gb.amount > 1) {
                             gb_unit = gb.unit + "s"
                         }
-                        Text("${gb.garbage} - ${gb.amount} ${gb_unit}")
+                        Text(
+                            "${gb.garbage} - ${gb.amount} ${gb_unit}")
                         Divider(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             color = Color.LightGray,
-                            thickness = 5.dp
+                            thickness = 1.dp
                         )
                     }
                 }
