@@ -9,6 +9,7 @@ import co.touchlab.kermit.Logger
 import com.example.splmobile.android.ui.auth.screens.*
 import com.example.splmobile.android.ui.camera.CameraScreen
 import com.example.splmobile.android.ui.main.screens.*
+import com.example.splmobile.android.ui.main.screens.activities.ActivityInfoScreen
 import com.example.splmobile.android.ui.main.screens.activities.AddGarbageToActivity
 import com.example.splmobile.android.ui.main.screens.events.CreateEventScreen
 import com.example.splmobile.android.ui.main.screens.events.EventInfoScreen
@@ -107,6 +108,18 @@ fun SetupNavGraph(
                 log = log,
             )
         }
+
+        composable(route = Screen.ActivityInfo.route+ "/{activityID}") { backStackEntry ->
+            ActivityInfoScreen(
+                navController = navController,
+                activityViewModel = activityViewModel,
+                eventViewModel = eventViewModel,
+                authViewModel = authViewModel,
+                backStackEntry.arguments?.getString("activityID"),
+                log = log,
+            )
+        }
+
         composable(BottomNavItem.Map.route) {
             MapScreen(
                 navController = navController,

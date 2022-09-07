@@ -2,8 +2,10 @@ package com.example.splmobile.android.ui.main.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -18,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -127,37 +130,10 @@ private fun CommunityUI(
 
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+
     ) {
         // Apply the padding globally
-        Spacer(modifier = Modifier.height(32.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-
-        ) {
-            /*Button(
-                onClick = {
-                    buttonScreenState.value = R.string.btnCommunity
-                },
-                modifier = Modifier.align(Alignment.CenterVertically),
-
-                ) {
-                Text(text = textResource(R.string.btnCommunity))
-            }*/
-            /*Button(
-                onClick = {
-                    buttonScreenState.value = R.string.btnFriends
-                },
-                modifier = Modifier.align(Alignment.CenterVertically)
-            ) {
-                Text(text = textResource(R.string.btnFriends))
-            }*/
-
-
-        }
 
         if (buttonScreenState.value.equals(R.string.btnCommunity)) {
 
@@ -246,26 +222,25 @@ private fun GarbageSpotsNearMe(
         }
 
         if(location == null){
-            Text("Erro a ler a sua localização")
+            Text("Erro ao ler a sua localização")
         }else{
             if(garbageSpots.filter { gs ->
                     locationNearMe(location!!,
                         LatLng(gs.latitude.toDouble(), gs.longitude.toDouble())) <50
                 }.isEmpty()) {
-                Text("Não existe locais de lixo proximos de si")
+                Text("Não existem locais de lixo proximos de si")
             }else{
-                LazyHorizontalGrid(
-                    modifier = Modifier
-                        .height(100.dp),
-                    rows = GridCells.Fixed(1),
-                    ){
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.small_spacer)),
+                ){
                     garbageSpots.filter { gs ->
                         locationNearMe(location!!,
                             LatLng(gs.latitude.toDouble(), gs.longitude.toDouble())) <50
                     }.forEachIndexed { index, garbagespot ->
-                        item(span = { GridItemSpan(1) }) {
+                        item {
                             Card (modifier = Modifier
-                                .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") }) {
+                                .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") }
+                                .background(color = Color.Transparent)) {
                                 iconBoxUI(
                                     modifier = Modifier
                                         .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") },
@@ -297,7 +272,6 @@ private fun CreateEventSection(
     navController: NavHostController,
     log: Logger
 ) {
-    Spacer(modifier = Modifier.height(32.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -383,17 +357,18 @@ private fun EventsNearMeSection(
                 Text("Não existe eventos proximos de si")
             }
             else{
-                LazyHorizontalGrid(
+                LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.small_spacer)),
-                    rows = GridCells.Fixed(1),
                 ){
                     events.filter { ev -> ev.status == "Criado" &&
                             locationNearMe(location!!,
                                 LatLng(ev.latitude.toDouble(), ev.longitude.toDouble()))<50
                     }.forEachIndexed { index, event ->
-                        item(span = { GridItemSpan(1) }) {
+                        item {
                             Card (modifier = Modifier
-                                .clickable { navController.navigate(Screen.EventInfo.route + "/${event.id}") }) {
+                                .clickable { navController.navigate(Screen.EventInfo.route + "/${event.id}") }
+                                .background(color = Color.Transparent)
+                            ) {
                                 iconBoxUI(
                                     modifier = Modifier
                                         .clickable { navController.navigate(Screen.EventInfo.route + "/${event.id}") },

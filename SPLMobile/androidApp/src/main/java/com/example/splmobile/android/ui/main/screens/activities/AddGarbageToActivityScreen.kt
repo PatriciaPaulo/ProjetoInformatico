@@ -2,9 +2,12 @@ package com.example.splmobile.android.ui.main.screens.activities
 
 import BackAppBar
 import android.annotation.SuppressLint
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -12,9 +15,11 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import co.touchlab.kermit.Logger
@@ -267,6 +272,7 @@ fun AddGarbageToActivityUI(
                             garbageTypeList.value.forEach { selectedOption ->
                                 DropdownMenuItem(
                                     onClick = {
+                                        println("Clicked ")
                                         garbageTypeSelected.value = selectedOption
                                         garbageTypeListExpanded.value = false
                                         resetErrorState()
@@ -396,8 +402,6 @@ private fun GarbageInActivity(
     token: String
 ) {
     var noGarbage by remember { mutableStateOf(false) }
-    var garbagesList by remember { mutableStateOf(garbages)}
-
 
     // Sub Title
     Text(
@@ -461,6 +465,12 @@ private fun GarbageInActivity(
                             }
                         }
                     }
+                    Divider(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        color = Color.LightGray,
+                        thickness = 5.dp
+                    )
                 }
             }
         }

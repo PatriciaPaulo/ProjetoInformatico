@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -580,11 +582,8 @@ private fun GarbageSpotsStateSection(
             if (event.garbageSpots.size == 0) {
                 Text(text = textResource(id = R.string.txtNoGarbageSpotsInEvent).toString())
             } else {
-                LazyHorizontalGrid(
-                    modifier = Modifier
-                        .height(100.dp),
-                    rows = GridCells.Fixed(1),
-
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.small_spacer)),
                     ) {
 
                     event.garbageSpots
@@ -592,9 +591,11 @@ private fun GarbageSpotsStateSection(
                             var garbagespot =
                                 garbageSpotsState.garbageSpots.find { it.id == card.garbageSpotID }
                             if (garbagespot != null) {
-                                item(span = { GridItemSpan(1) }) {
+                                item {
                                     Card (modifier = Modifier
-                                        .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") }) {
+                                        .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") }
+                                        .background(color = Color.Transparent)
+                                    ) {
                                         iconBoxUI(
                                             modifier = Modifier
                                                 .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") },

@@ -168,7 +168,9 @@ fun MyActivitySection(
         when (usersActivitiesState) {
             is UserInfoViewModel.MyActivitiesUIState.SuccessLast5 -> {
                 usersActivitiesState.activities.forEach {
-                    TextButton(onClick = {}) {
+                    TextButton(onClick = {
+                        navController.navigate(Screen.ActivityInfo.route+"/${it.id}")
+                    }) {
                         Text(text = "Actividade ${it.id} que começou em ${it.startDate}. ")
                     }
 
