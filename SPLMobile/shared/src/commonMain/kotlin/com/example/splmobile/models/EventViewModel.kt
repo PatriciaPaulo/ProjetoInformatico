@@ -75,6 +75,12 @@ class EventViewModel (
         object Empty : MyEventsUIState()
     }
 
+    private var ongoingEvent = 0L
+
+    fun getOngoingEvent() : Long { return ongoingEvent }
+    fun setOngoingEvent(id : Long) { ongoingEvent = id }
+
+
     fun getEvents() {
         _eventsUIState.value = EventsUIState.Loading
         log.v("getting all events ")

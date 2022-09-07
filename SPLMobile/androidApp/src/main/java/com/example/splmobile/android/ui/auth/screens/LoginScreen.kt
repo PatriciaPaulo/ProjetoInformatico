@@ -1,13 +1,18 @@
 package com.example.splmobile.android.ui.auth.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -43,11 +48,6 @@ fun LoginScreen(
     messageViewModel: MessageViewModel
 ) {
 
-    /* TODO
-        Mudar os ICONS dos text boxes para um user e uma key
-        Mudar ICON do App Icon
-     */
-
     // Login Layout
     Column (
         modifier = Modifier
@@ -56,21 +56,14 @@ fun LoginScreen(
             .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // App Icon
-        Card(
+        //App Icon
+        Image(
+            painterResource(R.drawable.ic_logo),
+            contentDescription = "App Icon",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(dimensionResource(R.dimen.small_logo))
-                .testTag("circle"),
-            shape = CircleShape,
-            elevation = 2.dp,
-        ) {
-            Image(
-                painterResource(R.drawable.ic_onboarding_clean),
-                contentDescription = "App Icon",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+                .size(dimensionResource(R.dimen.big_logo))
+        )
 
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.big_spacer)))
 
@@ -213,7 +206,7 @@ fun LoginValidationUI(
                 onValueChange =  emailUpdate,
                 leadingIcon = {
                     Image(
-                        painterResource(R.drawable.ic_main_home),
+                        imageVector = Icons.Default.Person,
                         contentDescription = null
                     )
                 },
@@ -254,7 +247,7 @@ fun LoginValidationUI(
                 onValueChange = passwordUpdate,
                 leadingIcon = {
                     Icon(
-                        painterResource(R.drawable.ic_main_home),
+                        imageVector = Icons.Default.VpnKey,
                         contentDescription = null
                     )
                 },
@@ -286,9 +279,6 @@ fun LoginValidationUI(
                     modifier = Modifier.padding(start = dimensionResource(R.dimen.medium_spacer))
                 )
             }
-
-            // TODO On action click fazer login (no password textfield)
-            // TODO Manipular error messages
 
             if(!showErrorState.isBlank()) {
                 Text(

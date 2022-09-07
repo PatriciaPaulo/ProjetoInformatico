@@ -1,5 +1,9 @@
 package com.example.splmobile.android.ui.navigation
 
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.splmobile.android.R
 
 sealed class Screen (val route: String) {
@@ -30,10 +34,10 @@ sealed class Screen (val route: String) {
 
 }
 
-sealed class BottomNavItem(var title:String, var icon:Int, var route:String){
-    object Home : BottomNavItem("Home", R.drawable.ic_main_home,"home")
-    object Map: BottomNavItem("Mapa", R.drawable.ic_main_map,"map")
-    object Profile: BottomNavItem("Perfil", R.drawable.ic_main_profile,"profile")
-    object Community: BottomNavItem("Comunidade", R.drawable.ic_main_community,"community")
-    object Chat: BottomNavItem("Conversa", R.drawable.ic_main_chat,"chat")
+sealed class BottomNavItem(var title:String, var icon : ImageVector, var route:String){
+    object Home : BottomNavItem("Home", Icons.Default.Home,"home")
+    object Map: BottomNavItem("Mapa", Icons.Default.Map,"map")
+    object Profile: BottomNavItem("Perfil", Icons.Default.Person,"profile")
+    object Community: BottomNavItem("Comunidade", Icons.Default.Group,"community")
+    object Chat: BottomNavItem("Conversa", Icons.Default.Chat,"chat")
 }

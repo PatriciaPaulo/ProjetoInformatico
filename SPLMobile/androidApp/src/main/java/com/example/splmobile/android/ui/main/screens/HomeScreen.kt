@@ -1,7 +1,6 @@
 package com.example.splmobile.android.ui.main.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -27,6 +26,7 @@ import com.example.splmobile.android.viewmodel.MapViewModel
 import com.example.splmobile.objects.activities.CreateActivitySerializable
 import com.example.splmobile.models.ActivityViewModel
 import com.example.splmobile.models.AuthViewModel
+import com.example.splmobile.models.EventViewModel
 import com.example.splmobile.models.UserInfoViewModel
 import com.example.splmobile.objects.activities.ActivitySerializable
 import com.example.splmobile.objects.events.EventDTO
@@ -36,289 +36,99 @@ import java.time.ZoneOffset
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(
+fun HomeScreen (
     navController: NavController,
     activityViewModel: ActivityViewModel,
     authViewModel: AuthViewModel,
     userInfoViewModel: UserInfoViewModel,
+    eventViewModel: EventViewModel,
     mapViewModel: MapViewModel,
     log: Logger
 ) {
     val log = log.withTag("HomeScreen")
 
-    //TODO Ver se não está bug com o Guest
-    LaunchedEffect(Unit) {
-        userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
-        activityViewModel.getLastActivity(authViewModel.tokenState.value)
-    }
-
-    val showError = remember { mutableStateOf(false) }
-    val errorMessage = remember { mutableStateOf("") }
-
-    val createActivityState = activityViewModel.activityCreateUIState.collectAsState().value
-    createActivitySuccess(
-        createActivityState,
-        log,
-        activityViewModel,
-        navController,
-        showError,
-        errorMessage
-    )
-
-    val placeholderList = mutableListOf<EventDTO>()
-    val eventList = remember { mutableStateOf(emptyList<EventDTO>()) }
-    val nextEvents = remember { mutableStateOf(emptyList<EventDTO>()) }
-    val onGoingEvent = remember { mutableStateOf(0L) }
-
-    val myEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
-    MyEventsState(
-        myEventsState,
-        placeholderList,
-        onGoingEvent,
-        eventList,
-        nextEvents,
-        showError,
-        errorMessage
-    )
-
-    val lastActivityState = activityViewModel.lastActivity.collectAsState().value
-    val lastActivity = remember { mutableStateOf(ActivitySerializable(0, null, null, null, null, null)) }
-    LastActivityState(lastActivityState, lastActivity, activityViewModel)
-
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) },
         content = {
             HomeScreenUI(
+                navController,
                 activityViewModel,
                 authViewModel,
+                userInfoViewModel,
+                eventViewModel,
                 mapViewModel,
-                navController,
-                log,
-                showError,
-                errorMessage,
-                eventList,
-                nextEvents,
-                lastActivity,
-                onGoingEvent
-            )
+                log)
         }
     )
+
 }
 
 @Composable
-private fun LastActivityState(
-    lastActivityState: ActivityViewModel.LastActivityUIState,
-    lastActivity: MutableState<ActivitySerializable>,
-    activityViewModel: ActivityViewModel
-) {
-    when (lastActivityState) {
-        is ActivityViewModel.LastActivityUIState.Success -> {
-            LastActivitySucess(lastActivity, lastActivityState, activityViewModel)
-        }
-        is ActivityViewModel.LastActivityUIState.Error -> {
-
-        }
-    }
-}
-
-@Composable
-private fun LastActivitySucess(
-    lastActivity: MutableState<ActivitySerializable>,
-    lastActivityState: ActivityViewModel.LastActivityUIState.Success,
-    activityViewModel: ActivityViewModel
-) {
-    lastActivity.value = lastActivityState.activity
-    if (lastActivity.value.endDate.isNullOrEmpty()) {
-        activityViewModel.setCurrentActivity(lastActivity.value)
-    }
-}
-
-@Composable
-private fun MyEventsState(
-    myEventsState: UserInfoViewModel.MyEventsUIState,
-    placeholderList: MutableList<EventDTO>,
-    onGoingEvent: MutableState<Long>,
-    eventList: MutableState<List<EventDTO>>,
-    nextEvents: MutableState<List<EventDTO>>,
-    showError: MutableState<Boolean>,
-    errorMessage: MutableState<String>
-) {
-    when (myEventsState) {
-        is UserInfoViewModel.MyEventsUIState.Success -> {
-            MyEventsSucess(myEventsState, placeholderList, onGoingEvent, eventList, nextEvents)
-        }
-
-        is UserInfoViewModel.MyEventsUIState.Error -> {
-            showError.value = true
-            errorMessage.value = stringResource(R.string.eventsError)
-        }
-    }
-}
-
-@Composable
-private fun MyEventsSucess(
-    myEventsState: UserInfoViewModel.MyEventsUIState.Success,
-    placeholderList: MutableList<EventDTO>,
-    onGoingEvent: MutableState<Long>,
-    eventList: MutableState<List<EventDTO>>,
-    nextEvents: MutableState<List<EventDTO>>
-) {
-    myEventsState.events.forEach { event ->
-        placeholderList.add(event.event)
-        if (event.event.status == "Começado") {
-            onGoingEvent.value = event.id
-        }
-    }
-
-    when (placeholderList.size) {
-        myEventsState.events.size -> {
-            eventList.value = placeholderList
-            nextEvents.value = getNextEvents(eventList.value)
-        }
-    }
-}
-
-@Composable
-private fun createActivitySuccess(
-    createActivityState: ActivityViewModel.ActivityStartUIState,
-    log: Logger,
-    activityViewModel: ActivityViewModel,
+private fun HomeScreenUI(
     navController: NavController,
-    showError: MutableState<Boolean>,
-    errorMessage: MutableState<String>
-) {
-    when (createActivityState) {
-        is ActivityViewModel.ActivityStartUIState.Success -> {
-            log.d { "Create New Activity Successful" }
-            activityViewModel.setCurrentActivity(createActivityState.currentActivity)
-
-            navController.navigate(Screen.OngoingActivity.route)
-        }
-
-        is ActivityViewModel.ActivityStartUIState.Error -> {
-            log.d { "Create New Activity Failed" }
-            showError.value = true
-            errorMessage.value = stringResource(R.string.activityBDError)
-        }
-    }
-}
-
-
-
-@Composable
-fun HomeScreenUI(
     activityViewModel: ActivityViewModel,
     authViewModel: AuthViewModel,
+    userInfoViewModel: UserInfoViewModel,
+    eventViewModel: EventViewModel,
     mapViewModel: MapViewModel,
-    navController: NavController,
-    log: Logger,
-    showError: MutableState<Boolean>,
-    errorMessage: MutableState<String>,
-    eventList: MutableState<List<EventDTO>>,
-    nextEvents: MutableState<List<EventDTO>>,
-    lastActivity: MutableState<ActivitySerializable>,
-    onGoingEvent: MutableState<Long>,
+    log: Logger
 ) {
-    var isGuest = false
-    if (authViewModel.tokenState.value == "0") {
-        isGuest = true
+    log.d { "HomeScreen UI" }
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(dimensionResource(R.dimen.default_margin))
+            ) {
+
+        ActivityButtonUI(navController, activityViewModel, authViewModel, log)
+
+        Spacer(
+            modifier = Modifier
+                .size(dimensionResource(R.dimen.big_spacer))
+        )
+        EventListCompose(
+            userInfoViewModel,
+            eventViewModel,
+            authViewModel,
+            navController,
+            mapViewModel,
+            log
+        )
+    }
+}
+
+@Composable
+fun MyNextEventsUI(
+    mapViewModel: MapViewModel,
+    nextEvents: List<EventDTO>,
+    navController: NavController,
+    log: Logger
+) {
+    val location = mapViewModel.getLocationLiveData()
+    var parseLocationLiveData = LatLng(0.0, 0.0)
+    if (location.value != null) {
+        val lat = location.value!!.latitude.toDouble()
+        val lng = location.value!!.longitude.toDouble()
+        parseLocationLiveData = LatLng(lat, lng)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(dimensionResource(R.dimen.default_margin))
-    ) {
+    Text(
+        text = stringResource(R.string.lblNextEvents),
+        fontSize = dimensionResource(R.dimen.title).value.sp,
+    )
 
-        if (isGuest) {
-            Box(
-                modifier = Modifier
-                    .padding(dimensionResource(R.dimen.default_margin))
-                    .fillMaxWidth()
-                    .background(color = MaterialTheme.colors.primary)
-            ) {
-                Text(
-                    text = stringResource(R.string.guestOnHome),
-                    color = MaterialTheme.colors.onPrimary
-                )
-            }
-        }
-        log.d(" last activity -> ${lastActivity.value}")
-        if (lastActivity.value.endDate.isNullOrEmpty()) {
-            btnOnGoingActivity(navController)
-            if(onGoingEvent.value != 0L) {
-                if (lastActivity.value.eventID != onGoingEvent.value) {
-                    Text( text = stringResource(R.string.onGoingEvent),
-                    fontSize = dimensionResource(R.dimen.txt_small).value.sp)
-                }
-            }
-        } else if (onGoingEvent.value != 0L) {
-            btnStartEventActivity(activityViewModel, authViewModel, log, onGoingEvent.value)
-            // Activity Instead
-            Column (
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Bottom
-            ){
-                TextButton(
-                    onClick = {
-                        log.d { "Create New Activity" }
-
-                        // Create Activity in DB
-                        activityViewModel.createActivity(
-                            CreateActivitySerializable(null),
-                            authViewModel.tokenState.value,
-                        )
-                    },
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                ) {
-                    Text(
-                        text = AnnotatedString(
-                            text = stringResource(R.string.noEvent),
-                            spanStyle = SpanStyle(color = MaterialTheme.colors.onBackground)
-                        ).plus(
-                            AnnotatedString(
-                                text = " " + stringResource(R.string.doActivity),
-                            )
-                        ),
-                        fontSize = dimensionResource(R.dimen.txt_small).value.sp,
-                    )
-                }
-            }
-        } else {
-            btnStartActivity(activityViewModel, authViewModel, log, isGuest)
-        }
-
-
-
-
-
-        val location = mapViewModel.getLocationLiveData()
-        var parseLocationLiveData = LatLng(0.0, 0.0)
-        if (location.value != null) {
-            val lat = location.value!!.latitude.toDouble()
-            val lng = location.value!!.longitude.toDouble()
-            parseLocationLiveData = LatLng(lat, lng)
-        }
-
-        Text(
-            text = stringResource(R.string.lblNextEvents),
-            fontSize = dimensionResource(R.dimen.title).value.sp,
-        )
-
-        if(nextEvents.value.size > 1) {
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.small_spacer))
-            ) {
-                nextEvents.value.forEach { event ->
-                    item {
-                        val eventTime = LocalDateTime.parse(event.startDate, patternReceiver)
-                        val eventString = eventTime.format(patternConverter).toString()
-
+    if (nextEvents.isNotEmpty()) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.small_spacer))
+        ) {
+            nextEvents.forEach { event ->
+                item {
+                    val eventTime = LocalDateTime.parse(event.startDate, patternReceiver)
+                    val eventString = eventTime.format(patternConverter).toString()
+                    Card (modifier = Modifier
+                        .clickable { navController.navigate(Screen.EventInfo.route + "/${event.id}") }) {
                         iconBoxUI(
                             modifier = Modifier
                                 .clickable {
@@ -337,18 +147,157 @@ fun HomeScreenUI(
                     }
                 }
             }
-        } else {
-            Text(
-                text = stringResource(R.string.noNextEvents),
-                fontSize = dimensionResource(R.dimen.txt_medium).value.sp
-            )
         }
-
-
+    } else {
+        Text(
+            text = stringResource(R.string.noNextEvents),
+            fontSize = dimensionResource(R.dimen.txt_medium).value.sp
+        )
     }
 }
 
-private fun getNextEvents(eventList: List<EventDTO>): List<EventDTO> {
+@Composable
+fun ActivityButtonUI(
+    navController: NavController,
+    activityViewModel: ActivityViewModel,
+    authViewModel: AuthViewModel,
+    log: Logger
+) {
+    var isGuest = false
+    if (authViewModel.tokenState.value == "0") {
+        isGuest = true
+    }
+
+    var lastActivity by remember { mutableStateOf(ActivitySerializable(0, null, null, null, null, "Not Going")) }
+
+    if(lastActivity.id == 0L) {
+        activityViewModel.getLastActivity(authViewModel.tokenState.value)
+    }
+    log.d { "Last Activity Compose Called" }
+
+    val lastActivityState = activityViewModel.lastActivity.collectAsState().value
+    log.d { lastActivityState.toString() }
+    log.d { "lastActivity -> $lastActivity" }
+    when (lastActivityState) {
+        is ActivityViewModel.LastActivityUIState.Success -> {
+            log.d { "Last Activity Success" }
+            lastActivity = lastActivityState.activity
+        }
+        is ActivityViewModel.LastActivityUIState.Error -> { }
+        is ActivityViewModel.LastActivityUIState.Loading -> {
+
+        }
+    }
+
+    val ongoingEvent = 0L
+
+    log.d { "ongoing event -> $ongoingEvent" }
+    log.d { "last activity -> $lastActivity" }
+
+    if (lastActivity.endDate.isNullOrEmpty()) {
+        btnOnGoingActivity(navController, lastActivity.id)
+        if (ongoingEvent != 0L) {
+            if (lastActivity.eventID != ongoingEvent) {
+                Text(
+                    text = stringResource(R.string.onGoingEvent),
+                    fontSize = dimensionResource(R.dimen.txt_small).value.sp
+                )
+            }
+        }
+    } else if (ongoingEvent != 0L) {
+        btnStartEventActivity(navController, activityViewModel, authViewModel, log, ongoingEvent)
+        // Activity Instead
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            TextButton(
+                onClick = {
+                    log.d { "Create New Single Activity" }
+
+                    // Create Activity in DB
+                    activityViewModel.createActivity(
+                        CreateActivitySerializable(null),
+                        authViewModel.tokenState.value,
+                    ) {
+                        navController.navigate(Screen.OngoingActivity.route + "/$it")
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = AnnotatedString(
+                        text = stringResource(R.string.noEvent),
+                        spanStyle = SpanStyle(color = MaterialTheme.colors.onBackground)
+                    ).plus(
+                        AnnotatedString(
+                            text = " " + stringResource(R.string.doActivity),
+                        )
+                    ),
+                    fontSize = dimensionResource(R.dimen.txt_small).value.sp,
+                )
+            }
+        }
+    } else {
+        btnStartActivity(navController, activityViewModel, authViewModel, log, isGuest)
+    }
+}
+
+
+
+@Composable
+fun EventListCompose(
+    userInfoViewModel: UserInfoViewModel,
+    eventViewModel: EventViewModel,
+    authViewModel: AuthViewModel,
+    navController: NavController,
+    mapViewModel: MapViewModel,
+    log: Logger,
+) {
+    var myEventsList = mutableListOf<EventDTO>()
+
+    if(myEventsList.isEmpty()) {
+        userInfoViewModel.getMyEvents(authViewModel.tokenState.value)
+    }
+
+    log.d { "Event Composable Called" }
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    val myEventsState = userInfoViewModel.myEventsUIState.collectAsState().value
+    when (myEventsState) {
+
+        is UserInfoViewModel.MyEventsUIState.Success -> {
+            log.d { "Get Events Sucessfull" }
+            run breaking@{
+                myEventsState.events.forEach { event ->
+                    myEventsList.add(event.event)
+                    if (event.event.status == "Começado") {
+                        eventViewModel.setOngoingEvent(event.id)
+                        return@breaking
+                    }
+                }
+            }
+            var returnList = getNextEvents(myEventsList)
+            log.d { "Events Return List -> ${returnList.listIterator()}" }
+            log.d { "Calling Next Events" }
+            MyNextEventsUI(mapViewModel, returnList, navController, log)
+        }
+
+        is UserInfoViewModel.MyEventsUIState.Error -> {
+            showError = true
+            errorMessage = stringResource(R.string.eventsError)
+        }
+    }
+}
+
+
+
+
+
+private fun getNextEvents(eventList: MutableList<EventDTO>): List<EventDTO> {
     val currentTime = LocalDateTime.now()
     eventList.sortedBy { event ->
         val eventTime = LocalDateTime.parse(event.startDate, patternReceiver)
@@ -374,9 +323,11 @@ private fun getNextEvents(eventList: List<EventDTO>): List<EventDTO> {
     return returnList
 }
 
+
 @Composable
 private fun btnOnGoingActivity(
-    navController: NavController
+    navController: NavController,
+    activityID: Long
 ) {
     // Button Edit Activity
     Button(
@@ -384,21 +335,24 @@ private fun btnOnGoingActivity(
             .height(dimensionResource(R.dimen.btn_large))
             .fillMaxWidth(),
         onClick = {
-            navController.navigate(Screen.OngoingActivity.route)
+            navController.navigate(Screen.OngoingActivity.route + "/${activityID}")
         },
     ) {
         Text(
             text = stringResource(R.string.editActivity)
         )
     }
+
+
 }
 
 @Composable
 private fun btnStartActivity(
+    navController: NavController,
     activityViewModel: ActivityViewModel,
     authViewModel: AuthViewModel,
     log: Logger,
-    isGuest: Boolean
+    isGuest: Boolean,
 ) {
     // Button Start Activity
     Button(
@@ -406,13 +360,16 @@ private fun btnStartActivity(
             .height(dimensionResource(R.dimen.btn_large))
             .fillMaxWidth(),
         onClick = {
-            log.d { "Create New Activity" }
+            log.d { "Create New Single Activity" }
 
             // Create Activity in DB
             activityViewModel.createActivity(
                 CreateActivitySerializable(null),
                 authViewModel.tokenState.value,
-            )
+            ) { id ->
+                navController.navigate(Screen.OngoingActivity.route + "/$id")
+            }
+
         },
         enabled = !isGuest
     ) {
@@ -424,6 +381,7 @@ private fun btnStartActivity(
 
 @Composable
 private fun btnStartEventActivity(
+    navController: NavController,
     activityViewModel: ActivityViewModel,
     authViewModel: AuthViewModel,
     log: Logger,
@@ -435,13 +393,15 @@ private fun btnStartEventActivity(
             .height(dimensionResource(R.dimen.btn_large))
             .fillMaxWidth(),
         onClick = {
-            log.d { "Create New Activity" }
+            log.d { "Create New Event Activity" }
 
             // Create Activity in DB
             activityViewModel.createActivity(
                 CreateActivitySerializable(eventID),
                 authViewModel.tokenState.value,
-            )
+            ) {
+                navController.navigate(Screen.OngoingActivity.route + "/$it")
+            }
         },
     ) {
         Text(

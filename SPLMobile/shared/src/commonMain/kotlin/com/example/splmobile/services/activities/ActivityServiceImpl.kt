@@ -179,7 +179,7 @@ class ActivityServiceImpl (
     override suspend fun deleteGarbageInActivity(
         garbageToDelete: Long,
         token: String
-    ) : MessagesResponse {
+    ): RequestMessageResponse {
         log.d { "DELETE Garbage in Activity" }
         try {
             return client.delete {
@@ -190,8 +190,8 @@ class ActivityServiceImpl (
                 }
                 url("api/activitygarbage/$garbageToDelete/delete")
             }.body()
-    } catch (e : ClientRequestException) {
-            return MessagesResponse(emptyList(), "$e")
+    } catch (e : Exception) {
+            return RequestMessageResponse( "$e")
         }
     }
 
@@ -205,6 +205,22 @@ class ActivityServiceImpl (
                     }
                 }
                 url("api/activities/last")
+            }.body()
+        } catch (e : ClientRequestException) {
+            return ActivityResponse(ActivitySerializable(0, null, null, null, null, null), e.message)
+        }
+    }
+
+    override suspend fun getActivityByID(activityID: Long, token: String): ActivityResponse {
+        log.d { "GET Activity by ID" }
+        try {
+            return client.get {
+                if (token.isNotEmpty()) {
+                    headers{
+                        append(HttpHeaders.Authorization, "Bearer $token")
+                    }
+                }
+                url("api/activities/$activityID")
             }.body()
         } catch (e : ClientRequestException) {
             return ActivityResponse(ActivitySerializable(0, null, null, null, null, null), e.message)

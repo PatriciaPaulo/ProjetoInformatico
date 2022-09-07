@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.splmobile.android.R
 import com.example.splmobile.android.textResource
+import com.example.splmobile.android.ui.main.BottomNavigationBar
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.objects.messages.IndividualMessageRequest
 import com.example.splmobile.objects.messages.MessageDTO
@@ -60,6 +61,7 @@ fun ChatUserScreen (navController : NavController,
                 }
             }
            ,
+        bottomBar = { BottomNavigationBar(navController = navController) },
         content = { innerPadding ->
             Column(
                 modifier = Modifier

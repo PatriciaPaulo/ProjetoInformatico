@@ -138,10 +138,10 @@ class UserInfoViewModel (
             val response = userInfoService.getMyActivities(token)
 
             if(response.message.substring(0,3) == "200"){
-                _distanceTravelledUIState.value = 0
+                _distanceTravelledUIState.value = 0L
                 _myActivitiesCountUIState.value = response.data.size.toLong()
                 response.data.forEach {
-                    _distanceTravelledUIState.value = it.distanceTravelled!!.toLong() + _distanceTravelledUIState.value
+                    _distanceTravelledUIState.value = it.distanceTravelled!!.toDouble().toLong() + _distanceTravelledUIState.value
                 }
                 _myActivitiesUIState.value = MyActivitiesUIState.Success(response.data)
                 _myActivitiesUIState.value =

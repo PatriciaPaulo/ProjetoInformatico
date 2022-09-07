@@ -91,16 +91,18 @@ fun SetupNavGraph(
                 authViewModel = authViewModel,
                 userInfoViewModel = userInfoViewModel,
                 mapViewModel = mapViewModel,
+                eventViewModel = eventViewModel,
                 log = log,
             )
         }
 
-        composable(route = Screen.OngoingActivity.route) {
+        composable(route = Screen.OngoingActivity.route+ "/{activityID}") { backStackEntry ->
             OngoingActivity(
                 navController = navController,
                 mapViewModel = mapViewModel,
                 activityViewModel = activityViewModel,
                 authViewModel = authViewModel,
+                backStackEntry.arguments?.getString("activityID"),
                 garbageSpotViewModel = garbageSpotViewModel,
                 log = log,
             )
@@ -325,13 +327,14 @@ fun SetupNavGraph(
             )
         }
 
-        composable(Screen.ManageGarbage.route) {
+        composable(Screen.ManageGarbage.route + "/{activityID}") { backStackEntry ->
             AddGarbageToActivity(
                 garbageSpotViewModel = garbageSpotViewModel,
                 authViewModel = authViewModel,
                 activityViewModel = activityViewModel,
                 navController = navController,
-                log = log
+                log = log,
+                backStackEntry.arguments?.getString("activityID"),
             )
         }
 

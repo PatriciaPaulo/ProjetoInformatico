@@ -40,7 +40,8 @@ fun AddGarbageToActivity(
     authViewModel: AuthViewModel,
     activityViewModel: ActivityViewModel,
     navController : NavController,
-    log: Logger
+    log: Logger,
+    activityID: String?,
 ) {
     val log = log.withTag("ManageGarbageInActivity")
 
@@ -51,7 +52,7 @@ fun AddGarbageToActivity(
         },
         bottomBar = { BottomNavigationBar(navController = navController) },
         content = {
-            addGBA(garbageSpotViewModel, authViewModel, activityViewModel, log)
+            addGBA(garbageSpotViewModel, authViewModel, activityViewModel, log, activityID!!.toLong())
         }
     )
 }
@@ -60,9 +61,9 @@ fun AddGarbageToActivity(
 fun addGBA(garbageSpotViewModel: GarbageSpotViewModel,
            authViewModel: AuthViewModel,
            activityViewModel: ActivityViewModel,
-           log: Logger) {
+           log: Logger,
+        activityID: Long) {
     val token = authViewModel.tokenState.value
-    val currentActivity = activityViewModel.getCurrentActivity()
 
     var showError by remember { mutableStateOf(false) }
     var errorString by remember { mutableStateOf("") }
@@ -81,7 +82,7 @@ fun addGBA(garbageSpotViewModel: GarbageSpotViewModel,
         log.d { "Get Garbage Type and Unit Type and Garbage in Current Activity" }
         garbageSpotViewModel.getGarbageTypes(token)
         garbageSpotViewModel.getUnitTypes()
-        activityViewModel.getGarbageInActivity(currentActivity.id, token)
+        activityViewModel.getGarbageInActivity(activityID, token) { }
     }
 
     var garbageTypesState = garbageSpotViewModel.garbageTypesUIState.collectAsState().value
@@ -144,7 +145,7 @@ fun addGBA(garbageSpotViewModel: GarbageSpotViewModel,
     var postGarbageState = activityViewModel.addGarbageInActivityUIState.collectAsState().value
     when(postGarbageState) {
         is ActivityViewModel.AddGarbageInActivityUIState.Success -> {
-            activityViewModel.getGarbageInActivity(activityViewModel.getCurrentActivity().id, token)
+            activityViewModel.getGarbageInActivity(activityID, token) { }
         }
         is ActivityViewModel.AddGarbageInActivityUIState.Error -> {
             showError = true
@@ -154,7 +155,7 @@ fun addGBA(garbageSpotViewModel: GarbageSpotViewModel,
     var patchGarbageState = activityViewModel.updateGarbageInActivityUIState.collectAsState().value
     when(patchGarbageState) {
         is ActivityViewModel.UpdateGarbageInActivityUIState.Success -> {
-            activityViewModel.getGarbageInActivity(activityViewModel.getCurrentActivity().id, token)
+            activityViewModel.getGarbageInActivity(activityID, token) { }
         }
         is ActivityViewModel.UpdateGarbageInActivityUIState.Error -> {
             showError = true
@@ -164,7 +165,10 @@ fun addGBA(garbageSpotViewModel: GarbageSpotViewModel,
     var deleteGarbage = activityViewModel.deleteGarbageInActivity.collectAsState().value
     when(deleteGarbage) {
         is ActivityViewModel.DeleteGarbageInActivityUIState.Success -> {
-            activityViewModel.getGarbageInActivity(activityViewModel.getCurrentActivity().id, token)
+            log.d { "DELETE SUCCESS" }
+            activityViewModel.getGarbageInActivity(activityID, token) {
+                garbageList = it
+            }
         }
         is ActivityViewModel.DeleteGarbageInActivityUIState.Error -> {
             // TODO Handle Error
@@ -186,7 +190,8 @@ fun addGBA(garbageSpotViewModel: GarbageSpotViewModel,
         resetErrorState,
         errorString,
         activityViewModel,
-        token
+        token,
+        activityID
     )
 }
 
@@ -207,7 +212,8 @@ fun AddGarbageToActivityUI(
     resetErrorState : () -> Unit,
     errorString: String,
     activityViewModel: ActivityViewModel,
-    token: String
+    token: String,
+    activityID: Long
 ) {
     Column(
         modifier = Modifier
@@ -289,7 +295,7 @@ fun AddGarbageToActivityUI(
                                 )
                                 val garbageSelected = GarbageInActivityDTO(
                                     0,
-                                    activityViewModel.getCurrentActivity().id,
+                                    activityID,
                                     garbageTypeSelected.value.id,
                                     garbageQuantity.toFloat(),
                                     unitTypeSelected.value.id
@@ -300,7 +306,8 @@ fun AddGarbageToActivityUI(
                                     garbageSelected,
                                     garbageList,
                                     activityViewModel,
-                                    token
+                                    token,
+                                    activityID
                                 )
                             }
                         },
@@ -384,11 +391,13 @@ fun AddGarbageToActivityUI(
 
 @Composable
 private fun GarbageInActivity(
-    garbage: List<ExplicitGarbageInActivityDTO>,
+    garbages: List<ExplicitGarbageInActivityDTO>,
     activityViewModel: ActivityViewModel,
     token: String
 ) {
     var noGarbage by remember { mutableStateOf(false) }
+    var garbagesList by remember { mutableStateOf(garbages)}
+
 
     // Sub Title
     Text(
@@ -412,11 +421,11 @@ private fun GarbageInActivity(
         modifier = Modifier
             .padding(dimensionResource(R.dimen.small_spacer))
     ) {
-        if (garbage.isEmpty()) {
+        if (garbages.isEmpty()) {
             noGarbage = true
         } else {
             noGarbage = false
-            garbage.forEachIndexed { index, garbage ->
+            garbages.forEachIndexed { index, garbage ->
                 item {
                     Box(){
                         var gb_amount : String = garbage.amount.toString()
@@ -441,7 +450,9 @@ private fun GarbageInActivity(
                                 .align(Alignment.CenterEnd)
                         ) {
                             IconButton(
-                                onClick = { activityViewModel.deleteGarbageInActivity(garbage.id, token)}
+                                onClick = {
+                                    activityViewModel.deleteGarbageInActivity(garbage.id, token)
+                                }
                             ) {
                                 Icon(
                                     Icons.Default.Delete,
@@ -450,7 +461,6 @@ private fun GarbageInActivity(
                             }
                         }
                     }
-
                 }
             }
         }
@@ -463,8 +473,10 @@ private fun saveGarbageCollected(
     newGarbage : GarbageInActivityDTO,
     garbageList : List<ExplicitGarbageInActivityDTO>,
     activityViewModel: ActivityViewModel,
-    token: String
+    token: String,
+    activityID: Long
 ) {
+
     garbageList.forEach { item ->
         if (newGarbageComparison.garbage == item.garbage && newGarbageComparison.unit == item.unit) {
             // PUT Garbage
@@ -472,18 +484,17 @@ private fun saveGarbageCollected(
             val putData = GarbageAmountDTO(newGarbage.amount + item.amount)
 
             activityViewModel.patchGarbageInActivity(
-                activityViewModel.getCurrentActivity().id,
+                activityID,
                 item.id,
                 putData,
                 token
             )
-            return
         }
     }
 
     activityViewModel.postGarbageInActivity(
         newGarbage,
-        activityViewModel.getCurrentActivity().id,
+        activityID,
         token
     )
 }

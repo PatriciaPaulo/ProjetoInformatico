@@ -25,11 +25,14 @@ import com.example.splmobile.android.patternConverter
 import com.example.splmobile.android.patternReceiver
 import com.example.splmobile.android.textResource
 import com.example.splmobile.android.ui.main.BottomNavigationBar
+import com.example.splmobile.android.ui.main.components.iconBoxUI
 import com.example.splmobile.android.ui.navigation.Screen
 import com.example.splmobile.objects.events.EventDTO
 import com.example.splmobile.objects.events.UserInEventDTO
 import com.example.splmobile.models.*
+import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -195,11 +198,21 @@ private fun EventInfoSection(
         Text(text = " " + event.status, style = MaterialTheme.typography.body1)
     }
 
+    Spacer(
+        modifier = Modifier
+            .size(dimensionResource(R.dimen.medium_spacer))
+    )
+
     Text(
         text = textResource(id = R.string.lblEventInfoDescription),
         style = MaterialTheme.typography.h6
     )
     Text(text = event.description, style = MaterialTheme.typography.body1)
+
+    Spacer(
+        modifier = Modifier
+            .size(dimensionResource(R.dimen.medium_spacer))
+    )
     Text(text = "Locais de Lixo no Evento", style = MaterialTheme.typography.h6)
     Row(
         modifier = Modifier
@@ -486,6 +499,10 @@ private fun EquipmentStateSection(
 ) {
     when (equipmentState) {
         is EventViewModel.EquipmentUIState.Success -> {
+            Spacer(
+                modifier = Modifier
+                    .size(dimensionResource(R.dimen.medium_spacer))
+            )
             Text("Equipamento",style = MaterialTheme.typography.h6)
             if (event.equipments.size >0) {
                 Row(horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -572,25 +589,21 @@ private fun GarbageSpotsStateSection(
 
                     event.garbageSpots
                         .forEachIndexed { index, card ->
-                            var gs =
+                            var garbagespot =
                                 garbageSpotsState.garbageSpots.find { it.id == card.garbageSpotID }
-                            if (gs != null) {
+                            if (garbagespot != null) {
                                 item(span = { GridItemSpan(1) }) {
-                                    Card(
-                                        Modifier.clickable {
-
-                                            log.d { "Gs clicked -> $card" }
-                                            log.d { "Navigated to new screen" }
-                                            navController.navigate(Screen.GarbageSpotInfo.route + "/${card.garbageSpotID}")
-                                        },
-                                    ) {
-                                        Column() {
-                                            Text(text = gs.name)
-                                            Text(text = gs.createdDate)
-                                            Text(text = gs.status)
-                                        }
-
-
+                                    Card (modifier = Modifier
+                                        .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") }) {
+                                        iconBoxUI(
+                                            modifier = Modifier
+                                                .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") },
+                                            name = garbagespot.name,
+                                            distance = null,
+                                            location = null,
+                                            details = garbagespot.status,
+                                            iconPath = null,
+                                        )
                                     }
                                 }
                             }

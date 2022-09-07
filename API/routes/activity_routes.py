@@ -87,6 +87,29 @@ def get_last_activity(current_user):
         200)
 
 
+# Get last activity
+@activity_routes_blueprint.route('/activities/<activityID>', methods=['GET'])
+@token_required
+def get_activity_by_id(current_user, activityID):
+    activity: Activity = db.session.query(Activity).filter_by(id=activityID).first()
+
+    if activity is None:
+        return make_response(jsonify({'data': [], 'message': 'User does not have activity with id'}), 404)
+
+    activity_data = {}
+    activity_data['id'] = activity.id
+    activity_data['eventID'] = activity.eventID
+    activity_data['userID'] = activity.userID
+    activity_data['distanceTravelled'] = activity.distanceTravelled
+    activity_data['startDate'] = activity.startDate
+    activity_data['endDate'] = activity.endDate
+    activity_data['activityTypeID'] = activity.activityTypeID
+
+    return make_response(
+        jsonify({'data': activity_data, 'message': '200 OK - Activity Retrieved'}),
+        200)
+
+
 # Update Logged User Activity
 @activity_routes_blueprint.route('/activities/<activity_id>', methods=['PATCH'])
 @token_required
