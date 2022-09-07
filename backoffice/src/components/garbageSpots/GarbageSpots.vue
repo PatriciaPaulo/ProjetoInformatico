@@ -188,7 +188,7 @@ export default {
     }
   },
   mounted() {
-    this.loadGarbageSpots(), (document.title = "GarbageSpots");
+    this.loadGarbageSpots(), (document.title = "Locais de Lixo");
   },
 };
 </script>

@@ -78,13 +78,15 @@ if __name__ == '__main__':
 
     # SEED LIXEIRA
     session.query(GarbageSpot).delete()
-    for i in range(10):
-        name = str(r.get_random_word())
+    gsName = ["Praia de Peniche", "Mata de Leiria", "Rua Suja", "Lixo perto da cidade", "Mata Nova", "Centro da cidade"]
+
+    for i in range(6):
+
         latitude = round(random.uniform(38.779875, 41.575756), 5)
         longitude = round(random.uniform(-8.199258, -7.886036), 5)
         creator = session.query(User).filter_by(admin=False).order_by(func.random()).first()
         status = ["Muito sujo", "Pouco sujo", "Limpo"]
-        garbageSpot = GarbageSpot(name=name, latitude=latitude, longitude=longitude, creator=creator.id,
+        garbageSpot = GarbageSpot(name=gsName[i], latitude=latitude, longitude=longitude, creator=creator.id,
                                   status=random.choice(status), approved=True, createdDate=datetime.utcnow())
 
         session.add(garbageSpot)
@@ -121,7 +123,9 @@ if __name__ == '__main__':
 
     # SEED EVENTO
     session.query(Event).delete()
-    for i in range(10):
+
+    eventName = ["Limpeza da Praia de Peniche", "Limpeza da mata de Leiria Edição 1", "Limpeza da mata de Leiria Edição 2", "Corrida da Limpeza Edição 3", "Corrida da Limpeza Edição 4", "Limpeza mensal da Zona"]
+    for i in range(6):
         latitude = round(random.uniform(38.779875, 41.575756), 5)
         longitude = round(random.uniform(-8.199258, -7.886036), 5)
         # organizer = session.query(User).filter_by(admin=False).order_by(func.random()).first()
@@ -131,25 +135,18 @@ if __name__ == '__main__':
         quantity = ["Muita", "Pouca", "Media"]
         restrictions = ["Todas as idades", "Não indicado para crianças"]
         garbageType = []
-        # for a in range(2):
-        #    garbage = session.query(Garbage).order_by(func.random()).first()
-        #    if garbage.id not in garbageType:
-        #        garbageType.append(garbage.id)
-        # print(garbage.name)
 
-        # to json, so we can insert array in database (sqlite doesnt support arrays in database)
-        # garbageTypeJSON = json.dumps(garbageType)
         # 72 hours ->
         duration = randrange(127)
 
-        name = str(r.get_random_word()) + " " + str(r.get_random_word())
+
         description = ""
         observations = ""
         for b in range(2):
             description = str(description) + " " + str(r.get_random_word())
             observations = f"{observations} {r.get_random_word()}"
 
-        event = Event(name=name, description=description, observations=observations, latitude=latitude,
+        event = Event(name=eventName[i], description=description, observations=observations, latitude=latitude,
                       longitude=longitude,
                       status=random.choice(status), accessibility=random.choice(accessibility),
                       quantity=random.choice(quantity), restrictions=random.choice(restrictions),

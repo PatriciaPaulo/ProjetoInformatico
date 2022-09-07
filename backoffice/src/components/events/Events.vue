@@ -149,7 +149,7 @@ export default {
    
   },
   mounted() {
-    this.loadEvents(), (document.title = "Events");
+    this.loadEvents(), (document.title = "Eventos");
   },
 };
 </script>

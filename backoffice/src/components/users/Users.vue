@@ -214,6 +214,8 @@ export default {
         this.isLoading = false;
         console.log(error);
       });
+      (document.title = "Utilizadores");
+ 
   },
 };
 </script>

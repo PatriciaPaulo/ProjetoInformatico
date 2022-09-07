@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">.SPLMobileApplication</string>
+    <string name="app_name">Social Plogging Lovers</string>
 
     <!-- ONBOARDING -->
     <string name="participateTitle">Participa</string>

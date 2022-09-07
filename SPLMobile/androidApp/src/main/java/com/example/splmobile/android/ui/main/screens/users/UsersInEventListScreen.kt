@@ -317,8 +317,8 @@ fun AllUsersList(
             Image(painter = painterResource(id =R.drawable.ic_main_map ), contentDescription = null )
             Column() {
 
-                Text(text = user.id.toString(), style = MaterialTheme.typography.h6)
-                Text(text = user.name, style = MaterialTheme.typography.body1)
+                //Text(text = user.id.toString(), style = MaterialTheme.typography.h6)
+                Text(text = user.name, style = MaterialTheme.typography.h6)
                 Text(text = user.username, style = MaterialTheme.typography.body1)
 
 
