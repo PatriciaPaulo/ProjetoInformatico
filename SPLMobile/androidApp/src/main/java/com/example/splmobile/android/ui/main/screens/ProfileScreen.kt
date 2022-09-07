@@ -70,11 +70,6 @@ fun ProfileScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        drawerContent = {
-            Text("Settings?", modifier = Modifier.padding(16.dp))
-            Divider()
-            // Drawer items
-        },
         bottomBar = { BottomNavigationBar(navController = navController) },
         content =
         { innerPadding ->
@@ -83,7 +78,7 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(bottom = innerPadding.calculateBottomPadding()),
+                    .padding(bottom = innerPadding.calculateBottomPadding(), top = 20.dp,start= 15.dp, end = 15.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -119,33 +114,43 @@ fun ProfileScreen(
                     ) {
                         Text(text = textResource(R.string.btnFriends))
                     }
+                    Divider(modifier = Modifier.padding(10.dp),color = Color.Gray, thickness = 1.dp)
                 }
                 Text(
+                    modifier = Modifier.align(Alignment.Start),
                     text = textResource(R.string.lblLastActivities),
-                    fontStyle = MaterialTheme.typography.h6.fontStyle
+                    style = MaterialTheme.typography.h6
                 )
 
                 MyActivitySection(usersActivitiesState, navController, log)
 
+                Divider(modifier = Modifier.padding(10.dp),color = Color.Gray, thickness = 1.dp)
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
 
                 ) {
 
                     Text(
                         text = textResource(R.string.lblLastEvents),
-                        fontStyle = MaterialTheme.typography.h6.fontStyle
+                        style = MaterialTheme.typography.h6
                     )
                     Spacer(Modifier.width(86.dp))
-                    ClickableText(text = AnnotatedString(textResource(R.string.lblSeeMoreItems)),
-                        style = MaterialTheme.typography.body1,
+                    Button(
                         onClick = {
                             navController.navigate(Screen.MyEventList.route)
-                        })
+                        },
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Text(text = textResource(R.string.lblSeeMoreItems))
+
+                    }
 
                 }
+
                 MyEventsSection(usersEventsState, navController, log)
             }
         },
@@ -354,7 +359,7 @@ fun ProfileSection(
                     editableState.value = !editableState.value
                 },
 
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 if (editableState.value) {
                     Icon(Icons.Default.Close, contentDescription = "editable")

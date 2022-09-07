@@ -108,9 +108,6 @@ private fun CommunityAppBar(
                 text = textResource(R.string.lblCommunitySearchBar)
             )
         },
-        actions = {
-
-        }
     )
 
 }
@@ -126,7 +123,7 @@ private fun CommunityUI(
     var buttonScreenState = remember { mutableStateOf(R.string.btnCommunity) }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(20.dp),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

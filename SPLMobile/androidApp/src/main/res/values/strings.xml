@@ -112,7 +112,7 @@
     <string name="lblQuantityCreateEvent">Quantidade</string>
     <string name="lblDurationCreateEvent">Duração em horas</string>
     <string name="lblPlaceCreateEvent">Novo evento</string>
-    <string name="txtNecessaryField">Campo Obrigatório</string>
+    <string name="txtNecessaryField">Campo Obrigatório*</string>
     <string name="lblGarbageTypeCreateEvent">Tipo de Lixo</string>
     <string name="lblNoEvents">Eventos Não Encontrados</string>
     <string name="btnParticipateOnEvent">Participar</string>
@@ -167,5 +167,6 @@
     <!-- EVENTOS -->
     <string name="lblNextEvents">Próximos eventos</string>
     <string name="noNextEvents">Não está inscrito em eventos futuros!</string>
+    <string name="txtAllUsers">Todos os utilizadores</string>
 
 </resources>

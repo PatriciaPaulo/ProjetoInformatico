@@ -888,8 +888,7 @@ fun PlacePickerComponent(
         // Creating a button that on
         Text(text= "Local")
         if(!(locationEvent.value.latitude.equals(0.0) && locationEvent.value.longitude.equals(0.0))){
-            Text(locationEvent.value.latitude.toString())
-            Text(locationEvent.value.longitude.toString())
+            Text("Escolhido")
         }
         Button(
             onClick = {
