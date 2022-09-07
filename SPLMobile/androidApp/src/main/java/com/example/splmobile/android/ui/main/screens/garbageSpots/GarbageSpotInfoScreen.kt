@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -195,7 +196,7 @@ private fun GarbageSpotComponent(
         val gsTime = LocalDateTime.parse(garbageSpotByIdState.garbageSpot.createdDate, patternReceiver)
         val gsString = gsTime.format(patternConverter).toString()
         Text(
-            text = "Às ${gsString}",
+            text = "${gsString}",
             color = Color.White,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             textAlign = TextAlign.Center,
@@ -208,6 +209,10 @@ private fun GarbageSpotComponent(
         Column(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
+            Spacer(
+                modifier = Modifier
+                    .size(dimensionResource(R.dimen.medium_spacer))
+            )
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = {
@@ -224,7 +229,6 @@ private fun GarbageSpotComponent(
                             expanded = expanded
                         )
                     },
-                    colors = ExposedDropdownMenuDefaults.textFieldColors()
                 )
                 ExposedDropdownMenu(
                     expanded = expanded,
@@ -246,6 +250,10 @@ private fun GarbageSpotComponent(
             }
         }
         val statusState = ButtonState(selectedOptionText, garbageSpotByIdState)
+        Spacer(
+            modifier = Modifier
+                .size(dimensionResource(R.dimen.small_spacer))
+        )
         ButtonSection(
             garbageSpotViewModel,
             garbageSpotId,
@@ -289,10 +297,10 @@ private fun ButtonSection(
         },
         enabled = statusState.value,
         modifier = Modifier
-            .fillMaxWidth(),
+            .height(dimensionResource(R.dimen.btn_medium)),
 
         ) {
-        Text(text = textResource(R.string.btnUpdateParticipateOnEvent).toString())
+        Text(text = textResource(R.string.btnUpdateParticipateOnEvent))
     }
 }
 

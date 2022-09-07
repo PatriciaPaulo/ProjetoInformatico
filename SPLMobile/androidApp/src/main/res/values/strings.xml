@@ -4,13 +4,13 @@
 
     <!-- ONBOARDING -->
     <string name="participateTitle">Participa</string>
-    <string name="participateDescription">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sollicitudin ac augue vel porta. Praesent et velit non urna pulvinar malesuada. Donec lacinia volutpat elementum. </string>
+    <string name="participateDescription">Na aplicação do Social Plogging Lovers podes criar e participar em eventos para limpar o mundo!</string>
 
     <string name="cleanTitle">Limpa</string>
-    <string name="cleanDescription">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sollicitudin ac augue vel porta. Praesent et velit non urna pulvinar malesuada. Donec lacinia volutpat elementum. </string>
+    <string name="cleanDescription">Regista o lixo que apanhas no decorrer da tua atividade física!</string>
 
     <string name="shareTitle">Partilha</string>
-    <string name="shareDescription">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sollicitudin ac augue vel porta. Praesent et velit non urna pulvinar malesuada. Donec lacinia volutpat elementum. </string>
+    <string name="shareDescription">Partilha as tuas atividades com os teus amigos e vejam o mundo ficar mais limpo juntos!</string>
 
     <string name="btnOnboardingFinish">Concluir</string>
 
@@ -91,9 +91,9 @@
     <string name="btnCommunity">Comunidade</string>
     <string name="btnFriends">Amigos</string>
     <string name="btnCreateEvent">Organizar Evento</string>
-    <string name="lblEventsNearMe">Eventos Próximos de mim</string>
+    <string name="lblEventsNearMe">Eventos na Vizinhança</string>
     <string name="lblNoEventForMe">Não existe o evento que procura?</string>
-    <string name="lblGarbageSpotsNearMe">Locais de Lixo Próximos de mim</string>
+    <string name="lblGarbageSpotsNearMe">Locais de Lixo Próximos</string>
     <string name="lblSeeMoreItems">Ver mais</string>
     <string name="lblBarCreateEvent">Criar Evento</string>
     <string name="lblNameCreateEvent">Nome do Evento</string>

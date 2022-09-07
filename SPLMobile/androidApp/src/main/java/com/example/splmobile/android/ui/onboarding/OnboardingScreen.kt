@@ -96,7 +96,7 @@ fun ScreenTemplate(onboardingPage: OnboardingPage) {
         // Icon
         Image(
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .fillMaxWidth(1f)
                 .fillMaxHeight(0.7f),
             painter = painterResource(id = onboardingPage.image),
             contentDescription = "Onboarding Icon"

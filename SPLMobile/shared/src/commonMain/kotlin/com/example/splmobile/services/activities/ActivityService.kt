@@ -11,6 +11,7 @@ interface ActivityService {
     suspend fun getGarbageInActivity(currentActivity : Long, token: String) : GarbageInActivityResponse
     suspend fun patchGarbageInActivity(currentActivity: Long, garbageInActivityID : Long, garbage: GarbageAmountDTO, token: String) : MessagesResponse
     suspend fun postGarbageInActivity(garbage: GarbageInActivityDTO, token: String, activityID: Long) : AddGarbageInActivityResponse
-    suspend fun deleteGarbageInActivity(garbageToDelete: Long, token: String): MessagesResponse
+    suspend fun deleteGarbageInActivity(garbageToDelete: Long, token: String): RequestMessageResponse
     suspend fun getLastActivity(token: String) : ActivityResponse
+    suspend fun getActivityByID(activityID: Long, token: String) : ActivityResponse
 }

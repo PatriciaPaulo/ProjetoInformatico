@@ -32,6 +32,7 @@
     <!-- LOGO AND BRANDING -->
     <!-- TODO Adjust sizes when we have permanent logo -->
     <dimen name="small_logo">48dp</dimen>
+    <dimen name="big_logo">200dp</dimen>
 
 
 </resources>

@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,20 +55,13 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // App Icon
-        Card(
+        Image(
+            painterResource(R.drawable.ic_logo),
+            contentDescription = "App Icon",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(dimensionResource(R.dimen.small_logo))
-                .testTag("circle"),
-            shape = CircleShape,
-            elevation = 2.dp,
-        ) {
-            Image(
-                painterResource(R.drawable.ic_onboarding_clean),
-                contentDescription = "App Icon",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+                .size(dimensionResource(R.dimen.big_logo))
+        )
 
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.big_spacer)))
 
@@ -214,7 +210,7 @@ fun RegisterValidationUI(
                 onValueChange =  emailUpdate,
                 leadingIcon = {
                     Image(
-                        painterResource(R.drawable.ic_main_home),
+                        imageVector = Icons.Default.Person,
                         contentDescription = null
                     )
                 },
@@ -256,7 +252,7 @@ fun RegisterValidationUI(
                 onValueChange = passwordUpdate,
                 leadingIcon = {
                     Image(
-                        painterResource(R.drawable.ic_main_home),
+                        imageVector = Icons.Default.VpnKey,
                         contentDescription = null
                     )
                 },

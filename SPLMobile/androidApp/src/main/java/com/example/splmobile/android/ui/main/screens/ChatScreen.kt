@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Message
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -267,7 +269,7 @@ fun EventsList(event: EventDTO,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    Icons.Default.AccountCircle,
+                    Icons.Default.Groups,
                     "",
                     modifier = Modifier
                         .size(dimensionResource(R.dimen.small_logo))

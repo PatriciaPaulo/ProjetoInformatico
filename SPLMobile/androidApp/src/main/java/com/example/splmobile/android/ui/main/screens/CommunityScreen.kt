@@ -218,7 +218,6 @@ private fun GarbageSpotsNearMe(
         Text(text = textResource(R.string.lblGarbageSpotsNearMe),style = MaterialTheme.typography.h6)
         Button(
             onClick = {
-
                 navController.navigate(Screen.GarbageSpotList.route)
             },
             modifier = Modifier
@@ -265,19 +264,25 @@ private fun GarbageSpotsNearMe(
                             LatLng(gs.latitude.toDouble(), gs.longitude.toDouble())) <50
                     }.forEachIndexed { index, garbagespot ->
                         item(span = { GridItemSpan(1) }) {
-                            iconBoxUI(
-                                modifier = Modifier
-                                    .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") },
-                                name = garbagespot.name,
-                                distance = if (location != null) (calculateDistance(
-                                    parseLocationLiveData,
-                                    LatLng(garbagespot.latitude.toDouble(), garbagespot.longitude.toDouble())
-                                ) * 10.0).roundToInt() / 10.0
-                                else null,
-                                location = null,
-                                details = garbagespot.status,
-                                iconPath = null,
-                            )
+                            Card (modifier = Modifier
+                                .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") }) {
+                                iconBoxUI(
+                                    modifier = Modifier
+                                        .clickable { navController.navigate(Screen.GarbageSpotInfo.route + "/${garbagespot.id}") },
+                                    name = garbagespot.name,
+                                    distance = if (location != null) (calculateDistance(
+                                        parseLocationLiveData,
+                                        LatLng(
+                                            garbagespot.latitude.toDouble(),
+                                            garbagespot.longitude.toDouble()
+                                        )
+                                    ) * 10.0).roundToInt() / 10.0
+                                    else null,
+                                    location = null,
+                                    details = garbagespot.status,
+                                    iconPath = null,
+                                )
+                            }
                         }
                     }
                 }
@@ -387,20 +392,25 @@ private fun EventsNearMeSection(
                                 LatLng(ev.latitude.toDouble(), ev.longitude.toDouble()))<50
                     }.forEachIndexed { index, event ->
                         item(span = { GridItemSpan(1) }) {
-
-                            iconBoxUI(
-                                modifier = Modifier
-                                    .clickable { navController.navigate(Screen.EventInfo.route + "/${event.id}") },
-                                name = event.name,
-                                distance = if (location != null) (calculateDistance(
-                                    parseLocationLiveData,
-                                    LatLng(event.latitude.toDouble(), event.longitude.toDouble())
-                                ) * 10.0).roundToInt() / 10.0
-                                else null,
-                                location = null,
-                                details = event.status,
-                                iconPath = null,
-                            )
+                            Card (modifier = Modifier
+                                .clickable { navController.navigate(Screen.EventInfo.route + "/${event.id}") }) {
+                                iconBoxUI(
+                                    modifier = Modifier
+                                        .clickable { navController.navigate(Screen.EventInfo.route + "/${event.id}") },
+                                    name = event.name,
+                                    distance = if (location != null) (calculateDistance(
+                                        parseLocationLiveData,
+                                        LatLng(
+                                            event.latitude.toDouble(),
+                                            event.longitude.toDouble()
+                                        )
+                                    ) * 10.0).roundToInt() / 10.0
+                                    else null,
+                                    location = null,
+                                    details = event.status,
+                                    iconPath = null,
+                                )
+                            }
                         }
                     }
                 }

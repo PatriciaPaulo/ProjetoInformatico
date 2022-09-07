@@ -69,9 +69,14 @@ class ActivityViewModel (
         object Empty : LastActivityUIState()
     }
 
-    // Variables
-    private var currentActivity : ActivitySerializable = ActivitySerializable(-1, null, null, null, null, null)
+    sealed class GetActivityByID {
+        data class Success(val activity: ActivitySerializable): GetActivityByID()
+        data class Error(val error: String) : GetActivityByID()
+        object Loading : GetActivityByID()
+        object Empty : GetActivityByID()
+    }
 
+    // Variables
     private val _activityCreateUIState = MutableStateFlow<ActivityStartUIState>(ActivityStartUIState.Empty)
     val activityCreateUIState = _activityCreateUIState.asStateFlow()
 
@@ -96,25 +101,20 @@ class ActivityViewModel (
     private val _lastActivity = MutableStateFlow<LastActivityUIState>(LastActivityUIState.Empty)
     val lastActivity = _lastActivity.asStateFlow()
 
-    fun getCurrentActivity() : ActivitySerializable {
-        return currentActivity
-    }
-
-    fun setCurrentActivity(activity : ActivitySerializable) {
-        currentActivity = activity
-    }
-
+    private val _activityByID = MutableStateFlow<GetActivityByID>(GetActivityByID.Empty)
+    val activityByID = _activityByID.asStateFlow()
 
     // Requests
 
     // Create New Activity
-    fun createActivity(activity : CreateActivitySerializable, token : String) {
+    fun createActivity(activity : CreateActivitySerializable, token : String, onResponse : (Long) -> Unit) {
         _activityCreateUIState.value = ActivityStartUIState.Loading
 
         viewModelScope.launch {
             val response = activityService.postCreateActivity(activity, token)
             if(response.message.substring(0,3) == "200"){
                 _activityCreateUIState.value = ActivityStartUIState.Success(response.data)
+                onResponse(response.data.id)
             } else {
                 _activityCreateUIState.value = ActivityStartUIState.Error(response.message)
             }
@@ -122,13 +122,14 @@ class ActivityViewModel (
     }
 
     // Finish Activity
-    fun finishActivity(activity: PatchActivitySerializable, token: String) {
+    fun finishActivity(activity: PatchActivitySerializable, token: String, onResponse: () -> Unit) {
         _activityFinishUIState.value = ActivityFinishUIState.Loading
 
         viewModelScope.launch {
             val response = activityService.patchActivity(activity, token)
             if(response.message.substring(0,3) == "200"){
                 _activityFinishUIState.value = ActivityFinishUIState.Success
+                onResponse()
             } else {
                 _activityFinishUIState.value = ActivityFinishUIState.Error(response.message)
             }
@@ -149,16 +150,32 @@ class ActivityViewModel (
         }
     }
 
+
     // Get Garbage in Activity
-    fun getGarbageInActivity(currentActivity : Long, token: String) {
+    fun getGarbageInActivity(currentActivity : Long, token: String, onResponse: (List<ExplicitGarbageInActivityDTO>) -> Unit) {
         _garbageInActivityUIState.value = GarbageInActivityUIState.Loading
 
         viewModelScope.launch {
             val response = activityService.getGarbageInActivity(currentActivity, token)
             if(response.message.substring(0,3) == "200"){
                 _garbageInActivityUIState.value = GarbageInActivityUIState.Success(response.data)
+                onResponse(response.data)
             } else {
                 _garbageInActivityUIState.value = GarbageInActivityUIState.Error(response.message)
+            }
+        }
+    }
+
+    // Get Activity by ID
+    fun getActivityByID(currentActivity : Long, token: String) {
+        _activityByID.value = GetActivityByID.Loading
+
+        viewModelScope.launch {
+            val response = activityService.getActivityByID(currentActivity, token)
+            if(response.message.substring(0,3) == "200"){
+                _activityByID.value = GetActivityByID.Success(response.data)
+            } else {
+                _activityByID.value = GetActivityByID.Error(response.message)
             }
         }
     }

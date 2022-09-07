@@ -29,6 +29,7 @@ import com.example.splmobile.models.ActivityViewModel
 import com.example.splmobile.models.AuthViewModel
 import com.example.splmobile.models.GarbageSpotViewModel
 import com.example.splmobile.objects.activities.ActivitySerializable
+import com.example.splmobile.objects.activities.ExplicitGarbageInActivityDTO
 import com.example.splmobile.objects.activities.PatchActivitySerializable
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -39,6 +40,25 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.LocalDateTime
 import kotlin.math.*
 
+/*
+@Composable
+fun OngoingActivity(
+    navController: NavController,
+    mapViewModel: MapViewModel,
+    activityViewModel: ActivityViewModel,
+    authViewModel: AuthViewModel,
+    activityID: String?,
+    garbageSpotViewModel: GarbageSpotViewModel,
+    log: Logger
+) {
+    Button(
+        onClick = {
+            navController.navigate(BottomNavItem.Home.route)
+        }
+    ) { Text("Activity") }
+}
+*/
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun OngoingActivity(
@@ -46,6 +66,7 @@ fun OngoingActivity(
     mapViewModel: MapViewModel,
     activityViewModel: ActivityViewModel,
     authViewModel: AuthViewModel,
+    activityID: String?,
     garbageSpotViewModel: GarbageSpotViewModel,
     log: Logger
 ) {
@@ -57,6 +78,7 @@ fun OngoingActivity(
         bottomBar = { BottomNavigationBar(navController = navController) },
         content = {
             onGoingActivityUI(
+                activityID!!.toLong(),
                 navController,
                 mapViewModel,
                 activityViewModel,
@@ -69,9 +91,9 @@ fun OngoingActivity(
 
 }
 
-
 @Composable
 fun onGoingActivityUI(
+    activityID: Long,
     navController: NavController,
     mapViewModel: MapViewModel,
     activityViewModel: ActivityViewModel,
@@ -79,6 +101,7 @@ fun onGoingActivityUI(
     garbageSpotViewModel: GarbageSpotViewModel,
     log: Logger
 ) {
+
     // Current Location
     val location by mapViewModel.getLocationLiveData().observeAsState()
     var lastLocation: LatLng? by remember { mutableStateOf(null) }
@@ -128,6 +151,7 @@ fun onGoingActivityUI(
     val shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp)
     Column() {
         // Show Map Box
+
         Box(
             modifier = Modifier
                 .weight(2f)
@@ -135,20 +159,23 @@ fun onGoingActivityUI(
             mapActivityUI(cameraPosition, pointerLocation)
         }
 
+
         // Information panel
         Box(
             modifier = Modifier
                 .weight(3f)
                 .clip(shape)
         ) {
-            val shortDistance = round(distanceTravelled * 10.0) / 10.0
+            //val shortDistance = round(distanceTravelled * 10.0) / 10.0
             ongoingActivityDataUI(
-                shortDistance,
+                activityID,
+                //shortDistance,
+                distance = 1.0,
                 activityViewModel,
                 authViewModel,
                 navController,
-                showError,
-                showErrorState
+                showError = false,
+                showErrorState = { }
             )
         }
     }
@@ -192,6 +219,7 @@ private fun mapActivityUI(cameraPosition: CameraPositionState, pointerLocation: 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ongoingActivityDataUI(
+    activityID: Long,
     distance: Double,
     activityViewModel: ActivityViewModel,
     authViewModel: AuthViewModel,
@@ -199,11 +227,36 @@ private fun ongoingActivityDataUI(
     showError: Boolean,
     showErrorState : (Int) -> Unit
 ) {
-    var currentActivity = ActivitySerializable(-1, null, null, null, null, null)
+
+    var listGarbageCollected : List<ExplicitGarbageInActivityDTO> = emptyList()
+    var garbageKgAmount by remember { mutableStateOf(0f) }
+    var garbageLtAmount by remember { mutableStateOf(0f) }
+    var garbageUnAmount by remember { mutableStateOf(0f) }
+
+
     LaunchedEffect(Unit) {
         // Get Activity Types from DB
         activityViewModel.getActivityTypes()
-        currentActivity = activityViewModel.getCurrentActivity()
+        activityViewModel.getGarbageInActivity(activityID, authViewModel.tokenState.value) { list ->
+            var garbageKgAmount2 = 0f
+            var garbageLtAmount2 = 0f
+            var garbageUnAmount2 = 0f
+
+            list.forEach { garbage ->
+                if (garbage.unit == "kg") {
+                    garbageKgAmount2 += garbage.amount
+                } else if (garbage.unit == "unidade") {
+                    garbageLtAmount2 += garbage.amount
+                } else {
+                    garbageUnAmount2 += garbage.amount
+                }
+            }
+
+            garbageKgAmount = garbageKgAmount2
+            garbageLtAmount = garbageLtAmount2
+            garbageUnAmount = garbageUnAmount2
+
+        }
     }
 
     var activityTypeState = activityViewModel.activityTypeUIState.collectAsState().value
@@ -217,49 +270,11 @@ private fun ongoingActivityDataUI(
         }
     }
 
-
-    // TODO Garbage adds bug add pa sempre?
-    var garbageInActivityState = activityViewModel.garbageInActivityUIState.collectAsState().value
-    var garbageKgAmount by remember { mutableStateOf(0f) }
-    var garbageLtAmount by remember { mutableStateOf(0f) }
-    var garbageUnAmount by remember { mutableStateOf(0f) }
-    when (garbageInActivityState) {
-        is ActivityViewModel.GarbageInActivityUIState.Success -> {
-            val triple = garbageInActivitySuccess(
-                garbageInActivityState,
-                garbageKgAmount,
-                garbageUnAmount,
-                garbageLtAmount
-            )
-            garbageKgAmount = triple.first
-            garbageLtAmount = triple.second
-            garbageUnAmount = triple.third
-        }
-    }
-
-
-    if (currentActivity.id != -1L) {
-        activityTypesList.value.forEach { type ->
-            if (currentActivity.activityTypeID == type.id) {
-                actTypeSelected = type
-            }
-        }
-
-
-    }
-
-    var finishActivityState = activityViewModel.activityFinishUIState.collectAsState().value
-    when(finishActivityState) {
-        is ActivityViewModel.ActivityFinishUIState.Success -> {
-            finishActivitySuccess(activityViewModel, navController)
-        }
-    }
-
-
     Column(
         modifier = Modifier
             .padding(dimensionResource(R.dimen.default_margin))
     ) {
+
         // Escolher Activity Type
         Row() {
             ExposedDropdownMenuBox(
@@ -299,6 +314,7 @@ private fun ongoingActivityDataUI(
                 }
             }
         }
+
 
         if(showError) {
             Text(stringResource(R.string.dataMissing))
@@ -390,7 +406,7 @@ private fun ongoingActivityDataUI(
                 IconButton(
                     modifier = Modifier
                         .fillMaxSize(),
-                    onClick = { navController.navigate(Screen.ManageGarbage.route) },
+                    onClick = { navController.navigate(Screen.ManageGarbage.route + "/${activityID}") },
                 ) {
                     Icon(
                         imageVector = Icons.Default.AddCircle,
@@ -408,20 +424,23 @@ private fun ongoingActivityDataUI(
                 .height(dimensionResource(R.dimen.btn_medium))
                 .fillMaxWidth(),
             onClick = {
+
                 if(actTypeSelected.id == -1L) {
                     showErrorState(1)
                 } else {
                     // Finish Activity
-                    println("${activityViewModel.getCurrentActivity().id} ${distance} ${actTypeSelected.id} ${LocalDateTime.now()}")
+                    println("${activityID} ${distance} ${actTypeSelected.id} ${LocalDateTime.now()}")
                     activityViewModel.finishActivity(
                         PatchActivitySerializable(
-                            id = activityViewModel.getCurrentActivity().id,
+                            id = activityID,
                             distanceTravelled = distance.toString(),
                             activityTypeID = actTypeSelected.id,
                             endDate = LocalDateTime.now().toString()
                         ),
                         authViewModel.tokenState.value,
-                    )
+                    ) {
+                        navController.navigate(BottomNavItem.Home.route)
+                    }
                 }
             },
         ) {
@@ -432,14 +451,6 @@ private fun ongoingActivityDataUI(
     }
 }
 
-private fun finishActivitySuccess(
-    activityViewModel: ActivityViewModel,
-    navController: NavController
-) {
-    activityViewModel.setCurrentActivity(ActivitySerializable(-1, null, null, null, null, null))
-    navController.navigate(BottomNavItem.Home.route)
-}
-
 private fun typeListSuccess(
     activityTypesList: MutableState<List<ActivityTypeSerializable>>,
     activityTypeState: ActivityViewModel.ActivityTypeUIState.Success
@@ -447,23 +458,3 @@ private fun typeListSuccess(
     activityTypesList.value = activityTypeState.activityTypes
 }
 
-private fun garbageInActivitySuccess(
-    garbageInActivityState: ActivityViewModel.GarbageInActivityUIState.Success,
-    garbageKgAmount: Float,
-    garbageUnAmount: Float,
-    garbageLtAmount: Float
-): Triple<Float, Float, Float> {
-    var garbageKgAmount1 = garbageKgAmount
-    var garbageUnAmount1 = garbageUnAmount
-    var garbageLtAmount1 = garbageLtAmount
-    garbageInActivityState.activities.forEach { garbage ->
-        if (garbage.unit == "kg") {
-            garbageKgAmount1 += garbage.amount
-        } else if (garbage.unit == "unidade") {
-            garbageUnAmount1 += garbage.amount
-        } else {
-            garbageLtAmount1 += garbage.amount
-        }
-    }
-    return Triple(garbageKgAmount1, garbageLtAmount1, garbageUnAmount1)
-}
