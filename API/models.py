@@ -7,7 +7,11 @@ from sqlalchemy import create_engine
 
 metadata = MetaData()
 Base = declarative_base(metadata=metadata)
-engine = create_engine('sqlite:///spl.db')
+engine = create_engine(
+    'sqlite:///spl.db',
+    connect_args={'check_same_thread': False}
+)
+
 db = SQLAlchemy(metadata=metadata)
 
 

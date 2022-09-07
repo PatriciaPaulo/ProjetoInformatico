@@ -18,10 +18,13 @@ from datetime import datetime, timedelta
 from random import randrange
 from random_word import RandomWords
 import random
-import json
 
 if __name__ == '__main__':
-    engine = create_engine('sqlite:///spl.db')
+    engine = create_engine(
+        'sqlite:///spl.db',
+        connect_args={'check_same_thread': False}
+    )
+
     session = Session(engine)
     r = RandomWords()
 
