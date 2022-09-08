@@ -181,7 +181,7 @@ fun MyActivitySection(
                     TextButton(onClick = {
                         navController.navigate(Screen.ActivityInfo.route+"/${it.id}")
                     }) {
-                        Text(text = "Actividade ${it.id} que começou em ${it.startDate}. ")
+                        Text(text = "Atividade ${it.id} que começou em ${it.startDate}. ")
                     }
 
                 }

@@ -28,8 +28,6 @@ engine = create_engine(
     connect_args={'check_same_thread': False}
 )
 
-
-
 if __name__ == '__main__':
     # App Config
     app = Flask(__name__)
@@ -58,12 +56,12 @@ if __name__ == '__main__':
 
     start_websockets()
     with app.app_context():
-        #Base.metadata.drop_all(engine)
-        #Base.metadata.create_all(engine)
+        # Base.metadata.drop_all(engine)
+        Base.metadata.create_all(engine)
 
         session = Session(engine)
 
         session.commit()
 
-        # app.run(host='0.0.0.0', port=5000,debug=False)
-        app.run(debug=True, use_reloader=False)
+        app.run(host='0.0.0.0', port=5000, debug=False)
+        # app.run(debug=True, use_reloader=False)
