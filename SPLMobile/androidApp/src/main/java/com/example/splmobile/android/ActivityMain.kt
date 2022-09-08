@@ -226,7 +226,7 @@ fun friendRequestReceived(
             val builder = NotificationCompat.Builder(context, channel)
                 .setSmallIcon(R.drawable.ic_onboarding_participate)
                 .setContentTitle("Novo pedido de amizade")
-                .setContentText("O utilizador ${requestState} quer ser seu amigo!")
+                .setContentText("O utilizador ${requestState.user.name} quer ser seu amigo!")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true)
 
